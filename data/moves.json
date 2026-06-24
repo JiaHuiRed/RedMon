@@ -1,0 +1,94 @@
+{
+  "撞击": {
+    "name": "撞击", "type": "空", "category": "物理",
+    "power": 35, "accuracy": 95, "max_pp": 35,
+    "effect": "", "description": "全力冲撞对方。"
+  },
+  "火花": {
+    "name": "火花", "type": "火", "category": "物理",
+    "power": 40, "accuracy": 100, "max_pp": 25,
+    "effect": "", "description": "喷出小火花攻击对方。"
+  },
+  "撕咬": {
+    "name": "撕咬", "type": "空", "category": "物理",
+    "power": 60, "accuracy": 100, "max_pp": 25,
+    "effect": "", "description": "用尖牙狠狠咬住对方。"
+  },
+  "吼叫": {
+    "name": "吼叫", "type": "空", "category": "变化",
+    "power": 0, "accuracy": 100, "max_pp": 40,
+    "effect": "lower_atk", "description": "发出巨吼，降低对方攻击。"
+  },
+  "烟雾弹": {
+    "name": "烟雾弹", "type": "空", "category": "变化",
+    "power": 0, "accuracy": 100, "max_pp": 20,
+    "effect": "lower_acc", "description": "释放浓烟，降低对方命中。"
+  },
+  "水枪": {
+    "name": "水枪", "type": "水", "category": "特殊",
+    "power": 40, "accuracy": 100, "max_pp": 25,
+    "effect": "", "description": "高压射出水流攻击对方。"
+  },
+  "防御卷缩": {
+    "name": "防御卷缩", "type": "空", "category": "变化",
+    "power": 0, "accuracy": 100, "max_pp": 40,
+    "effect": "raise_def", "description": "缩紧身躯，提升自身防御。"
+  },
+  "龙息": {
+    "name": "龙息", "type": "水", "category": "特殊",
+    "power": 60, "accuracy": 100, "max_pp": 20,
+    "effect": "", "description": "吐出蛟龙之气，威力强劲。"
+  },
+  "藤鞭": {
+    "name": "藤鞭", "type": "木", "category": "物理",
+    "power": 45, "accuracy": 100, "max_pp": 25,
+    "effect": "", "description": "挥动藤蔓抽打对方。"
+  },
+  "成长": {
+    "name": "成长", "type": "空", "category": "变化",
+    "power": 0, "accuracy": 100, "max_pp": 40,
+    "effect": "raise_sp_atk", "description": "积蓄能量，提升特攻。"
+  },
+  "吐丝": {
+    "name": "吐丝", "type": "虫", "category": "变化",
+    "power": 0, "accuracy": 95, "max_pp": 40,
+    "effect": "lower_spd", "description": "喷出粘丝，降低对方速度。"
+  },
+  "啃咬": {
+    "name": "啃咬", "type": "空", "category": "物理",
+    "power": 35, "accuracy": 95, "max_pp": 35,
+    "effect": "", "description": "大口啃咬对方。"
+  },
+  "石击": {
+    "name": "石击", "type": "土", "category": "物理",
+    "power": 50, "accuracy": 90, "max_pp": 15,
+    "effect": "", "description": "投掷坚石猛力击打对方。"
+  },
+  "焰喷": {
+    "name": "焰喷", "type": "火", "category": "特殊",
+    "power": 60, "accuracy": 100, "max_pp": 15,
+    "effect": "inflict_burn", "effect_chance": 30,
+    "description": "喷出灼热火焰，有30%概率令对方烧伤。"
+  },
+  "毒粉": {
+    "name": "毒粉", "type": "毒", "category": "变化",
+    "power": 0, "accuracy": 75, "max_pp": 35,
+    "effect": "inflict_poison", "description": "散布毒粉，令对方中毒。"
+  },
+  "电磁波": {
+    "name": "电磁波", "type": "雷", "category": "变化",
+    "power": 0, "accuracy": 90, "max_pp": 20,
+    "effect": "inflict_paralysis", "description": "发出电磁波，令对方陷入麻痹。"
+  },
+  "催眠术": {
+    "name": "催眠术", "type": "灵", "category": "变化",
+    "power": 0, "accuracy": 60, "max_pp": 10,
+    "effect": "inflict_sleep", "description": "施展催眠，使对方沉睡1~3回合。"
+  },
+  "冰冻光线": {
+    "name": "冰冻光线", "type": "冰", "category": "特殊",
+    "power": 60, "accuracy": 100, "max_pp": 15,
+    "effect": "inflict_freeze", "effect_chance": 10,
+    "description": "射出冰冷光线，有10%概率冰封对方。"
+  }
+}

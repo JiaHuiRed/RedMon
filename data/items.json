@@ -1,0 +1,14 @@
+{
+  "精灵球": {
+    "name": "精灵球", "category": "ball", "ball_bonus": 1.0,
+    "desc": "基础精灵球，可捕捉野生精灵。"
+  },
+  "回复药": {
+    "name": "回复药", "category": "heal", "heal_amount": 20,
+    "desc": "恢复精灵20点HP。"
+  },
+  "强效回复药": {
+    "name": "强效回复药", "category": "heal", "heal_amount": 50,
+    "desc": "恢复精灵50点HP。"
+  }
+}
