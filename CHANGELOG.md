@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.0.10] - 2026-06-25
+
+#### Added
+- **新精灵 6 只**：绿螳螂、蓝焰螳螂、赤金螳螂、元英、智敏、舒华 — `data/species.json` 占位
+- **蛹甲素材图**：绿叶挂茧风格像素画，`assets/sprites/`
+- **覆海龙背面图**：`assets/sprites/覆海龙_back.png`（此前缺失）
+- **Git LFS 支持**：`.gitattributes` 追踪 `assets/sprites/*.png`，大图推送不再超时
+
+#### Fixed
+- **`tools/mon_editor.py`**：`_mon_save` 中 `STAT_LABELS` 列表拆包反了导致 KeyError 崩溃
+- **`tools/mon_editor.py`**：种族值标签 width=4 过窄，"HP（体力）"等中文标签被截断
+- **`tools/mon_editor.py`**：种族值每行右端的硬编码 "0" 标签已移除，避免误解
+- **`tools/mon_editor.py`**：PyInstaller 打包后路径解析错误（缺 `sys.frozen` 判断导致找 `Temp/` 下数据）
+
+#### Changed
+- **`tools/mon_editor.py`**：保存按钮从底部移到右上角（编号旁），操作更方便
+- **`tools/mon_editor.py`**：性别比选择器旁增加 ♂♀ 标识符号
+- **精灵素材全部重压缩**：3MB → 650KB（78.5% 缩减），统一缩放至 256×256，NEAREST 采样保持像素风
+- **`assets/sprites/`**：所有非 96×96 的大图（384×384/288×384）统一为 256×256
+
+---
+
 ### [0.0.9] - 2026-06-25
 
 #### Added

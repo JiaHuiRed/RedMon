@@ -216,6 +216,7 @@
     "size_info": "大型 / 2.1m / 101.5kg"
   },
   "小竹熊": {
+    "id": 1,
     "name": "小竹熊",
     "type1": "木",
     "type2": "",
@@ -227,10 +228,18 @@
       "sp_def": 65,
       "spd": 45
     },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "圆滚滚的竹林小熊，以竹叶为食，天生能感应草木之灵气。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "小型 / 0.7m / 6.9kg",
+    "evolves_into": "武道熊",
+    "evolve_level": 16,
     "learnset": {
       "1": [
-        "藤鞭",
-        "成长"
+        "成长",
+        "藤鞭"
       ],
       "4": [
         "烟雾弹"
@@ -241,15 +250,7 @@
       "12": [
         "藤鞭"
       ]
-    },
-    "catch_rate": 45,
-    "exp_yield": 64,
-    "growth_rate": "中速",
-    "evolves_into": "武道熊",
-    "evolve_level": 16,
-    "desc": "圆滚滚的竹林小熊，以竹叶为食，天生能感应草木之灵气。",
-    "gender_ratio": "87.5/12.5",
-    "size_info": "小型 / 0.7m / 6.9kg"
+    }
   },
   "武道熊": {
     "name": "武道熊",
@@ -596,5 +597,159 @@
     },
     "desc": "进化后羽毛化作钢刀，驾驭气流，振翅成风，是草原上的速度之王。",
     "name": "坤鸡"
+  },
+  "绿螳螂": {
+    "name": "绿螳螂",
+    "type1": "虫",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "learnset": {
+      "1": [
+        "撞击"
+      ]
+    },
+    "catch_rate": 120,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "新发现的绿螳螂，详细资料待补充。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.5m / 5.0kg",
+    "evolves_into": "蓝焰螳螂",
+    "evolve_level": 16,
+    "id": 2
+  },
+  "蓝焰螳螂": {
+    "name": "蓝焰螳螂",
+    "type1": "虫",
+    "type2": "火",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "learnset": {
+      "1": [
+        "撞击"
+      ]
+    },
+    "catch_rate": 120,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "新发现的蓝焰螳螂，详细资料待补充。",
+    "gender_ratio": "50/50",
+    "size_info": "中型 / 1.0m / 15.0kg",
+    "evolves_into": "赤金螳螂",
+    "evolve_level": 36,
+    "id": 3
+  },
+  "赤金螳螂": {
+    "name": "赤金螳螂",
+    "type1": "虫",
+    "type2": "火",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "learnset": {
+      "1": [
+        "撞击"
+      ]
+    },
+    "catch_rate": 120,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "新发现的赤金螳螂，详细资料待补充。",
+    "gender_ratio": "50/50",
+    "size_info": "大型 / 1.8m / 45.0kg",
+    "id": 4
+  },
+  "元英": {
+    "id": 5,
+    "name": "元英",
+    "type1": "龙",
+    "type2": "灵",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "learnset": {
+      "1": [
+        "撞击"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "神秘的元始之灵，资料待补充。",
+    "gender_ratio": "无性别",
+    "size_info": "小型 / 0.5m / 5.0kg"
+  },
+  "智敏": {
+    "id": 6,
+    "name": "智敏",
+    "type1": "灵",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "learnset": {
+      "1": [
+        "撞击"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "新发现的智敏，详细资料待补充。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.5m / 5.0kg"
+  },
+  "舒华": {
+    "id": 7,
+    "name": "舒华",
+    "type1": "仙",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "learnset": {
+      "1": [
+        "撞击"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "新发现的舒华，详细资料待补充。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.5m / 5.0kg"
   }
 }
