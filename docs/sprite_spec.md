@@ -1,0 +1,176 @@
+# RedMon 精灵图规格表
+# 文件放到对应路径后，游戏会自动优先加载，代码占位图作为兜底
+
+# ============================================================
+# 一、战斗精灵（最高优先级）
+# ============================================================
+
+# 路径规则：res://assets/sprites/<名称>_front.png / _back.png
+
+battle_sprites:
+
+  # 御三家 — 战斗中玩家方显示背面，敌方/野生显示正面
+  starters:
+    - name: 炎喵
+      front: assets/sprites/炎喵_front.png   # 规格：96×96，透明背景
+      back:  assets/sprites/炎喵_back.png    # 规格：96×96，透明背景
+      priority: 最高
+
+    - name: 蓝蛇
+      front: assets/sprites/蓝蛇_front.png
+      back:  assets/sprites/蓝蛇_back.png
+      priority: 最高
+
+    - name: 小竹熊
+      front: assets/sprites/小竹熊_front.png
+      back:  assets/sprites/小竹熊_back.png
+      priority: 最高
+
+  # 野生精灵 — 只需正面（战斗敌方）
+  wild_mons:
+    - name: 绿毛虫
+      front: assets/sprites/绿毛虫_front.png  # 规格：96×96，透明背景
+      priority: 高
+
+    - name: 石偶
+      front: assets/sprites/石偶_front.png
+      priority: 高
+
+    - name: 野鼠灵
+      front: assets/sprites/野鼠灵_front.png
+      priority: 高
+
+# ============================================================
+# 二、角色立绘（选择场景/对话框用）
+# ============================================================
+
+portraits:
+
+  - name: 奥克博士
+    path: assets/sprites/professor.png
+    size: 80×120（或更大等比缩放）
+    用途: 御三家选择场景左侧
+    priority: 中
+    note: 正面站立，白大褂，灰白乱发，持平板，无背景
+
+  - name: 主角_男
+    path: assets/portraits/hero_m.png
+    size: 80×120
+    用途: 对话框/存档界面（Phase 2）
+    priority: 低
+
+  - name: 主角_女
+    path: assets/portraits/hero_f.png
+    size: 80×120
+    用途: 同上
+    priority: 低
+
+  - name: 劲敌_女
+    path: assets/portraits/rival_f.png
+    size: 80×120
+    用途: 对战前对话（Phase 2）
+    priority: 低
+
+# ============================================================
+# 三、大地图行走图（过场/世界地图）
+# ============================================================
+
+overworld_sprites:
+
+  note: >
+    GBA风格行走图：每方向3帧（停止/左脚/右脚），4方向 = 12帧
+    拼成一张 spritesheet：48×96（每帧16×24）
+    当前代码用16×20静态单帧，升级行走动画时替换
+
+  - name: 主角_男_行走
+    path: assets/overworld/hero_m_walk.png
+    size: 48×96（spritesheet，4行×3列）
+    priority: 中（有静态占位可先跑通）
+
+  - name: 主角_女_行走
+    path: assets/overworld/hero_f_walk.png
+    size: 48×96
+    priority: 低（Phase 2，性别选择实装后）
+
+  - name: 奥克博士_站立
+    path: assets/overworld/professor_stand.png
+    size: 16×24，单帧
+    priority: 低（NPC实装时）
+
+  - name: 劲敌_行走
+    path: assets/overworld/rival_walk.png
+    size: 48×96
+    priority: 低（Phase 2）
+
+# ============================================================
+# 四、UI 图标（可选，当前用代码绘制）
+# ============================================================
+
+ui_icons:
+
+  - name: 精灵球图标
+    path: assets/ui/pokeball.png
+    size: 16×16
+    priority: 低
+
+  - name: 属性徽章（火/水/木/虫/土/无）
+    path: assets/ui/type_<属性>.png
+    size: 32×12
+    priority: 低
+
+# ============================================================
+# 五、GPT Image 2 生成 Prompt 参考
+# ============================================================
+
+prompt_templates:
+
+  pokemon_front: >
+    GBA Pokemon FireRed style pixel art, <精灵名称> monster sprite,
+    front-facing battle pose, 96x96 pixels, transparent background,
+    clean pixel art, limited color palette, no anti-aliasing,
+    chibi style, cute, [描述该精灵的颜色/特征]
+
+  pokemon_back: >
+    GBA Pokemon FireRed style pixel art, <精灵名称> monster sprite,
+    back-facing battle pose (seen from behind), 96x96 pixels,
+    transparent background, pixel art, limited palette
+
+  professor_portrait: >
+    GBA Pokemon style NPC portrait, elderly male professor,
+    white lab coat, messy grey hair, grey beard, holding tablet,
+    front-facing, pixel art style, 80x120 pixels, transparent background,
+    warm friendly expression
+
+  hero_male: >
+    GBA Pokemon FireRed style trainer sprite, male protagonist,
+    red baseball cap, dark hair, red open jacket, black t-shirt,
+    black pants, red sneakers, front-facing battle pose,
+    96x96 pixels, transparent background, pixel art
+
+  hero_female: >
+    GBA Pokemon style trainer sprite, female protagonist,
+    red cap, long dark hair, black crop top, red jacket,
+    black shorts, black stockings, red sneakers,
+    front-facing pose, 96x96 pixels, transparent background, pixel art
+
+  rival_female: >
+    GBA Pokemon style trainer sprite, female rival character,
+    pink baseball cap, long wavy dark hair, white shirt,
+    pink skirt, white thigh-high socks, pink shoes,
+    confident pose, 96x96 pixels, transparent background, pixel art
+
+# ============================================================
+# 六、Phase 1 最小可用素材清单（先做这些就能跑完整流程）
+# ============================================================
+
+phase1_minimum:
+  - 炎喵_front.png   # 选择卡+敌方野生炎喵
+  - 炎喵_back.png    # 玩家战斗方
+  - 蓝蛇_front.png
+  - 蓝蛇_back.png
+  - 小竹熊_front.png
+  - 小竹熊_back.png
+  - 绿毛虫_front.png  # 最常见野生
+  - 石偶_front.png
+  - 野鼠灵_front.png
+  # 教授和主角有代码占位，暂时不影响流程
