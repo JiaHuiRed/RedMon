@@ -5,7 +5,7 @@ var player_team: Array = []   # Array of mon dicts from MonDB.create_mon()
 var has_starter: bool = false
 var badges: int = 0
 var money: int = 500
-var items: Dictionary = {"铜丹": 3, "金丹": 1, "精灵葫芦": 5}
+var items: Dictionary = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
 
 var font: SystemFont  # 全局中文字体，所有场景共用
 
@@ -65,7 +65,7 @@ func load_game() -> bool:
 	has_starter  = data.get("has_starter", false)
 	badges       = data.get("badges", 0)
 	money        = data.get("money", 500)
-	items        = data.get("items", {"铜丹": 3, "金丹": 1, "精灵葫芦": 5})
+	items        = data.get("items", {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5})
 	player_team  = data.get("player_team", [])
 	print("[SAVE] 存档读取完成，队伍：%d 只精灵" % player_team.size())
 	return true
@@ -76,7 +76,7 @@ func start_new_game(name: String) -> void:
 	has_starter = false
 	badges = 0
 	money = 500
-	items = {"铜丹": 3, "金丹": 1, "精灵葫芦": 5}
+	items = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
 
 func add_mon(mon: Dictionary) -> void:
 	player_team.append(mon)
