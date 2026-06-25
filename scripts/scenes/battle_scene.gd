@@ -56,7 +56,7 @@ const MENU_H  := 70
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
-	_enemy_mon  = data.get("wild_mon", MonDB.create_mon("绿毛虫", 3))
+	_enemy_mon  = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))
 	_player_mon = GameState.first_mon()
 
 	_player_mon_idx = 0
@@ -75,18 +75,36 @@ func _ready() -> void:
 # BUILD – Battle field
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_battle_field() -> void:
-	# Sky gradient background
-	var sky = ColorRect.new()
-	sky.size = Vector2(VW, FIELD_H)
-	sky.color = Color(0.55, 0.78, 0.95)
-	add_child(sky)
+	# Sky gradient (top → bottom: deep blue → light blue → pale horizon)
+	var sky_strips = [
+		[0,          FIELD_H * 0.4, Color(0.30, 0.55, 0.90)],
+		[FIELD_H * 0.4, FIELD_H * 0.35, Color(0.50, 0.72, 0.96)],
+		[FIELD_H * 0.75, FIELD_H * 0.25, Color(0.72, 0.88, 0.99)],
+	]
+	for s in sky_strips:
+		var r = ColorRect.new()
+		r.position = Vector2(0, s[0])
+		r.size     = Vector2(VW, s[1] + 2)
+		r.color    = s[2]
+		add_child(r)
 
-	# Ground strip
-	var ground = ColorRect.new()
-	ground.size = Vector2(VW, 60)
-	ground.position = Vector2(0, FIELD_H - 60)
-	ground.color = Color(0.35, 0.6, 0.25)
-	add_child(ground)
+	# Clouds
+	_draw_cloud(Vector2(60,  22), 32, 14)
+	_draw_cloud(Vector2(300, 14), 48, 18)
+	_draw_cloud(Vector2(420, 30), 28, 12)
+
+	# Ground strip (two-tone)
+	var ground_dark = ColorRect.new()
+	ground_dark.size     = Vector2(VW, 64)
+	ground_dark.position = Vector2(0, FIELD_H - 64)
+	ground_dark.color    = Color(0.28, 0.52, 0.20)
+	add_child(ground_dark)
+
+	var ground_light = ColorRect.new()
+	ground_light.size     = Vector2(VW, 28)
+	ground_light.position = Vector2(0, FIELD_H - 36)
+	ground_light.color    = Color(0.38, 0.64, 0.27)
+	add_child(ground_light)
 
 	# Enemy platform (top-right)
 	var ep = _make_platform(Vector2(VW - 160, FIELD_H - 90), 100, 20, Color(0.45, 0.68, 0.32))
@@ -107,6 +125,38 @@ func _build_battle_field() -> void:
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 	_player_spr.position = Vector2(110, FIELD_H - 68)
 	add_child(_player_spr)
+
+func _draw_cloud(pos: Vector2, w: float, h: float) -> void:
+	var img = Image.create(int(w), int(h), false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	# Fluffy cloud shape: three overlapping ellipses
+	var cx = int(w / 2)
+	var cy = int(h * 0.6)
+	for y in range(int(h)):
+		for x in range(int(w)):
+			var in_cloud = false
+			# Main body
+			var dx1 = float(x - cx) / (w * 0.42)
+			var dy1 = float(y - cy) / (h * 0.45)
+			if dx1*dx1 + dy1*dy1 <= 1.0: in_cloud = true
+			# Left puff
+			var dx2 = float(x - cx + w*0.22) / (w * 0.28)
+			var dy2 = float(y - cy + h*0.1) / (h * 0.38)
+			if dx2*dx2 + dy2*dy2 <= 1.0: in_cloud = true
+			# Right puff
+			var dx3 = float(x - cx - w*0.22) / (w * 0.28)
+			var dy3 = float(y - cy + h*0.1) / (h * 0.38)
+			if dx3*dx3 + dy3*dy3 <= 1.0: in_cloud = true
+			if in_cloud:
+				var brightness = 1.0 - float(y) / h * 0.12
+				img.set_pixel(x, y, Color(brightness, brightness, brightness, 0.82))
+	var tex = ImageTexture.new()
+	tex.set_image(img)
+	var spr = Sprite2D.new()
+	spr.texture = tex
+	spr.position = pos
+	spr.z_index = 1
+	add_child(spr)
 
 func _make_platform(pos: Vector2, w: float, h: float, color: Color) -> ColorRect:
 	var r = ColorRect.new()
@@ -199,16 +249,25 @@ func _build_info_boxes() -> void:
 # BUILD – Message box
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_message_box() -> void:
-	var box_bg = ColorRect.new()
-	box_bg.size = Vector2(VW, MSG_H + 2)
+	# Outer dark frame
+	var box_bg = Panel.new()
+	box_bg.size     = Vector2(VW, MSG_H + 4)
 	box_bg.position = Vector2(0, MSG_Y - 2)
-	box_bg.color = Color(0.08, 0.08, 0.08)
+	var outer_style = StyleBoxFlat.new()
+	outer_style.bg_color = Color(0.10, 0.10, 0.14)
+	box_bg.add_theme_stylebox_override("panel", outer_style)
 	add_child(box_bg)
 
-	var box = ColorRect.new()
-	box.size = Vector2(VW - 6, MSG_H - 4)
-	box.position = Vector2(3, MSG_Y + 1)
-	box.color = Color(0.96, 0.96, 0.92)
+	# Inner cream box with rounded corners
+	var box = Panel.new()
+	box.size     = Vector2(VW - 8, MSG_H - 4)
+	box.position = Vector2(4, MSG_Y + 1)
+	var inner_style = StyleBoxFlat.new()
+	inner_style.bg_color    = Color(0.97, 0.97, 0.93)
+	inner_style.border_color = Color(0.25, 0.25, 0.30)
+	inner_style.set_border_width_all(2)
+	inner_style.set_corner_radius_all(4)
+	box.add_theme_stylebox_override("panel", inner_style)
 	add_child(box)
 
 	_msg_label = Label.new()
@@ -228,32 +287,54 @@ func _build_action_panel() -> void:
 	_action_panel.size = Vector2(VW, MENU_H)
 	add_child(_action_panel)
 
-	var bg = ColorRect.new()
+	var bg = Panel.new()
 	bg.size = Vector2(VW, MENU_H)
-	bg.color = Color(0.12, 0.12, 0.16)
+	var bg_style = StyleBoxFlat.new()
+	bg_style.bg_color = Color(0.08, 0.10, 0.18)
+	bg.add_theme_stylebox_override("panel", bg_style)
 	_action_panel.add_child(bg)
+
+	# Top border line (gold accent)
+	var accent = ColorRect.new()
+	accent.size = Vector2(VW, 2)
+	accent.color = Color(0.85, 0.70, 0.20)
+	_action_panel.add_child(accent)
 
 	var prompt = Label.new()
 	prompt.text = "该怎么做？"
-	prompt.position = Vector2(14, 6)
-	prompt.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
-	prompt.add_theme_font_size_override("font_size", 12)
+	prompt.position = Vector2(14, 12)
+	prompt.add_theme_color_override("font_color", Color(0.95, 0.92, 0.75))
+	prompt.add_theme_font_size_override("font_size", 13)
 	_action_panel.add_child(prompt)
 
-	# 2×2 button grid on the right half
-	var labels = ["战  斗", "背  包", "精  灵", "逃  跑"]
+	# 2×2 button grid
+	var labels    = ["⚔  战  斗", "🎒  背  包", "♟  精  灵", "🏃  逃  跑"]
 	var callbacks = [_on_fight, _on_bag, _on_mon, _on_run]
-	var btn_w = 110
-	var btn_h = 26
-	var grid_x = VW - 240
+	var btn_colors = [
+		Color(0.75, 0.20, 0.15), Color(0.20, 0.50, 0.20),
+		Color(0.18, 0.35, 0.75), Color(0.45, 0.45, 0.45),
+	]
+	var btn_w = 108
+	var btn_h = 28
+	var grid_x = VW - 238
 	for i in range(4):
 		var col = i % 2
-		var row = i / 2
+		var row: int = i / 2
 		var btn = Button.new()
 		btn.text = labels[i]
 		btn.size = Vector2(btn_w, btn_h)
-		btn.position = Vector2(grid_x + col * (btn_w + 8), 10 + row * (btn_h + 6))
+		btn.position = Vector2(grid_x + col * (btn_w + 10), 8 + row * (btn_h + 5))
 		btn.pressed.connect(callbacks[i])
+		var s = StyleBoxFlat.new()
+		s.bg_color    = btn_colors[i]
+		s.border_color = btn_colors[i].lightened(0.3)
+		s.set_border_width_all(1)
+		s.set_corner_radius_all(4)
+		btn.add_theme_stylebox_override("normal", s)
+		var sh = s.duplicate(); sh.bg_color = btn_colors[i].lightened(0.15)
+		btn.add_theme_stylebox_override("hover", sh)
+		btn.add_theme_color_override("font_color", Color.WHITE)
+		btn.add_theme_font_size_override("font_size", 12)
 		_action_panel.add_child(btn)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -277,7 +358,7 @@ func _build_move_panel() -> void:
 	_move_btns = []
 	for i in range(4):
 		var col = i % 2
-		var row = i / 2
+		var row: int = i / 2
 		var btn = Button.new()
 		btn.name = "MoveBtn%d" % i
 		btn.size = Vector2(btn_w, btn_h)
@@ -376,6 +457,7 @@ func _on_use_item(item_id: String) -> void:
 				else:
 					await _show_message_async("队伍已满，%s 被放生了……" % MonDB.display_name(_enemy_mon))
 				_busy = false
+				GameState.save_game()
 				request_scene.emit("world", {})
 				return
 			else:
@@ -521,13 +603,26 @@ func _refresh_move_panel() -> void:
 	for i in range(4):
 		var btn = _move_btns[i]
 		if i < moves.size():
-			var mv_id = moves[i]["id"]
-			var mv = MonDB.moves[mv_id]
-			btn.text = mv_id
-			btn.disabled = moves[i]["pp"] <= 0
-			# Color by type
-			var tc = MonDB.type_colors.get(mv["type"], Color(0.5, 0.5, 0.5))
-			btn.add_theme_color_override("font_color", tc)
+			var mv_id  = moves[i]["id"]
+			var mv     = MonDB.moves[mv_id]
+			var pp     = moves[i]["pp"]
+			var max_pp = moves[i]["max_pp"]
+			btn.text     = "%s\nPP %d/%d" % [mv_id, pp, max_pp]
+			btn.disabled = pp <= 0
+			# Type color: tinted background + white text
+			var tc = MonDB.type_colors.get(mv["type"], Color(0.4, 0.4, 0.4))
+			var style_n = StyleBoxFlat.new()
+			style_n.bg_color      = Color(tc.r * 0.45, tc.g * 0.45, tc.b * 0.45, 1.0)
+			style_n.border_color  = tc
+			style_n.set_border_width_all(2)
+			style_n.set_corner_radius_all(4)
+			btn.add_theme_stylebox_override("normal",   style_n)
+			var style_h = style_n.duplicate()
+			style_h.bg_color = Color(tc.r * 0.65, tc.g * 0.65, tc.b * 0.65, 1.0)
+			btn.add_theme_stylebox_override("hover",    style_h)
+			btn.add_theme_stylebox_override("pressed",  style_h)
+			btn.add_theme_color_override("font_color",  Color.WHITE)
+			btn.add_theme_font_size_override("font_size", 11)
 		else:
 			btn.text = "──"
 			btn.disabled = true
@@ -816,7 +911,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		# 附带状态效果（有概率触发）
 		var sec_effect  = mv.get("effect", "")
 		var sec_chance  = mv.get("effect_chance", 0)
-		if sec_effect != "" and sec_chance > 0 and effectiveness > 0.0:
+		if sec_effect != "" and sec_chance > 0 and eff > 0.0:
 			if randf() * 100.0 < sec_chance:
 				var had_status = defender.get("status", "") != ""
 				_apply_effect(sec_effect, attacker, defender, is_enemy)
@@ -920,6 +1015,7 @@ func _handle_victory() -> void:
 
 	await get_tree().create_timer(0.5).timeout
 	_busy = false
+	GameState.save_game()
 	request_scene.emit("world", {})
 
 func _handle_defeat() -> void:
@@ -936,6 +1032,7 @@ func _handle_defeat() -> void:
 		for m in GameState.player_team:
 			m["current_hp"] = 1   # 防止卡死
 		_busy = false
+		GameState.save_game()
 		request_scene.emit("world", {})
 	else:
 		# 强制换场
@@ -974,27 +1071,26 @@ func _panel_rect(pos: Vector2, size: Vector2) -> Control:
 	c.position = pos
 	c.size = size
 
-	var shadow = ColorRect.new()
+	# Drop shadow
+	var shadow = Panel.new()
 	shadow.size = size
-	shadow.color = Color(0, 0, 0, 0.25)
-	shadow.position = Vector2(2, 2)
+	shadow.position = Vector2(3, 3)
+	var shadow_style = StyleBoxFlat.new()
+	shadow_style.bg_color = Color(0, 0, 0, 0.30)
+	shadow_style.set_corner_radius_all(5)
+	shadow.add_theme_stylebox_override("panel", shadow_style)
 	c.add_child(shadow)
 
-	var bg = ColorRect.new()
-	bg.size = size
-	bg.color = Color(0.92, 0.92, 0.88)
-	c.add_child(bg)
-
-	var border = ColorRect.new()
-	border.size = size
-	border.color = Color(0.25, 0.25, 0.25, 0.8)
-	c.add_child(border)
-
-	var inner = ColorRect.new()
-	inner.size = size - Vector2(3, 3)
-	inner.position = Vector2(1.5, 1.5)
-	inner.color = Color(0.92, 0.92, 0.88)
-	c.add_child(inner)
+	# Main panel
+	var panel = Panel.new()
+	panel.size = size
+	var style = StyleBoxFlat.new()
+	style.bg_color     = Color(0.94, 0.94, 0.90, 0.96)
+	style.border_color = Color(0.20, 0.20, 0.25, 1.0)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(5)
+	panel.add_theme_stylebox_override("panel", style)
+	c.add_child(panel)
 
 	return c
 
@@ -1016,17 +1112,17 @@ func _draw_circle(img: Image, center: Vector2i, radius: int, color: Color) -> vo
 			if (x - center.x) * (x - center.x) + (y - center.y) * (y - center.y) <= r2:
 				img.set_pixel(x, y, color)
 
-func _draw_enemy_sprite(species_id: String) -> ImageTexture:
+func _draw_enemy_sprite(species_id: String) -> Texture2D:
 	var path = "res://assets/sprites/%s_front.png" % species_id
 	if ResourceLoader.exists(path):
 		return load(path)
 	match species_id:
-		"绿毛虫": return _draw_caterpillar()
-		"石偶":   return _draw_stone_golem()
-		"野鼠灵": return _draw_wild_mouse()
+		"绿肥虫": return _draw_caterpillar()
+		"岩灵":   return _draw_stone_golem()
+		"小灯鼠": return _draw_wild_mouse()
 		_:        return _draw_caterpillar()
 
-func _draw_caterpillar() -> ImageTexture:
+func _draw_caterpillar() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var BK := Color(0.08, 0.08, 0.08)
@@ -1062,7 +1158,7 @@ func _draw_caterpillar() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
-func _draw_stone_golem() -> ImageTexture:
+func _draw_stone_golem() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var BK := Color(0.08, 0.08, 0.08)
@@ -1097,7 +1193,7 @@ func _draw_stone_golem() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
-func _draw_wild_mouse() -> ImageTexture:
+func _draw_wild_mouse() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var BK   := Color(0.08, 0.08, 0.08)
@@ -1140,7 +1236,7 @@ func _draw_wild_mouse() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
-func _draw_player_back() -> ImageTexture:
+func _draw_player_back() -> Texture2D:
 	var img = Image.create(64, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	img.fill_rect(Rect2i(12, 72, 40, 6), Color(0, 0, 0, 0.2))
@@ -1157,18 +1253,18 @@ func _draw_player_back() -> ImageTexture:
 	return tex
 
 # 根据 species_id 返回对应精灵的背面图
-func _draw_mon_back(species_id: String) -> ImageTexture:
+func _draw_mon_back(species_id: String) -> Texture2D:
 	var path = "res://assets/sprites/%s_back.png" % species_id
 	if ResourceLoader.exists(path):
 		return load(path)
 	match species_id:
-		"焰狐":   return _draw_yanhu_back()
-		"水蛟":   return _draw_shuijiao_back()
-		"竹灵":   return _draw_zhuling_back()
+		"炎喵":   return _draw_yanhu_back()
+		"蓝蛇":   return _draw_shuijiao_back()
+		"小竹熊": return _draw_zhuling_back()
 		_:        return _draw_player_back()
 
-# 焰狐背面
-func _draw_yanhu_back() -> ImageTexture:
+# 炎喵背面
+func _draw_yanhu_back() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	# 轮廓（先画黑色略大版本）
@@ -1192,8 +1288,8 @@ func _draw_yanhu_back() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
-# 水蛟背面
-func _draw_shuijiao_back() -> ImageTexture:
+# 蓝蛇背面
+func _draw_shuijiao_back() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	# 轮廓
@@ -1214,8 +1310,8 @@ func _draw_shuijiao_back() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
-# 竹灵背面
-func _draw_zhuling_back() -> ImageTexture:
+# 小竹熊背面
+func _draw_zhuling_back() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	# 轮廓

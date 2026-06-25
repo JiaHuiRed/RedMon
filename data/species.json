@@ -1,108 +1,600 @@
 {
-  "焰狐": {
-    "name": "焰狐",
-    "type1": "火", "type2": "",
+  "炎喵": {
+    "name": "炎喵",
+    "type1": "火",
+    "type2": "",
     "base": {
-      "hp": 45, "atk": 52, "def": 43,
-      "sp_atk": 60, "sp_def": 50, "spd": 65
+      "hp": 45,
+      "atk": 52,
+      "def": 43,
+      "sp_atk": 60,
+      "sp_def": 50,
+      "spd": 65
     },
     "learnset": {
-      "1": ["火花", "撕咬"],
-      "4": ["吼叫"],
-      "7": ["烟雾弹"],
-      "10": ["焰喷"]
+      "1": [
+        "火花",
+        "撕咬"
+      ],
+      "4": [
+        "吼叫"
+      ],
+      "7": [
+        "烟雾弹"
+      ],
+      "10": [
+        "焰喷"
+      ]
     },
-    "catch_rate": 45, "exp_yield": 64, "growth_rate": "中速",
-    "desc": "传说中的火系灵狐，尾巴燃着幽蓝火焰，性情机敏。"
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "evolves_into": "烈火猫",
+    "evolve_level": 16,
+    "desc": "身怀火焰之力的灵猫，耳尖常有小火苗跳动，性情热烈好动。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "小型 / 0.4m / 4.1kg"
   },
-
-  "水蛟": {
-    "name": "水蛟",
-    "type1": "水", "type2": "",
+  "烈火猫": {
+    "name": "烈火猫",
+    "type1": "火",
+    "type2": "",
     "base": {
-      "hp": 44, "atk": 48, "def": 65,
-      "sp_atk": 50, "sp_def": 64, "spd": 43
+      "hp": 58,
+      "atk": 65,
+      "def": 58,
+      "sp_atk": 80,
+      "sp_def": 65,
+      "spd": 80
     },
     "learnset": {
-      "1": ["水枪", "撞击"],
-      "4": ["防御卷缩"],
-      "7": ["龙息"]
+      "1": [
+        "火花",
+        "撕咬"
+      ],
+      "16": [
+        "吼叫",
+        "烟雾弹"
+      ],
+      "22": [
+        "焰喷"
+      ],
+      "28": [
+        "撕咬"
+      ]
     },
-    "catch_rate": 45, "exp_yield": 64, "growth_rate": "中速",
-    "desc": "青色小蛟龙，外表温和，遇敌时能喷出强力激流。"
+    "catch_rate": 45,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "evolves_into": "焚焰狮",
+    "evolve_level": 36,
+    "desc": "进化后火焰覆盖全身，战斗时鬃毛燃烧，速度与力量兼备。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "中型 / 1.0m / 19.0kg"
   },
-
-  "竹灵": {
-    "name": "竹灵",
-    "type1": "木", "type2": "",
+  "焚焰狮": {
+    "name": "焚焰狮",
+    "type1": "火",
+    "type2": "",
     "base": {
-      "hp": 45, "atk": 49, "def": 49,
-      "sp_atk": 65, "sp_def": 65, "spd": 45
+      "hp": 78,
+      "atk": 85,
+      "def": 78,
+      "sp_atk": 109,
+      "sp_def": 85,
+      "spd": 100
     },
     "learnset": {
-      "1": ["藤鞭", "成长"],
-      "4": ["烟雾弹"],
-      "7": ["吐丝"]
+      "1": [
+        "火花",
+        "撕咬",
+        "焰喷"
+      ],
+      "36": [
+        "吼叫"
+      ],
+      "44": [
+        "焰喷"
+      ],
+      "50": [
+        "撕咬"
+      ]
     },
-    "catch_rate": 45, "exp_yield": 64, "growth_rate": "中速",
-    "desc": "栖居竹林的灵兽，能以意念操控草木藤蔓。"
+    "catch_rate": 45,
+    "exp_yield": 240,
+    "growth_rate": "中速",
+    "desc": "焚焰狮啸声震山，烈焰鬃毛可熔岩石，是华灵大陆最强的火系精灵之一。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "大型 / 1.9m / 90.5kg"
   },
-
-  "绿毛虫": {
-    "name": "绿毛虫",
-    "type1": "虫", "type2": "",
+  "蓝蛇": {
+    "name": "蓝蛇",
+    "type1": "水",
+    "type2": "",
     "base": {
-      "hp": 45, "atk": 30, "def": 35,
-      "sp_atk": 20, "sp_def": 20, "spd": 45
+      "hp": 44,
+      "atk": 48,
+      "def": 65,
+      "sp_atk": 50,
+      "sp_def": 64,
+      "spd": 43
     },
     "learnset": {
-      "1": ["撞击", "吐丝"]
+      "1": [
+        "水枪",
+        "撞击"
+      ],
+      "4": [
+        "防御卷缩"
+      ],
+      "7": [
+        "龙息"
+      ],
+      "12": [
+        "水枪"
+      ]
     },
-    "catch_rate": 255, "exp_yield": 39, "growth_rate": "快速",
-    "evolves_into": "蛹甲", "evolve_level": 7,
-    "desc": "行动迟缓的虫形精灵，生命力旺盛，常见于草丛。"
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "evolves_into": "江蛟",
+    "evolve_level": 16,
+    "desc": "通体蔚蓝的小水蛇，性情温顺，能喷出清冽水流护身。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "小型 / 0.5m / 6.9kg"
   },
-
+  "江蛟": {
+    "name": "江蛟",
+    "type1": "水",
+    "type2": "",
+    "base": {
+      "hp": 59,
+      "atk": 63,
+      "def": 80,
+      "sp_atk": 65,
+      "sp_def": 80,
+      "spd": 58
+    },
+    "learnset": {
+      "1": [
+        "水枪",
+        "撞击"
+      ],
+      "16": [
+        "防御卷缩",
+        "龙息"
+      ],
+      "24": [
+        "水枪"
+      ],
+      "30": [
+        "龙息"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "evolves_into": "覆海龙",
+    "evolve_level": 36,
+    "desc": "蓝蛇化蛟，体型急速扩大，在江河中穿行如电，防御坚如磐石。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "中型 / 1.0m / 22.5kg"
+  },
+  "覆海龙": {
+    "name": "覆海龙",
+    "type1": "水",
+    "type2": "龙",
+    "base": {
+      "hp": 79,
+      "atk": 83,
+      "def": 100,
+      "sp_atk": 85,
+      "sp_def": 105,
+      "spd": 78
+    },
+    "learnset": {
+      "1": [
+        "水枪",
+        "撞击",
+        "龙息"
+      ],
+      "36": [
+        "防御卷缩"
+      ],
+      "44": [
+        "龙息"
+      ],
+      "52": [
+        "水枪"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 240,
+    "growth_rate": "中速",
+    "desc": "覆海龙翻腾时能掀起滔天巨浪，龙威震慑四海，是传说中守护江河的神龙。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "大型 / 2.1m / 101.5kg"
+  },
+  "小竹熊": {
+    "name": "小竹熊",
+    "type1": "木",
+    "type2": "",
+    "base": {
+      "hp": 45,
+      "atk": 49,
+      "def": 49,
+      "sp_atk": 65,
+      "sp_def": 65,
+      "spd": 45
+    },
+    "learnset": {
+      "1": [
+        "藤鞭",
+        "成长"
+      ],
+      "4": [
+        "烟雾弹"
+      ],
+      "7": [
+        "吐丝"
+      ],
+      "12": [
+        "藤鞭"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "evolves_into": "武道熊",
+    "evolve_level": 16,
+    "desc": "圆滚滚的竹林小熊，以竹叶为食，天生能感应草木之灵气。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "小型 / 0.7m / 6.9kg"
+  },
+  "武道熊": {
+    "name": "武道熊",
+    "type1": "木",
+    "type2": "",
+    "base": {
+      "hp": 60,
+      "atk": 62,
+      "def": 63,
+      "sp_atk": 80,
+      "sp_def": 80,
+      "spd": 60
+    },
+    "learnset": {
+      "1": [
+        "藤鞭",
+        "成长"
+      ],
+      "16": [
+        "烟雾弹",
+        "吐丝"
+      ],
+      "24": [
+        "藤鞭"
+      ],
+      "30": [
+        "成长"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "evolves_into": "功夫熊师",
+    "evolve_level": 36,
+    "desc": "熟习竹林功法的少年熊，拳风带着草木之力，正在苦练绝学。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "中型 / 1.2m / 65.5kg"
+  },
+  "功夫熊师": {
+    "name": "功夫熊师",
+    "type1": "木",
+    "type2": "格",
+    "base": {
+      "hp": 80,
+      "atk": 82,
+      "def": 83,
+      "sp_atk": 100,
+      "sp_def": 100,
+      "spd": 80
+    },
+    "learnset": {
+      "1": [
+        "藤鞭",
+        "成长",
+        "吐丝"
+      ],
+      "36": [
+        "烟雾弹"
+      ],
+      "44": [
+        "藤鞭"
+      ],
+      "52": [
+        "成长"
+      ]
+    },
+    "catch_rate": 45,
+    "exp_yield": 240,
+    "growth_rate": "中速",
+    "desc": "功夫熊师身披竹甲，一招一式蕴含天地灵气，是竹林武道的最强传承者。",
+    "gender_ratio": "87.5/12.5",
+    "size_info": "大型 / 1.9m / 100.5kg"
+  },
+  "绿肥虫": {
+    "name": "绿肥虫",
+    "type1": "虫",
+    "type2": "",
+    "base": {
+      "hp": 45,
+      "atk": 30,
+      "def": 35,
+      "sp_atk": 20,
+      "sp_def": 20,
+      "spd": 45
+    },
+    "learnset": {
+      "1": [
+        "撞击",
+        "吐丝"
+      ]
+    },
+    "catch_rate": 255,
+    "exp_yield": 39,
+    "growth_rate": "快速",
+    "evolves_into": "蛹甲",
+    "evolve_level": 7,
+    "desc": "行动迟缓的虫形精灵，生命力旺盛，常见于草丛。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.3m / 2.9kg"
+  },
   "蛹甲": {
     "name": "蛹甲",
-    "type1": "虫", "type2": "",
+    "type1": "虫",
+    "type2": "",
     "base": {
-      "hp": 50, "atk": 25, "def": 55,
-      "sp_atk": 25, "sp_def": 25, "spd": 30
+      "hp": 50,
+      "atk": 25,
+      "def": 55,
+      "sp_atk": 25,
+      "sp_def": 25,
+      "spd": 30
     },
     "learnset": {
-      "1": ["撞击"]
+      "1": [
+        "撞击"
+      ]
     },
-    "catch_rate": 120, "exp_yield": 72, "growth_rate": "快速",
-    "desc": "绿毛虫蜕变后的蛹状态，外壳坚硬，正在积蓄力量。"
+    "catch_rate": 120,
+    "exp_yield": 72,
+    "growth_rate": "快速",
+    "desc": "绿肥虫蜕变后的蛹状态，外壳坚硬，正在积蓄力量。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.6m / 11.5kg"
   },
-
-  "石偶": {
-    "name": "石偶",
-    "type1": "土", "type2": "",
+  "岩灵": {
+    "name": "岩灵",
+    "type1": "土",
+    "type2": "",
     "base": {
-      "hp": 40, "atk": 80, "def": 100,
-      "sp_atk": 30, "sp_def": 30, "spd": 20
+      "hp": 40,
+      "atk": 80,
+      "def": 100,
+      "sp_atk": 30,
+      "sp_def": 30,
+      "spd": 20
     },
     "learnset": {
-      "1": ["撞击", "防御卷缩"],
-      "4": ["石击"]
+      "1": [
+        "撞击",
+        "防御卷缩"
+      ],
+      "4": [
+        "石击"
+      ]
     },
-    "catch_rate": 120, "exp_yield": 45, "growth_rate": "缓慢",
-    "desc": "由山间顽石凝聚灵气而生，防御极为坚固。"
+    "catch_rate": 120,
+    "exp_yield": 45,
+    "growth_rate": "缓慢",
+    "desc": "由山间顽石凝聚灵气而生，防御极为坚固。",
+    "gender_ratio": "无性别",
+    "size_info": "小型 / 0.4m / 20.0kg"
   },
-
-  "野鼠灵": {
-    "name": "野鼠灵",
-    "type1": "空", "type2": "",
+  "粉粉丘": {
+    "name": "粉粉丘",
+    "type1": "电",
+    "type2": "仙",
     "base": {
-      "hp": 35, "atk": 55, "def": 35,
-      "sp_atk": 25, "sp_def": 35, "spd": 72
+      "hp": 38,
+      "atk": 35,
+      "def": 35,
+      "sp_atk": 60,
+      "sp_def": 55,
+      "spd": 50
     },
     "learnset": {
-      "1": ["撞击", "啃咬"]
+      "1": [
+        "撞击",
+        "电击"
+      ],
+      "5": [
+        "微笑"
+      ]
     },
-    "catch_rate": 200, "exp_yield": 36, "growth_rate": "中速",
-    "desc": "行动敏捷的小灵鼠，总在草丛中穿梭觅食。"
+    "catch_rate": 180,
+    "exp_yield": 40,
+    "growth_rate": "中速",
+    "desc": "浑身粉嫩圆滚的小精灵，尾尖常有静电火花，性格温顺爱撒娇。",
+    "gender_ratio": "25/75",
+    "size_info": "小型 / 0.3m / 3.0kg"
+  },
+  "小灯鼠": {
+    "name": "小灯鼠",
+    "type1": "空",
+    "type2": "",
+    "base": {
+      "hp": 35,
+      "atk": 55,
+      "def": 35,
+      "sp_atk": 25,
+      "sp_def": 35,
+      "spd": 72
+    },
+    "learnset": {
+      "1": [
+        "撞击",
+        "啃咬"
+      ]
+    },
+    "catch_rate": 200,
+    "exp_yield": 36,
+    "growth_rate": "中速",
+    "desc": "行动敏捷的小灵鼠，总在草丛中穿梭觅食。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.3m / 3.5kg"
+  },
+  "小魔女": {
+    "type1": "仙",
+    "type2": "",
+    "gender_ratio": "0/100",
+    "size_info": "小型 / 0.5m / 5.0kg",
+    "base": {
+      "hp": 42,
+      "atk": 30,
+      "def": 35,
+      "sp_atk": 65,
+      "sp_def": 55,
+      "spd": 55
+    },
+    "catch_rate": 150,
+    "exp_yield": 55,
+    "growth_rate": "中速",
+    "evolves_into": "贝丽斯",
+    "evolve_level": 22,
+    "learnset": {
+      "1": [
+        "撞击",
+        "微笑"
+      ],
+      "6": [
+        "魔法叶"
+      ],
+      "12": [
+        "电击"
+      ],
+      "18": [
+        "催眠术"
+      ]
+    },
+    "desc": "头顶独角散发魔力的蝴蝶翅膀小精灵，性格活泼，魔法球是其最爱的玩具。",
+    "name": "小魔女"
+  },
+  "贝丽斯": {
+    "type1": "仙",
+    "type2": "灵",
+    "gender_ratio": "0/100",
+    "size_info": "中型 / 1.4m / 48.0kg",
+    "base": {
+      "hp": 65,
+      "atk": 45,
+      "def": 55,
+      "sp_atk": 110,
+      "sp_def": 85,
+      "spd": 80
+    },
+    "catch_rate": 45,
+    "exp_yield": 178,
+    "growth_rate": "中速",
+    "learnset": {
+      "1": [
+        "撞击",
+        "微笑",
+        "魔法叶"
+      ],
+      "22": [
+        "催眠术"
+      ],
+      "30": [
+        "仙女风"
+      ],
+      "40": [
+        "灵能冲击"
+      ]
+    },
+    "desc": "小魔女的成熟进化形态，华丽翅膀展开能覆盖夜空，魔力之球可扭曲空间。",
+    "name": "贝丽斯"
+  },
+  "小雉鸡": {
+    "type1": "风",
+    "type2": "",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.3m / 2.0kg",
+    "base": {
+      "hp": 40,
+      "atk": 48,
+      "def": 35,
+      "sp_atk": 38,
+      "sp_def": 35,
+      "spd": 65
+    },
+    "catch_rate": 190,
+    "exp_yield": 50,
+    "growth_rate": "中速",
+    "evolves_into": "坤鸡",
+    "evolve_level": 22,
+    "learnset": {
+      "1": [
+        "撞击",
+        "疾风击"
+      ],
+      "8": [
+        "吼叫"
+      ],
+      "15": [
+        "顺风"
+      ],
+      "22": [
+        "疾风击"
+      ]
+    },
+    "desc": "羽翼未满的小雉鸡，乘风而行，身姿轻盈。",
+    "name": "小雉鸡"
+  },
+  "坤鸡": {
+    "type1": "风",
+    "type2": "",
+    "gender_ratio": "50/50",
+    "size_info": "中型 / 0.9m / 12.5kg",
+    "base": {
+      "hp": 62,
+      "atk": 75,
+      "def": 55,
+      "sp_atk": 58,
+      "sp_def": 52,
+      "spd": 90
+    },
+    "catch_rate": 65,
+    "exp_yield": 168,
+    "growth_rate": "中速",
+    "learnset": {
+      "1": [
+        "撞击",
+        "疾风击",
+        "顺风"
+      ],
+      "22": [
+        "吼叫"
+      ],
+      "32": [
+        "顺风"
+      ],
+      "42": [
+        "飓风"
+      ]
+    },
+    "desc": "进化后羽毛化作钢刀，驾驭气流，振翅成风，是草原上的速度之王。",
+    "name": "坤鸡"
   }
 }

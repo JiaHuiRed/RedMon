@@ -90,5 +90,45 @@
     "power": 60, "accuracy": 100, "max_pp": 15,
     "effect": "inflict_freeze", "effect_chance": 10,
     "description": "射出冰冷光线，有10%概率冰封对方。"
+  },
+  "微笑": {
+    "name": "微笑", "type": "仙", "category": "变化",
+    "power": 0, "accuracy": 100, "max_pp": 20,
+    "effect": "lower_atk", "description": "展示可爱笑容，降低对方攻击。"
+  },
+  "魔法叶": {
+    "name": "魔法叶", "type": "仙", "category": "特殊",
+    "power": 60, "accuracy": 100, "max_pp": 20,
+    "effect": "", "description": "射出必中的魔法叶片，威力稳定。"
+  },
+  "电击": {
+    "name": "电击", "type": "雷", "category": "特殊",
+    "power": 40, "accuracy": 100, "max_pp": 30,
+    "effect": "", "description": "用电流击打对方。"
+  },
+  "仙女风": {
+    "name": "仙女风", "type": "仙", "category": "特殊",
+    "power": 80, "accuracy": 100, "max_pp": 10,
+    "effect": "", "description": "召唤仙灵之力，以强劲风暴攻击对方。"
+  },
+  "灵能冲击": {
+    "name": "灵能冲击", "type": "灵", "category": "特殊",
+    "power": 80, "accuracy": 100, "max_pp": 10,
+    "effect": "", "description": "以强大灵力冲击对方，威力惊人。"
+  },
+  "疾风击": {
+    "name": "疾风击", "type": "风", "category": "物理",
+    "power": 55, "accuracy": 100, "max_pp": 20,
+    "effect": "", "description": "乘风冲击对方，疾若流星。"
+  },
+  "顺风": {
+    "name": "顺风", "type": "风", "category": "变化",
+    "power": 0, "accuracy": 100, "max_pp": 30,
+    "effect": "raise_spd", "description": "借助风力大幅提升自身速度。"
+  },
+  "飓风": {
+    "name": "飓风", "type": "风", "category": "特殊",
+    "power": 80, "accuracy": 70, "max_pp": 10,
+    "effect": "", "description": "掀起猛烈飓风，威力强大但命中不稳定。"
   }
 }

@@ -1,17 +1,17 @@
 extends Node2D
 # RedMon – 御三家选择场景
-# 元教授送出三只精灵，玩家选一只开始冒险
+# 奥克博士送出三只精灵，玩家选一只开始冒险
 
 signal request_scene(scene_name: String, data: Dictionary)
 
 const VW := 480
 const VH := 320
 
-const STARTERS := ["焰狐", "水蛟", "竹灵"]
+const STARTERS := ["炎喵", "蓝蛇", "小竹熊"]
 const STARTER_DESCS := [
-	"火系灵狐\n性情机敏，攻速俱佳",
-	"水系蛟龙\n防御稳固，后劲十足",
-	"木系灵兽\n特攻卓越，能操控草木",
+	"火系灵猫\n爆发力强，速度出众\n终极进化：焚焰狮",
+	"水系灵蛇\n防御厚实，化蛟成龙\n终极进化：覆海龙",
+	"草系竹熊\n功夫精湛，特攻卓越\n终极进化：功夫熊师",
 ]
 const TYPE_LABELS := ["火　系", "水　系", "木　系"]
 
@@ -69,43 +69,88 @@ func _build_professor() -> void:
 	add_child(spr)
 
 	var name_lbl = Label.new()
-	name_lbl.text = "元教授"
+	name_lbl.text = "奥克博士"
 	name_lbl.position = Vector2(20, VH - 40)
 	name_lbl.add_theme_color_override("font_color", Color(0.2, 0.2, 0.2))
 	add_child(name_lbl)
 
-func _draw_professor() -> ImageTexture:
+func _draw_professor() -> Texture2D:
 	var img = Image.create(80, 120, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 
-	# Coat
-	img.fill_rect(Rect2i(20, 40, 40, 60), Color(0.95, 0.95, 0.95))
-	img.fill_rect(Rect2i(24, 42, 32, 56), Color(1.0, 1.0, 1.0))
-	# Lapels
-	img.fill_rect(Rect2i(36, 40, 8, 20), Color(0.85, 0.85, 0.85))
-	# Arms
-	img.fill_rect(Rect2i(8, 44, 14, 8), Color(0.95, 0.95, 0.95))
-	img.fill_rect(Rect2i(58, 44, 14, 8), Color(0.95, 0.95, 0.95))
-	# Hands
-	img.fill_rect(Rect2i(6, 50, 10, 8), Color(0.95, 0.82, 0.7))
-	img.fill_rect(Rect2i(64, 50, 10, 8), Color(0.95, 0.82, 0.7))
-	# Legs
-	img.fill_rect(Rect2i(24, 98, 12, 22), Color(0.25, 0.25, 0.5))
-	img.fill_rect(Rect2i(44, 98, 12, 22), Color(0.25, 0.25, 0.5))
+	var coat  = Color(0.96, 0.96, 0.96)
+	var skin  = Color(0.92, 0.78, 0.65)
+	var hair  = Color(0.62, 0.62, 0.62)
+	var hair_d = Color(0.44, 0.44, 0.44)
+	var dark  = Color(0.22, 0.14, 0.09)   # dark brown under-shirt
+	var pant  = Color(0.30, 0.22, 0.16)   # brown trousers
+	var beard = Color(0.70, 0.68, 0.66)
+
+	# Trousers
+	img.fill_rect(Rect2i(24, 96, 13, 24), pant)
+	img.fill_rect(Rect2i(43, 96, 13, 24), pant)
+
+	# Lab coat body
+	img.fill_rect(Rect2i(16, 40, 48, 58), coat)
+	# Dark shirt visible at center
+	img.fill_rect(Rect2i(30, 40, 20, 52), dark)
+	# Coat left panel (over dark shirt)
+	img.fill_rect(Rect2i(16, 40, 18, 46), coat)
+	# Coat right panel
+	img.fill_rect(Rect2i(46, 40, 18, 46), coat)
+	# Coat bottom flap
+	img.fill_rect(Rect2i(16, 82, 48, 16), coat)
+
+	# Left arm (coat sleeve)
+	img.fill_rect(Rect2i(4, 44, 14, 12), coat)
+	img.fill_rect(Rect2i(4, 54, 12, 10), skin)   # left hand
+
+	# Right arm (holding tablet)
+	img.fill_rect(Rect2i(62, 44, 14, 14), coat)
+	img.fill_rect(Rect2i(62, 56, 10, 8), skin)   # right hand
+
+	# Tablet (right side)
+	img.fill_rect(Rect2i(60, 60, 18, 26), Color(0.14, 0.14, 0.17))   # frame
+	img.fill_rect(Rect2i(62, 62, 14, 22), Color(0.28, 0.52, 0.82))   # screen
+
+	# Neck
+	img.fill_rect(Rect2i(34, 44, 12, 6), skin)
+
 	# Head
-	_draw_circle(img, Vector2i(40, 24), 18, Color(0.95, 0.82, 0.7))
-	# Hair (grey)
-	img.fill_rect(Rect2i(22, 6, 36, 16), Color(0.55, 0.55, 0.55))
-	_draw_circle(img, Vector2i(40, 10), 14, Color(0.55, 0.55, 0.55))
-	# Glasses
-	img.fill_rect(Rect2i(26, 22, 10, 6), Color(0.7, 0.9, 1.0, 0.7))
-	img.fill_rect(Rect2i(44, 22, 10, 6), Color(0.7, 0.9, 1.0, 0.7))
-	img.fill_rect(Rect2i(36, 24, 8, 2), Color(0.3, 0.3, 0.3))
-	# Eyes
-	img.fill_rect(Rect2i(29, 24, 3, 3), Color(0.1, 0.1, 0.1))
-	img.fill_rect(Rect2i(48, 24, 3, 3), Color(0.1, 0.1, 0.1))
-	# Smile
-	img.fill_rect(Rect2i(34, 34, 12, 2), Color(0.6, 0.3, 0.3))
+	_draw_circle(img, Vector2i(40, 28), 17, skin)
+	# Ears
+	_draw_circle(img, Vector2i(22, 28), 4, skin)
+	_draw_circle(img, Vector2i(58, 28), 4, skin)
+
+	# Hair — messy spiky grey
+	img.fill_rect(Rect2i(22, 8, 36, 18), hair)
+	_draw_circle(img, Vector2i(40, 14), 16, hair)
+	img.fill_rect(Rect2i(18, 10, 8, 16), hair_d)   # left tuft
+	img.fill_rect(Rect2i(54, 10, 8, 16), hair_d)   # right tuft
+	img.fill_rect(Rect2i(28, 4, 8, 12), hair)       # top-left spike
+	img.fill_rect(Rect2i(44, 4, 8, 12), hair)       # top-right spike
+	img.fill_rect(Rect2i(36, 2, 8, 10), hair_d)     # center spike
+
+	# Bushy eyebrows
+	img.fill_rect(Rect2i(25, 20, 11, 3), hair_d)
+	img.fill_rect(Rect2i(44, 20, 11, 3), hair_d)
+
+	# Eyes (no glasses)
+	img.fill_rect(Rect2i(27, 24, 9, 5), Color(0.08, 0.06, 0.04))   # left socket
+	img.fill_rect(Rect2i(29, 24, 5, 4), Color(0.97, 0.97, 0.97))   # left white
+	img.fill_rect(Rect2i(30, 25, 3, 3), Color(0.22, 0.14, 0.06))   # left iris
+	img.fill_rect(Rect2i(44, 24, 9, 5), Color(0.08, 0.06, 0.04))   # right socket
+	img.fill_rect(Rect2i(46, 24, 5, 4), Color(0.97, 0.97, 0.97))   # right white
+	img.fill_rect(Rect2i(47, 25, 3, 3), Color(0.22, 0.14, 0.06))   # right iris
+
+	# Nose
+	img.fill_rect(Rect2i(37, 30, 6, 6), Color(0.80, 0.66, 0.56))
+
+	# Beard (grey, covers lower face)
+	img.fill_rect(Rect2i(24, 34, 32, 14), beard)   # beard mass
+	# Mouth through beard
+	img.fill_rect(Rect2i(32, 38, 16, 2), Color(0.50, 0.32, 0.28))
+	img.fill_rect(Rect2i(34, 40, 12, 2), Color(0.42, 0.26, 0.22))  # slight smile
 
 	var tex = ImageTexture.new()
 	tex.set_image(img)
@@ -120,7 +165,7 @@ func _build_dialog_box() -> void:
 	add_child(box)
 
 	var lbl = Label.new()
-	lbl.text = "欢迎！我是元教授。\n这三只精灵，请选择你的伙伴！"
+	lbl.text = "欢迎！我是奥克博士。\n这三只精灵，请选择你的伙伴！"
 	lbl.position = Vector2(118, VH - 72)
 	lbl.size.x = 280
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -261,6 +306,7 @@ func _on_confirm() -> void:
 	GameState.player_team.append(mon)
 	GameState.has_starter = true
 	print("[STARTER] 选择了 ", STARTERS[_selected])
+	GameState.save_game()
 	request_scene.emit("world", {})
 
 # ── Keyboard nav ─────────────────────────────────────────────────────────────
@@ -280,83 +326,86 @@ func _draw_circle(img: Image, center: Vector2i, radius: int, color: Color) -> vo
 			if (x - center.x) * (x - center.x) + (y - center.y) * (y - center.y) <= r2:
 				img.set_pixel(x, y, color)
 
-func _draw_starter_sprite(idx: int) -> ImageTexture:
-	var names = ["焰狐", "水蛟", "竹灵"]
+func _draw_starter_sprite(idx: int) -> Texture2D:
+	var names = ["炎喵", "蓝蛇", "小竹熊"]
 	var path = "res://assets/sprites/%s_front.png" % names[idx]
 	if ResourceLoader.exists(path):
 		return load(path)
 	match idx:
-		0: return _draw_yanhu()
-		1: return _draw_shuijiao()
-		2: return _draw_zhuling()
+		0: return _draw_yanmiao()
+		1: return _draw_lanshe()
+		2: return _draw_xiaozhu_xiong()
 	return ImageTexture.new()
 
-# 焰狐 – fire fox
-func _draw_yanhu() -> ImageTexture:
+# 炎喵 – fire cat
+func _draw_yanmiao() -> Texture2D:
 	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	# Body
-	_draw_circle(img, Vector2i(32, 38), 14, Color(0.92, 0.5, 0.15))
-	# Head
-	_draw_circle(img, Vector2i(32, 20), 12, Color(0.95, 0.55, 0.18))
-	# Ears
-	_draw_circle(img, Vector2i(22, 10), 6, Color(0.92, 0.5, 0.15))
-	_draw_circle(img, Vector2i(42, 10), 6, Color(0.92, 0.5, 0.15))
-	_draw_circle(img, Vector2i(22, 10), 3, Color(0.95, 0.75, 0.4))
-	_draw_circle(img, Vector2i(42, 10), 3, Color(0.95, 0.75, 0.4))
-	# Eyes
-	_draw_circle(img, Vector2i(27, 18), 3, Color(1, 1, 1))
-	_draw_circle(img, Vector2i(37, 18), 3, Color(1, 1, 1))
-	_draw_circle(img, Vector2i(27, 18), 2, Color(0.1, 0.1, 0.1))
-	_draw_circle(img, Vector2i(37, 18), 2, Color(0.1, 0.1, 0.1))
-	# Nose
-	_draw_circle(img, Vector2i(32, 23), 2, Color(0.6, 0.2, 0.1))
-	# Tail (blue flame)
-	img.fill_rect(Rect2i(44, 28, 8, 4), Color(0.92, 0.5, 0.15))
-	_draw_circle(img, Vector2i(54, 26), 6, Color(0.2, 0.4, 0.9))
-	_draw_circle(img, Vector2i(54, 26), 3, Color(0.6, 0.8, 1.0))
-	# Legs
-	img.fill_rect(Rect2i(22, 50, 8, 12), Color(0.85, 0.44, 0.12))
-	img.fill_rect(Rect2i(34, 50, 8, 12), Color(0.85, 0.44, 0.12))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	return tex
-
-# 水蛟 – water dragon
-func _draw_shuijiao() -> ImageTexture:
-	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	# Body
-	_draw_circle(img, Vector2i(32, 40), 16, Color(0.2, 0.65, 0.85))
+	_draw_circle(img, Vector2i(32, 40), 13, Color(0.85, 0.35, 0.1))
 	# Belly
-	_draw_circle(img, Vector2i(32, 42), 10, Color(0.85, 0.95, 1.0))
+	_draw_circle(img, Vector2i(32, 42), 8, Color(0.98, 0.75, 0.55))
 	# Head
-	_draw_circle(img, Vector2i(32, 20), 13, Color(0.22, 0.68, 0.88))
-	# Snout
-	_draw_circle(img, Vector2i(32, 27), 6, Color(0.3, 0.75, 0.9))
-	# Horns
-	img.fill_rect(Rect2i(24, 4, 4, 12), Color(0.15, 0.5, 0.7))
-	img.fill_rect(Rect2i(36, 4, 4, 12), Color(0.15, 0.5, 0.7))
+	_draw_circle(img, Vector2i(32, 20), 13, Color(0.88, 0.38, 0.12))
+	# Ears (pointy cat ears)
+	img.fill_rect(Rect2i(18, 4, 8, 10), Color(0.88, 0.38, 0.12))
+	img.fill_rect(Rect2i(38, 4, 8, 10), Color(0.88, 0.38, 0.12))
+	img.fill_rect(Rect2i(20, 6, 4, 7), Color(1.0, 0.6, 0.5))
+	img.fill_rect(Rect2i(40, 6, 4, 7), Color(1.0, 0.6, 0.5))
+	# Flame tips on ears
+	_draw_circle(img, Vector2i(22, 4), 3, Color(1.0, 0.7, 0.1))
+	_draw_circle(img, Vector2i(42, 4), 3, Color(1.0, 0.7, 0.1))
 	# Eyes
 	_draw_circle(img, Vector2i(26, 18), 3, Color(1, 1, 1))
 	_draw_circle(img, Vector2i(38, 18), 3, Color(1, 1, 1))
-	_draw_circle(img, Vector2i(26, 18), 2, Color(0.05, 0.05, 0.3))
-	_draw_circle(img, Vector2i(38, 18), 2, Color(0.05, 0.05, 0.3))
-	# Nostrils
-	img.fill_rect(Rect2i(29, 28, 3, 2), Color(0.1, 0.4, 0.6))
-	img.fill_rect(Rect2i(34, 28, 3, 2), Color(0.1, 0.4, 0.6))
-	# Tail
-	img.fill_rect(Rect2i(46, 36, 14, 6), Color(0.2, 0.65, 0.85))
-	_draw_circle(img, Vector2i(58, 36), 5, Color(0.3, 0.75, 0.95))
+	_draw_circle(img, Vector2i(26, 18), 2, Color(0.8, 0.4, 0.0))
+	_draw_circle(img, Vector2i(38, 18), 2, Color(0.8, 0.4, 0.0))
+	# Nose
+	_draw_circle(img, Vector2i(32, 24), 2, Color(0.6, 0.2, 0.1))
+	# Tail with flame
+	img.fill_rect(Rect2i(44, 32, 6, 14), Color(0.85, 0.35, 0.1))
+	_draw_circle(img, Vector2i(50, 30), 5, Color(1.0, 0.6, 0.0))
+	_draw_circle(img, Vector2i(50, 28), 3, Color(1.0, 0.9, 0.3))
 	# Legs
-	img.fill_rect(Rect2i(20, 54, 10, 10), Color(0.18, 0.6, 0.8))
-	img.fill_rect(Rect2i(34, 54, 10, 10), Color(0.18, 0.6, 0.8))
+	img.fill_rect(Rect2i(22, 51, 7, 11), Color(0.78, 0.3, 0.08))
+	img.fill_rect(Rect2i(35, 51, 7, 11), Color(0.78, 0.3, 0.08))
 	var tex = ImageTexture.new()
 	tex.set_image(img)
 	return tex
 
-# 竹灵 – bamboo spirit (panda-like)
-func _draw_zhuling() -> ImageTexture:
+# 蓝蛇 – blue water snake
+func _draw_lanshe() -> Texture2D:
+	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	# Coiled body
+	img.fill_rect(Rect2i(16, 38, 36, 12), Color(0.15, 0.55, 0.85))
+	_draw_circle(img, Vector2i(32, 44), 14, Color(0.15, 0.55, 0.85))
+	# Belly coil
+	_draw_circle(img, Vector2i(32, 46), 9, Color(0.75, 0.92, 1.0))
+	# Neck
+	img.fill_rect(Rect2i(27, 20, 10, 22), Color(0.18, 0.58, 0.88))
+	# Head
+	_draw_circle(img, Vector2i(32, 16), 12, Color(0.18, 0.58, 0.88))
+	# Snout
+	_draw_circle(img, Vector2i(32, 22), 5, Color(0.25, 0.65, 0.92))
+	# Eyes
+	_draw_circle(img, Vector2i(25, 13), 3, Color(1, 1, 1))
+	_draw_circle(img, Vector2i(39, 13), 3, Color(1, 1, 1))
+	_draw_circle(img, Vector2i(25, 13), 2, Color(0.0, 0.2, 0.6))
+	_draw_circle(img, Vector2i(39, 13), 2, Color(0.0, 0.2, 0.6))
+	# Tongue
+	img.fill_rect(Rect2i(30, 26, 4, 5), Color(0.9, 0.1, 0.2))
+	img.fill_rect(Rect2i(29, 30, 2, 3), Color(0.9, 0.1, 0.2))
+	img.fill_rect(Rect2i(33, 30, 2, 3), Color(0.9, 0.1, 0.2))
+	# Fin/crest
+	img.fill_rect(Rect2i(36, 6, 4, 14), Color(0.3, 0.75, 0.95))
+	img.fill_rect(Rect2i(40, 4, 3, 10), Color(0.3, 0.75, 0.95))
+	var tex = ImageTexture.new()
+	tex.set_image(img)
+	return tex
+
+# 小竹熊 – bamboo panda cub
+func _draw_xiaozhu_xiong() -> Texture2D:
 	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	# Body
@@ -378,10 +427,10 @@ func _draw_zhuling() -> ImageTexture:
 	_draw_circle(img, Vector2i(43, 8), 6, Color(0.1, 0.1, 0.1))
 	# Nose
 	_draw_circle(img, Vector2i(32, 25), 3, Color(0.2, 0.2, 0.2))
-	# Leaf on head
-	img.fill_rect(Rect2i(26, 2, 16, 8), Color(0.2, 0.7, 0.2))
-	_draw_circle(img, Vector2i(34, 6), 7, Color(0.25, 0.75, 0.25))
-	# Arms
+	# Bamboo leaf on head
+	img.fill_rect(Rect2i(26, 2, 16, 6), Color(0.15, 0.65, 0.15))
+	_draw_circle(img, Vector2i(34, 5), 6, Color(0.2, 0.72, 0.2))
+	# Arms (black panda arms)
 	_draw_circle(img, Vector2i(16, 38), 8, Color(0.1, 0.1, 0.1))
 	_draw_circle(img, Vector2i(48, 38), 8, Color(0.1, 0.1, 0.1))
 	# Legs

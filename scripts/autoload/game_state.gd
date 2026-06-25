@@ -26,6 +26,50 @@ func _ready() -> void:
 func _apply_root_theme(theme: Theme) -> void:
 	get_tree().root.theme = theme
 
+const SAVE_PATH := "user://save.json"
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+func save_game() -> void:
+	var data := {
+		"player_name": player_name,
+		"has_starter":  has_starter,
+		"badges":       badges,
+		"money":        money,
+		"items":        items,
+		"player_team":  player_team,
+	}
+	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(data, "\t"))
+		file.close()
+		print("[SAVE] 游戏已保存")
+	else:
+		push_error("[SAVE] 无法写入存档: " + SAVE_PATH)
+
+func load_game() -> bool:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return false
+	var file = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if not file:
+		return false
+	var json = JSON.new()
+	var err = json.parse(file.get_as_text())
+	file.close()
+	if err != OK:
+		push_error("[SAVE] 存档解析失败: " + json.get_error_message())
+		return false
+	var data: Dictionary = json.get_data()
+	player_name  = data.get("player_name", "小明")
+	has_starter  = data.get("has_starter", false)
+	badges       = data.get("badges", 0)
+	money        = data.get("money", 500)
+	items        = data.get("items", {"精灵葫芦": 5, "回复药": 3, "强效回复药": 0})
+	player_team  = data.get("player_team", [])
+	print("[SAVE] 存档读取完成，队伍：%d 只精灵" % player_team.size())
+	return true
+
 func start_new_game(name: String) -> void:
 	player_name = name
 	player_team = []
