@@ -20,12 +20,12 @@
     "desc": "乌黑葫芦，夜晚才敢拿出来用。"
   },
   "铁丹": {
-    "name": "铁丹", "category": "heal", "heal_amount": 150, "mp_heal_amount": 50,
-    "desc": "铁制丹药，恢复150点HP，50点MP。"
+    "name": "铁丹", "category": "heal", "heal_amount": 50, "mp_heal_amount": 10,
+    "desc": "铁制丹药，恢复50点HP，10点MP。"
   },
   "铜丹": {
-    "name": "铜丹", "category": "heal", "heal_amount": 100, "mp_heal_amount": 50,
-    "desc": "铜制丹药，恢复100点HP，50点MP。"
+    "name": "铜丹", "category": "heal", "heal_amount": 100, "mp_heal_amount": 30,
+    "desc": "铜制丹药，恢复100点HP，30点MP。"
   },
   "银丹": {
     "name": "银丹", "category": "heal", "heal_amount": 200, "mp_heal_amount": 50,
