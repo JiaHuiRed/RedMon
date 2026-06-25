@@ -344,10 +344,16 @@ func _build_bag_panel() -> void:
 		col += 1
 
 func _refresh_bag_panel() -> void:
-	for item_id in _bag_btns:
-		var count = GameState.items.get(item_id, 0)
-		_bag_btns[item_id].text     = "%s ×%d" % [item_id, count]
-		_bag_btns[item_id].disabled = count <= 0
+  for item_id in _bag_btns:
+    var count = GameState.items.get(item_id, 0)
+    var btn = _bag_btns[item_id]
+    btn.text     = "%s ×%d" % [item_id, count]
+    btn.disabled = count <= 0
+    var item = MonDB.items.get(item_id, {})
+    if item.get("category", "") == "ball":
+      btn.add_theme_color_override("font_color", Color(item.get("color", "#FFFFFF")))
+    else:
+      btn.add_theme_color_override("font_color", Color.WHITE)
 
 func _on_use_item(item_id: String) -> void:
 	if GameState.items.get(item_id, 0) <= 0: return

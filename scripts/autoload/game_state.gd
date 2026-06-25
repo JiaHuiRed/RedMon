@@ -5,7 +5,7 @@ var player_team: Array = []   # Array of mon dicts from MonDB.create_mon()
 var has_starter: bool = false
 var badges: int = 0
 var money: int = 500
-var items: Dictionary = {"精灵球": 5, "回复药": 3, "强效回复药": 0}
+var items: Dictionary = {"精灵葫芦": 5, "回复药": 3, "强效回复药": 0}
 
 var font: SystemFont  # 全局中文字体，所有场景共用
 
@@ -32,7 +32,7 @@ func start_new_game(name: String) -> void:
 	has_starter = false
 	badges = 0
 	money = 500
-	items = {"精灵球": 5, "回复药": 3, "强效回复药": 0}
+	items = {"精灵葫芦": 5, "回复药": 3, "强效回复药": 0}
 
 func add_mon(mon: Dictionary) -> void:
 	player_team.append(mon)
