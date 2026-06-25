@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.0.8-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.0.9-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -52,7 +52,7 @@
 |------|------|
 | 引擎 | Godot 4.7 |
 | 语言 | GDScript 4 |
-| 分辨率 | 480×320（放大至 960×640） |
+| 分辨率 | 720×480（放大至 1440×960），pixel_snap 开启 |
 | 渲染 | 像素风，pixel_snap 开启 |
 | 字体 | Microsoft YaHei / 微软雅黑（系统字体） |
 | 数据 | JSON（species / moves / items） |
