@@ -463,18 +463,30 @@ func _on_use_item(item_id: String) -> void:
 			else:
 				await _show_message_async("差一点！\n%s 挣脱了！" % MonDB.display_name(_enemy_mon))
 		"heal":
-			var heal = item.get("heal_amount", 20)
-			if _player_mon["current_hp"] >= _player_mon["max_hp"]:
-				await _show_message_async("HP已满，无法使用！")
-				GameState.items[item_id] += 1  # 退还
-				_busy = false
-				_refresh_bag_panel()
-				_bag_panel.visible = true
-				return
-			var actual = min(heal, _player_mon["max_hp"] - _player_mon["current_hp"])
-			_player_mon["current_hp"] += actual
-			_refresh_info()
-			await _show_message_async("%s 回复了 %d HP！" % [MonDB.display_name(_player_mon), actual])
+			var item_data = MonDB.items.get(item_id, {})
+			if item_data.get("full_heal", false):
+				_player_mon["current_hp"] = _player_mon["max_hp"]
+				_refresh_info()
+				await _show_message_async("%s 的 HP 完全恢复了！" % MonDB.display_name(_player_mon))
+			else:
+				var heal = item_data.get("heal_amount", 20)
+				if _player_mon["current_hp"] >= _player_mon["max_hp"]:
+					await _show_message_async("HP已满，无法使用！")
+					GameState.items[item_id] += 1
+					_busy = false
+					_refresh_bag_panel()
+					_bag_panel.visible = true
+					return
+				var actual = min(heal, _player_mon["max_hp"] - _player_mon["current_hp"])
+				_player_mon["current_hp"] += actual
+				_refresh_info()
+				await _show_message_async("%s 回复了 %d HP！" % [MonDB.display_name(_player_mon), actual])
+			var mp_heal = item_data.get("mp_heal_amount", 0)
+			if mp_heal > 0:
+				await _show_message_async("MP 恢复了 %d 点！" % mp_heal)
+			var mp_pct = item_data.get("mp_heal_percent", 0)
+			if mp_pct > 0:
+				await _show_message_async("MP 恢复了 %d%%！" % mp_pct)
 
 	# 使用道具 → 敌方行动
 	var e_blocked = await _check_status_block(_enemy_mon, true)
