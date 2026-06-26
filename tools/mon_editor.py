@@ -478,11 +478,10 @@ class App:
 
         # ── Right container ──────────────────────────────────────────────────
         self._mon_right = tk.Frame(self.mon_tab, bg=BG_MAIN)
-        # evo chain bar (packed when needed)
-        self._evo_bar = ttk.LabelFrame(self._mon_right, text=" 进化链对比 ")
 
+        # ── Top: form + right panel (sprite + learnset) ─────────────────────
         split = tk.Frame(self._mon_right, bg=BG_MAIN)
-        split.pack(fill="both", expand=True)
+        split.pack(side="top", fill="both", expand=True)
 
         # ── Center: scrollable form ──────────────────────────────────────────
         form_wrap = tk.Frame(split, bg=BG_MAIN)
@@ -510,10 +509,26 @@ class App:
             "<Leave>",
             lambda _: self._mon_canvas.unbind_all("<MouseWheel>"))
 
-        # ── Right panel: sprite + learnset ───────────────────────────────────
-        rp = tk.Frame(split, bg=BG_SIDE, width=440)
-        rp.pack(side="right", fill="both")
-        rp.pack_propagate(False)
+        # ── Right panel: sprite + learnset + matchup ─────────────────────────
+        rp_outer = tk.Frame(split, bg=BG_SIDE, width=440)
+        rp_outer.pack(side="right", fill="both")
+        rp_outer.pack_propagate(False)
+        rp_canvas = tk.Canvas(rp_outer, bg=BG_SIDE, borderwidth=0, highlightthickness=0)
+        rp_vbar = ttk.Scrollbar(rp_outer, orient="vertical", command=rp_canvas.yview)
+        rp = tk.Frame(rp_canvas, bg=BG_SIDE)
+        rp.bind("<Configure>", lambda _: rp_canvas.configure(scrollregion=rp_canvas.bbox("all")))
+        rp_canvas.create_window((0, 0), window=rp, anchor="nw")
+        rp_canvas.configure(yscrollcommand=rp_vbar.set)
+        rp_canvas.pack(side="left", fill="both", expand=True)
+        rp_vbar.pack(side="right", fill="y")
+        rp_canvas.bind(
+            "<Enter>",
+            lambda _: rp_canvas.bind_all(
+                "<MouseWheel>",
+                lambda e: rp_canvas.yview_scroll(-1*(e.delta//120), "units")))
+        rp_canvas.bind(
+            "<Leave>",
+            lambda _: rp_canvas.unbind_all("<MouseWheel>"))
 
         # Sprite card
         sp_card = tk.Frame(rp, bg=BG_CARD)
@@ -547,7 +562,7 @@ class App:
 
         # Learnset panel
         ls_card = tk.Frame(rp, bg=BG_CARD)
-        ls_card.pack(fill="both", expand=True, padx=10, pady=(0, 4))
+        ls_card.pack(fill="x", padx=10, pady=(0, 4))
 
         _lbl(ls_card, "技能池", bg=BG_CARD, bold=True).pack(
             anchor="w", padx=10, pady=(8, 2))
@@ -564,10 +579,10 @@ class App:
 
         _ls_cols = ("level", "name", "type", "cat", "power", "acc", "pp")
         ls_tree_f = tk.Frame(ls_card, bg=BG_CARD)
-        ls_tree_f.pack(side="top", fill="both", expand=True, padx=6)
+        ls_tree_f.pack(side="top", fill="x", padx=6)
         self.ls_tree = ttk.Treeview(
             ls_tree_f, columns=_ls_cols, show="headings",
-            selectmode="browse")
+            selectmode="browse", height=8)
         for col_id, head, w, anc in [
             ("level", "等级", 40, "center"), ("name",  "招式", 100, "w"),
             ("type",  "属性", 36, "center"), ("cat",   "分类", 44, "center"),
@@ -580,11 +595,14 @@ class App:
                                 command=self.ls_tree.yview)
         self.ls_tree.configure(yscrollcommand=_ls_sv.set)
         _ls_sv.pack(side="right", fill="y")
-        self.ls_tree.pack(side="left", fill="both", expand=True)
+        self.ls_tree.pack(side="left", fill="x")
 
-        # Type matchup panel
-        self._matchup_card = tk.Frame(rp, bg=BG_CARD)
-        self._matchup_card.pack(fill="x", padx=10, pady=(0, 10))
+        # ── Bottom: evo chain + type matchup side by side ────────────────────
+        _bottom_area = tk.Frame(self._mon_right, bg=BG_MAIN)
+        _bottom_area.pack(side="bottom", fill="x")
+
+        self._evo_bar = ttk.LabelFrame(_bottom_area, text=" 进化链对比 ")
+        self._matchup_card = tk.Frame(_bottom_area, bg=BG_CARD, bd=1, relief="groove")
         _lbl(self._matchup_card, "属性克制", bg=BG_CARD, bold=True).pack(
             anchor="w", padx=10, pady=(8, 4))
         self._matchup_inner = tk.Frame(self._matchup_card, bg=BG_CARD)
@@ -863,7 +881,7 @@ class App:
             _lbl(self._matchup_inner, "请先选择属性", bg=BG_CARD, fg=TEXT_SEC).pack(anchor="w")
             return
 
-        # Calculate defensive matchups: for each attacking type, find multiplier
+        # Defensive: for each attacking type, find multiplier against THIS species
         weak = []    # 2x or 4x
         resist = []  # 0.5x or 0.25x
         immune = []  # 0x
@@ -875,11 +893,28 @@ class App:
             if mult == 0:
                 immune.append((atk, "0"))
             elif mult > 1.0:
-                label = f"{mult:g}x"
-                weak.append((atk, label))
+                weak.append((atk, f"{mult:g}x"))
             elif mult < 1.0:
+                resist.append((atk, f"{mult:g}x"))
+
+        # Offensive: for THIS species' types as attacker, find what they're strong against
+        super_eff = []  # types this species is super effective against
+        not_eff = []    # types this species is not very effective against
+        no_dmg = []     # types this species deals 0 damage to
+        for my_atk in [t1] + ([t2] if t2 else []):
+            chart = TYPE_CHART.get(my_atk, {})
+            for def_type, mult in chart.items():
+                # Skip duplicates (dual-type species might list same def_type from both types)
+                if mult == 1.0:
+                    continue
                 label = f"{mult:g}x"
-                resist.append((atk, label))
+                entry = (def_type, label)
+                if mult == 0 and entry not in no_dmg:
+                    no_dmg.append(entry)
+                elif mult > 1.0 and entry not in super_eff:
+                    super_eff.append(entry)
+                elif mult < 1.0 and entry not in not_eff:
+                    not_eff.append(entry)
 
         sections = [
             ("弱点", weak, "#FFE0E0"),
@@ -887,6 +922,27 @@ class App:
             ("免疫", immune, "#E8E8F0"),
         ]
         for title, entries, bg_c in sections:
+            if not entries:
+                continue
+            row_f = tk.Frame(self._matchup_inner, bg=BG_CARD)
+            row_f.pack(fill="x", pady=1)
+            tk.Label(row_f, text=f"{title}:", bg=BG_CARD, fg=TEXT_SEC,
+                     font=(FONT_CJK, 8), width=4, anchor="e").pack(side="left")
+            for typ, mult_s in entries:
+                cell = tk.Frame(row_f, bg=bg_c, bd=1, relief="groove")
+                cell.pack(side="left", padx=1, pady=1)
+                fg, tbg = TYPE_COLORS.get(typ, ("#1C1C1E", "#AAAAAA"))
+                tk.Label(cell, text=typ, bg=tbg, fg=fg,
+                         font=(FONT_CJK, 8, "bold"), width=2).pack(side="left")
+                tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
+                         font=(FONT_CJK, 7)).pack(side="left", padx=1)
+
+        # Offensive section
+        off_sections = [
+            ("克制", super_eff, "#D0F0D0"),
+            ("抵抗", not_eff, "#FFF5D0"),
+        ]
+        for title, entries, bg_c in off_sections:
             if not entries:
                 continue
             row_f = tk.Frame(self._matchup_inner, bg=BG_CARD)
@@ -934,9 +990,12 @@ class App:
 
         if not ancestor_chain and not branches:
             self._evo_bar.pack_forget()
+            # Always show matchup in bottom right
+            self._matchup_card.pack(side="right", fill="both", padx=(0, 6), pady=(4, 4))
             return
 
-        self._evo_bar.pack(fill="x", padx=6, pady=(4, 0))
+        self._evo_bar.pack(side="left", fill="both", expand=True, padx=(6, 0), pady=(4, 4))
+        self._matchup_card.pack(side="right", fill="both", padx=(0, 6), pady=(4, 4))
         col = 0
 
         for anc_name, alv in ancestor_chain:
@@ -952,17 +1011,21 @@ class App:
         col += 1
 
         for br_row, br in enumerate(branches):
+            # Repeat current species as clear branch starting point
+            self._evo_card(self._evo_bar, name, d, False, 0, col)
+            col += 1
             tk.Label(self._evo_bar, text=f"→Lv{br['level']}",
                      bg=BG_MAIN, fg=TEXT_SEC,
                      font=(FONT_CJK, 8)).grid(
-                row=br_row, column=col, padx=2, sticky="w")
+                row=0, column=col, padx=2, sticky="w")
+            col += 1
             br_name = br["into"]
             self._evo_card(self._evo_bar, br_name,
-                           self.species[br_name], False, br_row, col + 1)
+                           self.species[br_name], False, 0, col)
+            col += 1
 
             seen_fwd = visited | {br_name}
             cur_fwd  = br_name
-            nc       = col + 2
             while True:
                 cd = self.species.get(cur_fwd, {})
                 fe = cd.get("evolutions", [])
@@ -978,11 +1041,11 @@ class App:
                 tk.Label(self._evo_bar, text=f"→Lv{nxt['level']}",
                          bg=BG_MAIN, fg=TEXT_SEC,
                          font=(FONT_CJK, 8)).grid(
-                    row=br_row, column=nc, padx=2, sticky="w")
-                nc += 1
+                    row=0, column=col, padx=2, sticky="w")
+                col += 1
                 self._evo_card(self._evo_bar, nxt["into"],
-                               self.species[nxt["into"]], False, br_row, nc)
-                nc += 1
+                               self.species[nxt["into"]], False, 0, col)
+                col += 1
                 seen_fwd.add(nxt["into"])
                 cur_fwd = nxt["into"]
 
