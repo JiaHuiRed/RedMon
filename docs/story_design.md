@@ -243,7 +243,7 @@ legendaries:
 
 npcs:
 
-  - name: 元教授
+  - name: 陈教授
     role: 精灵研究者，给予御三家
     location: 翠苗镇
     personality: [待填] 性格描述
@@ -266,7 +266,7 @@ story_outline:
 
   prologue: >
     [待填] 序章：主角在翠苗镇的日常，触发事件（如：野生精灵闯入镇子？
-    元教授紧急招募助手？），推动主角去找元教授领取御三家
+    陈教授紧急招募助手？），推动主角去找陈教授领取御三家
 
   phase1_story: >
     [待填] 青岚地区主线（3-5个关键事件，串联道馆挑战与反派初登场）
@@ -294,7 +294,7 @@ misc:
   currency_name: 灵币      # 游戏内货币名称，可修改
   pokemart_name: 精灵商会  # 商店名称，可修改
   pokecenter_name: 灵疗所  # 精灵中心名称，可修改
-  professor_gift_item: "[待填] 元教授除御三家外给予的初始道具"
+  professor_gift_item: "[待填] 陈教授除御三家外给予的初始道具"
   rival_first_mon_name: "[待填] rival的第一只精灵名（克制主角御三家）"
   additional_notes: >
     [待填] 其他你想加入的设定、灵感、特殊机制等

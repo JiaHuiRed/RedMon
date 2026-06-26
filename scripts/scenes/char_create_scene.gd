@@ -18,13 +18,10 @@ var _name_input: LineEdit
 
 const PROFESSOR_SPRITE := "res://assets/sprites/博士_front.png"
 
-const INTRO_LINES := [
-	"你好，旅行者！\n我是专门研究华灵大陆精灵的——元教授。",
-	"华灵大陆孕育着无数神奇的精灵，\n等待着有缘人去探索与记录。",
-	"在你踏上旅途之前——\n先告诉我，你是谁？",
-]
+var INTRO_LINES: Array = []
 
 func _ready() -> void:
+	INTRO_LINES = MonDB.dlg_array("char_create", "intro")
 	_build_bg()
 	_build_professor()
 	_build_dialog()
@@ -71,7 +68,7 @@ func _build_professor() -> void:
 	add_child(spr)
 
 	var name_lbl = Label.new()
-	name_lbl.text = "元教授"
+	name_lbl.text = "陈教授"
 	name_lbl.position = Vector2(8, VH - 92)
 	name_lbl.add_theme_color_override("font_color", Color(0.20, 0.20, 0.25))
 	name_lbl.add_theme_font_size_override("font_size", 11)
@@ -250,13 +247,13 @@ func _show_phase(phase: int) -> void:
 			_dialog_hint.visible = true
 		1:  # 性别选择
 			_gender_panel.visible = true
-			_dialog_lbl.text = "你是男孩，还是女孩？"
+			_dialog_lbl.text = MonDB.dlg("char_create", "gender_prompt")
 			_dialog_hint.visible = true
 			_refresh_gender()
 		2:  # 取名
 			_name_panel.visible = true
-			var pronoun = "小伙子" if _gender == "男" else "小姑娘"
-			_dialog_lbl.text = "好！那么%s，\n你叫什么名字呢？" % pronoun
+			var key = "name_prompt_male" if _gender == "男" else "name_prompt_female"
+			_dialog_lbl.text = MonDB.dlg("char_create", key)
 			_dialog_hint.visible = false
 			_name_input.grab_focus()
 

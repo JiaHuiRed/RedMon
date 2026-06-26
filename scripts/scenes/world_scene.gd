@@ -852,14 +852,14 @@ func _open_clinic() -> void:
 	_dialog_active = true
 	_dialog_phase = 0
 	_dialog_panel.visible = true
-	_dialog_label.text = "陈教授的助理：\n欢迎来到灵疗所！\n我们来帮您恢复精灵的体力吧！"
+	_dialog_label.text = MonDB.dlg("world", "clinic_greeting")
 
 func _advance_dialog() -> void:
 	match _dialog_phase:
 		0:  # 灵疗所问候
 			_heal_all_mons()
 			_dialog_phase = 1
-			_dialog_label.text = "✦ 精灵们全部恢复了！✦\n游戏已保存。"
+			_dialog_label.text = MonDB.dlg("world", "clinic_healed")
 		1:  # 灵疗所结束
 			_dialog_active = false; _dialog_panel.visible = false; _update_hud()
 		100:  # 训练师挑战确认 → 开战

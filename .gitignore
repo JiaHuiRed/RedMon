@@ -24,3 +24,21 @@ desktop.ini
 
 # Logs
 *.log
+
+# Python __pycache__
+__pycache__/
+*.pyc
+
+# PyInstaller build artifacts
+tools/build/
+tools/dist/
+
+# Legacy launchers
+start_editor.bat
+tools/editor.html
+
+# RPG_Demo sync archive
+RPG_Demo/
+
+# RedCode config
+.redcode/

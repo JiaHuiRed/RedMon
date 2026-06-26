@@ -13,18 +13,8 @@ const STARTER_DESCS := [
 ]
 const TYPE_LABELS := ["火　系", "水　系", "木　系"]
 
-# 前置剧情对话
-const INTRO_LINES := [
-	"哎呀！%s，你来得正好！\n我在草原研究精灵时被一群野生精灵围住了！",
-	"来不及解释了——\n快从我的研究包里选一只精灵，把它们吓跑！",
-	"这三只都是我多年来养育的伙伴，\n它们一定会帮助你的——快选！",
-]
-# 后置对话（选完精灵后）
-const OUTRO_LINES := [
-	"太好了！%s出手相助，野生精灵都跑了！\n这只精灵从今天起就是你的旅伴了！",
-	"作为答谢——带上这本《华灵图鉴》。\n帮我记录华灵大陆上所有的精灵吧！",
-	"这片大陆还有太多未解的谜……\n出发吧，%s，旅途在等着你！",
-]
+var INTRO_LINES: Array = []
+var OUTRO_LINES: Array = []
 
 # 阶段：0=前置剧情, 1=选择精灵, 2=后置对话
 var _scene_phase: int = 0
@@ -41,6 +31,8 @@ var _dialog_hint: Label  # "Enter 继续" 提示
 var _cards_root: Node2D  # 卡片组容器，统一显隐
 
 func _ready() -> void:
+	INTRO_LINES = MonDB.dlg_array("starter", "intro")
+	OUTRO_LINES = MonDB.dlg_array("starter", "outro")
 	_build_bg()
 	_build_professor()
 	_build_dialog_box()
@@ -224,7 +216,7 @@ func _start_intro() -> void:
 	_confirm_btn.visible = false
 	if _desc_label: _desc_label.visible = false
 	_dialog_hint.visible = true
-	_dialog_lbl.text = INTRO_LINES[0] % GameState.player_name
+	_dialog_lbl.text = MonDB.dlg_sub(INTRO_LINES[0], {"player": GameState.player_name})
 
 func _enter_selection() -> void:
 	_scene_phase = 1
@@ -232,7 +224,7 @@ func _enter_selection() -> void:
 	_confirm_btn.visible = true
 	if _desc_label: _desc_label.visible = true
 	_dialog_hint.visible = false
-	_dialog_lbl.text = "选好了吗？这只精灵将是你一生的伙伴！"
+	_dialog_lbl.text = MonDB.dlg("starter", "selection_prompt")
 	_select(0)
 
 func _start_outro() -> void:
@@ -242,7 +234,7 @@ func _start_outro() -> void:
 	_confirm_btn.visible = false
 	if _desc_label: _desc_label.visible = false
 	_dialog_hint.visible = true
-	_dialog_lbl.text = OUTRO_LINES[0] % MonDB.display_name(GameState.player_team[0])
+	_dialog_lbl.text = MonDB.dlg_sub(OUTRO_LINES[0], {"mon": MonDB.display_name(GameState.player_team[0])})
 
 func _advance_outro() -> void:
 	_outro_idx += 1
@@ -250,9 +242,7 @@ func _advance_outro() -> void:
 		request_scene.emit("world", {})
 		return
 	var text = OUTRO_LINES[_outro_idx]
-	# 最后一行插入玩家名字
-	if _outro_idx == OUTRO_LINES.size() - 1:
-		text = text % GameState.player_name
+	text = MonDB.dlg_sub(text, {"player": GameState.player_name, "mon": MonDB.display_name(GameState.player_team[0])})
 	_dialog_lbl.text = text
 
 # ── Starter cards ─────────────────────────────────────────────────────────────
@@ -408,7 +398,7 @@ func _input(event: InputEvent) -> void:
 				if _intro_idx >= INTRO_LINES.size():
 					_enter_selection()
 				else:
-					_dialog_lbl.text = INTRO_LINES[_intro_idx] % GameState.player_name
+					_dialog_lbl.text = MonDB.dlg_sub(INTRO_LINES[_intro_idx], {"player": GameState.player_name})
 		1:  # 精灵选择
 			if event.is_action_pressed("ui_left"):
 				_select((_selected - 1 + 3) % 3)

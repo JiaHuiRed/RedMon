@@ -1037,5 +1037,407 @@
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 2.0kg",
     "learnset": {}
+  },
+  "吉他小猪": {
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "height": "",
+    "weight": "",
+    "evolutions": [],
+    "learnset": {},
+    "id": 33,
+    "name": "吉他小猪",
+    "type1": "空",
+    "type2": "",
+    "desc": "背着一把比自己还大的吉他，穿着蓝色西装的矮胖小猪。虽然表情总是一脸苦恼，但弹起琴来却异常动听。"
+  },
+  "君美": {
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "height": "",
+    "weight": "",
+    "evolutions": [],
+    "learnset": {},
+    "id": 34,
+    "name": "君美",
+    "type1": "灵",
+    "type2": "",
+    "desc": "戴着菱格纹毛衣和眼镜的知性精灵，总是背着一个鼓鼓的挎包。据说包里装满了各地收集的珍稀标本。"
+  },
+  "瑜伽小妹": {
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "height": "",
+    "weight": "",
+    "evolutions": [],
+    "learnset": {},
+    "id": 35,
+    "name": "瑜伽小妹",
+    "type1": "格",
+    "type2": "",
+    "desc": "热爱瑜伽修行的精灵，总是赤脚站在大地上感受自然的气息。腰间系着粉色纱巾，动作柔中带刚。"
+  },
+  "酷姐": {
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "height": "",
+    "weight": "",
+    "evolutions": [],
+    "learnset": {},
+    "id": 36,
+    "name": "酷姐",
+    "type1": "暗",
+    "type2": "",
+    "desc": "穿着黑色蕾丝上衣的冷酷精灵，编着精致的鱼骨辫。喜欢坐在高处俯瞰众生，手里永远拿着一瓶饮料。"
+  },
+  "雨琦": {
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "height": "",
+    "weight": "",
+    "evolutions": [],
+    "learnset": {},
+    "id": 37,
+    "name": "雨琦",
+    "type1": "格",
+    "type2": "暗",
+    "desc": "穿着黑色背心短裤的干练精灵，双手叉腰充满斗志。短发利落，眼神坚定，是天生的战斗家。"
+  },
+  "石面具": {
+    "id": 38,
+    "name": "石面具",
+    "type1": "岩",
+    "type2": "灵",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 120,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "无性别",
+    "desc": "古老祭祀面具被灵气唤醒，双眼一红一绿闪烁不定，身后拖着紫色灵体触须。",
+    "evolutions": [
+      {
+        "into": "岩傩神",
+        "level": 30
+      }
+    ],
+    "learnset": {}
+  },
+  "岩傩神": {
+    "id": 39,
+    "name": "岩傩神",
+    "type1": "岩",
+    "type2": "灵",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 178,
+    "growth_rate": "中速",
+    "gender_ratio": "无性别",
+    "desc": "石面具觉醒后化为傩神战士，身披岩石铠甲，胸口嵌有灵能宝珠，头顶烈焰角冠，背负紫色神幡。",
+    "evolutions": [],
+    "learnset": {}
+  },
+  "泥蛙": {
+    "id": 40,
+    "name": "泥蛙",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 190,
+    "exp_yield": 50,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "浑身土黄的小蛙，皮肤龟裂如干泥，大眼睛圆滚滚，常蹲在泥塘边晒太阳。",
+    "evolutions": [
+      {
+        "into": "沼蟾",
+        "level": 16
+      }
+    ],
+    "learnset": {}
+  },
+  "沼蟾": {
+    "id": 41,
+    "name": "沼蟾",
+    "type1": "土",
+    "type2": "毒",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 90,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "进化后体型壮硕，背部长出岩石棘刺，腮帮鼓着紫色毒囊，脾气暴躁。",
+    "evolutions": [
+      {
+        "into": "毒沼王",
+        "level": 32
+      }
+    ],
+    "learnset": {}
+  },
+  "毒沼王": {
+    "id": 42,
+    "name": "毒沼王",
+    "type1": "土",
+    "type2": "毒",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 240,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "沼泽之王，全身披覆墨绿岩甲，头顶双角冒紫烟，胸腹紫毒脉络清晰可见，背甲刻有古篆纹。",
+    "evolutions": [],
+    "learnset": {}
+  },
+  "绿叶蜥": {
+    "id": 43,
+    "name": "绿叶蜥",
+    "type1": "木",
+    "type2": "",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 190,
+    "exp_yield": 50,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "趴在树枝上的小变色龙，背上长满翠绿叶片，大眼睛好奇地张望，卷曲的尾巴缠绕树枝。",
+    "evolutions": [
+      {
+        "into": "刺尾蜥",
+        "level": 18
+      }
+    ],
+    "learnset": {}
+  },
+  "刺尾蜥": {
+    "id": 44,
+    "name": "刺尾蜥",
+    "type1": "木",
+    "type2": "毒",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 90,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "进化后尾巴长满尖刺，舌头滴着毒液，性情凶猛好斗，能喷射腐蚀性毒汁。",
+    "evolutions": [
+      {
+        "into": "瘴龙",
+        "level": 36
+      }
+    ],
+    "learnset": {}
+  },
+  "瘴龙": {
+    "id": 45,
+    "name": "瘴龙",
+    "type1": "木",
+    "type2": "毒",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 240,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "密林深处的霸主，全身覆盖刺叶鳞甲，口吐剧毒瘴气，背脊荆棘如森林般茂密。",
+    "evolutions": [],
+    "learnset": {}
+  },
+  "绵绵羊": {
+    "id": 46,
+    "name": "绵绵羊",
+    "type1": "仙",
+    "type2": "",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 190,
+    "exp_yield": 50,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "浑身蓬松白毛的小羊精灵，紫色大眼睛水汪汪的，小角圆润可爱，性情温顺亲人。",
+    "evolutions": [
+      {
+        "into": "绒绒云",
+        "level": 24
+      }
+    ],
+    "learnset": {}
+  },
+  "绒绒云": {
+    "id": 47,
+    "name": "绒绒云",
+    "type1": "仙",
+    "type2": "",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 75,
+    "exp_yield": 168,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "进化后绒毛变为梦幻粉色，金色卷角闪耀星辉，据说抱着它入睡会做美梦。",
+    "evolutions": [],
+    "learnset": {}
+  },
+  "草御剑": {
+    "id": 48,
+    "name": "草御剑",
+    "type1": "木",
+    "type2": "格",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 120,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "头顶嫩芽的小蜥剑士，双手各持一柄叶片利剑，虽然个头小但眼神坚毅，时刻准备战斗。",
+    "evolutions": [
+      {
+        "into": "花剑客",
+        "level": 30
+      }
+    ],
+    "learnset": {}
+  },
+  "花剑客": {
+    "id": 49,
+    "name": "花剑客",
+    "type1": "木",
+    "type2": "格",
+    "base": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "sp_atk": 0,
+      "sp_def": 0,
+      "spd": 0
+    },
+    "catch_rate": 45,
+    "exp_yield": 178,
+    "growth_rate": "中速",
+    "gender_ratio": "50/50",
+    "desc": "头顶盛开火红百合的木甲剑客，双刃叶剑锋利无比，膝肘缠绕花藤，是草木武道的大师。",
+    "evolutions": [],
+    "learnset": {}
   }
 }

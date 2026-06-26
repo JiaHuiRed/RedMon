@@ -4,6 +4,7 @@ extends Node
 var moves:   Dictionary = {}
 var species: Dictionary = {}
 var items:   Dictionary = {}
+var dialogs: Dictionary = {}
 
 # ── 属性克制表 ────────────────────────────────────────────────────────────────
 # 18属性完整版（对应宝可梦第六世代起）
@@ -118,6 +119,7 @@ var type_colors: Dictionary = {
 func _ready() -> void:
 	_load_json("res://data/moves.json",   moves)
 	_load_json("res://data/items.json",   items)
+	_load_json("res://data/dialogs.json", dialogs)
 	_load_species_json()
 
 func _load_json(path: String, target: Dictionary) -> void:
@@ -153,6 +155,24 @@ func _load_species_json() -> void:
 			fixed_learnset[int(lv_str)] = sp["learnset"][lv_str]
 		sp["learnset"] = fixed_learnset
 		species[sp_id] = sp
+
+# ── 对话文本 API ─────────────────────────────────────────────────────────────
+func dlg(section: String, key: String, vars: Dictionary = {}) -> String:
+	var sec = dialogs.get(section, {})
+	var val = sec.get(key, "")
+	if val is String:
+		for k in vars:
+			val = val.replace("{%s}" % k, str(vars[k]))
+	return val
+
+func dlg_array(section: String, key: String) -> Array:
+	var sec = dialogs.get(section, {})
+	return sec.get(key, [])
+
+func dlg_sub(text: String, vars: Dictionary) -> String:
+	for k in vars:
+		text = text.replace("{%s}" % k, str(vars[k]))
+	return text
 
 # ── 公共 API ─────────────────────────────────────────────────────────────────
 

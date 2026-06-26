@@ -22,6 +22,7 @@ else:
 SPECIES_FILE  = os.path.join(ROOT, "data", "species.json")
 MOVES_FILE    = os.path.join(ROOT, "data", "moves.json")
 TRAINERS_FILE = os.path.join(ROOT, "data", "trainers.json")
+DIALOGS_FILE  = os.path.join(ROOT, "data", "dialogs.json")
 SPRITES_DIR   = os.path.join(ROOT, "assets", "sprites")
 
 TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢"]
@@ -30,10 +31,45 @@ CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
 TRAINER_GENDERS = ["男", "女", "未知"]
 TRAINER_CLASSES = ["普通训练师", "精英训练师", "道馆主", "四天王", "冠军", "路人", "商人", "研究员"]
-EFFECTS    = ["", "lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd",
-              "lower_acc", "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def",
-              "raise_spd", "raise_acc", "inflict_burn", "inflict_poison",
-              "inflict_paralysis", "inflict_sleep", "inflict_freeze", "heal_self"]
+EFFECTS_RAW = ["", "lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd",
+               "lower_acc", "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def",
+               "raise_spd", "raise_acc", "inflict_burn", "inflict_poison",
+               "inflict_paralysis", "inflict_sleep", "inflict_freeze", "heal_self"]
+EFFECT_LABELS = {
+    "": "", "lower_atk": "降攻击", "lower_def": "降防御",
+    "lower_sp_atk": "降特攻", "lower_sp_def": "降特防", "lower_spd": "降速度",
+    "lower_acc": "降命中", "raise_atk": "升攻击", "raise_def": "升防御",
+    "raise_sp_atk": "升特攻", "raise_sp_def": "升特防", "raise_spd": "升速度",
+    "raise_acc": "升命中", "inflict_burn": "灼伤", "inflict_poison": "中毒",
+    "inflict_paralysis": "麻痹", "inflict_sleep": "催眠", "inflict_freeze": "冰冻",
+    "heal_self": "自我回复",
+}
+EFFECTS = [EFFECT_LABELS.get(e, e) for e in EFFECTS_RAW]
+# Reverse lookup: Chinese label → raw key
+EFFECT_TO_RAW = {v: k for k, v in EFFECT_LABELS.items()}
+
+# Type matchup chart (attack_type → {defense_type: multiplier})
+TYPE_CHART = {
+    "空": {"岩": 0.6, "钢": 0.6, "鬼": 0.0},
+    "火": {"木": 1.5, "冰": 1.5, "虫": 1.5, "钢": 1.5, "火": 0.6, "水": 0.6, "岩": 0.6, "龙": 0.6},
+    "水": {"火": 1.5, "土": 1.5, "岩": 1.5, "水": 0.6, "木": 0.6, "龙": 0.6},
+    "木": {"水": 1.5, "土": 1.5, "岩": 1.5, "火": 0.6, "木": 0.6, "毒": 0.6, "风": 0.6, "虫": 0.6, "龙": 0.6, "钢": 0.6},
+    "雷": {"水": 1.5, "风": 1.5, "雷": 0.6, "木": 0.6, "龙": 0.6, "土": 0.0},
+    "冰": {"木": 1.5, "土": 1.5, "风": 1.5, "龙": 1.5, "水": 0.6, "冰": 0.6, "钢": 0.6},
+    "格": {"空": 1.5, "冰": 1.5, "岩": 1.5, "暗": 1.5, "钢": 1.5, "毒": 0.6, "风": 0.6, "灵": 0.6, "虫": 0.6, "仙": 0.6, "鬼": 0.0},
+    "毒": {"木": 1.5, "仙": 1.5, "毒": 0.6, "土": 0.6, "岩": 0.6, "鬼": 0.6, "钢": 0.0},
+    "土": {"火": 1.5, "雷": 1.5, "毒": 1.5, "岩": 1.5, "钢": 1.5, "木": 0.6, "虫": 0.6, "风": 0.0},
+    "风": {"木": 1.5, "格": 1.5, "虫": 1.5, "雷": 0.6, "岩": 0.6, "钢": 0.6},
+    "灵": {"格": 1.5, "毒": 1.5, "灵": 0.6, "钢": 0.6},
+    "虫": {"木": 1.5, "灵": 1.5, "暗": 1.5, "仙": 1.5, "火": 0.6, "格": 0.6, "风": 0.6, "鬼": 0.6, "钢": 0.6},
+    "岩": {"火": 1.5, "冰": 1.5, "风": 1.5, "虫": 1.5, "格": 0.6, "土": 0.6, "钢": 0.6},
+    "鬼": {"灵": 1.5, "鬼": 1.5, "暗": 0.6, "空": 0.0},
+    "龙": {"龙": 1.5, "钢": 0.6, "仙": 0.0},
+    "暗": {"灵": 1.5, "鬼": 1.5, "格": 0.6, "暗": 0.6, "仙": 0.6},
+    "钢": {"冰": 1.5, "岩": 1.5, "仙": 1.5, "火": 0.6, "水": 0.6, "雷": 0.6, "钢": 0.6},
+    "仙": {"格": 1.5, "龙": 1.5, "暗": 1.5, "火": 0.6, "毒": 0.6, "钢": 0.6},
+}
+ALL_TYPES = ["空", "火", "水", "木", "雷", "冰", "格", "毒", "土", "风", "灵", "虫", "岩", "鬼", "龙", "暗", "钢", "仙"]
 
 # (text_color, bg_color) per type
 TYPE_COLORS = {
@@ -228,12 +264,26 @@ class App:
         self.moves    = load_json(MOVES_FILE)
         self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
 
-        self.root = tk.Tk()
+        # 隐藏根窗口用于保留任务栏图标，实际 UI 在 Toplevel 上
+        self._ghost = tk.Tk()
+        self._ghost.title("RedMon 数据编辑器")
+        self._ghost.geometry("0x0+0+0")
+        self._ghost.attributes("-alpha", 0)
+        self._ghost.bind("<Map>", lambda e: self.root.deiconify())
+        self._ghost.bind("<Unmap>", lambda e: self.root.withdraw())
+        self._ghost.protocol("WM_DELETE_WINDOW", self._on_close)
+        # 设置任务栏图标（使用 Godot 项目图标，若无则用默认）
+        _icon_path = os.path.join(ROOT, "icon.ico")
+        if os.path.exists(_icon_path):
+            self._ghost.iconbitmap(_icon_path)
+
+        self.root = tk.Toplevel(self._ghost)
         self.root.title("RedMon 数据编辑器")
         self.root.geometry("1360x800")
         self.root.minsize(960, 620)
         self.root.configure(bg=BG_MAIN)
         self.root.overrideredirect(True)   # 移除系统标题栏
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self._drag_x = 0
         self._drag_y = 0
         self._is_maximized  = False
@@ -248,13 +298,16 @@ class App:
         self.mon_tab     = ttk.Frame(self.notebook)
         self.move_tab    = ttk.Frame(self.notebook)
         self.trainer_tab = ttk.Frame(self.notebook)
+        self.dialog_tab  = ttk.Frame(self.notebook)
         self.notebook.add(self.mon_tab,     text="  精灵图鉴  ")
         self.notebook.add(self.move_tab,    text="  技能库  ")
         self.notebook.add(self.trainer_tab, text="  角色编辑  ")
+        self.notebook.add(self.dialog_tab,  text="  剧情文本  ")
 
         self._build_mon_tab()
         self._build_move_tab()
         self._build_trainer_tab()
+        self._build_dialog_tab()
 
         self.status = tk.Label(self.root, anchor="w", bg=BG_SIDE, fg=TEXT_SEC,
                                font=(FONT_CJK, 8), padx=14)
@@ -318,8 +371,8 @@ class App:
         dot_row.place(x=14, rely=0.5, anchor="w")
 
         actions = [
-            (DOT_RED, self.root.destroy),
-            (DOT_YLW, self.root.iconify),
+            (DOT_RED, self._on_close),
+            (DOT_YLW, self._iconify),
             (DOT_GRN, self._toggle_maximize),
         ]
         for color, action in actions:
@@ -331,6 +384,14 @@ class App:
 
         tk.Label(hdr, text="RedMon 数据编辑器", bg=BG_SIDE, fg=TEXT_PRI,
                  font=(FONT_CJK, 10, "bold")).place(relx=0.5, rely=0.5, anchor="center")
+
+    def _on_close(self):
+        self.root.destroy()
+        self._ghost.destroy()
+
+    def _iconify(self):
+        self.root.withdraw()
+        self._ghost.iconify()
 
     def _on_drag_start(self, event):
         self._drag_x = event.x_root - self.root.winfo_x()
@@ -354,12 +415,15 @@ class App:
 
     # ── Status / draw helpers ───────────────────────────────────────────────
 
-    def _update_status(self):
-        n_sp = len(self.species)
-        n_mv = len(self.moves)
-        n_tr = len(self.trainers)
-        self.status.config(
-            text=f"  精灵 {n_sp} 种  ·  技能 {n_mv} 个  ·  角色 {n_tr} 名")
+    def _update_status(self, msg=None):
+        if msg:
+            self.status.config(text=f"  {msg}")
+        else:
+            n_sp = len(self.species)
+            n_mv = len(self.moves)
+            n_tr = len(self.trainers)
+            self.status.config(
+                text=f"  精灵 {n_sp} 种  ·  技能 {n_mv} 个  ·  角色 {n_tr} 名")
 
     def _draw_bar(self, canvas, value, color):
         canvas.delete("all")
@@ -483,7 +547,7 @@ class App:
 
         # Learnset panel
         ls_card = tk.Frame(rp, bg=BG_CARD)
-        ls_card.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        ls_card.pack(fill="both", expand=True, padx=10, pady=(0, 4))
 
         _lbl(ls_card, "技能池", bg=BG_CARD, bold=True).pack(
             anchor="w", padx=10, pady=(8, 2))
@@ -517,6 +581,14 @@ class App:
         self.ls_tree.configure(yscrollcommand=_ls_sv.set)
         _ls_sv.pack(side="right", fill="y")
         self.ls_tree.pack(side="left", fill="both", expand=True)
+
+        # Type matchup panel
+        self._matchup_card = tk.Frame(rp, bg=BG_CARD)
+        self._matchup_card.pack(fill="x", padx=10, pady=(0, 10))
+        _lbl(self._matchup_card, "属性克制", bg=BG_CARD, bold=True).pack(
+            anchor="w", padx=10, pady=(8, 4))
+        self._matchup_inner = tk.Frame(self._matchup_card, bg=BG_CARD)
+        self._matchup_inner.pack(fill="x", padx=10, pady=(0, 8))
 
         # ── Build form inside _mon_inner ─────────────────────────────────────
         f   = self._mon_inner
@@ -780,6 +852,55 @@ class App:
             if tp:
                 _type_badge(self._badge_frame, tp, BG_CARD).pack(
                     side="left", padx=(0, 4))
+        self._refresh_type_matchup()
+
+    def _refresh_type_matchup(self):
+        for w in self._matchup_inner.winfo_children():
+            w.destroy()
+        t1 = self.mon_t1.get()
+        t2 = self.mon_t2.get()
+        if not t1:
+            _lbl(self._matchup_inner, "请先选择属性", bg=BG_CARD, fg=TEXT_SEC).pack(anchor="w")
+            return
+
+        # Calculate defensive matchups: for each attacking type, find multiplier
+        weak = []    # 2x or 4x
+        resist = []  # 0.5x or 0.25x
+        immune = []  # 0x
+        for atk in ALL_TYPES:
+            chart = TYPE_CHART.get(atk, {})
+            mult = chart.get(t1, 1.0)
+            if t2:
+                mult *= chart.get(t2, 1.0)
+            if mult == 0:
+                immune.append((atk, "0"))
+            elif mult > 1.0:
+                label = f"{mult:g}x"
+                weak.append((atk, label))
+            elif mult < 1.0:
+                label = f"{mult:g}x"
+                resist.append((atk, label))
+
+        sections = [
+            ("弱点", weak, "#FFE0E0"),
+            ("抗性", resist, "#E0FFE0"),
+            ("免疫", immune, "#E8E8F0"),
+        ]
+        for title, entries, bg_c in sections:
+            if not entries:
+                continue
+            row_f = tk.Frame(self._matchup_inner, bg=BG_CARD)
+            row_f.pack(fill="x", pady=1)
+            tk.Label(row_f, text=f"{title}:", bg=BG_CARD, fg=TEXT_SEC,
+                     font=(FONT_CJK, 8), width=4, anchor="e").pack(side="left")
+            for typ, mult_s in entries:
+                cell = tk.Frame(row_f, bg=bg_c, bd=1, relief="groove")
+                cell.pack(side="left", padx=1, pady=1)
+                fg, tbg = TYPE_COLORS.get(typ, ("#1C1C1E", "#AAAAAA"))
+                tk.Label(cell, text=typ, bg=tbg, fg=fg,
+                         font=(FONT_CJK, 8, "bold"), width=2).pack(side="left")
+                tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
+                         font=(FONT_CJK, 7)).pack(side="left", padx=1)
 
     def _refresh_evo_compare(self, name, d):
         for w in self._evo_bar.winfo_children():
@@ -1274,7 +1395,7 @@ class App:
         self.move_acc.insert(0, str(d.get("accuracy", 0)))
         self.move_pp.delete(0, "end")
         self.move_pp.insert(0, str(d.get("max_pp", 0)))
-        self.move_effect.set(d.get("effect", ""))
+        self.move_effect.set(EFFECT_LABELS.get(d.get("effect", ""), d.get("effect", "")))
         self.move_desc.delete("1.0", "end")
         self.move_desc.insert("1.0", d.get("description", ""))
 
@@ -1291,7 +1412,7 @@ class App:
             "power":       _int(self.move_power.get()),
             "accuracy":    _int(self.move_acc.get()),
             "max_pp":      _int(self.move_pp.get()),
-            "effect":      self.move_effect.get(),
+            "effect":      EFFECT_TO_RAW.get(self.move_effect.get(), self.move_effect.get()),
             "description": self.move_desc.get("1.0", "end-1c").strip(),
         }
 
@@ -1619,8 +1740,273 @@ class App:
         sel = self.team_tree.selection()
         if sel: self.team_tree.delete(sel[0])
 
+    # ── 剧情文本 Tab ────────────────────────────────────────────────────────────
+    def _build_dialog_tab(self):
+        self._dlg_data = load_json(DIALOGS_FILE) if os.path.exists(DIALOGS_FILE) else {}
+
+        left = tk.Frame(self.dialog_tab, bg=BG_SIDE, width=230)
+        left.pack(side="left", fill="y")
+        left.pack_propagate(False)
+
+        tk.Label(left, text="场景分组", bg=BG_SIDE, fg=TEXT_PRI,
+                 font=(FONT_CJK, 11, "bold"), anchor="w").pack(fill="x", padx=14, pady=(10, 4))
+
+        self._dlg_tree = ttk.Treeview(left, show="tree", selectmode="browse")
+        self._dlg_tree.pack(fill="both", expand=True, padx=8, pady=4)
+        self._dlg_tree.bind("<<TreeviewSelect>>", self._on_dlg_section_select)
+
+        btn_frame = tk.Frame(left, bg=BG_SIDE)
+        btn_frame.pack(fill="x", padx=8, pady=6)
+        tk.Button(btn_frame, text="+ 新增分组", font=(FONT_CJK, 9),
+                  command=self._dlg_add_section).pack(side="left", padx=2)
+        tk.Button(btn_frame, text="- 删除分组", font=(FONT_CJK, 9),
+                  command=self._dlg_del_section).pack(side="left", padx=2)
+
+        self._dlg_placeholder = tk.Label(
+            self.dialog_tab, text="← 选择一个场景分组开始编辑",
+            bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 13))
+        self._dlg_placeholder.pack(fill="both", expand=True)
+
+        self._dlg_right = tk.Frame(self.dialog_tab, bg=BG_MAIN)
+        self._dlg_current_section = None
+        self._dlg_editors = {}
+
+        self._refresh_dlg_tree()
+
+    def _refresh_dlg_tree(self):
+        self._dlg_tree.delete(*self._dlg_tree.get_children())
+        section_labels = {
+            "char_create": "角色创建",
+            "starter": "御三家选择",
+            "world": "大地图",
+            "trainers": "训练师对话",
+        }
+        for sec_id in self._dlg_data:
+            label = section_labels.get(sec_id, sec_id)
+            self._dlg_tree.insert("", "end", iid=sec_id, text=f"  {label}")
+
+    def _on_dlg_section_select(self, _event=None):
+        sel = self._dlg_tree.selection()
+        if not sel:
+            return
+        sec_id = sel[0]
+        if sec_id == self._dlg_current_section:
+            return
+        self._dlg_current_section = sec_id
+        self._dlg_placeholder.pack_forget()
+        self._dlg_right.pack_forget()
+        self._dlg_right.destroy()
+        self._dlg_right = tk.Frame(self.dialog_tab, bg=BG_MAIN)
+        self._dlg_right.pack(side="left", fill="both", expand=True)
+        self._dlg_build_section(sec_id)
+
+    def _dlg_build_section(self, sec_id):
+        data = self._dlg_data.get(sec_id, {})
+        canvas = tk.Canvas(self._dlg_right, bg=BG_MAIN, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(self._dlg_right, orient="vertical", command=canvas.yview)
+        scroll_frame = tk.Frame(canvas, bg=BG_MAIN)
+        scroll_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True)
+        canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(int(-e.delta / 120), "units"))
+
+        # Title
+        tk.Label(scroll_frame, text=f"编辑: {sec_id}", bg=BG_MAIN, fg=TEXT_PRI,
+                 font=(FONT_CJK, 14, "bold")).pack(anchor="w", padx=16, pady=(12, 6))
+
+        self._dlg_editors = {}
+        row = 0
+        for key, val in data.items():
+            row += 1
+            frame = tk.Frame(scroll_frame, bg=BG_CARD, bd=1, relief="solid")
+            frame.pack(fill="x", padx=14, pady=4)
+
+            tk.Label(frame, text=key, bg=BG_CARD, fg=ACCENT,
+                     font=(FONT_CJK, 10, "bold"), anchor="w").pack(fill="x", padx=8, pady=(6, 2))
+
+            if isinstance(val, list):
+                # Array of strings — one Text per element, with add/remove buttons
+                list_frame = tk.Frame(frame, bg=BG_CARD)
+                list_frame.pack(fill="x", padx=8, pady=(0, 6))
+                self._dlg_editors[key] = ("list", list_frame, sec_id, key)
+                self._dlg_build_list_entries(list_frame, val)
+                btn_f = tk.Frame(frame, bg=BG_CARD)
+                btn_f.pack(fill="x", padx=8, pady=(0, 6))
+                tk.Button(btn_f, text="+ 添加行", font=(FONT_CJK, 8),
+                          command=lambda lf=list_frame, k=key: self._dlg_list_add(lf, k)).pack(side="left", padx=2)
+            elif isinstance(val, dict):
+                # Nested dict (e.g. trainers section)
+                for sub_key, sub_val in val.items():
+                    sub_frame = tk.Frame(frame, bg="#F8F8FA", bd=0)
+                    sub_frame.pack(fill="x", padx=12, pady=2)
+                    tk.Label(sub_frame, text=f"  {sub_key}:", bg="#F8F8FA", fg=TEXT_SEC,
+                             font=(FONT_CJK, 9)).pack(anchor="w")
+                    if isinstance(sub_val, dict):
+                        for dk, dv in sub_val.items():
+                            df = tk.Frame(sub_frame, bg="#F8F8FA")
+                            df.pack(fill="x", padx=16, pady=1)
+                            tk.Label(df, text=dk, bg="#F8F8FA", fg=TEXT_SEC,
+                                     font=(FONT_CJK, 8), width=14, anchor="w").pack(side="left")
+                            t = tk.Text(df, height=2, width=40, font=(FONT_CJK, 10),
+                                        wrap="word", bd=1, relief="solid")
+                            t.insert("1.0", str(dv))
+                            t.pack(side="left", fill="x", expand=True, padx=4)
+                            self._dlg_editors[f"{key}.{sub_key}.{dk}"] = ("text", t)
+                    else:
+                        t = tk.Text(sub_frame, height=2, width=40, font=(FONT_CJK, 10),
+                                    wrap="word", bd=1, relief="solid")
+                        t.insert("1.0", str(sub_val))
+                        t.pack(fill="x", padx=16, pady=2)
+                        self._dlg_editors[f"{key}.{sub_key}"] = ("text", t)
+            else:
+                # Simple string
+                t = tk.Text(frame, height=3, width=50, font=(FONT_CJK, 10),
+                            wrap="word", bd=1, relief="solid")
+                t.insert("1.0", str(val))
+                t.pack(fill="x", padx=8, pady=(0, 6))
+                self._dlg_editors[key] = ("text", t)
+
+        # Buttons
+        btn_f2 = tk.Frame(scroll_frame, bg=BG_MAIN)
+        btn_f2.pack(fill="x", padx=14, pady=12)
+        tk.Button(btn_f2, text="💾 保存剧情文本", font=(FONT_CJK, 11, "bold"),
+                  bg=ACCENT, fg="white", bd=0, padx=16, pady=6,
+                  command=self._dlg_save).pack(side="left")
+        tk.Button(btn_f2, text="+ 新增条目", font=(FONT_CJK, 9),
+                  command=self._dlg_add_key).pack(side="left", padx=12)
+
+    def _dlg_build_list_entries(self, parent, items):
+        for w in parent.winfo_children():
+            w.destroy()
+        for i, item in enumerate(items):
+            row_f = tk.Frame(parent, bg=BG_CARD)
+            row_f.pack(fill="x", pady=1)
+            tk.Label(row_f, text=f"[{i}]", bg=BG_CARD, fg=TEXT_SEC,
+                     font=(FONT_CJK, 8), width=4).pack(side="left")
+            t = tk.Text(row_f, height=3, width=45, font=(FONT_CJK, 10),
+                        wrap="word", bd=1, relief="solid")
+            t.insert("1.0", str(item))
+            t.pack(side="left", fill="x", expand=True, padx=4)
+            tk.Button(row_f, text="×", font=(FONT_CJK, 8), width=2,
+                      command=lambda idx=i, p=parent, k=self._dlg_current_section: self._dlg_list_remove(p, idx)).pack(side="left", padx=2)
+
+    def _dlg_list_add(self, parent, key):
+        sec = self._dlg_data.get(self._dlg_current_section, {})
+        lst = sec.get(key, [])
+        lst.append("")
+        sec[key] = lst
+        self._dlg_build_list_entries(parent, lst)
+
+    def _dlg_list_remove(self, parent, idx):
+        # Collect current text from all entries first
+        texts = []
+        for row_f in parent.winfo_children():
+            for w in row_f.winfo_children():
+                if isinstance(w, tk.Text):
+                    texts.append(w.get("1.0", "end-1c"))
+        if idx < len(texts):
+            texts.pop(idx)
+        self._dlg_build_list_entries(parent, texts)
+
+    def _dlg_add_key(self):
+        sec_id = self._dlg_current_section
+        if not sec_id:
+            return
+        dlg = tk.Toplevel(self.root)
+        dlg.title("新增文本条目")
+        dlg.geometry("340x180")
+        dlg.transient(self.root)
+        tk.Label(dlg, text="条目 Key:", font=(FONT_CJK, 10)).pack(pady=(12, 2))
+        key_e = tk.Entry(dlg, font=(FONT_CJK, 10), width=28)
+        key_e.pack(pady=2)
+        key_e.focus_set()
+        var_type = tk.StringVar(value="string")
+        tf = tk.Frame(dlg)
+        tf.pack(pady=4)
+        tk.Radiobutton(tf, text="单行文本", variable=var_type, value="string").pack(side="left", padx=6)
+        tk.Radiobutton(tf, text="多行列表", variable=var_type, value="list").pack(side="left", padx=6)
+        def ok():
+            k = key_e.get().strip()
+            if not k:
+                return
+            sec = self._dlg_data.setdefault(sec_id, {})
+            if k not in sec:
+                sec[k] = [] if var_type.get() == "list" else ""
+                save_json(DIALOGS_FILE, self._dlg_data)
+                dlg.destroy()
+                self._on_dlg_section_select()
+        tk.Button(dlg, text="确定", command=ok).pack(pady=8)
+
+    def _dlg_save(self):
+        sec_id = self._dlg_current_section
+        if not sec_id:
+            return
+        sec = self._dlg_data.get(sec_id, {})
+
+        for editor_key, editor_info in self._dlg_editors.items():
+            if editor_info[0] == "text":
+                val = editor_info[1].get("1.0", "end-1c")
+                parts = editor_key.split(".")
+                if len(parts) == 1:
+                    sec[parts[0]] = val
+                elif len(parts) == 2:
+                    if parts[0] not in sec:
+                        sec[parts[0]] = {}
+                    sec[parts[0]][parts[1]] = val
+                elif len(parts) == 3:
+                    if parts[0] not in sec:
+                        sec[parts[0]] = {}
+                    if parts[1] not in sec[parts[0]]:
+                        sec[parts[0]][parts[1]] = {}
+                    sec[parts[0]][parts[1]][parts[2]] = val
+            elif editor_info[0] == "list":
+                list_frame = editor_info[1]
+                texts = []
+                for row_f in list_frame.winfo_children():
+                    for w in row_f.winfo_children():
+                        if isinstance(w, tk.Text):
+                            texts.append(w.get("1.0", "end-1c"))
+                sec[editor_info[3]] = texts
+
+        self._dlg_data[sec_id] = sec
+        save_json(DIALOGS_FILE, self._dlg_data)
+        self._update_status(f"剧情文本已保存 — {sec_id}")
+
+    def _dlg_add_section(self):
+        dlg = tk.Toplevel(self.root)
+        dlg.title("新增场景分组")
+        dlg.geometry("300x120")
+        dlg.transient(self.root)
+        tk.Label(dlg, text="分组 ID（英文）:", font=(FONT_CJK, 10)).pack(pady=(12, 4))
+        entry = tk.Entry(dlg, font=(FONT_CJK, 10), width=24)
+        entry.pack(pady=4)
+        entry.focus_set()
+        def ok():
+            sid = entry.get().strip()
+            if sid and sid not in self._dlg_data:
+                self._dlg_data[sid] = {}
+                save_json(DIALOGS_FILE, self._dlg_data)
+                self._refresh_dlg_tree()
+                dlg.destroy()
+        tk.Button(dlg, text="确定", command=ok).pack(pady=8)
+
+    def _dlg_del_section(self):
+        sel = self._dlg_tree.selection()
+        if not sel:
+            return
+        sec_id = sel[0]
+        if messagebox.askyesno("删除", f"确定删除分组 '{sec_id}'？", parent=self.root):
+            self._dlg_data.pop(sec_id, None)
+            save_json(DIALOGS_FILE, self._dlg_data)
+            self._dlg_current_section = None
+            self._refresh_dlg_tree()
+            self._dlg_right.pack_forget()
+            self._dlg_placeholder.pack(fill="both", expand=True)
+
     def run(self):
-        self.root.mainloop()
+        self._ghost.mainloop()
 
 
 if __name__ == "__main__":
