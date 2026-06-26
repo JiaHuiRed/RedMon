@@ -211,14 +211,20 @@ class App:
         self.mon_growth.grid(row=row, column=1, sticky="w", pady=3)
         row += 1
 
-        ttk.Label(f, text="进化:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
-        ef = ttk.Frame(f)
-        ef.grid(row=row, column=1, columnspan=3, sticky="w", pady=3)
-        self.mon_evo = ttk.Combobox(ef, width=14, state="normal")
-        self.mon_evo.pack(side="left")
-        ttk.Label(ef, text="  Lv").pack(side="left")
-        self.mon_evo_lv = ttk.Entry(ef, width=5, justify="center")
-        self.mon_evo_lv.pack(side="left", padx=(4, 0))
+        ttk.Label(f, text="进化分支:", anchor="ne").grid(row=row, column=0, sticky="ne", padx=(8, 4), pady=3)
+        evo_f = ttk.Frame(f)
+        evo_f.grid(row=row, column=1, columnspan=3, sticky="ew", pady=3, padx=(0, 8))
+        self.evo_tree = ttk.Treeview(evo_f, columns=("into", "level"), show="headings",
+                                     height=3, selectmode="browse")
+        self.evo_tree.heading("into",  text="进化为")
+        self.evo_tree.heading("level", text="等级")
+        self.evo_tree.column("into",  width=120, anchor="w")
+        self.evo_tree.column("level", width=50,  anchor="center")
+        self.evo_tree.pack(side="left", fill="x", expand=True)
+        evo_btn = ttk.Frame(evo_f)
+        evo_btn.pack(side="left", padx=(4, 0))
+        ttk.Button(evo_btn, text="+", width=3, command=self._evo_add).pack(pady=(0, 2))
+        ttk.Button(evo_btn, text="×", width=3, command=self._evo_remove).pack()
         row += 1
 
         ttk.Label(f, text="性别比:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
@@ -321,12 +327,13 @@ class App:
         self.mon_exp.delete(0, "end");    self.mon_exp.insert(0, str(d.get("exp_yield", 0)))
         self.mon_growth.set(d.get("growth_rate", ""))
 
-        evo_list = sorted([n for n in self.species.keys() if n != name])
-        self.mon_evo["values"] = [""] + evo_list
-        self.mon_evo.set(d.get("evolves_into", ""))
-        self.mon_evo_lv.delete(0, "end")
-        if d.get("evolves_into"):
-            self.mon_evo_lv.insert(0, str(d.get("evolve_level", "")))
+        # 加载进化分支（兼容旧单分支格式）
+        self.evo_tree.delete(*self.evo_tree.get_children())
+        evolutions = d.get("evolutions", [])
+        if not evolutions and d.get("evolves_into"):
+            evolutions = [{"into": d["evolves_into"], "level": d.get("evolve_level", 0)}]
+        for ev in evolutions:
+            self.evo_tree.insert("", "end", values=(ev["into"], ev["level"]))
 
         self.mon_gender.set(d.get("gender_ratio", ""))
         self.mon_size.delete(0, "end"); self.mon_size.insert(0, d.get("size_info", ""))
@@ -348,55 +355,70 @@ class App:
         for w in self._evo_bar.winfo_children():
             w.destroy()
 
-        pre  = next((n for n, s in self.species.items() if s.get("evolves_into") == name), None)
-        post_name = d.get("evolves_into", "")
-        post = post_name if post_name and post_name in self.species else None
+        # 找前置形态（扫描谁的 evolutions 或 evolves_into 指向 name）
+        pre = next((n for n, s in self.species.items()
+                    if name in [e["into"] for e in s.get("evolutions", [])]
+                    or s.get("evolves_into") == name), None)
 
-        chain = []
-        if pre:  chain.append((pre,  self.species[pre],  False))
-        chain.append((name, d, True))
-        if post: chain.append((post, self.species[post], False))
+        # 当前精灵的所有进化分支
+        branches = d.get("evolutions", [])
+        if not branches and d.get("evolves_into"):
+            branches = [{"into": d["evolves_into"], "level": d.get("evolve_level", 0)}]
+        branches = [b for b in branches if b["into"] in self.species]
 
-        if len(chain) <= 1:
+        has_relation = pre or branches
+        if not has_relation:
             self._evo_bar.pack_forget()
             return
 
         self._evo_bar.pack(fill="x", padx=4, pady=(4, 0))
 
-        grid_col = 0
-        for idx, (mname, mdata, is_cur) in enumerate(chain):
-            if idx > 0:
-                evo_lv = chain[idx - 1][1].get("evolve_level", "?")
-                ttk.Label(self._evo_bar, text=f"→Lv{evo_lv}", foreground="#888888",
-                          font=("", 8)).grid(row=0, column=grid_col, padx=2)
-                grid_col += 1
+        col = 0
+        # 前置形态
+        if pre:
+            self._evo_card(self._evo_bar, pre, self.species[pre], False, row=0, col=col)
+            col += 1
+            # 箭头（取前置形态指向当前的等级）
+            pre_data  = self.species[pre]
+            pre_evos  = pre_data.get("evolutions", [])
+            arrow_lv  = next((e["level"] for e in pre_evos if e["into"] == name),
+                             pre_data.get("evolve_level", "?"))
+            ttk.Label(self._evo_bar, text=f"→Lv{arrow_lv}", foreground="#888888",
+                      font=("", 8)).grid(row=0, column=col, padx=2)
+            col += 1
 
-            cf = ttk.Frame(self._evo_bar, relief="groove" if is_cur else "flat", borderwidth=1)
-            cf.grid(row=0, column=grid_col, padx=6, pady=4, sticky="n")
-            grid_col += 1
+        # 当前精灵
+        self._evo_card(self._evo_bar, name, d, True, row=0, col=col)
+        col += 1
 
-            name_lbl = ttk.Label(cf, text=mname, font=("Microsoft YaHei", 9, "bold"))
-            if is_cur:
-                name_lbl.configure(foreground="#b05000")
-            name_lbl.pack()
+        # 分支进化（多行堆叠）
+        if branches:
+            for br_row, br in enumerate(branches):
+                ttk.Label(self._evo_bar, text=f"→Lv{br['level']}", foreground="#888888",
+                          font=("", 8)).grid(row=br_row, column=col, padx=2, sticky="w")
+                self._evo_card(self._evo_bar, br["into"], self.species[br["into"]],
+                               False, row=br_row, col=col + 1)
 
-            t1 = mdata.get("type1", ""); t2 = mdata.get("type2", "")
-            ttk.Label(cf, text=f"{t1}{'/' + t2 if t2 else ''}", foreground="#666666",
-                      font=("", 8)).pack()
-
-            base = mdata.get("base", {}); total = 0
-            for slbl, key in STAT_LABELS:
-                v = base.get(key, 0); total += v
-                rf = ttk.Frame(cf)
-                rf.pack(fill="x")
-                ttk.Label(rf, text=slbl[:3], width=4, anchor="e", font=("", 8)).pack(side="left")
-                ttk.Label(rf, text=f"{v:3d}", width=3, font=("", 8)).pack(side="left", padx=(2, 2))
-                c = tk.Canvas(rf, width=55, height=7, highlightthickness=0, bg="#dddddd")
-                c.pack(side="left")
-                w_bar = max(1, int(min(v, BAR_MAX) / BAR_MAX * 55))
-                c.create_rectangle(0, 0, w_bar, 7, fill=STAT_COLORS[key], outline="")
-
-            ttk.Label(cf, text=f"BST {total}", font=("Microsoft YaHei", 8, "bold")).pack(pady=(2, 0))
+    def _evo_card(self, parent, mname, mdata, is_cur, row, col):
+        cf = ttk.Frame(parent, relief="groove" if is_cur else "flat", borderwidth=1)
+        cf.grid(row=row, column=col, padx=6, pady=4, sticky="n")
+        lbl = ttk.Label(cf, text=mname, font=("Microsoft YaHei", 9, "bold"))
+        if is_cur: lbl.configure(foreground="#b05000")
+        lbl.pack()
+        t1 = mdata.get("type1", ""); t2 = mdata.get("type2", "")
+        ttk.Label(cf, text=f"{t1}{'/' + t2 if t2 else ''}", foreground="#666666",
+                  font=("", 8)).pack()
+        base = mdata.get("base", {}); total = 0
+        for slbl, key in STAT_LABELS:
+            v = base.get(key, 0); total += v
+            rf = ttk.Frame(cf); rf.pack(fill="x")
+            ttk.Label(rf, text=slbl[:3], width=4, anchor="e", font=("", 8)).pack(side="left")
+            ttk.Label(rf, text=f"{v:3d}", width=3, font=("", 8)).pack(side="left", padx=(2, 2))
+            c = tk.Canvas(rf, width=55, height=7, highlightthickness=0, bg="#dddddd")
+            c.pack(side="left")
+            w_bar = max(1, int(min(v, BAR_MAX) / BAR_MAX * 55))
+            c.create_rectangle(0, 0, w_bar, 7, fill=STAT_COLORS[key], outline="")
+        ttk.Label(cf, text=f"BST {total}", font=("Microsoft YaHei", 8, "bold")).pack(pady=(2, 0))
 
     def _refresh_stat_bars(self):
         total = 0
@@ -422,6 +444,38 @@ class App:
                 m.get("accuracy", "-"),
                 m.get("max_pp", "-"),
             ))
+
+    def _evo_add(self):
+        dlg = tk.Toplevel(self.root)
+        dlg.title("添加进化分支")
+        dlg.geometry("300x110")
+        dlg.resizable(False, False)
+        dlg.transient(self.root); dlg.grab_set()
+
+        ttk.Label(dlg, text="进化为:").grid(row=0, column=0, padx=10, pady=8, sticky="e")
+        mon_names = sorted(n for n in self.species if n != self._current_mon)
+        cb = ttk.Combobox(dlg, values=mon_names, width=18, state="readonly")
+        cb.grid(row=0, column=1, sticky="w", pady=8)
+        if mon_names: cb.current(0)
+
+        ttk.Label(dlg, text="等级:").grid(row=1, column=0, padx=10, pady=4, sticky="e")
+        lv_var = tk.StringVar(value="20")
+        ttk.Spinbox(dlg, from_=1, to=100, width=6, textvariable=lv_var).grid(row=1, column=1, sticky="w")
+
+        def ok():
+            tgt = cb.get(); lv = lv_var.get()
+            if tgt and lv.isdigit():
+                self.evo_tree.insert("", "end", values=(tgt, int(lv)))
+                dlg.destroy()
+            else:
+                messagebox.showwarning("", "请选择目标精灵和等级", parent=dlg)
+        bf = ttk.Frame(dlg); bf.grid(row=2, column=0, columnspan=2, pady=6)
+        ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
+        ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
+
+    def _evo_remove(self):
+        sel = self.evo_tree.selection()
+        if sel: self.evo_tree.delete(sel[0])
 
     def _ls_add(self):
         dlg = tk.Toplevel(self.root)
@@ -487,12 +541,18 @@ class App:
             "size_info": self.mon_size.get().strip(),
         }
 
-        evo = self.mon_evo.get().strip()
-        if evo:
-            d["evolves_into"] = evo
-            d["evolve_level"] = _int(self.mon_evo_lv.get())
-        else:
-            d.pop("evolves_into", None); d.pop("evolve_level", None)
+        # 进化分支
+        evolutions = [
+            {"into": self.evo_tree.item(iid, "values")[0],
+             "level": _int(self.evo_tree.item(iid, "values")[1])}
+            for iid in self.evo_tree.get_children()
+        ]
+        if evolutions:
+            d["evolutions"] = evolutions
+            # 单分支时保留旧字段兼容游戏代码
+            if len(evolutions) == 1:
+                d["evolves_into"] = evolutions[0]["into"]
+                d["evolve_level"] = evolutions[0]["level"]
 
         # learnset
         ls = {}
@@ -507,6 +567,9 @@ class App:
             for mon in self.species.values():
                 if mon.get("evolves_into") == old:
                     mon["evolves_into"] = new
+                for ev in mon.get("evolutions", []):
+                    if ev["into"] == old:
+                        ev["into"] = new
 
         self.species[new] = d
         save_json(SPECIES_FILE, self.species)

@@ -326,8 +326,15 @@ func level_up(mon: Dictionary) -> Array:
 	return new_moves
 
 # 检查是否满足进化条件，满足则返回进化目标 species_id，否则返回 ""
+# 分支进化时返回第一个满足条件的分支（后续可扩展为玩家选择）
 func check_evolution(mon: Dictionary) -> String:
 	var sp = species.get(mon["species_id"], {})
+	# 新格式：evolutions 列表
+	var evolutions = sp.get("evolutions", [])
+	for evo in evolutions:
+		if mon["level"] >= evo.get("level", 0):
+			return evo["into"]
+	# 旧格式兼容
 	var evo_into  = sp.get("evolves_into", "")
 	var evo_level = sp.get("evolve_level", 0)
 	if evo_into != "" and mon["level"] >= evo_level:
