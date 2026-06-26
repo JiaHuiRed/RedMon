@@ -126,11 +126,15 @@ class App:
         ttk.Button(bf, text="+ 新增", command=self._mon_add).pack(side="left", padx=(0, 4))
         ttk.Button(bf, text="× 删除", command=self._mon_delete).pack(side="left")
 
-        # ── right: scrollable form ───────────────────────────────────────────
+        # ── right: container → evo bar + scrollable form ─────────────────────
         self._mon_placeholder = ttk.Label(self.mon_tab, text="  选择一个精灵开始编辑", foreground="gray")
         self._mon_placeholder.pack(side="right", fill="both", expand=True)
 
-        self._mon_scroll = ttk.Frame(self.mon_tab)
+        self._mon_right = ttk.Frame(self.mon_tab)
+        self._evo_bar   = ttk.LabelFrame(self._mon_right, text=" 进化链对比 ")
+
+        self._mon_scroll = ttk.Frame(self._mon_right)
+        self._mon_scroll.pack(fill="both", expand=True)
         self._mon_canvas = tk.Canvas(self._mon_scroll, borderwidth=0, highlightthickness=0)
         self._mon_vbar   = ttk.Scrollbar(self._mon_scroll, orient="vertical", command=self._mon_canvas.yview)
         self._mon_inner  = ttk.Frame(self._mon_canvas)
@@ -275,7 +279,7 @@ class App:
 
     def _mon_show_form(self):
         self._mon_placeholder.pack_forget()
-        self._mon_scroll.pack(side="right", fill="both", expand=True, padx=5, pady=5)
+        self._mon_right.pack(side="right", fill="both", expand=True)
 
     def _mon_get_name(self, display):
         # "001 炎喵" → "炎喵"
@@ -338,6 +342,61 @@ class App:
                 self._learnset.append({"level": int(lv_str), "name": s})
         self._learnset.sort(key=lambda x: (x["level"], x["name"]))
         self._refresh_ls_table()
+        self._refresh_evo_compare(name, d)
+
+    def _refresh_evo_compare(self, name, d):
+        for w in self._evo_bar.winfo_children():
+            w.destroy()
+
+        pre  = next((n for n, s in self.species.items() if s.get("evolves_into") == name), None)
+        post_name = d.get("evolves_into", "")
+        post = post_name if post_name and post_name in self.species else None
+
+        chain = []
+        if pre:  chain.append((pre,  self.species[pre],  False))
+        chain.append((name, d, True))
+        if post: chain.append((post, self.species[post], False))
+
+        if len(chain) <= 1:
+            self._evo_bar.pack_forget()
+            return
+
+        self._evo_bar.pack(fill="x", padx=4, pady=(4, 0))
+
+        grid_col = 0
+        for idx, (mname, mdata, is_cur) in enumerate(chain):
+            if idx > 0:
+                evo_lv = chain[idx - 1][1].get("evolve_level", "?")
+                ttk.Label(self._evo_bar, text=f"→Lv{evo_lv}", foreground="#888888",
+                          font=("", 8)).grid(row=0, column=grid_col, padx=2)
+                grid_col += 1
+
+            cf = ttk.Frame(self._evo_bar, relief="groove" if is_cur else "flat", borderwidth=1)
+            cf.grid(row=0, column=grid_col, padx=6, pady=4, sticky="n")
+            grid_col += 1
+
+            name_lbl = ttk.Label(cf, text=mname, font=("Microsoft YaHei", 9, "bold"))
+            if is_cur:
+                name_lbl.configure(foreground="#b05000")
+            name_lbl.pack()
+
+            t1 = mdata.get("type1", ""); t2 = mdata.get("type2", "")
+            ttk.Label(cf, text=f"{t1}{'/' + t2 if t2 else ''}", foreground="#666666",
+                      font=("", 8)).pack()
+
+            base = mdata.get("base", {}); total = 0
+            for slbl, key in STAT_LABELS:
+                v = base.get(key, 0); total += v
+                rf = ttk.Frame(cf)
+                rf.pack(fill="x")
+                ttk.Label(rf, text=slbl[:3], width=4, anchor="e", font=("", 8)).pack(side="left")
+                ttk.Label(rf, text=f"{v:3d}", width=3, font=("", 8)).pack(side="left", padx=(2, 2))
+                c = tk.Canvas(rf, width=55, height=7, highlightthickness=0, bg="#dddddd")
+                c.pack(side="left")
+                w_bar = max(1, int(min(v, BAR_MAX) / BAR_MAX * 55))
+                c.create_rectangle(0, 0, w_bar, 7, fill=STAT_COLORS[key], outline="")
+
+            ttk.Label(cf, text=f"BST {total}", font=("Microsoft YaHei", 8, "bold")).pack(pady=(2, 0))
 
     def _refresh_stat_bars(self):
         total = 0
@@ -486,7 +545,7 @@ class App:
         self._current_mon = None
         self._mon_refresh_list()
         self._update_status()
-        self._mon_scroll.pack_forget()
+        self._mon_right.pack_forget()
         self._mon_placeholder.pack(side="right", fill="both", expand=True)
 
     # ════════════════════════════════════════════════════════════════════════
