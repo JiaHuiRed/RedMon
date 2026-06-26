@@ -1,14 +1,10 @@
 extends Node2D
 # RedMon – Scene Manager
-# Switches between: starter_scene / world_scene / battle_scene
 
 var _current: Node = null
 
 func _ready() -> void:
-	if GameState.has_starter:
-		switch_to("world", {})
-	else:
-		switch_to("starter", {})
+	switch_to("title", {})
 
 func switch_to(scene_name: String, data: Dictionary) -> void:
 	if _current != null:
@@ -18,9 +14,11 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 
 	var script: GDScript
 	match scene_name:
-		"starter": script = load("res://scripts/scenes/starter_scene.gd")
-		"world":   script = load("res://scripts/scenes/world_scene.gd")
-		"battle":  script = load("res://scripts/scenes/battle_scene.gd")
+		"title":       script = load("res://scripts/scenes/title_scene.gd")
+		"char_create": script = load("res://scripts/scenes/char_create_scene.gd")
+		"starter":     script = load("res://scripts/scenes/starter_scene.gd")
+		"world":       script = load("res://scripts/scenes/world_scene.gd")
+		"battle":      script = load("res://scripts/scenes/battle_scene.gd")
 		_:
 			push_error("Unknown scene: " + scene_name)
 			return

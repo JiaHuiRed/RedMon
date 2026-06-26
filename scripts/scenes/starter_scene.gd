@@ -1,7 +1,5 @@
 extends Node2D
-# RedMon – 御三家选择场景
-# 奥克博士送出三只精灵，玩家选一只开始冒险
-
+# RedMon – 御三家选择场景（含前置剧情 + 后置对话）
 signal request_scene(scene_name: String, data: Dictionary)
 
 const VW := 480
@@ -15,11 +13,32 @@ const STARTER_DESCS := [
 ]
 const TYPE_LABELS := ["火　系", "水　系", "木　系"]
 
+# 前置剧情对话
+const INTRO_LINES := [
+	"哎呀！%s，你来得正好！\n我在草原研究精灵时被一群野生精灵围住了！",
+	"来不及解释了——\n快从我的研究包里选一只精灵，把它们吓跑！",
+	"这三只都是我多年来养育的伙伴，\n它们一定会帮助你的——快选！",
+]
+# 后置对话（选完精灵后）
+const OUTRO_LINES := [
+	"太好了！%s出手相助，野生精灵都跑了！\n这只精灵从今天起就是你的旅伴了！",
+	"作为答谢——带上这本《华灵图鉴》。\n帮我记录华灵大陆上所有的精灵吧！",
+	"这片大陆还有太多未解的谜……\n出发吧，%s，旅途在等着你！",
+]
+
+# 阶段：0=前置剧情, 1=选择精灵, 2=后置对话
+var _scene_phase: int = 0
+var _intro_idx: int = 0
+var _outro_idx: int = 0
+
 var _selected: int = 0
 var _confirmed: bool = false
 var _card_nodes: Array = []
 var _desc_label: Label
 var _confirm_btn: Button
+var _dialog_lbl: Label   # 动态对话文字（前置/后置复用）
+var _dialog_hint: Label  # "Enter 继续" 提示
+var _cards_root: Node2D  # 卡片组容器，统一显隐
 
 func _ready() -> void:
 	_build_bg()
@@ -27,7 +46,7 @@ func _ready() -> void:
 	_build_dialog_box()
 	_build_cards()
 	_build_confirm()
-	_select(0)
+	_start_intro()
 
 # ── Background ───────────────────────────────────────────────────────────────
 func _build_bg() -> void:
@@ -61,16 +80,28 @@ func _build_bg() -> void:
 	add_child(title)
 
 # ── Professor sprite (procedural) ────────────────────────────────────────────
+const PROFESSOR_NAME := "陈教授"
+const PROFESSOR_SPRITE := "res://assets/sprites/博士_front.png"
+
 func _build_professor() -> void:
-	var tex = _draw_professor()
+	var tex: Texture2D
+	if ResourceLoader.exists(PROFESSOR_SPRITE):
+		tex = load(PROFESSOR_SPRITE)
+	else:
+		tex = _draw_professor()
+
 	var spr = Sprite2D.new()
 	spr.texture = tex
-	spr.position = Vector2(60, VH - 80)
+	var tex_size := tex.get_size()
+	# 目标高度 ~120px（站在画面底部），按高度缩放
+	var s := 120.0 / maxf(tex_size.x, tex_size.y)
+	spr.scale = Vector2(s, s)
+	spr.position = Vector2(60, VH - 30)
 	add_child(spr)
 
 	var name_lbl = Label.new()
-	name_lbl.text = "奥克博士"
-	name_lbl.position = Vector2(20, VH - 40)
+	name_lbl.text = PROFESSOR_NAME
+	name_lbl.position = Vector2(10, VH - 36)
 	name_lbl.add_theme_color_override("font_color", Color(0.2, 0.2, 0.2))
 	add_child(name_lbl)
 
@@ -159,22 +190,77 @@ func _draw_professor() -> Texture2D:
 # ── Dialog box ───────────────────────────────────────────────────────────────
 func _build_dialog_box() -> void:
 	var box = ColorRect.new()
-	box.size = Vector2(300, 44)
-	box.position = Vector2(110, VH - 76)
-	box.color = Color(0.1, 0.1, 0.1, 0.82)
+	box.size = Vector2(310, 56)
+	box.position = Vector2(108, VH - 78)
+	box.color = Color(0.06, 0.06, 0.16, 0.92)
 	add_child(box)
 
-	var lbl = Label.new()
-	lbl.text = "欢迎！我是奥克博士。\n这三只精灵，请选择你的伙伴！"
-	lbl.position = Vector2(118, VH - 72)
-	lbl.size.x = 280
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
-	lbl.add_theme_color_override("font_color", Color.WHITE)
-	lbl.add_theme_font_size_override("font_size", 12)
-	add_child(lbl)
+	var border = ColorRect.new()
+	border.size = Vector2(310, 2)
+	border.position = Vector2(108, VH - 78)
+	border.color = Color(0.60, 0.60, 0.88)
+	add_child(border)
+
+	_dialog_lbl = Label.new()
+	_dialog_lbl.position = Vector2(116, VH - 74)
+	_dialog_lbl.size = Vector2(294, 52)
+	_dialog_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_dialog_lbl.add_theme_color_override("font_color", Color.WHITE)
+	_dialog_lbl.add_theme_font_size_override("font_size", 12)
+	add_child(_dialog_lbl)
+
+	_dialog_hint = Label.new()
+	_dialog_hint.text = "Enter 继续 ▼"
+	_dialog_hint.position = Vector2(VW - 102, VH - 18)
+	_dialog_hint.add_theme_color_override("font_color", Color(0.50, 0.50, 0.72))
+	_dialog_hint.add_theme_font_size_override("font_size", 10)
+	add_child(_dialog_hint)
+
+# ── 阶段控制 ─────────────────────────────────────────────────────────────────
+func _start_intro() -> void:
+	_scene_phase = 0
+	_intro_idx = 0
+	_cards_root.visible = false
+	_confirm_btn.visible = false
+	if _desc_label: _desc_label.visible = false
+	_dialog_hint.visible = true
+	_dialog_lbl.text = INTRO_LINES[0] % GameState.player_name
+
+func _enter_selection() -> void:
+	_scene_phase = 1
+	_cards_root.visible = true
+	_confirm_btn.visible = true
+	if _desc_label: _desc_label.visible = true
+	_dialog_hint.visible = false
+	_dialog_lbl.text = "选好了吗？这只精灵将是你一生的伙伴！"
+	_select(0)
+
+func _start_outro() -> void:
+	_scene_phase = 2
+	_outro_idx = 0
+	_cards_root.visible = false
+	_confirm_btn.visible = false
+	if _desc_label: _desc_label.visible = false
+	_dialog_hint.visible = true
+	_dialog_lbl.text = OUTRO_LINES[0] % MonDB.display_name(GameState.player_team[0])
+
+func _advance_outro() -> void:
+	_outro_idx += 1
+	if _outro_idx >= OUTRO_LINES.size():
+		request_scene.emit("world", {})
+		return
+	var text = OUTRO_LINES[_outro_idx]
+	# 最后一行插入玩家名字
+	if _outro_idx == OUTRO_LINES.size() - 1:
+		text = text % GameState.player_name
+	_dialog_lbl.text = text
 
 # ── Starter cards ─────────────────────────────────────────────────────────────
 func _build_cards() -> void:
+	# 所有卡片放进容器，统一控制显隐
+	_cards_root = Node2D.new()
+	add_child(_cards_root)
+
 	var type_colors = [Color(0.95, 0.4, 0.1), Color(0.2, 0.5, 0.95), Color(0.2, 0.75, 0.25)]
 	var card_w = 110
 	var card_h = 148
@@ -187,7 +273,7 @@ func _build_cards() -> void:
 		var cy = 44
 
 		var card = _make_card(i, cx, cy, card_w, card_h, type_colors[i])
-		add_child(card)
+		_cards_root.add_child(card)
 		_card_nodes.append(card)
 
 		# Input detection: use a Button as invisible hitbox
@@ -197,7 +283,7 @@ func _build_cards() -> void:
 		btn.size = Vector2(card_w, card_h)
 		btn.modulate.a = 0.0
 		btn.pressed.connect(_on_card_pressed.bind(i))
-		add_child(btn)
+		_cards_root.add_child(btn)
 
 	# Description label below cards
 	_desc_label = Label.new()
@@ -206,7 +292,7 @@ func _build_cards() -> void:
 	_desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_desc_label.add_theme_color_override("font_color", Color(0.15, 0.15, 0.15))
 	_desc_label.add_theme_font_size_override("font_size", 12)
-	add_child(_desc_label)
+	_cards_root.add_child(_desc_label)
 
 func _make_card(idx: int, x: int, y: int, w: int, h: int, type_color: Color) -> Node2D:
 	var root = Node2D.new()
@@ -224,18 +310,21 @@ func _make_card(idx: int, x: int, y: int, w: int, h: int, type_color: Color) -> 
 	stripe.color = type_color
 	root.add_child(stripe)
 
-	# Mon sprite
+	# Mon sprite — scale to fit card width (target 90px regardless of source size)
 	var tex = _draw_starter_sprite(idx)
 	var spr = Sprite2D.new()
 	spr.texture = tex
-	spr.position = Vector2(w / 2, 52)
+	var tex_size := tex.get_size()
+	var s := 90.0 / maxf(tex_size.x, tex_size.y)
+	spr.scale = Vector2(s, s)
+	spr.position = Vector2(w / 2, 50)
 	root.add_child(spr)
 
 	# Name
 	var name_lbl = Label.new()
 	name_lbl.text = STARTERS[idx]
 	name_lbl.size.x = w
-	name_lbl.position = Vector2(0, 90)
+	name_lbl.position = Vector2(0, 100)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.add_theme_font_size_override("font_size", 13)
 	root.add_child(name_lbl)
@@ -243,14 +332,14 @@ func _make_card(idx: int, x: int, y: int, w: int, h: int, type_color: Color) -> 
 	# Type badge
 	var type_bg = ColorRect.new()
 	type_bg.size = Vector2(64, 16)
-	type_bg.position = Vector2((w - 64) / 2, 108)
+	type_bg.position = Vector2((w - 64) / 2, 118)
 	type_bg.color = type_color
 	root.add_child(type_bg)
 
 	var type_lbl = Label.new()
 	type_lbl.text = TYPE_LABELS[idx]
 	type_lbl.size = Vector2(64, 16)
-	type_lbl.position = Vector2((w - 64) / 2, 108)
+	type_lbl.position = Vector2((w - 64) / 2, 118)
 	type_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	type_lbl.add_theme_color_override("font_color", Color.WHITE)
 	type_lbl.add_theme_font_size_override("font_size", 11)
@@ -307,16 +396,30 @@ func _on_confirm() -> void:
 	GameState.has_starter = true
 	print("[STARTER] 选择了 ", STARTERS[_selected])
 	GameState.save_game()
-	request_scene.emit("world", {})
+	_start_outro()
 
 # ── Keyboard nav ─────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_left"):
-		_select((_selected - 1 + 3) % 3)
-	elif event.is_action_pressed("ui_right"):
-		_select((_selected + 1) % 3)
-	elif event.is_action_pressed("ui_accept"):
-		_on_confirm()
+	match _scene_phase:
+		0:  # 前置剧情
+			if event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				_intro_idx += 1
+				if _intro_idx >= INTRO_LINES.size():
+					_enter_selection()
+				else:
+					_dialog_lbl.text = INTRO_LINES[_intro_idx] % GameState.player_name
+		1:  # 精灵选择
+			if event.is_action_pressed("ui_left"):
+				_select((_selected - 1 + 3) % 3)
+			elif event.is_action_pressed("ui_right"):
+				_select((_selected + 1) % 3)
+			elif event.is_action_pressed("ui_accept"):
+				_on_confirm()
+		2:  # 后置对话
+			if event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				_advance_outro()
 
 # ── Sprite drawing helpers ────────────────────────────────────────────────────
 func _draw_circle(img: Image, center: Vector2i, radius: int, color: Color) -> void:

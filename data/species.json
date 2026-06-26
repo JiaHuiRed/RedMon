@@ -5,7 +5,7 @@
     "type1": "火",
     "type2": "",
     "base": {
-      "hp": 45,
+      "hp": 50,
       "atk": 55,
       "def": 36,
       "sp_atk": 50,
@@ -18,6 +18,12 @@
     "desc": "身怀火焰之力的灵猫，耳尖常有小火苗跳动，性情热烈好动。",
     "gender_ratio": "87.5/12.5",
     "size_info": "小型 / 0.4m / 4.1kg",
+    "evolutions": [
+      {
+        "into": "烈火猫",
+        "level": 16
+      }
+    ],
     "evolves_into": "烈火猫",
     "evolve_level": 16,
     "learnset": {
@@ -43,11 +49,11 @@
     "type2": "",
     "base": {
       "hp": 70,
-      "atk": 70,
+      "atk": 73,
       "def": 58,
-      "sp_atk": 68,
+      "sp_atk": 70,
       "sp_def": 52,
-      "spd": 80
+      "spd": 81
     },
     "catch_rate": 45,
     "exp_yield": 142,
@@ -55,6 +61,12 @@
     "desc": "进化后火焰覆盖全身，战斗时鬃毛燃烧，速度与力量兼备。",
     "gender_ratio": "87.5/12.5",
     "size_info": "中型 / 1.0m / 19.0kg",
+    "evolutions": [
+      {
+        "into": "焚焰狮",
+        "level": 36
+      }
+    ],
     "evolves_into": "焚焰狮",
     "evolve_level": 36,
     "learnset": {
@@ -81,11 +93,11 @@
     "type2": "",
     "base": {
       "hp": 78,
-      "atk": 105,
-      "def": 70,
-      "sp_atk": 100,
-      "sp_def": 71,
-      "spd": 100
+      "atk": 102,
+      "def": 67,
+      "sp_atk": 98,
+      "sp_def": 67,
+      "spd": 105
     },
     "catch_rate": 45,
     "exp_yield": 240,
@@ -117,9 +129,9 @@
     "type2": "",
     "base": {
       "hp": 44,
-      "atk": 48,
+      "atk": 35,
       "def": 65,
-      "sp_atk": 50,
+      "sp_atk": 55,
       "sp_def": 64,
       "spd": 43
     },
@@ -127,8 +139,14 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "通体蔚蓝的小水蛇，性情温顺，能喷出清冽水流护身。",
-    "gender_ratio": "87.5/12.5",
+    "gender_ratio": "50/50",
     "size_info": "小型 / 0.5m / 6.9kg",
+    "evolutions": [
+      {
+        "into": "江蛟",
+        "level": 16
+      }
+    ],
     "evolves_into": "江蛟",
     "evolve_level": 16,
     "learnset": {
@@ -153,19 +171,25 @@
     "type1": "水",
     "type2": "",
     "base": {
-      "hp": 59,
-      "atk": 63,
+      "hp": 65,
+      "atk": 40,
       "def": 80,
-      "sp_atk": 65,
+      "sp_atk": 88,
       "sp_def": 80,
-      "spd": 58
+      "spd": 60
     },
     "catch_rate": 45,
     "exp_yield": 142,
-    "growth_rate": "中速",
+    "growth_rate": "缓慢",
     "desc": "蓝蛇化蛟，体型急速扩大，在江河中穿行如电，防御坚如磐石。",
-    "gender_ratio": "87.5/12.5",
+    "gender_ratio": "50/50",
     "size_info": "中型 / 1.0m / 22.5kg",
+    "evolutions": [
+      {
+        "into": "覆海龙",
+        "level": 36
+      }
+    ],
     "evolves_into": "覆海龙",
     "evolve_level": 36,
     "learnset": {
@@ -191,18 +215,18 @@
     "type1": "水",
     "type2": "龙",
     "base": {
-      "hp": 79,
-      "atk": 83,
+      "hp": 90,
+      "atk": 45,
       "def": 100,
-      "sp_atk": 85,
+      "sp_atk": 108,
       "sp_def": 105,
-      "spd": 78
+      "spd": 76
     },
     "catch_rate": 45,
     "exp_yield": 240,
     "growth_rate": "中速",
     "desc": "覆海龙翻腾时能掀起滔天巨浪，龙威震慑四海，是传说中守护江河的神龙。",
-    "gender_ratio": "87.5/12.5",
+    "gender_ratio": "50/50",
     "size_info": "大型 / 2.1m / 101.5kg",
     "learnset": {
       "1": [
@@ -227,12 +251,12 @@
     "type1": "木",
     "type2": "",
     "base": {
-      "hp": 50,
+      "hp": 55,
       "atk": 65,
       "def": 49,
       "sp_atk": 20,
       "sp_def": 65,
-      "spd": 45
+      "spd": 46
     },
     "catch_rate": 45,
     "exp_yield": 64,
@@ -266,7 +290,7 @@
       "def": 63,
       "sp_atk": 25,
       "sp_def": 80,
-      "spd": 60
+      "spd": 65
     },
     "catch_rate": 45,
     "exp_yield": 142,
@@ -274,7 +298,13 @@
     "desc": "熟习竹林功法的少年熊，拳风带着草木之力，正在苦练绝学。",
     "gender_ratio": "50/50",
     "size_info": "中型 / 1.2m / 65.5kg",
-    "evolves_into": "元英",
+    "evolutions": [
+      {
+        "into": "功夫熊师",
+        "level": 35
+      }
+    ],
+    "evolves_into": "功夫熊师",
     "evolve_level": 35,
     "learnset": {
       "1": [
@@ -289,10 +319,10 @@
     "type1": "木",
     "type2": "格",
     "base": {
-      "hp": 95,
+      "hp": 110,
       "atk": 101,
       "def": 90,
-      "sp_atk": 50,
+      "sp_atk": 30,
       "sp_def": 100,
       "spd": 85
     },
@@ -327,7 +357,13 @@
     "growth_rate": "快速",
     "desc": "行动迟缓的虫形精灵，生命力旺盛，常见于草丛。",
     "gender_ratio": "50/50",
-    "size_info": "小型 / 0.3m / 2.9kg",
+    "size_info": "小型 / 0.1m / 0.9kg",
+    "evolutions": [
+      {
+        "into": "蛹甲",
+        "level": 7
+      }
+    ],
     "evolves_into": "蛹甲",
     "evolve_level": 7,
     "learnset": {
@@ -343,19 +379,27 @@
     "type1": "虫",
     "type2": "",
     "base": {
-      "hp": 50,
-      "atk": 25,
-      "def": 55,
+      "hp": 55,
+      "atk": 38,
+      "def": 40,
       "sp_atk": 25,
-      "sp_def": 25,
-      "spd": 30
+      "sp_def": 40,
+      "spd": 49
     },
     "catch_rate": 120,
     "exp_yield": 72,
     "growth_rate": "快速",
     "desc": "绿肥虫蜕变后的蛹状态，外壳坚硬，正在积蓄力量。",
     "gender_ratio": "50/50",
-    "size_info": "小型 / 0.6m / 11.5kg",
+    "size_info": "小型 / 0.2m / 1.5kg",
+    "evolutions": [
+      {
+        "into": "大蝶",
+        "level": 15
+      }
+    ],
+    "evolves_into": "大蝶",
+    "evolve_level": 15,
     "learnset": {
       "1": [
         "撞击"
@@ -363,16 +407,16 @@
     }
   },
   "岩灵": {
-    "id": 17,
+    "id": 19,
     "name": "岩灵",
-    "type1": "土",
+    "type1": "岩",
     "type2": "",
     "base": {
-      "hp": 40,
-      "atk": 80,
+      "hp": 60,
+      "atk": 40,
       "def": 100,
       "sp_atk": 30,
-      "sp_def": 30,
+      "sp_def": 45,
       "spd": 20
     },
     "catch_rate": 120,
@@ -392,23 +436,23 @@
     }
   },
   "粉粉丘": {
-    "id": 24,
+    "id": 28,
     "name": "粉粉丘",
-    "type1": "电",
-    "type2": "仙",
+    "type1": "雷",
+    "type2": "",
     "base": {
-      "hp": 38,
-      "atk": 35,
-      "def": 35,
-      "sp_atk": 60,
-      "sp_def": 55,
-      "spd": 50
+      "hp": 70,
+      "atk": 91,
+      "def": 40,
+      "sp_atk": 94,
+      "sp_def": 60,
+      "spd": 91
     },
     "catch_rate": 180,
     "exp_yield": 40,
     "growth_rate": "中速",
     "desc": "浑身粉嫩圆滚的小精灵，尾尖常有静电火花，性格温顺爱撒娇。",
-    "gender_ratio": "25/75",
+    "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 3.0kg",
     "learnset": {
       "1": [
@@ -421,7 +465,7 @@
     }
   },
   "小灯鼠": {
-    "id": 14,
+    "id": 15,
     "name": "小灯鼠",
     "type1": "空",
     "type2": "",
@@ -439,23 +483,81 @@
     "desc": "行动敏捷的小灵鼠，总在草丛中穿梭觅食。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 3.5kg",
+    "evolutions": [
+      {
+        "into": "灯翼蝠",
+        "level": 28
+      }
+    ],
+    "evolves_into": "灯翼蝠",
+    "evolve_level": 28,
     "learnset": {
       "1": [
         "啃咬",
         "撞击"
+      ],
+      "6": [
+        "飞翔"
+      ],
+      "12": [
+        "咬碎"
+      ],
+      "18": [
+        "暴风"
+      ],
+      "24": [
+        "暗影球"
+      ]
+    }
+  },
+  "灯翼蝠": {
+    "id": 16,
+    "name": "灯翼蝠",
+    "type1": "空",
+    "type2": "暗",
+    "base": {
+      "hp": 70,
+      "atk": 80,
+      "def": 60,
+      "sp_atk": 85,
+      "sp_def": 65,
+      "spd": 70
+    },
+    "catch_rate": 75,
+    "exp_yield": 158,
+    "growth_rate": "中速",
+    "desc": "进化后幻化为大型蝙蝠，翼展宽阔，胸腹有幽光灯笼纹路，在暗夜中飞掠时会发出诡异冷光。",
+    "gender_ratio": "50/50",
+    "size_info": "中型 / 1.2m / 18.0kg",
+    "learnset": {
+      "1": [
+        "啃咬",
+        "暗影球"
+      ],
+      "28": [
+        "空中俯冲"
+      ],
+      "34": [
+        "黑夜魔火"
+      ],
+      "40": [
+        "飓风"
+      ],
+      "48": [
+        "暗黑强攻"
       ]
     }
   },
   "小魔女": {
-    "id": 15,
+    "id": 17,
     "name": "小魔女",
-    "type1": "仙",
+    "type1": "灵",
     "type2": "",
     "base": {
-      "hp": 42,
-      "atk": 30,
+      "hp": 50,
+      "atk": 25,
       "def": 35,
-      "sp_atk": 65,
+      "sp_atk": 70,
       "sp_def": 55,
       "spd": 55
     },
@@ -465,6 +567,12 @@
     "desc": "头顶独角散发魔力的蝴蝶翅膀小精灵，性格活泼，魔法球是其最爱的玩具。",
     "gender_ratio": "0/100",
     "size_info": "小型 / 0.5m / 5.0kg",
+    "evolutions": [
+      {
+        "into": "贝丽斯",
+        "level": 22
+      }
+    ],
     "evolves_into": "贝丽斯",
     "evolve_level": 22,
     "learnset": {
@@ -484,17 +592,17 @@
     }
   },
   "贝丽斯": {
-    "id": 16,
+    "id": 18,
     "name": "贝丽斯",
     "type1": "仙",
     "type2": "灵",
     "base": {
-      "hp": 65,
-      "atk": 45,
-      "def": 55,
+      "hp": 70,
+      "atk": 40,
+      "def": 65,
       "sp_atk": 110,
-      "sp_def": 85,
-      "spd": 80
+      "sp_def": 90,
+      "spd": 85
     },
     "catch_rate": 45,
     "exp_yield": 178,
@@ -525,8 +633,8 @@
     "type1": "风",
     "type2": "",
     "base": {
-      "hp": 40,
-      "atk": 48,
+      "hp": 50,
+      "atk": 55,
       "def": 35,
       "sp_atk": 38,
       "sp_def": 35,
@@ -538,6 +646,12 @@
     "desc": "羽翼未满的小雉鸡，乘风而行，身姿轻盈。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 2.0kg",
+    "evolutions": [
+      {
+        "into": "坤鸡",
+        "level": 22
+      }
+    ],
     "evolves_into": "坤鸡",
     "evolve_level": 22,
     "learnset": {
@@ -562,8 +676,8 @@
     "type1": "风",
     "type2": "",
     "base": {
-      "hp": 62,
-      "atk": 75,
+      "hp": 70,
+      "atk": 98,
       "def": 55,
       "sp_atk": 58,
       "sp_def": 52,
@@ -593,17 +707,17 @@
     }
   },
   "绿螳螂": {
-    "id": 18,
+    "id": 22,
     "name": "绿螳螂",
     "type1": "虫",
     "type2": "",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
-      "sp_def": 50,
-      "spd": 50
+      "hp": 60,
+      "atk": 60,
+      "def": 60,
+      "sp_atk": 60,
+      "sp_def": 60,
+      "spd": 60
     },
     "catch_rate": 120,
     "exp_yield": 64,
@@ -611,8 +725,16 @@
     "desc": "新发现的绿螳螂，详细资料待补充。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.5m / 5.0kg",
-    "evolves_into": "蓝焰螳螂",
-    "evolve_level": 16,
+    "evolutions": [
+      {
+        "into": "蓝焰螳螂",
+        "level": 32
+      },
+      {
+        "into": "赤金螳螂",
+        "level": 32
+      }
+    ],
     "learnset": {
       "1": [
         "撞击"
@@ -620,17 +742,17 @@
     }
   },
   "蓝焰螳螂": {
-    "id": 19,
+    "id": 23,
     "name": "蓝焰螳螂",
     "type1": "虫",
     "type2": "火",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
-      "sp_def": 50,
-      "spd": 50
+      "hp": 80,
+      "atk": 98,
+      "def": 80,
+      "sp_atk": 80,
+      "sp_def": 80,
+      "spd": 80
     },
     "catch_rate": 120,
     "exp_yield": 64,
@@ -638,8 +760,6 @@
     "desc": "新发现的蓝焰螳螂，详细资料待补充。",
     "gender_ratio": "50/50",
     "size_info": "中型 / 1.0m / 15.0kg",
-    "evolves_into": "赤金螳螂",
-    "evolve_level": 36,
     "learnset": {
       "1": [
         "撞击"
@@ -647,17 +767,17 @@
     }
   },
   "赤金螳螂": {
-    "id": 20,
+    "id": 24,
     "name": "赤金螳螂",
     "type1": "虫",
-    "type2": "火",
+    "type2": "雷",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
-      "sp_def": 50,
-      "spd": 50
+      "hp": 80,
+      "atk": 80,
+      "def": 80,
+      "sp_atk": 98,
+      "sp_def": 80,
+      "spd": 80
     },
     "catch_rate": 120,
     "exp_yield": 64,
@@ -672,24 +792,24 @@
     }
   },
   "元英": {
-    "id": 22,
+    "id": 26,
     "name": "元英",
     "type1": "龙",
     "type2": "灵",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
-      "sp_def": 50,
-      "spd": 50
+      "hp": 85,
+      "atk": 98,
+      "def": 80,
+      "sp_atk": 98,
+      "sp_def": 80,
+      "spd": 65
     },
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "神秘的元始之灵，资料待补充。",
-    "gender_ratio": "无性别",
-    "size_info": "小型 / 0.5m / 5.0kg",
+    "gender_ratio": "0/100",
+    "size_info": "中型 / 1.7m / 45kg",
     "learnset": {
       "1": [
         "撞击"
@@ -697,24 +817,24 @@
     }
   },
   "智敏": {
-    "id": 23,
+    "id": 27,
     "name": "智敏",
     "type1": "灵",
-    "type2": "",
+    "type2": "冰",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
-      "sp_def": 50,
-      "spd": 50
+      "hp": 100,
+      "atk": 70,
+      "def": 60,
+      "sp_atk": 110,
+      "sp_def": 65,
+      "spd": 100
     },
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "新发现的智敏，详细资料待补充。",
-    "gender_ratio": "50/50",
-    "size_info": "小型 / 0.5m / 5.0kg",
+    "gender_ratio": "0/100",
+    "size_info": "中型 /1.65m / 45.0kg",
     "learnset": {
       "1": [
         "撞击"
@@ -722,28 +842,200 @@
     }
   },
   "舒华": {
-    "id": 21,
+    "id": 25,
     "name": "舒华",
-    "type1": "仙",
-    "type2": "",
+    "type1": "灵",
+    "type2": "仙",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
-      "sp_def": 50,
-      "spd": 50
+      "hp": 90,
+      "atk": 40,
+      "def": 75,
+      "sp_atk": 110,
+      "sp_def": 75,
+      "spd": 100
     },
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "新发现的舒华，详细资料待补充。",
-    "gender_ratio": "50/50",
-    "size_info": "小型 / 0.5m / 5.0kg",
+    "gender_ratio": "0/100",
+    "size_info": "中型 / 1.6m / 45.0kg",
     "learnset": {
       "1": [
         "撞击"
       ]
     }
+  },
+  "浅浅丘": {
+    "id": 29,
+    "name": "浅浅丘",
+    "type1": "雷",
+    "type2": "仙",
+    "base": {
+      "hp": 60,
+      "atk": 82,
+      "def": 80,
+      "sp_atk": 85,
+      "sp_def": 82,
+      "spd": 95
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.5m / 5.0kg",
+    "learnset": {}
+  },
+  "幼冰犬": {
+    "id": 30,
+    "name": "幼冰犬",
+    "type1": "冰",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 40,
+      "def": 60,
+      "sp_atk": 31,
+      "sp_def": 60,
+      "spd": 55
+    },
+    "catch_rate": 45,
+    "exp_yield": 60,
+    "growth_rate": "中速",
+    "desc": "浑身覆盖雪白短毛的幼犬，耳尖凝有小冰晶，尾巴末端冻成透明冰柱，性情温驯。",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.4m / 5.0kg",
+    "evolutions": [
+      {
+        "into": "霜铠犬",
+        "level": 20
+      }
+    ],
+    "evolves_into": "霜铠犬",
+    "evolve_level": 20,
+    "learnset": {
+      "1": [
+        "撕咬",
+        "细雪"
+      ],
+      "5": [
+        "吼叫"
+      ],
+      "9": [
+        "冰冻牙"
+      ],
+      "13": [
+        "白雾"
+      ],
+      "17": [
+        "雪崩"
+      ]
+    }
+  },
+  "霜铠犬": {
+    "id": 31,
+    "name": "霜铠犬",
+    "type1": "冰",
+    "type2": "钢",
+    "base": {
+      "hp": 75,
+      "atk": 60,
+      "def": 100,
+      "sp_atk": 50,
+      "sp_def": 100,
+      "spd": 70
+    },
+    "catch_rate": 45,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "desc": "进化后体型如战犬，背脊与肩甲长出冰蓝色刃脊，四腿被分节冰钢铠甲包覆，步伐有力。",
+    "gender_ratio": "50/50",
+    "size_info": "中型 / 1.0m / 42.0kg",
+    "evolutions": [
+      {
+        "into": "铠霜战狼",
+        "level": 40
+      }
+    ],
+    "evolves_into": "铠霜战狼",
+    "evolve_level": 40,
+    "learnset": {
+      "1": [
+        "冰冻牙",
+        "撕咬"
+      ],
+      "20": [
+        "金属爪"
+      ],
+      "26": [
+        "铁头"
+      ],
+      "32": [
+        "冰冻光束"
+      ],
+      "38": [
+        "极光幕"
+      ]
+    }
+  },
+  "铠霜战狼": {
+    "id": 32,
+    "name": "铠霜战狼",
+    "type1": "冰",
+    "type2": "钢",
+    "base": {
+      "hp": 98,
+      "atk": 110,
+      "def": 120,
+      "sp_atk": 50,
+      "sp_def": 120,
+      "spd": 102
+    },
+    "catch_rate": 3,
+    "exp_yield": 275,
+    "growth_rate": "慢速",
+    "desc": "全身披覆冰钢铠甲，胸甲刻有山纹浮雕，口中横衔一柄冰刃，额头古篆符文散发淡金光芒，威震四方。",
+    "gender_ratio": "50/50",
+    "size_info": "大型 / 1.8m / 145.0kg",
+    "learnset": {
+      "1": [
+        "冰冻光束",
+        "铁头"
+      ],
+      "40": [
+        "冰封世界"
+      ],
+      "46": [
+        "铁壁"
+      ],
+      "52": [
+        "暴风雪"
+      ],
+      "60": [
+        "绝对零度"
+      ]
+    }
+  },
+  "大蝶": {
+    "id": 14,
+    "name": "大蝶",
+    "type1": "虫",
+    "type2": "风",
+    "base": {
+      "hp": 68,
+      "atk": 70,
+      "def": 55,
+      "sp_atk": 68,
+      "sp_def": 60,
+      "spd": 68
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "缓慢",
+    "desc": "",
+    "gender_ratio": "50/50",
+    "size_info": "小型 / 0.3m / 2.0kg",
+    "learnset": {}
   }
 }

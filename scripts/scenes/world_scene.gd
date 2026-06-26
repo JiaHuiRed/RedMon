@@ -738,6 +738,14 @@ func _build_hud() -> void:
 	area_lbl.add_theme_font_size_override("font_size", 11)
 	_hud.add_child(area_lbl)
 
+	# 按键提示 bottom-right
+	var key_hint = Label.new()
+	key_hint.text = "X/Esc=菜单  Z/Enter=确认"
+	key_hint.position = Vector2(VW - 158, VH - 18)
+	key_hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.55))
+	key_hint.add_theme_font_size_override("font_size", 9)
+	_hud.add_child(key_hint)
+
 # ── Movement & encounter ─────────────────────────────────────────────────────
 func _refresh_shop_panel() -> void:
 	var money_lbl = _shop_panel.get_node_or_null("ShopMoney")
@@ -844,7 +852,7 @@ func _open_clinic() -> void:
 	_dialog_active = true
 	_dialog_phase = 0
 	_dialog_panel.visible = true
-	_dialog_label.text = "奥克博士的助理：\n欢迎来到灵疗所！\n我们来帮您恢复精灵的体力吧！"
+	_dialog_label.text = "陈教授的助理：\n欢迎来到灵疗所！\n我们来帮您恢复精灵的体力吧！"
 
 func _advance_dialog() -> void:
 	match _dialog_phase:

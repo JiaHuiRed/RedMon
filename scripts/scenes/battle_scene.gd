@@ -48,6 +48,19 @@ var _mon_close_btn: Button
 var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 
+# ── 键盘 / 手柄导航 ────────────────────────────────────────────────────────────
+var _active_panel:      String = "none"  # "action"|"move"|"bag"|"mon"|"none"
+var _action_btns:       Array  = []
+var _action_btn_colors: Array  = []
+var _action_cursor:     int    = 0
+var _move_cursor:       int    = 0
+var _bag_cursor:        int    = 0
+var _bag_item_keys:     Array  = []
+var _mon_cursor:        int    = 0
+var _action_hl:         Panel  = null
+var _move_hl:           Panel  = null
+var _bag_hl:            Panel  = null
+
 # 训练师对战
 var _is_trainer:      bool   = false
 var _trainer_id:      String = ""
@@ -328,6 +341,14 @@ func _build_action_panel() -> void:
 	prompt.add_theme_font_size_override("font_size", 13)
 	_action_panel.add_child(prompt)
 
+	# 键盘操作提示（左侧提示区）
+	var kb_hint = Label.new()
+	kb_hint.text = "Z/Enter 确定\n↑↓←→ 移动"
+	kb_hint.position = Vector2(14, 36)
+	kb_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
+	kb_hint.add_theme_font_size_override("font_size", 9)
+	_action_panel.add_child(kb_hint)
+
 	# 2×2 button grid
 	var labels    = ["⚔  战  斗", "🎒  背  包", "♟  精  灵", "🏃  逃  跑"]
 	var callbacks = [_on_fight, _on_bag, _on_mon, _on_run]
@@ -335,9 +356,11 @@ func _build_action_panel() -> void:
 		Color(0.75, 0.20, 0.15), Color(0.20, 0.50, 0.20),
 		Color(0.18, 0.35, 0.75), Color(0.45, 0.45, 0.45),
 	]
+	_action_btn_colors = btn_colors.duplicate()
 	var btn_w = 108
 	var btn_h = 28
 	var grid_x = VW - 238
+	_action_btns = []
 	for i in range(4):
 		var col = i % 2
 		var row: int = i / 2
@@ -357,6 +380,11 @@ func _build_action_panel() -> void:
 		btn.add_theme_color_override("font_color", Color.WHITE)
 		btn.add_theme_font_size_override("font_size", 12)
 		_action_panel.add_child(btn)
+		_action_btns.append(btn)
+
+	# 光标高亮框
+	_action_hl = _make_hl_panel(_action_panel)
+	_refresh_action_cursor()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Move panel (4 moves)
@@ -403,6 +431,17 @@ func _build_move_panel() -> void:
 	back.pressed.connect(func(): _show_action_panel())
 	_move_panel.add_child(back)
 
+	# 键盘提示（右侧信息栏内）
+	var mv_hint = Label.new()
+	mv_hint.text = "↑↓←→ 选择\nZ 使用  X 返回"
+	mv_hint.position = Vector2(292, 46)
+	mv_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
+	mv_hint.add_theme_font_size_override("font_size", 9)
+	_move_panel.add_child(mv_hint)
+
+	# 光标高亮框
+	_move_hl = _make_hl_panel(_move_panel)
+
 	_refresh_move_panel()
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -435,8 +474,10 @@ func _build_bag_panel() -> void:
 	_bag_panel.add_child(back)
 
 	# 按道具顺序预建按钮（基于 MonDB.items）
+	_bag_item_keys = []
 	var col = 0
 	for item_id in MonDB.items:
+		_bag_item_keys.append(item_id)
 		var btn = Button.new()
 		btn.size = Vector2(118, 28)
 		btn.position = Vector2(8 + col * 126, 30)
@@ -445,17 +486,26 @@ func _build_bag_panel() -> void:
 		_bag_btns[item_id] = btn
 		col += 1
 
+	# 光标高亮框 + 键盘提示
+	_bag_hl = _make_hl_panel(_bag_panel)
+	var bag_hint = Label.new()
+	bag_hint.text = "←→选择  Z/Enter使用  X/Esc返回"
+	bag_hint.position = Vector2(8, MENU_H - 16)
+	bag_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
+	bag_hint.add_theme_font_size_override("font_size", 9)
+	_bag_panel.add_child(bag_hint)
+
 func _refresh_bag_panel() -> void:
-  for item_id in _bag_btns:
-    var count = GameState.items.get(item_id, 0)
-    var btn = _bag_btns[item_id]
-    btn.text     = "%s ×%d" % [item_id, count]
-    btn.disabled = count <= 0
-    var item = MonDB.items.get(item_id, {})
-    if item.get("category", "") == "ball":
-      btn.add_theme_color_override("font_color", Color(item.get("color", "#FFFFFF")))
-    else:
-      btn.add_theme_color_override("font_color", Color.WHITE)
+	for item_id in _bag_btns:
+		var count = GameState.items.get(item_id, 0)
+		var btn = _bag_btns[item_id]
+		btn.text     = "%s ×%d" % [item_id, count]
+		btn.disabled = count <= 0
+		var item = MonDB.items.get(item_id, {})
+		if item.get("category", "") == "ball":
+			btn.add_theme_color_override("font_color", Color(item.get("color", "#FFFFFF")))
+		else:
+			btn.add_theme_color_override("font_color", Color.WHITE)
 
 func _on_use_item(item_id: String) -> void:
 	if GameState.items.get(item_id, 0) <= 0: return
@@ -571,17 +621,30 @@ func _build_mon_panel() -> void:
 		_mon_panel.add_child(btn)
 		_mon_btns.append(btn)
 
+	var mon_hint = Label.new()
+	mon_hint.text = "↑↓选择  Z/Enter切换  X/Esc返回"
+	mon_hint.position = Vector2(12, VH - 20)
+	mon_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
+	mon_hint.add_theme_font_size_override("font_size", 9)
+	_mon_panel.add_child(mon_hint)
+
 func _refresh_mon_panel() -> void:
 	_mon_close_btn.visible = not _force_switch
 	for i in range(6):
 		var btn: Button = _mon_btns[i]
 		if i < GameState.player_team.size():
-			var m = GameState.player_team[i]
-			var cur  = "★ " if i == _player_mon_idx else "   "
-			var dead = "  【倒下】" if m["current_hp"] <= 0 else ""
-			btn.text     = "%s%s  Lv.%d    HP: %d/%d%s" % [cur, MonDB.display_name(m), m["level"], m["current_hp"], m["max_hp"], dead]
-			btn.disabled = m["current_hp"] <= 0 or i == _player_mon_idx
+			var m       = GameState.player_team[i]
+			var is_cur  = (i == _player_mon_idx)
+			var is_sel  = (i == _mon_cursor)
+			var marker  = "★ " if is_cur else ("▶ " if is_sel else "   ")
+			var dead    = "  【倒下】" if m["current_hp"] <= 0 else ""
+			btn.text     = "%s%s  Lv.%d    HP: %d/%d%s" % [marker, MonDB.display_name(m), m["level"], m["current_hp"], m["max_hp"], dead]
+			btn.disabled = m["current_hp"] <= 0 or is_cur
 			btn.modulate = Color(0.55, 0.55, 0.55) if m["current_hp"] <= 0 else Color(1, 1, 1)
+			if is_sel and not is_cur and m["current_hp"] > 0:
+				btn.add_theme_color_override("font_color", Color(1.0, 0.9, 0.2))
+			else:
+				btn.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 		else:
 			btn.text     = "── 空槽 ──"
 			btn.disabled = true
@@ -668,6 +731,8 @@ func _show_action_panel() -> void:
 	_move_panel.visible   = false
 	if _bag_panel:  _bag_panel.visible  = false
 	if _mon_panel:  _mon_panel.visible  = false
+	_active_panel = "action"
+	_refresh_action_cursor()
 
 func _show_move_panel() -> void:
 	_action_panel.visible = false
@@ -675,6 +740,8 @@ func _show_move_panel() -> void:
 	if _bag_panel:  _bag_panel.visible  = false
 	if _mon_panel:  _mon_panel.visible  = false
 	_refresh_move_panel()
+	_active_panel = "move"
+	_refresh_move_cursor()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Refresh info boxes
@@ -735,6 +802,7 @@ func _hp_color(ratio: float) -> Color:
 func _show_message(text: String, callback: Callable = Callable()) -> void:
 	_action_panel.visible = false
 	_move_panel.visible   = false
+	_active_panel = "none"
 	_msg_label.text = text
 	if callback.is_valid():
 		await get_tree().create_timer(1.6).timeout
@@ -750,18 +818,23 @@ func _on_fight() -> void:
 
 func _on_bag() -> void:
 	if _busy: return
+	_bag_cursor = 0
 	_refresh_bag_panel()
 	_action_panel.visible = false
 	_move_panel.visible   = false
 	_bag_panel.visible    = true
+	_active_panel = "bag"
+	_refresh_bag_cursor()
 
 func _on_mon() -> void:
 	if _busy: return
 	_force_switch = false
+	_mon_cursor = 0
 	_refresh_mon_panel()
 	_action_panel.visible = false
 	_move_panel.visible   = false
 	_mon_panel.visible    = true
+	_active_panel = "mon"
 
 func _on_run() -> void:
 	if _busy: return
@@ -1096,10 +1169,12 @@ func _handle_defeat() -> void:
 	else:
 		# 强制换场
 		_force_switch = true
+		_mon_cursor = 0
 		_refresh_mon_panel()
 		_action_panel.visible = false
 		_move_panel.visible   = false
 		_mon_panel.visible    = true
+		_active_panel = "mon"
 		# 由 _on_switch_mon 继续接管后续流程
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1121,6 +1196,121 @@ func _spawn_damage_number(dmg: int, pos: Vector2) -> void:
 	tw.tween_property(lbl, "position", lbl.position + Vector2(0, -28), 0.6)
 	tw.parallel().tween_property(lbl, "modulate:a", 0.0, 0.6)
 	tw.tween_callback(lbl.queue_free)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 键盘 / 手柄输入
+# ══════════════════════════════════════════════════════════════════════════════
+func _input(event: InputEvent) -> void:
+	if _busy: return
+	match _active_panel:
+		"action":
+			if event.is_action_pressed("ui_up") or event.is_action_pressed("ui_down"):
+				get_viewport().set_input_as_handled()
+				_action_cursor = (_action_cursor + 2) % 4
+				_refresh_action_cursor()
+			elif event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
+				get_viewport().set_input_as_handled()
+				_action_cursor ^= 1
+				_refresh_action_cursor()
+			elif event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				match _action_cursor:
+					0: _on_fight()
+					1: _on_bag()
+					2: _on_mon()
+					3: _on_run()
+		"move":
+			if event.is_action_pressed("ui_up") or event.is_action_pressed("ui_down"):
+				get_viewport().set_input_as_handled()
+				_move_cursor = (_move_cursor + 2) % 4
+				_refresh_move_cursor()
+			elif event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
+				get_viewport().set_input_as_handled()
+				_move_cursor ^= 1
+				_refresh_move_cursor()
+			elif event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				_on_move_pressed(_move_cursor)
+			elif event.is_action_pressed("ui_cancel"):
+				get_viewport().set_input_as_handled()
+				_move_cursor = 0
+				_show_action_panel()
+		"bag":
+			var item_count = _bag_item_keys.size()
+			if item_count == 0: return
+			if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_up"):
+				get_viewport().set_input_as_handled()
+				_bag_cursor = (_bag_cursor - 1 + item_count) % item_count
+				_refresh_bag_cursor()
+			elif event.is_action_pressed("ui_right") or event.is_action_pressed("ui_down"):
+				get_viewport().set_input_as_handled()
+				_bag_cursor = (_bag_cursor + 1) % item_count
+				_refresh_bag_cursor()
+			elif event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				if _bag_cursor < _bag_item_keys.size():
+					_on_use_item(_bag_item_keys[_bag_cursor])
+			elif event.is_action_pressed("ui_cancel"):
+				get_viewport().set_input_as_handled()
+				_bag_panel.visible = false
+				_show_action_panel()
+		"mon":
+			var mon_count = GameState.player_team.size()
+			if mon_count == 0: return
+			if event.is_action_pressed("ui_up"):
+				get_viewport().set_input_as_handled()
+				_mon_cursor = (_mon_cursor - 1 + mon_count) % mon_count
+				_refresh_mon_panel()
+			elif event.is_action_pressed("ui_down"):
+				get_viewport().set_input_as_handled()
+				_mon_cursor = (_mon_cursor + 1) % mon_count
+				_refresh_mon_panel()
+			elif event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				_on_switch_mon(_mon_cursor)
+			elif event.is_action_pressed("ui_cancel"):
+				get_viewport().set_input_as_handled()
+				if not _force_switch:
+					_active_panel = "none"
+					_mon_panel.visible = false
+					_show_action_panel()
+
+# ── 光标高亮 Panel 工厂 ───────────────────────────────────────────────────────
+func _make_hl_panel(parent: Control) -> Panel:
+	var hl := Panel.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color     = Color(1.0, 0.95, 0.3, 0.10)
+	style.border_color = Color(1.0, 0.92, 0.3, 0.90)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	hl.add_theme_stylebox_override("panel", style)
+	hl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hl.z_index = 10
+	parent.add_child(hl)
+	return hl
+
+# ── 各面板光标刷新 ────────────────────────────────────────────────────────────
+func _refresh_action_cursor() -> void:
+	if not _action_hl: return
+	var btn_w := 108; var btn_h := 28
+	var grid_x := VW - 238
+	var col := _action_cursor % 2
+	var row := _action_cursor / 2
+	_action_hl.position = Vector2(grid_x + col * (btn_w + 10) - 2, 8 + row * (btn_h + 5) - 2)
+	_action_hl.size     = Vector2(btn_w + 4, btn_h + 4)
+
+func _refresh_move_cursor() -> void:
+	if not _move_hl: return
+	var btn_w := 130; var btn_h := 28
+	var col := _move_cursor % 2
+	var row := _move_cursor / 2
+	_move_hl.position = Vector2(8 + col * (btn_w + 8) - 2, 6 + row * (btn_h + 6) - 2)
+	_move_hl.size     = Vector2(btn_w + 4, btn_h + 4)
+
+func _refresh_bag_cursor() -> void:
+	if not _bag_hl or _bag_item_keys.is_empty(): return
+	_bag_hl.position = Vector2(6 + _bag_cursor * 126, 28)
+	_bag_hl.size     = Vector2(122, 32)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # UI helpers
@@ -1180,6 +1370,9 @@ func _draw_enemy_sprite(species_id: String) -> Texture2D:
 		"岩灵":   return _draw_stone_golem()
 		"小灯鼠": return _draw_wild_mouse()
 		_:        return _draw_caterpillar()
+
+func _draw_mon_front(species_id: String) -> Texture2D:
+	return _draw_enemy_sprite(species_id)
 
 func _draw_caterpillar() -> Texture2D:
 	var img = Image.create(80, 80, false, Image.FORMAT_RGBA8)
