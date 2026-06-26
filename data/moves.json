@@ -1,134 +1,8124 @@
 {
-  "撞击": {
-    "name": "撞击", "type": "空", "category": "物理",
-    "power": 35, "accuracy": 95, "max_pp": 35,
-    "effect": "", "description": "全力冲撞对方。"
+  "七星夺魂腿": {
+    "name": "七星夺魂腿",
+    "type": "鬼",
+    "category": "物理",
+    "power": 195,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
   },
-  "火花": {
-    "name": "火花", "type": "火", "category": "物理",
-    "power": 40, "accuracy": 100, "max_pp": 25,
-    "effect": "", "description": "喷出小火花攻击对方。"
+  "万圣夜": {
+    "name": "万圣夜",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
   },
-  "撕咬": {
-    "name": "撕咬", "type": "空", "category": "物理",
-    "power": 60, "accuracy": 100, "max_pp": 25,
-    "effect": "", "description": "用尖牙狠狠咬住对方。"
+  "万有引力": {
+    "name": "万有引力",
+    "type": "木",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
   },
-  "吼叫": {
-    "name": "吼叫", "type": "空", "category": "变化",
-    "power": 0, "accuracy": 100, "max_pp": 40,
-    "effect": "lower_atk", "description": "发出巨吼，降低对方攻击。"
+  "三旋擊": {
+    "name": "三旋擊",
+    "type": "冰",
+    "category": "物理",
+    "power": 20,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
   },
-  "烟雾弹": {
-    "name": "烟雾弹", "type": "空", "category": "变化",
-    "power": 0, "accuracy": 100, "max_pp": 20,
-    "effect": "lower_acc", "description": "释放浓烟，降低对方命中。"
+  "三连踢": {
+    "name": "三连踢",
+    "type": "格",
+    "category": "物理",
+    "power": 10,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
   },
-  "水枪": {
-    "name": "水枪", "type": "水", "category": "特殊",
-    "power": 40, "accuracy": 100, "max_pp": 25,
-    "effect": "", "description": "高压射出水流攻击对方。"
+  "三重攻击": {
+    "name": "三重攻击",
+    "type": "空",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
   },
-  "防御卷缩": {
-    "name": "防御卷缩", "type": "空", "category": "变化",
-    "power": 0, "accuracy": 100, "max_pp": 40,
-    "effect": "raise_def", "description": "缩紧身躯，提升自身防御。"
+  "下盘踢": {
+    "name": "下盘踢",
+    "type": "格",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
   },
-  "龙息": {
-    "name": "龙息", "type": "水", "category": "特殊",
-    "power": 60, "accuracy": 100, "max_pp": 20,
-    "effect": "", "description": "吐出蛟龙之气，威力强劲。"
+  "临别礼物": {
+    "name": "临别礼物",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
   },
-  "藤鞭": {
-    "name": "藤鞭", "type": "木", "category": "物理",
-    "power": 45, "accuracy": 100, "max_pp": 25,
-    "effect": "", "description": "挥动藤蔓抽打对方。"
+  "九彩升华齐聚顶": {
+    "name": "九彩升华齐聚顶",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
   },
-  "成长": {
-    "name": "成长", "type": "空", "category": "变化",
-    "power": 0, "accuracy": 100, "max_pp": 40,
-    "effect": "raise_sp_atk", "description": "积蓄能量，提升特攻。"
+  "乱击": {
+    "name": "乱击",
+    "type": "空",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
   },
-  "吐丝": {
-    "name": "吐丝", "type": "虫", "category": "变化",
-    "power": 0, "accuracy": 95, "max_pp": 40,
-    "effect": "lower_spd", "description": "喷出粘丝，降低对方速度。"
+  "乱抓": {
+    "name": "乱抓",
+    "type": "空",
+    "category": "物理",
+    "power": 18,
+    "accuracy": 80,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
   },
-  "啃咬": {
-    "name": "啃咬", "type": "空", "category": "物理",
-    "power": 35, "accuracy": 95, "max_pp": 35,
-    "effect": "", "description": "大口啃咬对方。"
+  "二连击": {
+    "name": "二连击",
+    "type": "空",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
   },
-  "石击": {
-    "name": "石击", "type": "土", "category": "物理",
-    "power": 50, "accuracy": 90, "max_pp": 15,
-    "effect": "", "description": "投掷坚石猛力击打对方。"
+  "二连劈": {
+    "name": "二连劈",
+    "type": "龙",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
   },
-  "焰喷": {
-    "name": "焰喷", "type": "火", "category": "特殊",
-    "power": 60, "accuracy": 100, "max_pp": 15,
-    "effect": "inflict_burn", "effect_chance": 30,
-    "description": "喷出灼热火焰，有30%概率令对方烧伤。"
+  "二连踢": {
+    "name": "二连踢",
+    "type": "格",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
   },
-  "毒粉": {
-    "name": "毒粉", "type": "毒", "category": "变化",
-    "power": 0, "accuracy": 75, "max_pp": 35,
-    "effect": "inflict_poison", "description": "散布毒粉，令对方中毒。"
+  "亚空裂斩": {
+    "name": "亚空裂斩",
+    "type": "龙",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
   },
-  "电磁波": {
-    "name": "电磁波", "type": "雷", "category": "变化",
-    "power": 0, "accuracy": 90, "max_pp": 20,
-    "effect": "inflict_paralysis", "description": "发出电磁波，令对方陷入麻痹。"
+  "交换场地": {
+    "name": "交换场地",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
   },
-  "催眠术": {
-    "name": "催眠术", "type": "灵", "category": "变化",
-    "power": 0, "accuracy": 60, "max_pp": 10,
-    "effect": "inflict_sleep", "description": "施展催眠，使对方沉睡1~3回合。"
+  "交错火焰": {
+    "name": "交错火焰",
+    "type": "火",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
   },
-  "冰冻光线": {
-    "name": "冰冻光线", "type": "冰", "category": "特殊",
-    "power": 60, "accuracy": 100, "max_pp": 15,
-    "effect": "inflict_freeze", "effect_chance": 10,
-    "description": "射出冰冷光线，有10%概率冰封对方。"
+  "交错闪电": {
+    "name": "交错闪电",
+    "type": "雷",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
   },
-  "微笑": {
-    "name": "微笑", "type": "仙", "category": "变化",
-    "power": 0, "accuracy": 100, "max_pp": 20,
-    "effect": "lower_atk", "description": "展示可爱笑容，降低对方攻击。"
+  "亮亮风暴": {
+    "name": "亮亮风暴",
+    "type": "仙",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
   },
-  "魔法叶": {
-    "name": "魔法叶", "type": "仙", "category": "特殊",
-    "power": 60, "accuracy": 100, "max_pp": 20,
-    "effect": "", "description": "射出必中的魔法叶片，威力稳定。"
-  },
-  "电击": {
-    "name": "电击", "type": "雷", "category": "特殊",
-    "power": 40, "accuracy": 100, "max_pp": 30,
-    "effect": "", "description": "用电流击打对方。"
+  "亲密无间大乱揍": {
+    "name": "亲密无间大乱揍",
+    "type": "仙",
+    "category": "物理",
+    "power": 190,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
   },
   "仙女风": {
-    "name": "仙女风", "type": "仙", "category": "特殊",
-    "power": 80, "accuracy": 100, "max_pp": 10,
-    "effect": "", "description": "召唤仙灵之力，以强劲风暴攻击对方。"
+    "name": "仙女风",
+    "type": "仙",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "召唤仙灵之力，以强劲风暴攻击对方。"
+  },
+  "以牙还牙": {
+    "name": "以牙还牙",
+    "type": "暗",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "仿效": {
+    "name": "仿效",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "伏特攻击": {
+    "name": "伏特攻击",
+    "type": "雷",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "伏特替换": {
+    "name": "伏特替换",
+    "type": "雷",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "传递礼物": {
+    "name": "传递礼物",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "佯攻": {
+    "name": "佯攻",
+    "type": "空",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "保护色": {
+    "name": "保护色",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "信号光束": {
+    "name": "信号光束",
+    "type": "虫",
+    "category": "特殊",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "修长之角": {
+    "name": "修长之角",
+    "type": "钢",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "借力摔": {
+    "name": "借力摔",
+    "type": "格",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "借助": {
+    "name": "借助",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "假哭": {
+    "name": "假哭",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "假跪真撞": {
+    "name": "假跪真撞",
+    "type": "暗",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "健美": {
+    "name": "健美",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "偷懒": {
+    "name": "偷懒",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "催眠术": {
+    "name": "催眠术",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 60,
+    "max_pp": 10,
+    "effect": "inflict_sleep",
+    "description": "施展催眠，使对方沉睡1~3回合。"
+  },
+  "催眠粉": {
+    "name": "催眠粉",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 75,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "充电": {
+    "name": "充电",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "充电光束": {
+    "name": "充电光束",
+    "type": "雷",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "光合作用": {
+    "name": "光合作用",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "光墙": {
+    "name": "光墙",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "光子喷涌": {
+    "name": "光子喷涌",
+    "type": "灵",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "全力无双激烈拳": {
+    "name": "全力无双激烈拳",
+    "type": "格",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "再来一次": {
+    "name": "再来一次",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "写生": {
+    "name": "写生",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "冥想": {
+    "name": "冥想",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "冰冰霜冻": {
+    "name": "冰冰霜冻",
+    "type": "冰",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "冰冻之风": {
+    "name": "冰冻之风",
+    "type": "冰",
+    "category": "特殊",
+    "power": 55,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "冰冻伏特": {
+    "name": "冰冻伏特",
+    "type": "冰",
+    "category": "物理",
+    "power": 140,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "冰冻光束": {
+    "name": "冰冻光束",
+    "type": "冰",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "冰冻光线": {
+    "name": "冰冻光线",
+    "type": "冰",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "inflict_freeze",
+    "effect_chance": 10,
+    "description": "射出冰冷光线，有10%概率冰封对方。"
+  },
+  "冰冻拳": {
+    "name": "冰冻拳",
+    "type": "冰",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "冰冻牙": {
+    "name": "冰冻牙",
+    "type": "冰",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "冰封世界": {
+    "name": "冰封世界",
+    "type": "冰",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "冰息": {
+    "name": "冰息",
+    "type": "冰",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "冰柱坠击": {
+    "name": "冰柱坠击",
+    "type": "冰",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "冰球": {
+    "name": "冰球",
+    "type": "冰",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 90,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "冰砾": {
+    "name": "冰砾",
+    "type": "冰",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "冰锤": {
+    "name": "冰锤",
+    "type": "冰",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "冰锥": {
+    "name": "冰锥",
+    "type": "冰",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "冰雹": {
+    "name": "冰雹",
+    "type": "冰",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "冲天拳": {
+    "name": "冲天拳",
+    "type": "格",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "冲岩": {
+    "name": "冲岩",
+    "type": "岩",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "冲浪": {
+    "name": "冲浪",
+    "type": "水",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "冷冻干燥": {
+    "name": "冷冻干燥",
+    "type": "冰",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "净化": {
+    "name": "净化",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "出奇一击": {
+    "name": "出奇一击",
+    "type": "暗",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "击掌奇袭": {
+    "name": "击掌奇袭",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "击落": {
+    "name": "击落",
+    "type": "岩",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "分担痛楚": {
+    "name": "分担痛楚",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "制裁光砾": {
+    "name": "制裁光砾",
+    "type": "空",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "刺耳声": {
+    "name": "刺耳声",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 85,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "剑舞": {
+    "name": "剑舞",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "剧毒": {
+    "name": "剧毒",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "剧毒牙": {
+    "name": "剧毒牙",
+    "type": "毒",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "劈开": {
+    "name": "劈开",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "劈瓦": {
+    "name": "劈瓦",
+    "type": "格",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "力量互换": {
+    "name": "力量互换",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "力量宝石": {
+    "name": "力量宝石",
+    "type": "岩",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "力量平分": {
+    "name": "力量平分",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "力量戏法": {
+    "name": "力量戏法",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "加农光炮": {
+    "name": "加农光炮",
+    "type": "钢",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "加农水炮": {
+    "name": "加农水炮",
+    "type": "水",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "勇鸟猛攻": {
+    "name": "勇鸟猛攻",
+    "type": "风",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "十万伏特": {
+    "name": "十万伏特",
+    "type": "雷",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "十万马力": {
+    "name": "十万马力",
+    "type": "土",
+    "category": "物理",
+    "power": 95,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "十字剪": {
+    "name": "十字剪",
+    "type": "虫",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "十字劈": {
+    "name": "十字劈",
+    "type": "格",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "十字毒刃": {
+    "name": "十字毒刃",
+    "type": "毒",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "千万伏特": {
+    "name": "千万伏特",
+    "type": "雷",
+    "category": "特殊",
+    "power": 195,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "千波激荡": {
+    "name": "千波激荡",
+    "type": "土",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "千箭齐发": {
+    "name": "千箭齐发",
+    "type": "土",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "单纯光束": {
+    "name": "单纯光束",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "原始之力": {
+    "name": "原始之力",
+    "type": "岩",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "双倍奉还": {
+    "name": "双倍奉还",
+    "type": "格",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "双刃头锤": {
+    "name": "双刃头锤",
+    "type": "岩",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "双针": {
+    "name": "双针",
+    "type": "虫",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "反射壁": {
+    "name": "反射壁",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "发劲": {
+    "name": "发劲",
+    "type": "格",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "变圆": {
+    "name": "变圆",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "变小": {
+    "name": "变小",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "变硬": {
+    "name": "变硬",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "变身": {
+    "name": "变身",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "叢林治療": {
+    "name": "叢林治療",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "古老之歌": {
+    "name": "古老之歌",
+    "type": "空",
+    "category": "特殊",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "叫声": {
+    "name": "叫声",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "可怕面孔": {
+    "name": "可怕面孔",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "可爱星星飞天撞": {
+    "name": "可爱星星飞天撞",
+    "type": "仙",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "叶刃": {
+    "name": "叶刃",
+    "type": "木",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "号令": {
+    "name": "号令",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "同命": {
+    "name": "同命",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "同步干扰": {
+    "name": "同步干扰",
+    "type": "灵",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "吐丝": {
+    "name": "吐丝",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 95,
+    "max_pp": 40,
+    "effect": "lower_spd",
+    "description": "喷出粘丝，降低对方速度。"
+  },
+  "吞下": {
+    "name": "吞下",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "吵闹": {
+    "name": "吵闹",
+    "type": "空",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "吸取": {
+    "name": "吸取",
+    "type": "木",
+    "category": "特殊",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "吸取之吻": {
+    "name": "吸取之吻",
+    "type": "仙",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "吸取力量": {
+    "name": "吸取力量",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "吸取拳": {
+    "name": "吸取拳",
+    "type": "格",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "吹捧": {
+    "name": "吹捧",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "吹飞": {
+    "name": "吹飞",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "吼叫": {
+    "name": "吼叫",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "lower_atk",
+    "description": "发出巨吼，降低对方攻击。"
+  },
+  "和睦相处": {
+    "name": "和睦相处",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "咬住": {
+    "name": "咬住",
+    "type": "暗",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "咬碎": {
+    "name": "咬碎",
+    "type": "暗",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "哈欠": {
+    "name": "哈欠",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "哗哗气场": {
+    "name": "哗哗气场",
+    "type": "灵",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "唤醒巴掌": {
+    "name": "唤醒巴掌",
+    "type": "格",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "唱歌": {
+    "name": "唱歌",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 55,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "啃咬": {
+    "name": "啃咬",
+    "type": "空",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 95,
+    "max_pp": 35,
+    "effect": "",
+    "description": "大口啃咬对方。"
+  },
+  "啄": {
+    "name": "啄",
+    "type": "风",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "啄钻": {
+    "name": "啄钻",
+    "type": "风",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "啄食": {
+    "name": "啄食",
+    "type": "风",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "喋喋不休": {
+    "name": "喋喋不休",
+    "type": "风",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "喝牛奶": {
+    "name": "喝牛奶",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "喷出": {
+    "name": "喷出",
+    "type": "空",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "喷射火焰": {
+    "name": "喷射火焰",
+    "type": "火",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "喷水": {
+    "name": "喷水",
+    "type": "水",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "喷火": {
+    "name": "喷火",
+    "type": "火",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "喷烟": {
+    "name": "喷烟",
+    "type": "火",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "嚣张": {
+    "name": "嚣张",
+    "type": "暗",
+    "category": "物理",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "回声": {
+    "name": "回声",
+    "type": "空",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "回复封锁": {
+    "name": "回复封锁",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "回复指令": {
+    "name": "回复指令",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "回收利用": {
+    "name": "回收利用",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "回旋踢": {
+    "name": "回旋踢",
+    "type": "格",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "围攻": {
+    "name": "围攻",
+    "type": "暗",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "圆瞳": {
+    "name": "圆瞳",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "圣剑": {
+    "name": "圣剑",
+    "type": "格",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "地狱翻滚": {
+    "name": "地狱翻滚",
+    "type": "格",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 80,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "地球上投": {
+    "name": "地球上投",
+    "type": "格",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "地裂": {
+    "name": "地裂",
+    "type": "土",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 30,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "地隆啸天大终结": {
+    "name": "地隆啸天大终结",
+    "type": "土",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "地震": {
+    "name": "地震",
+    "type": "土",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "坏坏领域": {
+    "name": "坏坏领域",
+    "type": "暗",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "垃圾射击": {
+    "name": "垃圾射击",
+    "type": "毒",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "增强拳": {
+    "name": "增强拳",
+    "type": "格",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "多属性攻击": {
+    "name": "多属性攻击",
+    "type": "空",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "大地之力": {
+    "name": "大地之力",
+    "type": "土",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "大地掌控": {
+    "name": "大地掌控",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "大地波動": {
+    "name": "大地波動",
+    "type": "空",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "大地神力": {
+    "name": "大地神力",
+    "type": "土",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "大声咆哮": {
+    "name": "大声咆哮",
+    "type": "暗",
+    "category": "特殊",
+    "power": 55,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "大字爆炎": {
+    "name": "大字爆炎",
+    "type": "火",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "大快朵颐": {
+    "name": "大快朵颐",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "大晴天": {
+    "name": "大晴天",
+    "type": "火",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "大爆炸": {
+    "name": "大爆炸",
+    "type": "空",
+    "category": "物理",
+    "power": 250,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "大蛇瞪眼": {
+    "name": "大蛇瞪眼",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "大闹一番": {
+    "name": "大闹一番",
+    "type": "空",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "天使之吻": {
+    "name": "天使之吻",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 75,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "头锤": {
+    "name": "头锤",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "夹住": {
+    "name": "夹住",
+    "type": "空",
+    "category": "物理",
+    "power": 55,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "奇妙空间": {
+    "name": "奇妙空间",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "奇异之光": {
+    "name": "奇异之光",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "奇异之风": {
+    "name": "奇异之风",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "奇迹之眼": {
+    "name": "奇迹之眼",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "妒火": {
+    "name": "妒火",
+    "type": "火",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "妖精之锁": {
+    "name": "妖精之锁",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "妖精之风": {
+    "name": "妖精之风",
+    "type": "仙",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "嬉闹": {
+    "name": "嬉闹",
+    "type": "仙",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "子弹拳": {
+    "name": "子弹拳",
+    "type": "钢",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "宇宙力量": {
+    "name": "宇宙力量",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "守住": {
+    "name": "守住",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "定身法": {
+    "name": "定身法",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "寄生种子": {
+    "name": "寄生种子",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "密语": {
+    "name": "密语",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "封印": {
+    "name": "封印",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "小偷": {
+    "name": "小偷",
+    "type": "暗",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "尖刺加农炮": {
+    "name": "尖刺加农炮",
+    "type": "空",
+    "category": "物理",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "尖刺臂": {
+    "name": "尖刺臂",
+    "type": "木",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "尖刺防守": {
+    "name": "尖刺防守",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "尖石攻击": {
+    "name": "尖石攻击",
+    "type": "岩",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "居合斩": {
+    "name": "居合斩",
+    "type": "空",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 95,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "屏障": {
+    "name": "屏障",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "山岚摔": {
+    "name": "山岚摔",
+    "type": "格",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "岩崩": {
+    "name": "岩崩",
+    "type": "岩",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "岩石封锁": {
+    "name": "岩石封锁",
+    "type": "岩",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "岩石打磨": {
+    "name": "岩石打磨",
+    "type": "岩",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "岩石炮": {
+    "name": "岩石炮",
+    "type": "岩",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "岩石爆击": {
+    "name": "岩石爆击",
+    "type": "岩",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "巨人卫士・阿罗拉": {
+    "name": "巨人卫士・阿罗拉",
+    "type": "仙",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "巨兽斩": {
+    "name": "巨兽斩",
+    "type": "钢",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "巨声": {
+    "name": "巨声",
+    "type": "空",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "巴投": {
+    "name": "巴投",
+    "type": "格",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "帮助": {
+    "name": "帮助",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "幸运咒语": {
+    "name": "幸运咒语",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "幻象光线": {
+    "name": "幻象光线",
+    "type": "灵",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "广域破坏": {
+    "name": "广域破坏",
+    "type": "龙",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "广域防守": {
+    "name": "广域防守",
+    "type": "岩",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "庆祝": {
+    "name": "庆祝",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "廣域戰力": {
+    "name": "廣域戰力",
+    "type": "灵",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "延后": {
+    "name": "延后",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "异次元洞": {
+    "name": "异次元洞",
+    "type": "灵",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "异次元猛攻": {
+    "name": "异次元猛攻",
+    "type": "暗",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "弹跳": {
+    "name": "弹跳",
+    "type": "风",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "强力鞭打": {
+    "name": "强力鞭打",
+    "type": "木",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "强酸剧毒灭绝雨": {
+    "name": "强酸剧毒灭绝雨",
+    "type": "毒",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "归天之翼": {
+    "name": "归天之翼",
+    "type": "风",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "彗星拳": {
+    "name": "彗星拳",
+    "type": "钢",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "影子偷袭": {
+    "name": "影子偷袭",
+    "type": "鬼",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "影子分身": {
+    "name": "影子分身",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "微笑": {
+    "name": "微笑",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "lower_atk",
+    "description": "展示可爱笑容，降低对方攻击。"
+  },
+  "心之眼": {
+    "name": "心之眼",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "心灵互换": {
+    "name": "心灵互换",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "必杀门牙": {
+    "name": "必杀门牙",
+    "type": "空",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "忍耐": {
+    "name": "忍耐",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "快速折返": {
+    "name": "快速折返",
+    "type": "水",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "快速防守": {
+    "name": "快速防守",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "念力": {
+    "name": "念力",
+    "type": "灵",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "急速折返": {
+    "name": "急速折返",
+    "type": "虫",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "怨念": {
+    "name": "怨念",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "怨恨": {
+    "name": "怨恨",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "怪力": {
+    "name": "怪力",
+    "type": "空",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "怪异电波": {
+    "name": "怪异电波",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "恶之波动": {
+    "name": "恶之波动",
+    "type": "暗",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "恶意追击": {
+    "name": "恶意追击",
+    "type": "暗",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "恶梦": {
+    "name": "恶梦",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "恶魔之吻": {
+    "name": "恶魔之吻",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 75,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "您先请": {
+    "name": "您先请",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "惊吓": {
+    "name": "惊吓",
+    "type": "鬼",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "惊爆大头": {
+    "name": "惊爆大头",
+    "type": "火",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "惩罚": {
+    "name": "惩罚",
+    "type": "暗",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "意念头锤": {
+    "name": "意念头锤",
+    "type": "灵",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "意念移物": {
+    "name": "意念移物",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "愤怒": {
+    "name": "愤怒",
+    "type": "空",
+    "category": "物理",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "愤怒粉": {
+    "name": "愤怒粉",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "愤怒门牙": {
+    "name": "愤怒门牙",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "戏法": {
+    "name": "戏法",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "戏法空间": {
+    "name": "戏法空间",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "戏法防守": {
+    "name": "戏法防守",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "成长": {
+    "name": "成长",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "raise_sp_atk",
+    "description": "积蓄能量，提升特攻。"
+  },
+  "战吼": {
+    "name": "战吼",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "手下留情": {
+    "name": "手下留情",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "扎根": {
+    "name": "扎根",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "扑击": {
+    "name": "扑击",
+    "type": "格",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "打嗝": {
+    "name": "打嗝",
+    "type": "毒",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "打草结": {
+    "name": "打草结",
+    "type": "木",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "打雷": {
+    "name": "打雷",
+    "type": "雷",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 70,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "打鼾": {
+    "name": "打鼾",
+    "type": "空",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "扫尾拍打": {
+    "name": "扫尾拍打",
+    "type": "空",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "扮演": {
+    "name": "扮演",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "找伙伴": {
+    "name": "找伙伴",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "抓": {
+    "name": "抓",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "抓狂": {
+    "name": "抓狂",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "投掷": {
+    "name": "投掷",
+    "type": "暗",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "投球": {
+    "name": "投球",
+    "type": "空",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "折弯汤匙": {
+    "name": "折弯汤匙",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 80,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "抛下狠话": {
+    "name": "抛下狠话",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "抛物面充电": {
+    "name": "抛物面充电",
+    "type": "雷",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "抢先一步": {
+    "name": "抢先一步",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "抢夺": {
+    "name": "抢夺",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "报仇": {
+    "name": "报仇",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "报复": {
+    "name": "报复",
+    "type": "格",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "报恩": {
+    "name": "报恩",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "拍击": {
+    "name": "拍击",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "拍落": {
+    "name": "拍落",
+    "type": "暗",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "拦堵": {
+    "name": "拦堵",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "指導": {
+    "name": "指導",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "挑衅": {
+    "name": "挑衅",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "挖洞": {
+    "name": "挖洞",
+    "type": "土",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "挠痒": {
+    "name": "挠痒",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "挡路": {
+    "name": "挡路",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "挣扎": {
+    "name": "挣扎",
+    "type": "空",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "挥指": {
+    "name": "挥指",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "挺住": {
+    "name": "挺住",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "捏碎": {
+    "name": "捏碎",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "捕兽夹": {
+    "name": "捕兽夹",
+    "type": "木",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "换场": {
+    "name": "换场",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "换挡": {
+    "name": "换挡",
+    "type": "钢",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "掀榻榻米": {
+    "name": "掀榻榻米",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "掉包": {
+    "name": "掉包",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "接棒": {
+    "name": "接棒",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "掷泥": {
+    "name": "掷泥",
+    "type": "土",
+    "category": "特殊",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "掷锚": {
+    "name": "掷锚",
+    "type": "钢",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "搏命": {
+    "name": "搏命",
+    "type": "格",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "摇尾巴": {
+    "name": "摇尾巴",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "摇晃舞": {
+    "name": "摇晃舞",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "摔打": {
+    "name": "摔打",
+    "type": "空",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 75,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "撒娇": {
+    "name": "撒娇",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "撒菱": {
+    "name": "撒菱",
+    "type": "土",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "撕咬": {
+    "name": "撕咬",
+    "type": "空",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": "用尖牙狠狠咬住对方。"
+  },
+  "撕裂爪": {
+    "name": "撕裂爪",
+    "type": "空",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "撞击": {
+    "name": "撞击",
+    "type": "空",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 95,
+    "max_pp": 35,
+    "effect": "",
+    "description": "全力冲撞对方。"
+  },
+  "攀岩": {
+    "name": "攀岩",
+    "type": "空",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "攀瀑": {
+    "name": "攀瀑",
+    "type": "水",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "攻击指令": {
+    "name": "攻击指令",
+    "type": "虫",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "放电": {
+    "name": "放电",
+    "type": "雷",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "断头钳": {
+    "name": "断头钳",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 30,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "断崖之剑": {
+    "name": "断崖之剑",
+    "type": "土",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "新月舞": {
+    "name": "新月舞",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "旋风刀": {
+    "name": "旋风刀",
+    "type": "空",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "无尽暗夜之诱惑": {
+    "name": "无尽暗夜之诱惑",
+    "type": "鬼",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "无极光束": {
+    "name": "无极光束",
+    "type": "龙",
+    "category": "特殊",
+    "power": 160,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "无理取闹": {
+    "name": "无理取闹",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "日光刃": {
+    "name": "日光刃",
+    "type": "木",
+    "category": "物理",
+    "power": 125,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "日光回旋下苍穹": {
+    "name": "日光回旋下苍穹",
+    "type": "钢",
+    "category": "物理",
+    "power": 200,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "日光束": {
+    "name": "日光束",
+    "type": "木",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "时光咆哮": {
+    "name": "时光咆哮",
+    "type": "龙",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "晨光": {
+    "name": "晨光",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "暗冥強擊": {
+    "name": "暗冥強擊",
+    "type": "暗",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "暗影之光": {
+    "name": "暗影之光",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "暗影之骨": {
+    "name": "暗影之骨",
+    "type": "鬼",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "暗影偷盗": {
+    "name": "暗影偷盗",
+    "type": "鬼",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "暗影拳": {
+    "name": "暗影拳",
+    "type": "鬼",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "暗影潜袭": {
+    "name": "暗影潜袭",
+    "type": "鬼",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "暗影爪": {
+    "name": "暗影爪",
+    "type": "鬼",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "暗影球": {
+    "name": "暗影球",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "暗袭要害": {
+    "name": "暗袭要害",
+    "type": "暗",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "暗黑洞": {
+    "name": "暗黑洞",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 50,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "暗黑爆破": {
+    "name": "暗黑爆破",
+    "type": "暗",
+    "category": "特殊",
+    "power": 85,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "暴风": {
+    "name": "暴风",
+    "type": "风",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 70,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "暴风雪": {
+    "name": "暴风雪",
+    "type": "冰",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 70,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "替身": {
+    "name": "替身",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "月亮之力": {
+    "name": "月亮之力",
+    "type": "仙",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "月光": {
+    "name": "月光",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "月华飞溅落灵霄": {
+    "name": "月华飞溅落灵霄",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 200,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "木枝突刺": {
+    "name": "木枝突刺",
+    "type": "木",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "木槌": {
+    "name": "木槌",
+    "type": "木",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "木角": {
+    "name": "木角",
+    "type": "木",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "杂技": {
+    "name": "杂技",
+    "type": "风",
+    "category": "物理",
+    "power": 55,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "极光幕": {
+    "name": "极光幕",
+    "type": "冰",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "极光束": {
+    "name": "极光束",
+    "type": "冰",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "极寒冷焰": {
+    "name": "极寒冷焰",
+    "type": "冰",
+    "category": "特殊",
+    "power": 140,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "极巨大地": {
+    "name": "极巨大地",
+    "type": "土",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨妖精": {
+    "name": "极巨妖精",
+    "type": "仙",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨寒冰": {
+    "name": "极巨寒冰",
+    "type": "冰",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨岩石": {
+    "name": "极巨岩石",
+    "type": "岩",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨幽魂": {
+    "name": "极巨幽魂",
+    "type": "鬼",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨恶霸": {
+    "name": "极巨恶霸",
+    "type": "暗",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨拳斗": {
+    "name": "极巨拳斗",
+    "type": "格",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨攻击": {
+    "name": "极巨攻击",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨水流": {
+    "name": "极巨水流",
+    "type": "水",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨火爆": {
+    "name": "极巨火爆",
+    "type": "火",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨炮": {
+    "name": "极巨炮",
+    "type": "龙",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "极巨草原": {
+    "name": "极巨草原",
+    "type": "木",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨虫蛊": {
+    "name": "极巨虫蛊",
+    "type": "虫",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨超能": {
+    "name": "极巨超能",
+    "type": "灵",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨酸毒": {
+    "name": "极巨酸毒",
+    "type": "毒",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨钢铁": {
+    "name": "极巨钢铁",
+    "type": "钢",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨闪电": {
+    "name": "极巨闪电",
+    "type": "雷",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨防壁": {
+    "name": "极巨防壁",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨飞冲": {
+    "name": "极巨飞冲",
+    "type": "风",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极巨龙骑": {
+    "name": "极巨龙骑",
+    "type": "龙",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "极恶飞跃粉碎击": {
+    "name": "极恶飞跃粉碎击",
+    "type": "暗",
+    "category": "物理",
+    "power": 180,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "极速俯冲轰烈撞": {
+    "name": "极速俯冲轰烈撞",
+    "type": "风",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "查封": {
+    "name": "查封",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "树叶": {
+    "name": "树叶",
+    "type": "木",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "核心惩罚者": {
+    "name": "核心惩罚者",
+    "type": "龙",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "根源波动": {
+    "name": "根源波动",
+    "type": "水",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "梦话": {
+    "name": "梦话",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "棉孢子": {
+    "name": "棉孢子",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "棉花防守": {
+    "name": "棉花防守",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "森林咒术": {
+    "name": "森林咒术",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "棱角化": {
+    "name": "棱角化",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "棱镜镭射": {
+    "name": "棱镜镭射",
+    "type": "灵",
+    "category": "特殊",
+    "power": 160,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "模仿": {
+    "name": "模仿",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "欢乐时光": {
+    "name": "欢乐时光",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "欺诈": {
+    "name": "欺诈",
+    "type": "暗",
+    "category": "物理",
+    "power": 95,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "毁天灭地巨岩坠": {
+    "name": "毁天灭地巨岩坠",
+    "type": "岩",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "毒丝": {
+    "name": "毒丝",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "毒击": {
+    "name": "毒击",
+    "type": "毒",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "毒尾": {
+    "name": "毒尾",
+    "type": "毒",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "毒液冲击": {
+    "name": "毒液冲击",
+    "type": "毒",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "毒液陷阱": {
+    "name": "毒液陷阱",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "毒瓦斯": {
+    "name": "毒瓦斯",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "毒粉": {
+    "name": "毒粉",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 75,
+    "max_pp": 35,
+    "effect": "inflict_poison",
+    "description": "散布毒粉，令对方中毒。"
+  },
+  "毒菱": {
+    "name": "毒菱",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "毒针": {
+    "name": "毒针",
+    "type": "毒",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "气味侦测": {
+    "name": "气味侦测",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "气场轮": {
+    "name": "气场轮",
+    "type": "钢",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "气旋攻击": {
+    "name": "气旋攻击",
+    "type": "风",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "气象球": {
+    "name": "气象球",
+    "type": "空",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "水之波动": {
+    "name": "水之波动",
+    "type": "水",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "水之誓约": {
+    "name": "水之誓约",
+    "type": "水",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "水枪": {
+    "name": "水枪",
+    "type": "水",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": "高压射出水流攻击对方。"
+  },
+  "水流喷射": {
+    "name": "水流喷射",
+    "type": "水",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "水流尾": {
+    "name": "水流尾",
+    "type": "水",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "水流环": {
+    "name": "水流环",
+    "type": "水",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "水流裂破": {
+    "name": "水流裂破",
+    "type": "水",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "水流連打": {
+    "name": "水流連打",
+    "type": "水",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "水炮": {
+    "name": "水炮",
+    "type": "水",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "求雨": {
+    "name": "求雨",
+    "type": "水",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "污泥攻击": {
+    "name": "污泥攻击",
+    "type": "毒",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "污泥波": {
+    "name": "污泥波",
+    "type": "毒",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "污泥炸弹": {
+    "name": "污泥炸弹",
+    "type": "毒",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "汲取": {
+    "name": "汲取",
+    "type": "虫",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "沙暴": {
+    "name": "沙暴",
+    "type": "岩",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "沥青射击": {
+    "name": "沥青射击",
+    "type": "岩",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "治愈之愿": {
+    "name": "治愈之愿",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "治愈波动": {
+    "name": "治愈波动",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "治愈铃声": {
+    "name": "治愈铃声",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "泡影的咏叹调": {
+    "name": "泡影的咏叹调",
+    "type": "水",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "泡沫": {
+    "name": "泡沫",
+    "type": "水",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "泡沫光线": {
+    "name": "泡沫光线",
+    "type": "水",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "波导弹": {
+    "name": "波导弹",
+    "type": "格",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "泥巴射击": {
+    "name": "泥巴射击",
+    "type": "土",
+    "category": "特殊",
+    "power": 55,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "泥巴炸弹": {
+    "name": "泥巴炸弹",
+    "type": "土",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "泪眼汪汪": {
+    "name": "泪眼汪汪",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "泰山压顶": {
+    "name": "泰山压顶",
+    "type": "空",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "泼沙": {
+    "name": "泼沙",
+    "type": "土",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "洁净光芒": {
+    "name": "洁净光芒",
+    "type": "灵",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "洩憤": {
+    "name": "洩憤",
+    "type": "暗",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "活活气泡": {
+    "name": "活活气泡",
+    "type": "水",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "流星光束": {
+    "name": "流星光束",
+    "type": "岩",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "流星突击": {
+    "name": "流星突击",
+    "type": "格",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "流星群": {
+    "name": "流星群",
+    "type": "龙",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "流星闪冲": {
+    "name": "流星闪冲",
+    "type": "钢",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "流沙地狱": {
+    "name": "流沙地狱",
+    "type": "土",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "浊流": {
+    "name": "浊流",
+    "type": "水",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "浊雾": {
+    "name": "浊雾",
+    "type": "毒",
+    "category": "特殊",
+    "power": 30,
+    "accuracy": 70,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "海神庄严交响乐": {
+    "name": "海神庄严交响乐",
+    "type": "水",
+    "category": "特殊",
+    "power": 195,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "浸水": {
+    "name": "浸水",
+    "type": "水",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "深渊突刺": {
+    "name": "深渊突刺",
+    "type": "暗",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "清醒": {
+    "name": "清醒",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "清除之烟": {
+    "name": "清除之烟",
+    "type": "毒",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "清除浓雾": {
+    "name": "清除浓雾",
+    "type": "风",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "渴望": {
+    "name": "渴望",
+    "type": "空",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "溶化": {
+    "name": "溶化",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "溶解液": {
+    "name": "溶解液",
+    "type": "毒",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "滔滔冲浪": {
+    "name": "滔滔冲浪",
+    "type": "水",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "滚动": {
+    "name": "滚动",
+    "type": "岩",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 90,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "潜水": {
+    "name": "潜水",
+    "type": "水",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "潜灵奇袭": {
+    "name": "潜灵奇袭",
+    "type": "鬼",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "潮旋": {
+    "name": "潮旋",
+    "type": "水",
+    "category": "特殊",
+    "power": 35,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "激狂大地万里冰": {
+    "name": "激狂大地万里冰",
+    "type": "冰",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "火之舞": {
+    "name": "火之舞",
+    "type": "火",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "火之誓约": {
+    "name": "火之誓约",
+    "type": "火",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "火焰弹": {
+    "name": "火焰弹",
+    "type": "火",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "火焰拳": {
+    "name": "火焰拳",
+    "type": "火",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "火焰旋涡": {
+    "name": "火焰旋涡",
+    "type": "火",
+    "category": "特殊",
+    "power": 35,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "火焰牙": {
+    "name": "火焰牙",
+    "type": "火",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "火焰球": {
+    "name": "火焰球",
+    "type": "火",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "火焰踢": {
+    "name": "火焰踢",
+    "type": "火",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "火焰轮": {
+    "name": "火焰轮",
+    "type": "火",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "火焰鞭": {
+    "name": "火焰鞭",
+    "type": "火",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "火箭头锤": {
+    "name": "火箭头锤",
+    "type": "空",
+    "category": "物理",
+    "power": 130,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "火花": {
+    "name": "火花",
+    "type": "火",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": "喷出小火花攻击对方。"
+  },
+  "灭亡之歌": {
+    "name": "灭亡之歌",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
   },
   "灵能冲击": {
-    "name": "灵能冲击", "type": "灵", "category": "特殊",
-    "power": 80, "accuracy": 100, "max_pp": 10,
-    "effect": "", "description": "以强大灵力冲击对方，威力惊人。"
+    "name": "灵能冲击",
+    "type": "灵",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "以强大灵力冲击对方，威力惊人。"
+  },
+  "灵魂冲击": {
+    "name": "灵魂冲击",
+    "type": "仙",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "炸蛋": {
+    "name": "炸蛋",
+    "type": "空",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 75,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "点到为止": {
+    "name": "点到为止",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "点穴": {
+    "name": "点穴",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "炼狱": {
+    "name": "炼狱",
+    "type": "火",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 50,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "炽魂热舞烈音爆": {
+    "name": "炽魂热舞烈音爆",
+    "type": "龙",
+    "category": "特殊",
+    "power": 185,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "烈焰溅射": {
+    "name": "烈焰溅射",
+    "type": "火",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "烟幕": {
+    "name": "烟幕",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "烟雾弹": {
+    "name": "烟雾弹",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "lower_acc",
+    "description": "释放浓烟，降低对方命中。"
+  },
+  "烦恼种子": {
+    "name": "烦恼种子",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "烧尽": {
+    "name": "烧尽",
+    "type": "火",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "热带踢": {
+    "name": "热带踢",
+    "type": "木",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "热水": {
+    "name": "热水",
+    "type": "水",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "热风": {
+    "name": "热风",
+    "type": "火",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "焕然一新": {
+    "name": "焕然一新",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "焚天灭世炽光爆": {
+    "name": "焚天灭世炽光爆",
+    "type": "灵",
+    "category": "特殊",
+    "power": 200,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "焰喷": {
+    "name": "焰喷",
+    "type": "火",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "inflict_burn",
+    "effect_chance": 30,
+    "description": "喷出灼热火焰，有30%概率令对方烧伤。"
+  },
+  "熊熊火爆": {
+    "name": "熊熊火爆",
+    "type": "火",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "熔岩风暴": {
+    "name": "熔岩风暴",
+    "type": "火",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 75,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "熱沙大地": {
+    "name": "熱沙大地",
+    "type": "土",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "燃尽": {
+    "name": "燃尽",
+    "type": "火",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "燕返": {
+    "name": "燕返",
+    "type": "风",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "爆炸头突击": {
+    "name": "爆炸头突击",
+    "type": "空",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "爆炸烈焰": {
+    "name": "爆炸烈焰",
+    "type": "火",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "爆裂拳": {
+    "name": "爆裂拳",
+    "type": "格",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 50,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "爆音波": {
+    "name": "爆音波",
+    "type": "空",
+    "category": "特殊",
+    "power": 140,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "爬擊": {
+    "name": "爬擊",
+    "type": "虫",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "爱心印章": {
+    "name": "爱心印章",
+    "type": "灵",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "牵手": {
+    "name": "牵手",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "特性互换": {
+    "name": "特性互换",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "狂舞挥打": {
+    "name": "狂舞挥打",
+    "type": "暗",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "狙击": {
+    "name": "狙击",
+    "type": "水",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "狼啸石牙飓风暴": {
+    "name": "狼啸石牙飓风暴",
+    "type": "岩",
+    "category": "物理",
+    "power": 190,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "猛扑": {
+    "name": "猛扑",
+    "type": "虫",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "猛推": {
+    "name": "猛推",
+    "type": "格",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "猛撞": {
+    "name": "猛撞",
+    "type": "空",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "玉石俱碎": {
+    "name": "玉石俱碎",
+    "type": "空",
+    "category": "物理",
+    "power": 200,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "王牌": {
+    "name": "王牌",
+    "type": "空",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "王者盾牌": {
+    "name": "王者盾牌",
+    "type": "钢",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "玩水": {
+    "name": "玩水",
+    "type": "水",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "玩泥巴": {
+    "name": "玩泥巴",
+    "type": "土",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "珍藏": {
+    "name": "珍藏",
+    "type": "空",
+    "category": "物理",
+    "power": 140,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "瑜伽姿势": {
+    "name": "瑜伽姿势",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "甜甜香气": {
+    "name": "甜甜香气",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "生命水滴": {
+    "name": "生命水滴",
+    "type": "水",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "生蛋": {
+    "name": "生蛋",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "生长": {
+    "name": "生长",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "电光": {
+    "name": "电光",
+    "type": "雷",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "电光一闪": {
+    "name": "电光一闪",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "电击": {
+    "name": "电击",
+    "type": "雷",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": "用电流击打对方。"
+  },
+  "电击波": {
+    "name": "电击波",
+    "type": "雷",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "电喙": {
+    "name": "电喙",
+    "type": "雷",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "电气场地": {
+    "name": "电气场地",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "电球": {
+    "name": "电球",
+    "type": "雷",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "电电加速": {
+    "name": "电电加速",
+    "type": "雷",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "电磁波": {
+    "name": "电磁波",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 20,
+    "effect": "inflict_paralysis",
+    "description": "发出电磁波，令对方陷入麻痹。"
+  },
+  "电磁炮": {
+    "name": "电磁炮",
+    "type": "雷",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 50,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "电磁飘浮": {
+    "name": "电磁飘浮",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "电网": {
+    "name": "电网",
+    "type": "雷",
+    "category": "特殊",
+    "power": 55,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "画龙点睛": {
+    "name": "画龙点睛",
+    "type": "风",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "疯狂伏特": {
+    "name": "疯狂伏特",
+    "type": "雷",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "疯狂植物": {
+    "name": "疯狂植物",
+    "type": "木",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "疯狂滚压": {
+    "name": "疯狂滚压",
+    "type": "虫",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
   },
   "疾风击": {
-    "name": "疾风击", "type": "风", "category": "物理",
-    "power": 55, "accuracy": 100, "max_pp": 20,
-    "effect": "", "description": "乘风冲击对方，疾若流星。"
+    "name": "疾风击",
+    "type": "风",
+    "category": "物理",
+    "power": 55,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": "乘风冲击对方，疾若流星。"
+  },
+  "白雾": {
+    "name": "白雾",
+    "type": "冰",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "百万吨重拳": {
+    "name": "百万吨重拳",
+    "type": "空",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "百万吨重踢": {
+    "name": "百万吨重踢",
+    "type": "空",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 75,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "皮卡皮卡必杀击": {
+    "name": "皮卡皮卡必杀击",
+    "type": "雷",
+    "category": "物理",
+    "power": 210,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "盐水": {
+    "name": "盐水",
+    "type": "水",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "盘蜷": {
+    "name": "盘蜷",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "直冲钻": {
+    "name": "直冲钻",
+    "type": "土",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "看我嘛": {
+    "name": "看我嘛",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "看穿": {
+    "name": "看穿",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "真气弹": {
+    "name": "真气弹",
+    "type": "格",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 70,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "真气拳": {
+    "name": "真气拳",
+    "type": "格",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "真空波": {
+    "name": "真空波",
+    "type": "格",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "睡觉": {
+    "name": "睡觉",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "瞪眼": {
+    "name": "瞪眼",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "瞬间失忆": {
+    "name": "瞬间失忆",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "瞬间移动": {
+    "name": "瞬间移动",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "石击": {
+    "name": "石击",
+    "type": "土",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": "投掷坚石猛力击打对方。"
+  },
+  "砰砰击破": {
+    "name": "砰砰击破",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "破坏光线": {
+    "name": "破坏光线",
+    "type": "空",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "破壳": {
+    "name": "破壳",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "破灭之光": {
+    "name": "破灭之光",
+    "type": "仙",
+    "category": "特殊",
+    "power": 140,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "破灭之愿": {
+    "name": "破灭之愿",
+    "type": "钢",
+    "category": "特殊",
+    "power": 140,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "破音": {
+    "name": "破音",
+    "type": "雷",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "硬撑": {
+    "name": "硬撑",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "碉堡": {
+    "name": "碉堡",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "碎岩": {
+    "name": "碎岩",
+    "type": "格",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "磁场操控": {
+    "name": "磁场操控",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "磁铁炸弹": {
+    "name": "磁铁炸弹",
+    "type": "钢",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "磨爪": {
+    "name": "磨爪",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "磨砺": {
+    "name": "磨砺",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "磷火": {
+    "name": "磷火",
+    "type": "火",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "礼物": {
+    "name": "礼物",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "祈愿": {
+    "name": "祈愿",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "神圣之火": {
+    "name": "神圣之火",
+    "type": "火",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "神奇蒸汽": {
+    "name": "神奇蒸汽",
+    "type": "仙",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "神秘之剑": {
+    "name": "神秘之剑",
+    "type": "格",
+    "category": "特殊",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "神秘守护": {
+    "name": "神秘守护",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "神通力": {
+    "name": "神通力",
+    "type": "灵",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "神速": {
+    "name": "神速",
+    "type": "空",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "神鸟猛击": {
+    "name": "神鸟猛击",
+    "type": "风",
+    "category": "物理",
+    "power": 140,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "祸不单行": {
+    "name": "祸不单行",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "种子机关枪": {
+    "name": "种子机关枪",
+    "type": "木",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "种子炸弹": {
+    "name": "种子炸弹",
+    "type": "木",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "种子闪光": {
+    "name": "种子闪光",
+    "type": "木",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "秘密之力": {
+    "name": "秘密之力",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "究极巨龙震天地": {
+    "name": "究极巨龙震天地",
+    "type": "龙",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "究极无敌大冲撞": {
+    "name": "究极无敌大冲撞",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "空手劈": {
+    "name": "空手劈",
+    "type": "格",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "空气利刃": {
+    "name": "空气利刃",
+    "type": "风",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 95,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "空气斩": {
+    "name": "空气斩",
+    "type": "风",
+    "category": "特殊",
+    "power": 75,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "突袭": {
+    "name": "突袭",
+    "type": "暗",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "章鱼桶炮": {
+    "name": "章鱼桶炮",
+    "type": "水",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "等离子浴": {
+    "name": "等离子浴",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "等离子闪电拳": {
+    "name": "等离子闪电拳",
+    "type": "雷",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "粉尘": {
+    "name": "粉尘",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "精神之牙": {
+    "name": "精神之牙",
+    "type": "灵",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "精神冲击": {
+    "name": "精神冲击",
+    "type": "灵",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "精神击破": {
+    "name": "精神击破",
+    "type": "灵",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "精神利刃": {
+    "name": "精神利刃",
+    "type": "灵",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "精神场地": {
+    "name": "精神场地",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "精神强念": {
+    "name": "精神强念",
+    "type": "灵",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "精神波": {
+    "name": "精神波",
+    "type": "灵",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "精神突进": {
+    "name": "精神突进",
+    "type": "灵",
+    "category": "特殊",
+    "power": 140,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "精神转移": {
+    "name": "精神转移",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "紧咬不放": {
+    "name": "紧咬不放",
+    "type": "暗",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "紧束": {
+    "name": "紧束",
+    "type": "空",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 90,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "纠缠不休": {
+    "name": "纠缠不休",
+    "type": "虫",
+    "category": "特殊",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "纹理": {
+    "name": "纹理",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "纹理２": {
+    "name": "纹理２",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "细雪": {
+    "name": "细雪",
+    "type": "冰",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "终极伏特狂雷闪": {
+    "name": "终极伏特狂雷闪",
+    "type": "雷",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "终极冲击": {
+    "name": "终极冲击",
+    "type": "空",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "终极吸取": {
+    "name": "终极吸取",
+    "type": "木",
+    "category": "特殊",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "绑紧": {
+    "name": "绑紧",
+    "type": "空",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "绚烂缤纷花怒放": {
+    "name": "绚烂缤纷花怒放",
+    "type": "木",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "绝处逢生": {
+    "name": "绝处逢生",
+    "type": "格",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "绝对捕食回旋斩": {
+    "name": "绝对捕食回旋斩",
+    "type": "虫",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "绝对零度": {
+    "name": "绝对零度",
+    "type": "冰",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 30,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "绞紧": {
+    "name": "绞紧",
+    "type": "空",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "缝影": {
+    "name": "缝影",
+    "type": "鬼",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "缠绕": {
+    "name": "缠绕",
+    "type": "空",
+    "category": "物理",
+    "power": 10,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "缩入壳中": {
+    "name": "缩入壳中",
+    "type": "水",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "羽栖": {
+    "name": "羽栖",
+    "type": "风",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "羽毛舞": {
+    "name": "羽毛舞",
+    "type": "风",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "翅膀攻击": {
+    "name": "翅膀攻击",
+    "type": "风",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "耕地": {
+    "name": "耕地",
+    "type": "土",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "聚光灯": {
+    "name": "聚光灯",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "聚宝功": {
+    "name": "聚宝功",
+    "type": "空",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "聚气": {
+    "name": "聚气",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "胃液": {
+    "name": "胃液",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "背水一战": {
+    "name": "背水一战",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "能量球": {
+    "name": "能量球",
+    "type": "木",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "腐蝕氣體": {
+    "name": "腐蝕氣體",
+    "type": "毒",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "腹鼓": {
+    "name": "腹鼓",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "臂貝武器": {
+    "name": "臂貝武器",
+    "type": "毒",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "臂锤": {
+    "name": "臂锤",
+    "type": "格",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "自我再生": {
+    "name": "自我再生",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "自我暗示": {
+    "name": "自我暗示",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "自我激励": {
+    "name": "自我激励",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "自然之力": {
+    "name": "自然之力",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "自然之怒": {
+    "name": "自然之怒",
+    "type": "仙",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "自然之恩": {
+    "name": "自然之恩",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "自由落体": {
+    "name": "自由落体",
+    "type": "风",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "至高精神破坏波": {
+    "name": "至高精神破坏波",
+    "type": "灵",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "致命针刺": {
+    "name": "致命针刺",
+    "type": "虫",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "舌舔": {
+    "name": "舌舔",
+    "type": "鬼",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "舍身冲撞": {
+    "name": "舍身冲撞",
+    "type": "空",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "花朵加农炮": {
+    "name": "花朵加农炮",
+    "type": "仙",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "花瓣舞": {
+    "name": "花瓣舞",
+    "type": "木",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "花疗": {
+    "name": "花疗",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "花粉团": {
+    "name": "花粉团",
+    "type": "虫",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "芳香治疗": {
+    "name": "芳香治疗",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "芳香薄雾": {
+    "name": "芳香薄雾",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "苹果酸": {
+    "name": "苹果酸",
+    "type": "木",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "茁茁炸弹": {
+    "name": "茁茁炸弹",
+    "type": "木",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "茶会": {
+    "name": "茶会",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "草之誓约": {
+    "name": "草之誓约",
+    "type": "木",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "草笛": {
+    "name": "草笛",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 55,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "萤火": {
+    "name": "萤火",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "落石": {
+    "name": "落石",
+    "type": "岩",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 90,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "落英缤纷": {
+    "name": "落英缤纷",
+    "type": "木",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "蒸汽爆炸": {
+    "name": "蒸汽爆炸",
+    "type": "水",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "蓄力": {
+    "name": "蓄力",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "蓄能焰袭": {
+    "name": "蓄能焰袭",
+    "type": "火",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "薄雾场地": {
+    "name": "薄雾场地",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "薄雾球": {
+    "name": "薄雾球",
+    "type": "灵",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "薄霧炸裂": {
+    "name": "薄霧炸裂",
+    "type": "仙",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "藤鞭": {
+    "name": "藤鞭",
+    "type": "木",
+    "category": "物理",
+    "power": 45,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": "挥动藤蔓抽打对方。"
+  },
+  "蘑菇孢子": {
+    "name": "蘑菇孢子",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "虚张声势": {
+    "name": "虚张声势",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "虫之抵抗": {
+    "name": "虫之抵抗",
+    "type": "虫",
+    "category": "特殊",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "虫咬": {
+    "name": "虫咬",
+    "type": "虫",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "虫鸣": {
+    "name": "虫鸣",
+    "type": "虫",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "蛛网": {
+    "name": "蛛网",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "蛮力": {
+    "name": "蛮力",
+    "type": "格",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "蛮干": {
+    "name": "蛮干",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "蛸固": {
+    "name": "蛸固",
+    "type": "格",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "蝶舞": {
+    "name": "蝶舞",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "蟹钳锤": {
+    "name": "蟹钳锤",
+    "type": "水",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "装饰": {
+    "name": "装饰",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "觉醒之舞": {
+    "name": "觉醒之舞",
+    "type": "空",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "觉醒力量": {
+    "name": "觉醒力量",
+    "type": "空",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "角撞": {
+    "name": "角撞",
+    "type": "空",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "角钻": {
+    "name": "角钻",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 30,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "认真起来大爆击": {
+    "name": "认真起来大爆击",
+    "type": "空",
+    "category": "物理",
+    "power": 210,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "诅咒": {
+    "name": "诅咒",
+    "type": "鬼",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "识破": {
+    "name": "识破",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "诡计": {
+    "name": "诡计",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "诱惑": {
+    "name": "诱惑",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "贝壳刃": {
+    "name": "贝壳刃",
+    "type": "水",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "贝壳夹击": {
+    "name": "贝壳夹击",
+    "type": "水",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "起源超新星大爆炸": {
+    "name": "起源超新星大爆炸",
+    "type": "灵",
+    "category": "特殊",
+    "power": 185,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "起风": {
+    "name": "起风",
+    "type": "风",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "超强极限爆焰弹": {
+    "name": "超强极限爆焰弹",
+    "type": "火",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "超级吸取": {
+    "name": "超级吸取",
+    "type": "木",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "超级水流大漩涡": {
+    "name": "超级水流大漩涡",
+    "type": "水",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "超级角击": {
+    "name": "超级角击",
+    "type": "虫",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "超绝螺旋连击": {
+    "name": "超绝螺旋连击",
+    "type": "钢",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "超音波": {
+    "name": "超音波",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 55,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "跃起": {
+    "name": "跃起",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "跺脚": {
+    "name": "跺脚",
+    "type": "土",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "踢倒": {
+    "name": "踢倒",
+    "type": "格",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "踩踏": {
+    "name": "踩踏",
+    "type": "空",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "蹭蹭脸颊": {
+    "name": "蹭蹭脸颊",
+    "type": "雷",
+    "category": "物理",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "身体轻量化": {
+    "name": "身体轻量化",
+    "type": "钢",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "轮唱": {
+    "name": "轮唱",
+    "type": "空",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "辅助力量": {
+    "name": "辅助力量",
+    "type": "灵",
+    "category": "特殊",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "辅助齿轮": {
+    "name": "辅助齿轮",
+    "type": "钢",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "输电": {
+    "name": "输电",
+    "type": "雷",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "迁怒": {
+    "name": "迁怒",
+    "type": "空",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "过热": {
+    "name": "过热",
+    "type": "火",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "迎头一击": {
+    "name": "迎头一击",
+    "type": "虫",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "近身战": {
+    "name": "近身战",
+    "type": "格",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "连斩": {
+    "name": "连斩",
+    "type": "虫",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 95,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "连环巴掌": {
+    "name": "连环巴掌",
+    "type": "空",
+    "category": "物理",
+    "power": 15,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "连续拳": {
+    "name": "连续拳",
+    "type": "空",
+    "category": "物理",
+    "power": 18,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "迷人": {
+    "name": "迷人",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "迷昏拳": {
+    "name": "迷昏拳",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "追打": {
+    "name": "追打",
+    "type": "暗",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "逆鳞": {
+    "name": "逆鳞",
+    "type": "龙",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "逐步击破": {
+    "name": "逐步击破",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "速度互换": {
+    "name": "速度互换",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "遮天蔽日暗影箭": {
+    "name": "遮天蔽日暗影箭",
+    "type": "鬼",
+    "category": "物理",
+    "power": 180,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "酸液炸弹": {
+    "name": "酸液炸弹",
+    "type": "毒",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "重力": {
+    "name": "重力",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "重磅冲撞": {
+    "name": "重磅冲撞",
+    "type": "钢",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "重踏": {
+    "name": "重踏",
+    "type": "土",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "金属爆炸": {
+    "name": "金属爆炸",
+    "type": "钢",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "金属爪": {
+    "name": "金属爪",
+    "type": "钢",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 95,
+    "max_pp": 35,
+    "effect": "",
+    "description": ""
+  },
+  "金属音": {
+    "name": "金属音",
+    "type": "钢",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 85,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "鐵滾輪": {
+    "name": "鐵滾輪",
+    "type": "钢",
+    "category": "物理",
+    "power": 130,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "钢拳双击": {
+    "name": "钢拳双击",
+    "type": "钢",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "钢翼": {
+    "name": "钢翼",
+    "type": "钢",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 90,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "钻石风暴": {
+    "name": "钻石风暴",
+    "type": "岩",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "铁壁": {
+    "name": "铁壁",
+    "type": "钢",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "铁头": {
+    "name": "铁头",
+    "type": "钢",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "铁尾": {
+    "name": "铁尾",
+    "type": "钢",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 75,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "铁蹄光线": {
+    "name": "铁蹄光线",
+    "type": "钢",
+    "category": "特殊",
+    "power": 140,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "银色旋风": {
+    "name": "银色旋风",
+    "type": "虫",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "锁定": {
+    "name": "锁定",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "镜光射击": {
+    "name": "镜光射击",
+    "type": "钢",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 85,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "镜面反射": {
+    "name": "镜面反射",
+    "type": "灵",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "镜面属性": {
+    "name": "镜面属性",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "长嚎": {
+    "name": "长嚎",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "闪光": {
+    "name": "闪光",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "闪焰冲锋": {
+    "name": "闪焰冲锋",
+    "type": "火",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "闪闪雷光": {
+    "name": "闪闪雷光",
+    "type": "雷",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "防守互换": {
+    "name": "防守互换",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "防守平分": {
+    "name": "防守平分",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "防御卷缩": {
+    "name": "防御卷缩",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "raise_def",
+    "description": "缩紧身躯，提升自身防御。"
+  },
+  "防御指令": {
+    "name": "防御指令",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "陀螺球": {
+    "name": "陀螺球",
+    "type": "钢",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "陷阱甲壳": {
+    "name": "陷阱甲壳",
+    "type": "火",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "隐形岩": {
+    "name": "隐形岩",
+    "type": "岩",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "集沙": {
+    "name": "集沙",
+    "type": "土",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "雙翼": {
+    "name": "雙翼",
+    "type": "风",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "雪崩": {
+    "name": "雪崩",
+    "type": "冰",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "雷击": {
+    "name": "雷击",
+    "type": "雷",
+    "category": "物理",
+    "power": 130,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "雷电拳": {
+    "name": "雷电拳",
+    "type": "雷",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "雷电牙": {
+    "name": "雷电牙",
+    "type": "雷",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "電力上升": {
+    "name": "電力上升",
+    "type": "雷",
+    "category": "特殊",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "震级": {
+    "name": "震级",
+    "type": "土",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "靈騷": {
+    "name": "靈騷",
+    "type": "鬼",
+    "category": "物理",
+    "power": 110,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "青焰": {
+    "name": "青焰",
+    "type": "火",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "青草场地": {
+    "name": "青草场地",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "青草搅拌器": {
+    "name": "青草搅拌器",
+    "type": "木",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "青草滑梯": {
+    "name": "青草滑梯",
+    "type": "木",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "音爆": {
+    "name": "音爆",
+    "type": "空",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "音速拳": {
+    "name": "音速拳",
+    "type": "格",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
   },
   "顺风": {
-    "name": "顺风", "type": "风", "category": "变化",
-    "power": 0, "accuracy": 100, "max_pp": 30,
-    "effect": "raise_spd", "description": "借助风力大幅提升自身速度。"
+    "name": "顺风",
+    "type": "风",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "raise_spd",
+    "description": "借助风力大幅提升自身速度。"
+  },
+  "预知未来": {
+    "name": "预知未来",
+    "type": "灵",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "颠倒": {
+    "name": "颠倒",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
   },
   "飓风": {
-    "name": "飓风", "type": "风", "category": "特殊",
-    "power": 80, "accuracy": 70, "max_pp": 10,
-    "effect": "", "description": "掀起猛烈飓风，威力强大但命中不稳定。"
+    "name": "飓风",
+    "type": "风",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 70,
+    "max_pp": 10,
+    "effect": "",
+    "description": "掀起猛烈飓风，威力强大但命中不稳定。"
+  },
+  "飘飘坠落": {
+    "name": "飘飘坠落",
+    "type": "风",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "飞叶快刀": {
+    "name": "飞叶快刀",
+    "type": "木",
+    "category": "物理",
+    "power": 55,
+    "accuracy": 95,
+    "max_pp": 25,
+    "effect": "",
+    "description": ""
+  },
+  "飞叶风暴": {
+    "name": "飞叶风暴",
+    "type": "木",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "飞弹针": {
+    "name": "飞弹针",
+    "type": "虫",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 95,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "飞水手里剑": {
+    "name": "飞水手里剑",
+    "type": "水",
+    "category": "特殊",
+    "power": 15,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "飞翔": {
+    "name": "飞翔",
+    "type": "风",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "飞膝踢": {
+    "name": "飞膝踢",
+    "type": "格",
+    "category": "物理",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "飞踢": {
+    "name": "飞踢",
+    "type": "格",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "飞身重压": {
+    "name": "飞身重压",
+    "type": "格",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "食梦": {
+    "name": "食梦",
+    "type": "灵",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "驾雷驭电戏冲浪": {
+    "name": "驾雷驭电戏冲浪",
+    "type": "雷",
+    "category": "特殊",
+    "power": 175,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "骨头回力镖": {
+    "name": "骨头回力镖",
+    "type": "土",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "骨棒": {
+    "name": "骨棒",
+    "type": "土",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 85,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "骨棒乱打": {
+    "name": "骨棒乱打",
+    "type": "土",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "高温重压": {
+    "name": "高温重压",
+    "type": "火",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "高科技光炮": {
+    "name": "高科技光炮",
+    "type": "空",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "高速旋转": {
+    "name": "高速旋转",
+    "type": "空",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": ""
+  },
+  "高速星星": {
+    "name": "高速星星",
+    "type": "空",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "高速移动": {
+    "name": "高速移动",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "魂舞烈音爆": {
+    "name": "魂舞烈音爆",
+    "type": "龙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "魅惑之声": {
+    "name": "魅惑之声",
+    "type": "仙",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "魔法反射": {
+    "name": "魔法反射",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "魔法叶": {
+    "name": "魔法叶",
+    "type": "仙",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": "射出必中的魔法叶片，威力稳定。"
+  },
+  "魔法火焰": {
+    "name": "魔法火焰",
+    "type": "火",
+    "category": "特殊",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "魔法空间": {
+    "name": "魔法空间",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "魔法粉": {
+    "name": "魔法粉",
+    "type": "灵",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "魔法闪耀": {
+    "name": "魔法闪耀",
+    "type": "仙",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "鱗射": {
+    "name": "鱗射",
+    "type": "龙",
+    "category": "物理",
+    "power": 25,
+    "accuracy": 90,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "鲜花防守": {
+    "name": "鲜花防守",
+    "type": "仙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "鳃咬": {
+    "name": "鳃咬",
+    "type": "水",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "鳞片噪音": {
+    "name": "鳞片噪音",
+    "type": "龙",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "鸟嘴加农炮": {
+    "name": "鸟嘴加农炮",
+    "type": "风",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "鹦鹉学舌": {
+    "name": "鹦鹉学舌",
+    "type": "风",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "麻痹粉": {
+    "name": "麻痹粉",
+    "type": "木",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 75,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "麻麻刺刺": {
+    "name": "麻麻刺刺",
+    "type": "雷",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "麻麻电击": {
+    "name": "麻麻电击",
+    "type": "雷",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "黏黏网": {
+    "name": "黏黏网",
+    "type": "虫",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "黑夜魔影": {
+    "name": "黑夜魔影",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "黑洞吞噬万物灭": {
+    "name": "黑洞吞噬万物灭",
+    "type": "暗",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "description": ""
+  },
+  "黑色目光": {
+    "name": "黑色目光",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
+  },
+  "黑雾": {
+    "name": "黑雾",
+    "type": "冰",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 30,
+    "effect": "",
+    "description": ""
+  },
+  "鼓击": {
+    "name": "鼓击",
+    "type": "木",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "齿轮飞盘": {
+    "name": "齿轮飞盘",
+    "type": "钢",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "龙之俯冲": {
+    "name": "龙之俯冲",
+    "type": "龙",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 75,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "龙之怒": {
+    "name": "龙之怒",
+    "type": "龙",
+    "category": "特殊",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "龙之波动": {
+    "name": "龙之波动",
+    "type": "龙",
+    "category": "特殊",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "龙之舞": {
+    "name": "龙之舞",
+    "type": "龙",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "龙卷风": {
+    "name": "龙卷风",
+    "type": "龙",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": ""
+  },
+  "龙尾": {
+    "name": "龙尾",
+    "type": "龙",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "龙息": {
+    "name": "龙息",
+    "type": "水",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": "吐出蛟龙之气，威力强劲。"
+  },
+  "龙爪": {
+    "name": "龙爪",
+    "type": "龙",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "龙箭": {
+    "name": "龙箭",
+    "type": "龙",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "龙锤": {
+    "name": "龙锤",
+    "type": "龙",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": ""
+  },
+  "ＤＤ金勾臂": {
+    "name": "ＤＤ金勾臂",
+    "type": "暗",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": ""
+  },
+  "Ｖ热焰": {
+    "name": "Ｖ热焰",
+    "type": "火",
+    "category": "物理",
+    "power": 180,
+    "accuracy": 95,
+    "max_pp": 5,
+    "effect": "",
+    "description": ""
   }
 }

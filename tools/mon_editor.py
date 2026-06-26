@@ -16,7 +16,7 @@ else:
 SPECIES_FILE = os.path.join(ROOT, "data", "species.json")
 MOVES_FILE   = os.path.join(ROOT, "data", "moves.json")
 
-TYPES      = ["", "火", "水", "木", "虫", "土", "空", "风", "仙", "灵", "龙", "格", "电"]
+TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢"]
 GROWTH     = ["快速", "中速", "缓慢"]
 CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
@@ -472,7 +472,7 @@ class App:
         }
         self._mon_refresh_list()
         for i in range(self.mon_list.size()):
-            if self.mon_list.get(i) == name:
+            if self._mon_get_name(self.mon_list.get(i)) == name:
                 self.mon_list.selection_clear(0, "end")
                 self.mon_list.selection_set(i)
                 self.mon_list.see(i)
@@ -640,6 +640,7 @@ class App:
             for mon in self.species.values():
                 for lv in mon.get("learnset", {}):
                     mon["learnset"][lv] = [new if s == old else s for s in mon["learnset"][lv]]
+            save_json(SPECIES_FILE, self.species)
 
         self.moves[new] = d
         save_json(MOVES_FILE, self.moves)
