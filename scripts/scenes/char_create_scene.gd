@@ -5,7 +5,7 @@ signal request_scene(scene_name: String, data: Dictionary)
 const VW := 480
 const VH := 320
 
-# 阶段：0=教授开场白, 1=性别选择, 2=取名
+# 阶段：0=教授开场白, 1=性别选择, 2=取名, 3=劲敌取名
 var _phase: int = 0
 var _intro_idx: int = 0
 var _gender: String = "男"
@@ -15,6 +15,8 @@ var _dialog_hint: Label
 var _gender_panel: Control
 var _name_panel: Control
 var _name_input: LineEdit
+var _rival_panel: Control     # 劲敌取名面板
+var _rival_input: LineEdit
 
 const PROFESSOR_SPRITE := "res://assets/sprites/博士_front.png"
 
@@ -27,6 +29,7 @@ func _ready() -> void:
 	_build_dialog()
 	_gender_panel = _build_gender_panel()
 	_name_panel = _build_name_panel()
+	_rival_panel = _build_rival_panel()
 	_show_phase(0)
 
 # ── 背景 ─────────────────────────────────────────────────────────────────────
@@ -236,11 +239,66 @@ func _build_name_panel() -> Control:
 
 	return panel
 
+# ── 劲敌取名面板 ──────────────────────────────────────────────────────────────
+func _build_rival_panel() -> Control:
+	var panel = Control.new()
+	panel.visible = false
+	add_child(panel)
+
+	var title = Label.new()
+	title.text = "你的劲敌叫……？"
+	title.position = Vector2(0, 36)
+	title.size.x = VW
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color(0.12, 0.12, 0.22))
+	title.add_theme_font_size_override("font_size", 20)
+	panel.add_child(title)
+
+	var box_bg = ColorRect.new()
+	box_bg.size = Vector2(210, 40)
+	box_bg.position = Vector2((VW - 210) / 2, 108)
+	box_bg.color = Color(1.0, 1.0, 1.0)
+	panel.add_child(box_bg)
+
+	var box_border = ColorRect.new()
+	box_border.size = Vector2(210, 2)
+	box_border.position = Vector2((VW - 210) / 2, 146)
+	box_border.color = Color(0.55, 0.55, 0.80)
+	panel.add_child(box_border)
+
+	_rival_input = LineEdit.new()
+	_rival_input.size = Vector2(206, 36)
+	_rival_input.position = Vector2((VW - 206) / 2, 110)
+	_rival_input.max_length = 8
+	_rival_input.placeholder_text = "输入劲敌名字……"
+	_rival_input.add_theme_font_size_override("font_size", 17)
+	_rival_input.text_submitted.connect(_on_rival_confirmed)
+	panel.add_child(_rival_input)
+
+	var confirm_btn = Button.new()
+	confirm_btn.text = "就这样！"
+	confirm_btn.size = Vector2(110, 32)
+	confirm_btn.position = Vector2((VW - 110) / 2, 162)
+	confirm_btn.pressed.connect(func(): _on_rival_confirmed(_rival_input.text))
+	panel.add_child(confirm_btn)
+
+	var hint = Label.new()
+	hint.text = "（最多 8 个字，Enter 确认）"
+	hint.position = Vector2(0, 204)
+	hint.size.x = VW
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override("font_color", Color(0.45, 0.45, 0.62))
+	hint.add_theme_font_size_override("font_size", 10)
+	panel.add_child(hint)
+
+	return panel
+
 # ── 阶段控制 ─────────────────────────────────────────────────────────────────
 func _show_phase(phase: int) -> void:
 	_phase = phase
 	_gender_panel.visible = false
 	_name_panel.visible = false
+	_rival_panel.visible = false
 	match phase:
 		0:  # 教授开场白
 			_dialog_lbl.text = INTRO_LINES[_intro_idx]
@@ -256,6 +314,11 @@ func _show_phase(phase: int) -> void:
 			_dialog_lbl.text = MonDB.dlg("char_create", key)
 			_dialog_hint.visible = false
 			_name_input.grab_focus()
+		3:  # 劲敌取名
+			_rival_panel.visible = true
+			_dialog_lbl.text = "对了——"
+			_dialog_hint.visible = false
+			_rival_input.grab_focus()
 
 func _refresh_gender() -> void:
 	var m_box = _gender_panel.get_node_or_null("MaleBox")
@@ -293,6 +356,14 @@ func _on_name_confirmed(text: String) -> void:
 	var n = text.strip_edges()
 	if n.is_empty():
 		n = "小明" if _gender == "男" else "小华"
-	GameState.start_new_game(n)
+	GameState.player_name = n
 	GameState.player_gender = _gender
+	_show_phase(3)
+
+func _on_rival_confirmed(text: String) -> void:
+	var n = text.strip_edges()
+	if n.is_empty():
+		n = "小敏"
+	GameState.rival_name = n
+	GameState.start_new_game(GameState.player_name, n)
 	request_scene.emit("starter", {})

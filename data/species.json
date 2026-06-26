@@ -15,7 +15,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "身怀火焰之力的灵猫，耳尖常有小火苗跳动，性情热烈好动。",
+    "desc": "身怀火焰之力的灵猫，耳尖常有小火苗跳动，毛色橙红温暖。性情热烈好动，活泼又黏人。",
     "gender_ratio": "87.5/12.5",
     "size_info": "小型 / 0.4m / 4.1kg",
     "evolutions": [
@@ -58,7 +58,7 @@
     "catch_rate": 45,
     "exp_yield": 142,
     "growth_rate": "中速",
-    "desc": "进化后火焰覆盖全身，战斗时鬃毛燃烧，速度与力量兼备。",
+    "desc": "进化后火焰覆盖全身，战斗时鬃毛如焰般燃烧。速度与力量兼备，已初显王者之气。",
     "gender_ratio": "87.5/12.5",
     "size_info": "中型 / 1.0m / 19.0kg",
     "evolutions": [
@@ -138,7 +138,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "通体蔚蓝的小水蛇，性情温顺，能喷出清冽水流护身。",
+    "desc": "通体蔚蓝小水蛇，鳞片闪闪发亮。性情温顺，能喷清冽水流护身，深受村民喜爱。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.5m / 6.9kg",
     "evolutions": [
@@ -181,7 +181,7 @@
     "catch_rate": 45,
     "exp_yield": 142,
     "growth_rate": "缓慢",
-    "desc": "蓝蛇化蛟，体型急速扩大，在江河中穿行如电，防御坚如磐石。",
+    "desc": "蓝蛇化蛟，体型急速扩大，在江河中穿行如电。性情变得沉稳坚毅，防御坚如磐石。",
     "gender_ratio": "50/50",
     "size_info": "中型 / 1.0m / 22.5kg",
     "evolutions": [
@@ -261,7 +261,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "圆滚滚的竹林小熊，以竹叶为食，天生能感应草木之灵气。",
+    "desc": "圆滚滚的竹林小熊，以竹叶为食，浑身毛茸茸的。天生能感应草木之灵气，憨态可掬。",
     "gender_ratio": "87.5/12.5",
     "size_info": "小型 / 0.7m / 32kg",
     "evolutions": [
@@ -295,7 +295,7 @@
     "catch_rate": 45,
     "exp_yield": 142,
     "growth_rate": "中速",
-    "desc": "熟习竹林功法的少年熊，拳风带着草木之力，正在苦练绝学。",
+    "desc": "熟习竹林功法的少年熊，拳风带着草木之力。憨厚中透着认真，正在苦练绝世绝学。",
     "gender_ratio": "50/50",
     "size_info": "中型 / 1.2m / 65.5kg",
     "evolutions": [
@@ -355,7 +355,7 @@
     "catch_rate": 255,
     "exp_yield": 39,
     "growth_rate": "快速",
-    "desc": "行动迟缓的虫形精灵，生命力旺盛，常见于草丛。",
+    "desc": "行动迟缓的虫形精灵，圆滚滚的身躯爬得很慢。生命力旺盛，常见于草丛间晒太阳。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.1m / 0.9kg",
     "evolutions": [
@@ -389,7 +389,7 @@
     "catch_rate": 120,
     "exp_yield": 72,
     "growth_rate": "快速",
-    "desc": "绿肥虫蜕变后的蛹状态，外壳坚硬，正在积蓄力量。",
+    "desc": "绿肥虫蜕变后的蛹状态，外壳坚硬无比。外表平静，实则正在积蓄破茧的力量。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.2m / 1.5kg",
     "evolutions": [
@@ -422,9 +422,18 @@
     "catch_rate": 120,
     "exp_yield": 45,
     "growth_rate": "缓慢",
-    "desc": "由山间顽石凝聚灵气而生，防御极为坚固。",
+    "desc": "山石凝灵而成，石块拼合的身躯浑圆结实，胸口嵌着发黄光的核心。行动虽慢但石壳极厚。",
     "gender_ratio": "无性别",
-    "size_info": "小型 / 0.4m / 20.0kg",
+    "height": "0.4",
+    "weight": "20.0",
+    "evolutions": [
+      {
+        "into": "岩偶小将",
+        "level": 23
+      }
+    ],
+    "evolves_into": "岩偶小将",
+    "evolve_level": 23,
     "learnset": {
       "1": [
         "撞击",
@@ -451,7 +460,7 @@
     "catch_rate": 180,
     "exp_yield": 40,
     "growth_rate": "中速",
-    "desc": "浑身粉嫩圆滚的小精灵，尾尖常有静电火花，性格温顺爱撒娇。",
+    "desc": "浑身粉嫩圆滚的小精灵，尾尖常有静电火花蹦跳。性格温顺爱撒娇，是个小团子。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 3.0kg",
     "learnset": {
@@ -480,17 +489,10 @@
     "catch_rate": 200,
     "exp_yield": 36,
     "growth_rate": "中速",
-    "desc": "行动敏捷的小灵鼠，总在草丛中穿梭觅食。",
+    "desc": "灰白小灵鼠，大眼睛乌溜溜灵动。尾巴末端散发微光，在黑暗中照亮前路，跑得飞快。",
     "gender_ratio": "50/50",
-    "size_info": "小型 / 0.3m / 3.5kg",
-    "evolutions": [
-      {
-        "into": "灯翼蝠",
-        "level": 28
-      }
-    ],
-    "evolves_into": "灯翼蝠",
-    "evolve_level": 28,
+    "height": "0.3",
+    "weight": "3.5",
     "learnset": {
       "1": [
         "啃咬",
@@ -511,7 +513,7 @@
     }
   },
   "灯翼蝠": {
-    "id": 16,
+    "id": 63,
     "name": "灯翼蝠",
     "type1": "空",
     "type2": "暗",
@@ -526,9 +528,10 @@
     "catch_rate": 75,
     "exp_yield": 158,
     "growth_rate": "中速",
-    "desc": "进化后幻化为大型蝙蝠，翼展宽阔，胸腹有幽光灯笼纹路，在暗夜中飞掠时会发出诡异冷光。",
+    "desc": "进化后化为大型蝙蝠，翼展宽阔，胸腹有幽光灯笼纹路，暗夜中飞掠时发出诡异冷光。",
     "gender_ratio": "50/50",
-    "size_info": "中型 / 1.2m / 18.0kg",
+    "height": "1.2",
+    "weight": "18.0",
     "learnset": {
       "1": [
         "啃咬",
@@ -643,7 +646,7 @@
     "catch_rate": 190,
     "exp_yield": 50,
     "growth_rate": "中速",
-    "desc": "羽翼未满的小雉鸡，乘风而行，身姿轻盈。",
+    "desc": "绒毛浅黄的小雉鸡，喙和脚明亮橙黄。天生懂得借助风力滑翔，奔跑时身姿格外轻盈。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 2.0kg",
     "evolutions": [
@@ -722,7 +725,7 @@
     "catch_rate": 120,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "新发现的绿螳螂，详细资料待补充。",
+    "desc": "草丛中的敏捷战士，胸前镰刀般的前肢锋利无比。进化方向由训练家的气息决定。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.5m / 5.0kg",
     "evolutions": [
@@ -757,7 +760,7 @@
     "catch_rate": 120,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "新发现的蓝焰螳螂，详细资料待补充。",
+    "desc": "烈火淬炼后的形态，前肢化为燃烧的烈焰巨镰，蓝色甲壳坚硬无比，所到之处烈焰滔天。",
     "gender_ratio": "50/50",
     "size_info": "中型 / 1.0m / 15.0kg",
     "learnset": {
@@ -782,7 +785,7 @@
     "catch_rate": 120,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "新发现的赤金螳螂，详细资料待补充。",
+    "desc": "沐浴雷电后进化的形态，甲壳化为赤金色，能操控雷电之力，双臂交叉时释放闪电风暴。",
     "gender_ratio": "50/50",
     "size_info": "大型 / 1.8m / 45.0kg",
     "learnset": {
@@ -807,7 +810,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "神秘的元始之灵，资料待补充。",
+    "desc": "华灵大陆最古老的元始之灵，龙形身躯由灵能凝聚而成，同时拥有龙的力量和灵的感知。",
     "gender_ratio": "0/100",
     "size_info": "中型 / 1.7m / 45kg",
     "learnset": {
@@ -832,7 +835,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "新发现的智敏，详细资料待补充。",
+    "desc": "冰灵精灵通体洁白如雪，双眸闪烁冰冷智慧之光。能操控极寒之气，通晓世间所有知识。",
     "gender_ratio": "0/100",
     "size_info": "中型 /1.65m / 45.0kg",
     "learnset": {
@@ -857,7 +860,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "新发现的舒华，详细资料待补充。",
+    "desc": "仙灵少女，身披柔和灵光，步伐轻盈如踏云端。感知万物心跳，用仙灵之力治愈伤痛。",
     "gender_ratio": "0/100",
     "size_info": "中型 / 1.6m / 45.0kg",
     "learnset": {
@@ -882,7 +885,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
-    "desc": "",
+    "desc": "丘陵中诞生的雷之精灵，身躯包裹着蓬松的雷云绒毛，头顶小角会迸出细小电火花。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.5m / 5.0kg",
     "learnset": {}
@@ -995,7 +998,7 @@
     "catch_rate": 3,
     "exp_yield": 275,
     "growth_rate": "慢速",
-    "desc": "全身披覆冰钢铠甲，胸甲刻有山纹浮雕，口中横衔一柄冰刃，额头古篆符文散发淡金光芒，威震四方。",
+    "desc": "披覆冰钢铠甲，胸甲刻山纹浮雕，口中横衔冰刃，额头古篆符文散发淡金光芒，威震四方。",
     "gender_ratio": "50/50",
     "size_info": "大型 / 1.8m / 145.0kg",
     "learnset": {
@@ -1033,7 +1036,7 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "缓慢",
-    "desc": "",
+    "desc": "破茧后的华丽形态，双翼展开可遮蔽阳光，鳞粉折射彩虹般光泽，传说能穿越万里云海。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 2.0kg",
     "learnset": {}
@@ -1059,7 +1062,7 @@
     "name": "吉他小猪",
     "type1": "空",
     "type2": "",
-    "desc": "背着一把比自己还大的吉他，穿着蓝色西装的矮胖小猪。虽然表情总是一脸苦恼，但弹起琴来却异常动听。"
+    "desc": "背着大吉他、穿蓝色西装的矮胖小猪，表情总是一脸苦恼，弹起琴来却异常动听。"
   },
   "君美": {
     "base": {
@@ -1082,9 +1085,13 @@
     "name": "君美",
     "type1": "灵",
     "type2": "",
-    "desc": "戴着菱格纹毛衣和眼镜的知性精灵，总是背着一个鼓鼓的挎包。据说包里装满了各地收集的珍稀标本。"
+    "desc": "戴着菱格纹毛衣和眼镜的知性精灵，总背着鼓鼓的挎包，里面装满了各地收集的珍稀标本。"
   },
   "瑜伽小妹": {
+    "id": 35,
+    "name": "瑜伽小妹",
+    "type1": "格",
+    "type2": "",
     "base": {
       "hp": 0,
       "atk": 0,
@@ -1096,16 +1103,19 @@
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "中速",
+    "desc": "热爱瑜伽修行的精灵，赤脚感受大地，腰间系粉色纱巾，动作柔中带刚，气质沉静淡然。",
     "gender_ratio": "50/50",
     "height": "",
     "weight": "",
-    "evolutions": [],
-    "learnset": {},
-    "id": 35,
-    "name": "瑜伽小妹",
-    "type1": "格",
-    "type2": "",
-    "desc": "热爱瑜伽修行的精灵，总是赤脚站在大地上感受自然的气息。腰间系着粉色纱巾，动作柔中带刚。"
+    "evolutions": [
+      {
+        "into": "酷姐",
+        "level": 33
+      }
+    ],
+    "evolves_into": "酷姐",
+    "evolve_level": 33,
+    "learnset": {}
   },
   "酷姐": {
     "base": {
@@ -1128,7 +1138,7 @@
     "name": "酷姐",
     "type1": "暗",
     "type2": "",
-    "desc": "穿着黑色蕾丝上衣的冷酷精灵，编着精致的鱼骨辫。喜欢坐在高处俯瞰众生，手里永远拿着一瓶饮料。"
+    "desc": "穿黑色蕾丝上衣的冷酷精灵，编着精致鱼骨辫，喜欢坐在高处俯瞰众生，手拿一瓶饮料。"
   },
   "雨琦": {
     "base": {
@@ -1151,7 +1161,7 @@
     "name": "雨琦",
     "type1": "格",
     "type2": "暗",
-    "desc": "穿着黑色背心短裤的干练精灵，双手叉腰充满斗志。短发利落，眼神坚定，是天生的战斗家。"
+    "desc": "穿黑色背心短裤的干练精灵，双手叉腰充满斗志。短发利落眼神坚定，是天生的战斗家。"
   },
   "石面具": {
     "id": 38,
@@ -1196,7 +1206,7 @@
     "exp_yield": 178,
     "growth_rate": "中速",
     "gender_ratio": "无性别",
-    "desc": "石面具觉醒后化为傩神战士，身披岩石铠甲，胸口嵌有灵能宝珠，头顶烈焰角冠，背负紫色神幡。",
+    "desc": "石面具觉醒后的傩神战士，身披岩石铠甲，胸口嵌灵能宝珠，头顶烈焰角冠背负紫色神幡。",
     "evolutions": [],
     "learnset": {}
   },
@@ -1269,7 +1279,7 @@
     "exp_yield": 240,
     "growth_rate": "中速",
     "gender_ratio": "50/50",
-    "desc": "沼泽之王，全身披覆墨绿岩甲，头顶双角冒紫烟，胸腹紫毒脉络清晰可见，背甲刻有古篆纹。",
+    "desc": "沼泽之王，披覆墨绿岩甲，头顶双角冒紫烟，胸腹紫毒脉络清晰，背甲刻有古篆纹。",
     "evolutions": [],
     "learnset": {}
   },
@@ -1438,6 +1448,410 @@
     "gender_ratio": "50/50",
     "desc": "头顶盛开火红百合的木甲剑客，双刃叶剑锋利无比，膝肘缠绕花藤，是草木武道的大师。",
     "evolutions": [],
+    "learnset": {}
+  },
+  "绒心": {
+    "id": 50,
+    "name": "绒心",
+    "type1": "仙",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "体质完美的仙灵，全身覆盖柔软云絮绒毛，胸口有一团温暖的粉色心形光晕。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "铠灵": {
+    "id": 51,
+    "name": "铠灵",
+    "type1": "仙",
+    "type2": "空",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "自云端降临的守护精灵，周身缠绕淡金光之锁链，背后生有半透明羽翼。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "天铠心御": {
+    "id": 52,
+    "name": "天铠心御",
+    "type1": "仙",
+    "type2": "空",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "铠灵的最高进化，身披流光天界铠甲，胸口悬浮燃烧圣焰的仙灵之心，被视为华灵守护神。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "灵晶": {
+    "id": 53,
+    "name": "灵晶",
+    "type1": "灵",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "灵体凝聚的水晶精灵，通体半透明，体内蕴藏闪烁微光的能量核心。能为迷路者引路。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "幻铠灵": {
+    "id": 54,
+    "name": "幻铠灵",
+    "type1": "灵",
+    "type2": "空",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "灵晶与铠灵的终极融合，环绕破碎重组的灵能光甲，身体半虚半实，连接现世与灵界。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "幽狐": {
+    "id": 55,
+    "name": "幽狐",
+    "type1": "鬼",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "荒山古墓中的小狐鬼，通体漆黑，双眼闪烁幽幽绿光。爱叼走旅人的一只鞋作为纪念。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "影狐": {
+    "id": 56,
+    "name": "影狐",
+    "type1": "鬼",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "幽狐进化的形态，体型增大，双爪能撕裂影子。夜幕降临融入黑暗，成为真正的影之主宰。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "冥火妖狐": {
+    "id": 57,
+    "name": "冥火妖狐",
+    "type1": "鬼",
+    "type2": "火",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "影狐终极进化，通体燃烧幽蓝冥火，三尾摇曳。能穿越阴阳两界，为亡者引路。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "小毛猴": {
+    "id": 58,
+    "name": "小毛猴",
+    "type1": "空",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "天空浮岛上诞生的小毛猴，浑身覆盖轻盈绒毛，尾巴尖翘起一根呆毛。好奇又爱荡。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "粗臂猿": {
+    "id": 59,
+    "name": "粗臂猿",
+    "type1": "空",
+    "type2": "格",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "小毛猴的进化形态，双臂粗壮有力，肌肉线条分明。从浮岛学会格斗术，外表凶猛。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "黑大猩": {
+    "id": 60,
+    "name": "黑大猩",
+    "type1": "空",
+    "type2": "格",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "小毛猴一族的终极进化，身如铁塔，双拳能碎山裂石。传说是浮岛守护神，用身躯挡风暴。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "哞哞": {
+    "id": 61,
+    "name": "哞哞",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "草原常见的小牛精灵，浑身毛茸茸，叫声软糯可爱。它吃的草能让泥土变肥沃。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "荒牛": {
+    "id": 62,
+    "name": "荒牛",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "哞哞长大的样子，体型壮硕如小山，四蹄踏地能引发小震。暴风雨时会为小动物挡风遮雨。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "岩偶小将": {
+    "id": 20,
+    "name": "岩偶小将",
+    "type1": "岩",
+    "type2": "土",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "古人用泥土和岩石捏制的小偶，被大地之灵赋予生命。关节是粗糙石块，胸前有古老刻痕。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "evolutions": [
+      {
+        "into": "岩石巨人",
+        "level": 38
+      }
+    ],
+    "evolves_into": "岩石巨人",
+    "evolve_level": 38,
+    "learnset": {}
+  },
+  "岩石巨人": {
+    "id": 21,
+    "name": "岩石巨人",
+    "type1": "土",
+    "type2": "岩",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "岩偶小将的最终形态，巍峨如山，身躯由整块巨石铸就。远古时期的大地守护者。",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "小影": {
+    "id": 64,
+    "name": "小影",
+    "type1": "暗",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "怪影": {
+    "id": 65,
+    "name": "怪影",
+    "type1": "暗",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "影火": {
+    "id": 66,
+    "name": "影火",
+    "type1": "暗",
+    "type2": "火",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
     "learnset": {}
   }
 }

@@ -17,6 +17,8 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		"title":       script = load("res://scripts/scenes/title_scene.gd")
 		"char_create": script = load("res://scripts/scenes/char_create_scene.gd")
 		"starter":     script = load("res://scripts/scenes/starter_scene.gd")
+		"home":        script = load("res://scripts/scenes/home_scene.gd")
+		"village":     script = load("res://scripts/scenes/village_scene.gd")
 		"world":       script = load("res://scripts/scenes/world_scene.gd")
 		"battle":      script = load("res://scripts/scenes/battle_scene.gd")
 		_:

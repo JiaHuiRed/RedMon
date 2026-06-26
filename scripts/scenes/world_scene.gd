@@ -99,7 +99,7 @@ func _ready() -> void:
 	_build_dialog()
 	_build_shop_panel()
 	_build_menu()
-	print("[WORLD] 华灵大陆 – 起始草原")
+	print("[WORLD] 华灵草原")
 
 # ── World construction ───────────────────────────────────────────────────────
 func _build_world() -> void:
@@ -214,7 +214,7 @@ func _place_path() -> void:
 	var path_tiles: Array = []
 	for c in range(2, 28):
 		path_tiles.append(Vector2i(c, 9))
-	for r in range(10, 18):
+	for r in range(10, 20):
 		path_tiles.append(Vector2i(14, r))
 	for t in path_tiles:
 		_draw_path_tile(t.x, t.y)
@@ -616,7 +616,7 @@ func _build_dialog() -> void:
 
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(TILE * 7, TILE * 9)  # Start on the path
+	_player.position = Vector2(TILE * 14, TILE * 18)  # Start at bottom path entrance (arriving from village)
 	add_child(_player)
 
 	_player_sprite = Sprite2D.new()
@@ -732,7 +732,7 @@ func _build_hud() -> void:
 
 	# Area label bottom-left
 	var area_lbl = Label.new()
-	area_lbl.text = "华灵大陆·起始草原"
+	area_lbl.text = "华灵草原"
 	area_lbl.position = Vector2(4, VH - 18)
 	area_lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.8))
 	area_lbl.add_theme_font_size_override("font_size", 11)

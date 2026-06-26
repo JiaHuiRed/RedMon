@@ -15,6 +15,8 @@ var _player_mon: Dictionary = {}
 var _enemy_mon:  Dictionary = {}
 var _player_turn: bool = true
 var _busy: bool = false          # Blocks input while animations/await run
+var _return_scene: String = "world"   # Which scene to return to after battle
+var _battle_result: String = ""       # "win" | "lose" | "flee" | "caught" — passed back to caller
 
 # ── UI references ─────────────────────────────────────────────────────────────
 var _msg_label:        Label
@@ -79,6 +81,7 @@ func _ready() -> void:
 	var data = get_meta("scene_data", {})
 	_player_mon     = GameState.first_mon()
 	_player_mon_idx = 0
+	_return_scene   = data.get("return_scene", "world")
 
 	var trainer_data = data.get("trainer", {})
 	if not trainer_data.is_empty():
@@ -529,7 +532,8 @@ func _on_use_item(item_id: String) -> void:
 					await _show_message_async("队伍已满，%s 被放生了……" % MonDB.display_name(_enemy_mon))
 				_busy = false
 				GameState.save_game()
-				request_scene.emit("world", {})
+				_battle_result = "caught"
+				request_scene.emit(_return_scene, {"battle_result": _battle_result})
 				return
 			else:
 				await _show_message_async("差一点！\n%s 挣脱了！" % MonDB.display_name(_enemy_mon))
@@ -842,9 +846,10 @@ func _on_run() -> void:
 		_show_message("训练师对战中，无法逃跑！", func(): _show_action_panel())
 		return
 	_busy = true
+	_battle_result = "flee"
 	_show_message("你逃跑了！", func():
 		_busy = false
-		request_scene.emit("world", {})
+		request_scene.emit(_return_scene, {"battle_result": _battle_result})
 	)
 
 func _on_move_pressed(idx: int) -> void:
@@ -1143,12 +1148,14 @@ func _handle_victory() -> void:
 			GameState.save_game()
 			_busy = false
 			await _show_message_async("打败了训练师%s！\n获得了 %dG！" % [_trainer_name, _trainer_reward])
-			request_scene.emit("world", {})
+			_battle_result = "win"
+			request_scene.emit(_return_scene, {"battle_result": _battle_result})
 			return
 
 	_busy = false
 	GameState.save_game()
-	request_scene.emit("world", {})
+	_battle_result = "win"
+	request_scene.emit(_return_scene, {"battle_result": _battle_result})
 
 func _handle_defeat() -> void:
 	await _show_message_async("%s 倒下了……" % MonDB.display_name(_player_mon))
@@ -1165,7 +1172,8 @@ func _handle_defeat() -> void:
 			m["current_hp"] = 1   # 防止卡死
 		_busy = false
 		GameState.save_game()
-		request_scene.emit("world", {})
+		_battle_result = "lose"
+		request_scene.emit(_return_scene, {"battle_result": _battle_result})
 	else:
 		# 强制换场
 		_force_switch = true

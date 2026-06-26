@@ -239,7 +239,7 @@ func _start_outro() -> void:
 func _advance_outro() -> void:
 	_outro_idx += 1
 	if _outro_idx >= OUTRO_LINES.size():
-		request_scene.emit("world", {})
+		request_scene.emit("home", {})
 		return
 	var text = OUTRO_LINES[_outro_idx]
 	text = MonDB.dlg_sub(text, {"player": GameState.player_name, "mon": MonDB.display_name(GameState.player_team[0])})
