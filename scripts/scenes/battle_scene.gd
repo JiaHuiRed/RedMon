@@ -48,6 +48,14 @@ var _mon_close_btn: Button
 var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 
+# 训练师对战
+var _is_trainer:      bool   = false
+var _trainer_id:      String = ""
+var _trainer_name:    String = ""
+var _trainer_team:    Array  = []
+var _trainer_mon_idx: int    = 0
+var _trainer_reward:  int    = 0
+
 const FIELD_H := 190
 const MSG_Y   := 190
 const MSG_H   := 60
@@ -56,10 +64,20 @@ const MENU_H  := 70
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
-	_enemy_mon  = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))
-	_player_mon = GameState.first_mon()
-
+	_player_mon     = GameState.first_mon()
 	_player_mon_idx = 0
+
+	var trainer_data = data.get("trainer", {})
+	if not trainer_data.is_empty():
+		_is_trainer     = true
+		_trainer_id     = trainer_data.get("id", "")
+		_trainer_name   = trainer_data.get("name", "训练师")
+		_trainer_reward = trainer_data.get("reward", 100)
+		for slot in trainer_data.get("team", []):
+			_trainer_team.append(MonDB.create_mon(slot["species"], slot["level"]))
+		_enemy_mon = _trainer_team[0]
+	else:
+		_enemy_mon = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))
 
 	_build_battle_field()
 	_build_info_boxes()
@@ -69,7 +87,10 @@ func _ready() -> void:
 	_build_bag_panel()
 	_build_mon_panel()
 
-	_show_message("野生的 %s 出现了！" % MonDB.display_name(_enemy_mon), func(): _show_action_panel())
+	if _is_trainer:
+		_show_message("训练师%s\n想要对战！" % _trainer_name, func(): _show_action_panel())
+	else:
+		_show_message("野生的 %s 出现了！" % MonDB.display_name(_enemy_mon), func(): _show_action_panel())
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Battle field
@@ -744,6 +765,9 @@ func _on_mon() -> void:
 
 func _on_run() -> void:
 	if _busy: return
+	if _is_trainer:
+		_show_message("训练师对战中，无法逃跑！", func(): _show_action_panel())
+		return
 	_busy = true
 	_show_message("你逃跑了！", func():
 		_busy = false
@@ -1026,6 +1050,29 @@ func _handle_victory() -> void:
 	_refresh_info()
 
 	await get_tree().create_timer(0.5).timeout
+
+	if _is_trainer:
+		_trainer_mon_idx += 1
+		if _trainer_mon_idx < _trainer_team.size():
+			# 训练师派出下一只
+			_enemy_mon = _trainer_team[_trainer_mon_idx]
+			_enemy_spr.texture = _draw_mon_front(_enemy_mon["species_id"])
+			_enemy_spr.modulate = Color.WHITE
+			_refresh_info()
+			_busy = false
+			await _show_message_async("训练师%s派出了%s！" % [_trainer_name, MonDB.display_name(_enemy_mon)])
+			_show_action_panel()
+			return
+		else:
+			# 训练师全队倒下
+			GameState.money += _trainer_reward
+			GameState.defeated_trainers.append(_trainer_id)
+			GameState.save_game()
+			_busy = false
+			await _show_message_async("打败了训练师%s！\n获得了 %dG！" % [_trainer_name, _trainer_reward])
+			request_scene.emit("world", {})
+			return
+
 	_busy = false
 	GameState.save_game()
 	request_scene.emit("world", {})

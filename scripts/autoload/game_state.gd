@@ -6,6 +6,7 @@ var has_starter: bool = false
 var badges: int = 0
 var money: int = 500
 var items: Dictionary = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
+var defeated_trainers: Array = []   # 已击败的训练师 id 列表
 
 var font: SystemFont  # 全局中文字体，所有场景共用
 
@@ -33,12 +34,13 @@ func has_save() -> bool:
 
 func save_game() -> void:
 	var data := {
-		"player_name": player_name,
-		"has_starter":  has_starter,
-		"badges":       badges,
-		"money":        money,
-		"items":        items,
-		"player_team":  player_team,
+		"player_name":       player_name,
+		"has_starter":       has_starter,
+		"badges":            badges,
+		"money":             money,
+		"items":             items,
+		"player_team":       player_team,
+		"defeated_trainers": defeated_trainers,
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -61,12 +63,13 @@ func load_game() -> bool:
 		push_error("[SAVE] 存档解析失败: " + json.get_error_message())
 		return false
 	var data: Dictionary = json.get_data()
-	player_name  = data.get("player_name", "小明")
-	has_starter  = data.get("has_starter", false)
-	badges       = data.get("badges", 0)
-	money        = data.get("money", 500)
-	items        = data.get("items", {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5})
-	player_team  = data.get("player_team", [])
+	player_name       = data.get("player_name", "小明")
+	has_starter       = data.get("has_starter", false)
+	badges            = data.get("badges", 0)
+	money             = data.get("money", 500)
+	items             = data.get("items", {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5})
+	player_team       = data.get("player_team", [])
+	defeated_trainers = data.get("defeated_trainers", [])
 	print("[SAVE] 存档读取完成，队伍：%d 只精灵" % player_team.size())
 	return true
 

@@ -20,11 +20,52 @@ var _battling: bool = false
 var _hud: Control
 
 # 灵疗所
-const CLINIC_DOOR_TILE := Vector2i(26, 4)  # tile player stands on to interact
+const CLINIC_DOOR_TILE := Vector2i(26, 4)
 var _dialog_active: bool = false
-var _dialog_phase: int = 0   # 0=greeting 1=healed
+var _dialog_phase: int = 0   # 0=greeting 1=healed  (clinic); 100=trainer_before 101=trainer_win (trainer)
 var _dialog_panel: Control
 var _dialog_label: Label
+
+# 商店
+const SHOP_DOOR_TILE := Vector2i(20, 4)
+const SHOP_ITEMS := [
+	{"name": "精灵葫芦", "price": 200},
+	{"name": "铜丹",     "price": 100},
+	{"name": "银丹",     "price": 300},
+	{"name": "金丹",     "price": 800},
+	{"name": "铁丹",     "price": 500},
+]
+var _shop_active: bool = false
+var _shop_cursor: int  = 0
+var _shop_panel:  Control
+var _shop_result_label: Label
+
+# 训练师
+const TRAINERS := [
+	{
+		"id":       "t_xiaomin",
+		"name":     "学员小闵",
+		"tile":     Vector2i(8, 8),
+		"dir":      Vector2i(1, 0),   # 朝右
+		"sight":    4,
+		"team":     [{"species": "绿肥虫", "level": 6}, {"species": "小灯鼠", "level": 5}],
+		"reward":   200,
+		"dialog_before": "前面的！站住！",
+		"dialog_win":    "你……你真厉害！",
+	},
+	{
+		"id":       "t_laoka",
+		"name":     "武者老卡",
+		"tile":     Vector2i(20, 9),
+		"dir":      Vector2i(-1, 0),  # 朝左
+		"sight":    4,
+		"team":     [{"species": "岩灵", "level": 8}],
+		"reward":   350,
+		"dialog_before": "哼，路过此地？先过了我这关！",
+		"dialog_win":    "哼……你有两下子。",
+	},
+]
+var _pending_trainer: Dictionary = {}   # 等待确认开战的训练师
 
 # 主菜单
 const MENU_W   := 210
@@ -51,9 +92,12 @@ func _ready() -> void:
 	_build_world()
 	_build_signpost()
 	_build_clinic()
+	_build_shop()
+	_build_trainers()
 	_build_player()
 	_build_hud()
 	_build_dialog()
+	_build_shop_panel()
 	_build_menu()
 	print("[WORLD] 华灵大陆 – 起始草原")
 
@@ -388,6 +432,149 @@ func _build_clinic() -> void:
 	sign_lbl.z_index = 4
 	add_child(sign_lbl)
 
+func _build_shop() -> void:
+	# 商店在诊所左边：col 19-22, row 1-3
+	var bx: int = 19 * TILE
+	var by: int = 1  * TILE
+	var bw: int = 4  * TILE   # 64px
+	var bh: int = 3  * TILE   # 48px
+
+	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
+	wall_img.fill(Color(0.82, 0.92, 0.98))   # 淡蓝
+	# 窗口
+	wall_img.fill_rect(Rect2i(6, 8, 16, 14), Color(0.50, 0.75, 0.95))
+	wall_img.fill_rect(Rect2i(6, 8, 16, 1),  Color(0.20, 0.20, 0.25))
+	wall_img.fill_rect(Rect2i(6, 21, 16, 1), Color(0.20, 0.20, 0.25))
+	wall_img.fill_rect(Rect2i(6, 8, 1, 14),  Color(0.20, 0.20, 0.25))
+	wall_img.fill_rect(Rect2i(21, 8, 1, 14), Color(0.20, 0.20, 0.25))
+	wall_img.fill_rect(Rect2i(13, 8, 1, 14), Color(0.20, 0.20, 0.25))
+	# 门
+	wall_img.fill_rect(Rect2i(28, 14, 14, 18), Color(0.50, 0.30, 0.15))
+	wall_img.fill_rect(Rect2i(29, 15, 12, 16), Color(0.70, 0.48, 0.28))
+	# 钱币符号
+	for y in range(10, 20):
+		for x in range(44, 56):
+			var dx = x - 50; var dy = y - 15
+			if dx*dx + dy*dy <= 22:
+				wall_img.set_pixel(x, y, Color(0.95, 0.78, 0.10))
+	wall_img.fill_rect(Rect2i(49, 9, 2, 3),  Color(0.80, 0.60, 0.05))
+	# 外框
+	for x in range(bw):
+		wall_img.set_pixel(x, 0, Color(0.25, 0.35, 0.55))
+		wall_img.set_pixel(x, bh-1, Color(0.25, 0.35, 0.55))
+	for y in range(bh):
+		wall_img.set_pixel(0, y, Color(0.25, 0.35, 0.55))
+		wall_img.set_pixel(bw-1, y, Color(0.25, 0.35, 0.55))
+
+	var wall_tex = ImageTexture.new(); wall_tex.set_image(wall_img)
+	var wall_spr = Sprite2D.new()
+	wall_spr.texture = wall_tex
+	wall_spr.offset = Vector2(bw/2.0, bh/2.0)
+	wall_spr.position = Vector2(bx, by)
+	wall_spr.z_index = 2; add_child(wall_spr)
+
+	# 屋顶（蓝色调）
+	var roof_img = Image.create(bw+8, 20, false, Image.FORMAT_RGBA8)
+	roof_img.fill(Color(0, 0, 0, 0))
+	var rc = Color(0.22, 0.40, 0.75); var rcd = Color(0.14, 0.28, 0.55)
+	for i in range(10):
+		roof_img.fill_rect(Rect2i(i, i*2, bw+8-i*2, 2), rc)
+	roof_img.fill_rect(Rect2i(0, 18, bw+8, 2), rcd)
+	var roof_tex = ImageTexture.new(); roof_tex.set_image(roof_img)
+	var roof_spr = Sprite2D.new()
+	roof_spr.texture = roof_tex
+	roof_spr.offset = Vector2((bw+8)/2.0, 0)
+	roof_spr.position = Vector2(bx-4, by-16)
+	roof_spr.z_index = 3; add_child(roof_spr)
+
+	var sign_lbl = Label.new()
+	sign_lbl.text = "道具店"
+	sign_lbl.position = Vector2(bx + 10, by - 2)
+	sign_lbl.add_theme_color_override("font_color", Color(0.10, 0.20, 0.70))
+	sign_lbl.add_theme_font_size_override("font_size", 9)
+	sign_lbl.z_index = 4; add_child(sign_lbl)
+
+func _build_trainers() -> void:
+	for td in TRAINERS:
+		if td["id"] in GameState.defeated_trainers:
+			continue   # 已击败的不再显示（或可显示不同姿态）
+		var spr = Sprite2D.new()
+		spr.texture = _draw_trainer(td["name"][0])
+		spr.position = Vector2(td["tile"].x * TILE + TILE/2.0, td["tile"].y * TILE + TILE/2.0)
+		spr.z_index = 5
+		add_child(spr)
+
+func _draw_trainer(initial: String) -> ImageTexture:
+	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var blue   = Color(0.15, 0.35, 0.85)
+	var bd     = Color(0.10, 0.22, 0.60)
+	var black  = Color(0.10, 0.10, 0.12)
+	var skin   = Color(0.95, 0.82, 0.70)
+	var hair   = Color(0.18, 0.12, 0.06)
+	# 帽子
+	img.fill_rect(Rect2i(3, 0, 10, 3), blue)
+	img.fill_rect(Rect2i(1, 2, 14, 2), bd)
+	# 头发
+	img.fill_rect(Rect2i(2, 4, 2, 3), hair)
+	img.fill_rect(Rect2i(12, 4, 2, 3), hair)
+	# 脸
+	img.fill_rect(Rect2i(3, 4, 10, 6), skin)
+	img.fill_rect(Rect2i(5, 7, 2, 1), black)
+	img.fill_rect(Rect2i(9, 7, 2, 1), black)
+	# 上衣（蓝色）
+	img.fill_rect(Rect2i(1, 10, 14, 6), blue)
+	# 裤子
+	img.fill_rect(Rect2i(2, 16, 5, 4), black)
+	img.fill_rect(Rect2i(9, 16, 5, 4), black)
+	# 鞋
+	img.fill_rect(Rect2i(1, 18, 6, 2), bd)
+	img.fill_rect(Rect2i(9, 18, 6, 2), bd)
+	var tex = ImageTexture.new(); tex.set_image(img)
+	return tex
+
+func _build_shop_panel() -> void:
+	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
+	_shop_panel = Control.new(); _shop_panel.visible = false; cl.add_child(_shop_panel)
+
+	# 背景
+	var bg = ColorRect.new()
+	bg.size = Vector2(220, 200); bg.position = Vector2(130, 60)
+	bg.color = Color(0.04, 0.06, 0.18, 0.96); _shop_panel.add_child(bg)
+	var border = ColorRect.new()
+	border.size = Vector2(220, 2); border.position = Vector2(130, 60)
+	border.color = Color(0.50, 0.70, 1.0); _shop_panel.add_child(border)
+
+	# 标题
+	var title = Label.new(); title.text = "■ 道具店"
+	title.position = Vector2(142, 66)
+	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	title.add_theme_font_size_override("font_size", 12); _shop_panel.add_child(title)
+
+	# 金币
+	var money_lbl = Label.new(); money_lbl.name = "ShopMoney"
+	money_lbl.position = Vector2(268, 66)
+	money_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	money_lbl.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(money_lbl)
+
+	# 商品列表（创建好，刷新时设文字）
+	for i in range(SHOP_ITEMS.size()):
+		var row_lbl = Label.new(); row_lbl.name = "ShopRow%d" % i
+		row_lbl.position = Vector2(142, 90 + i * 22)
+		row_lbl.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(row_lbl)
+
+	# 操作结果提示
+	_shop_result_label = Label.new()
+	_shop_result_label.position = Vector2(142, 200)
+	_shop_result_label.add_theme_font_size_override("font_size", 10)
+	_shop_result_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
+	_shop_panel.add_child(_shop_result_label)
+
+	var hint = Label.new(); hint.text = "↑↓选择  Enter购买1个  Esc离开"
+	hint.position = Vector2(134, 244)
+	hint.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
+	hint.add_theme_font_size_override("font_size", 9); _shop_panel.add_child(hint)
+
 func _build_dialog() -> void:
 	# Fixed-screen dialog box (CanvasLayer so it ignores camera)
 	var cl = CanvasLayer.new()
@@ -552,8 +739,39 @@ func _build_hud() -> void:
 	_hud.add_child(area_lbl)
 
 # ── Movement & encounter ─────────────────────────────────────────────────────
+func _refresh_shop_panel() -> void:
+	var money_lbl = _shop_panel.get_node_or_null("ShopMoney")
+	if money_lbl: money_lbl.text = "%dG" % GameState.money
+	for i in range(SHOP_ITEMS.size()):
+		var item = SHOP_ITEMS[i]
+		var row  = _shop_panel.get_node_or_null("ShopRow%d" % i)
+		if not row: continue
+		var sel = (i == _shop_cursor)
+		row.text = ("%s%s  %dG" % ["▶ " if sel else "  ", item["name"], item["price"]])
+		row.add_theme_color_override("font_color",
+			Color.WHITE if sel else Color(0.70, 0.70, 0.85))
+
+func _open_shop() -> void:
+	_shop_active = true; _shop_cursor = 0
+	_shop_result_label.text = ""
+	_shop_panel.visible = true
+	_refresh_shop_panel()
+
+func _close_shop() -> void:
+	_shop_active = false; _shop_panel.visible = false
+
+func _shop_buy() -> void:
+	var item = SHOP_ITEMS[_shop_cursor]
+	if GameState.money < item["price"]:
+		_shop_result_label.text = "钱不够！"
+		return
+	GameState.money -= item["price"]
+	GameState.items[item["name"]] = GameState.items.get(item["name"], 0) + 1
+	_shop_result_label.text = "购买了%s！" % item["name"]
+	_refresh_shop_panel()
+
 func _physics_process(_delta: float) -> void:
-	if _battling or _dialog_active or _menu_active:
+	if _battling or _dialog_active or _menu_active or _shop_active:
 		return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
@@ -575,18 +793,16 @@ func _physics_process(_delta: float) -> void:
 		_step_counter += 1
 		if _step_counter % 4 == 0:
 			_check_encounter()
+		_check_trainer_sight()
 
 func _input(event: InputEvent) -> void:
-	# Escape: toggle menu (or go back in sub-views)
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
-		if _dialog_active:
-			return   # Escape doesn't close dialog; use Enter
+		if _dialog_active: return
+		if _shop_active:   _close_shop(); return
 		if _menu_active:
 			if _menu_sub != "":
-				_menu_sub = ""
-				_menu_cursor = 0
-				_refresh_menu()
+				_menu_sub = ""; _menu_cursor = 0; _refresh_menu()
 			else:
 				_close_menu()
 		else:
@@ -599,15 +815,30 @@ func _input(event: InputEvent) -> void:
 			_advance_dialog()
 		return
 
+	if _shop_active:
+		if event.is_action_pressed("ui_up"):
+			get_viewport().set_input_as_handled()
+			_shop_cursor = (_shop_cursor - 1 + SHOP_ITEMS.size()) % SHOP_ITEMS.size()
+			_shop_result_label.text = ""; _refresh_shop_panel()
+		elif event.is_action_pressed("ui_down"):
+			get_viewport().set_input_as_handled()
+			_shop_cursor = (_shop_cursor + 1) % SHOP_ITEMS.size()
+			_shop_result_label.text = ""; _refresh_shop_panel()
+		elif event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			_shop_buy()
+		return
+
 	if _menu_active:
 		_handle_menu_nav(event)
 		return
 
-	# World interaction: clinic door
 	if event.is_action_pressed("ui_accept"):
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 		if tile == CLINIC_DOOR_TILE:
 			_open_clinic()
+		elif tile == SHOP_DOOR_TILE:
+			_open_shop()
 
 func _open_clinic() -> void:
 	_dialog_active = true
@@ -616,14 +847,20 @@ func _open_clinic() -> void:
 	_dialog_label.text = "奥克博士的助理：\n欢迎来到灵疗所！\n我们来帮您恢复精灵的体力吧！"
 
 func _advance_dialog() -> void:
-	if _dialog_phase == 0:
-		_heal_all_mons()
-		_dialog_phase = 1
-		_dialog_label.text = "✦ 精灵们全部恢复了！✦\n游戏已保存。"
-	else:
-		_dialog_active = false
-		_dialog_panel.visible = false
-		_update_hud()
+	match _dialog_phase:
+		0:  # 灵疗所问候
+			_heal_all_mons()
+			_dialog_phase = 1
+			_dialog_label.text = "✦ 精灵们全部恢复了！✦\n游戏已保存。"
+		1:  # 灵疗所结束
+			_dialog_active = false; _dialog_panel.visible = false; _update_hud()
+		100:  # 训练师挑战确认 → 开战
+			_dialog_active = false; _dialog_panel.visible = false
+			_battling = true
+			request_scene.emit("battle", {"trainer": _pending_trainer, "from_scene": "world"})
+		101:  # 训练师战后对话结束
+			_dialog_active = false; _dialog_panel.visible = false
+			_pending_trainer = {}
 
 func _heal_all_mons() -> void:
 	for mon in GameState.player_team:
@@ -793,6 +1030,22 @@ func _select_main_option() -> void:
 		1: _menu_sub = "bag";    _refresh_menu()
 		2: GameState.save_game(); _menu_sub = "saved"; _refresh_menu()
 		3: _close_menu()
+
+func _check_trainer_sight() -> void:
+	if _battling or _dialog_active: return
+	var player_tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+	for td in TRAINERS:
+		if td["id"] in GameState.defeated_trainers: continue
+		var ttile: Vector2i = td["tile"]
+		var tdir:  Vector2i = td["dir"]
+		for i in range(1, td["sight"] + 1):
+			if ttile + tdir * i == player_tile:
+				_pending_trainer = td
+				_dialog_phase = 100
+				_dialog_active = true
+				_dialog_panel.visible = true
+				_dialog_label.text = "训练师%s：\n%s" % [td["name"], td["dialog_before"]]
+				return
 
 func _check_encounter() -> void:
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
