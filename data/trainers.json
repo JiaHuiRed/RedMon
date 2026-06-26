@@ -1,0 +1,27 @@
+{
+  "t_xiaomin": {
+    "id": "t_xiaomin",
+    "name": "学员小闵",
+    "gender": "男",
+    "class": "普通训练师",
+    "reward": 200,
+    "dialog_before": "前面的！站住！",
+    "dialog_win": "你……你真厉害！",
+    "team": [
+      {"species": "绿肥虫", "level": 6},
+      {"species": "小灯鼠", "level": 5}
+    ]
+  },
+  "t_laoka": {
+    "id": "t_laoka",
+    "name": "武者老卡",
+    "gender": "男",
+    "class": "普通训练师",
+    "reward": 350,
+    "dialog_before": "哼，路过此地？先过了我这关！",
+    "dialog_win": "哼……你有两下子。",
+    "team": [
+      {"species": "岩灵", "level": 8}
+    ]
+  }
+}

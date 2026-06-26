@@ -227,7 +227,7 @@
     "type1": "木",
     "type2": "",
     "base": {
-      "hp": 45,
+      "hp": 50,
       "atk": 65,
       "def": 49,
       "sp_atk": 20,
@@ -240,6 +240,12 @@
     "desc": "圆滚滚的竹林小熊，以竹叶为食，天生能感应草木之灵气。",
     "gender_ratio": "87.5/12.5",
     "size_info": "小型 / 0.7m / 32kg",
+    "evolutions": [
+      {
+        "into": "武道熊",
+        "level": 15
+      }
+    ],
     "evolves_into": "武道熊",
     "evolve_level": 15,
     "learnset": {

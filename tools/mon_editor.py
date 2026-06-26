@@ -13,13 +13,16 @@ if getattr(sys, "frozen", False):
     ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(sys.executable))))
 else:
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SPECIES_FILE = os.path.join(ROOT, "data", "species.json")
-MOVES_FILE   = os.path.join(ROOT, "data", "moves.json")
+SPECIES_FILE  = os.path.join(ROOT, "data", "species.json")
+MOVES_FILE    = os.path.join(ROOT, "data", "moves.json")
+TRAINERS_FILE = os.path.join(ROOT, "data", "trainers.json")
 
 TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢"]
 GROWTH     = ["快速", "中速", "缓慢"]
 CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
+TRAINER_GENDERS  = ["男", "女", "未知"]
+TRAINER_CLASSES  = ["普通训练师", "精英训练师", "道馆主", "四天王", "冠军", "路人", "商人", "研究员"]
 EFFECTS    = ["", "lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd",
               "lower_acc", "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def",
               "raise_spd", "raise_acc", "inflict_burn", "inflict_poison",
@@ -58,8 +61,9 @@ def _int(s):
 
 class App:
     def __init__(self):
-        self.species = load_json(SPECIES_FILE)
-        self.moves   = load_json(MOVES_FILE)
+        self.species  = load_json(SPECIES_FILE)
+        self.moves    = load_json(MOVES_FILE)
+        self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
 
         self.root = tk.Tk()
         self.root.title("RedMon 数据编辑器")
@@ -79,18 +83,24 @@ class App:
         self.notebook.add(self.move_tab, text=" 技能库 ")
         self._build_move_tab()
 
+        # ── Tab 3: 角色编辑 ──
+        self.trainer_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.trainer_tab, text=" 角色编辑 ")
+        self._build_trainer_tab()
+
         # Status bar
         self.status = ttk.Label(self.root, relief="sunken", anchor="w")
         self.status.pack(fill="x")
         self._update_status()
 
-        self._current_mon  = None
-        self._current_move = None
-        self._learnset     = []          # 当前精灵的技能池（临时编辑用）
+        self._current_mon     = None
+        self._current_move    = None
+        self._current_trainer = None
+        self._learnset        = []          # 当前精灵的技能池（临时编辑用）
 
     # ── helpers ──────────────────────────────────────────────────────────────
     def _update_status(self):
-        self.status.config(text=f"精灵: {len(self.species)}  |  技能: {len(self.moves)}")
+        self.status.config(text=f"精灵: {len(self.species)}  |  技能: {len(self.moves)}  |  角色: {len(self.trainers)}")
 
     def _draw_bar(self, canvas, value, color):
         canvas.delete("all")
@@ -355,39 +365,47 @@ class App:
         for w in self._evo_bar.winfo_children():
             w.destroy()
 
-        # 找前置形态（扫描谁的 evolutions 或 evolves_into 指向 name）
-        pre = next((n for n, s in self.species.items()
-                    if name in [e["into"] for e in s.get("evolutions", [])]
-                    or s.get("evolves_into") == name), None)
+        # ── 向前追溯到链的根部 ──────────────────────────────────────────────
+        # ancestor_chain: [(祖先名, 进化到下一段的等级), ...] 从根到直接前置
+        ancestor_chain = []
+        cur, visited = name, {name}
+        while True:
+            pre = next((n for n, s in self.species.items()
+                        if cur in [e["into"] for e in s.get("evolutions", [])]
+                        or s.get("evolves_into") == cur), None)
+            if not pre or pre in visited:
+                break
+            visited.add(pre)
+            pre_data = self.species[pre]
+            pre_evos = pre_data.get("evolutions", [])
+            arrow_lv = next((e["level"] for e in pre_evos if e["into"] == cur),
+                            pre_data.get("evolve_level", "?"))
+            ancestor_chain.append((pre, arrow_lv))
+            cur = pre
+        ancestor_chain.reverse()   # 根 → … → 直接前置
 
-        # 当前精灵的所有进化分支
+        # ── 当前精灵的所有进化分支 ──────────────────────────────────────────
         branches = d.get("evolutions", [])
         if not branches and d.get("evolves_into"):
             branches = [{"into": d["evolves_into"], "level": d.get("evolve_level", 0)}]
         branches = [b for b in branches if b["into"] in self.species]
 
-        has_relation = pre or branches
-        if not has_relation:
+        if not ancestor_chain and not branches:
             self._evo_bar.pack_forget()
             return
 
         self._evo_bar.pack(fill="x", padx=4, pady=(4, 0))
 
         col = 0
-        # 前置形态
-        if pre:
-            self._evo_card(self._evo_bar, pre, self.species[pre], False, row=0, col=col)
+        # 祖先链（逐段绘制：精灵卡 → 箭头 → …）
+        for anc_name, arrow_lv in ancestor_chain:
+            self._evo_card(self._evo_bar, anc_name, self.species[anc_name], False, row=0, col=col)
             col += 1
-            # 箭头（取前置形态指向当前的等级）
-            pre_data  = self.species[pre]
-            pre_evos  = pre_data.get("evolutions", [])
-            arrow_lv  = next((e["level"] for e in pre_evos if e["into"] == name),
-                             pre_data.get("evolve_level", "?"))
             ttk.Label(self._evo_bar, text=f"→Lv{arrow_lv}", foreground="#888888",
                       font=("", 8)).grid(row=0, column=col, padx=2)
             col += 1
 
-        # 当前精灵
+        # 当前精灵（高亮）
         self._evo_card(self._evo_bar, name, d, True, row=0, col=col)
         col += 1
 
@@ -797,6 +815,266 @@ class App:
         self._update_status()
         self._move_scroll.pack_forget()
         self._move_placeholder.pack(side="right", fill="both", expand=True)
+
+    # ════════════════════════════════════════════════════════════════════════
+    #  角色编辑 TAB
+    # ════════════════════════════════════════════════════════════════════════
+
+    def _build_trainer_tab(self):
+        # ── left: search + list ──
+        left = ttk.Frame(self.trainer_tab, width=220)
+        left.pack(side="left", fill="y", padx=5, pady=5)
+        left.pack_propagate(False)
+
+        ttk.Label(left, text="搜索:").pack(anchor="w")
+        self.trainer_search = ttk.Entry(left)
+        self.trainer_search.pack(fill="x")
+        self.trainer_search.bind("<KeyRelease>", lambda _: self._trainer_refresh_list())
+
+        lf = ttk.Frame(left)
+        lf.pack(fill="both", expand=True, pady=(4, 4))
+        sb = ttk.Scrollbar(lf, orient="vertical")
+        self.trainer_list = tk.Listbox(lf, yscrollcommand=sb.set, font=("Microsoft YaHei", 10))
+        sb.config(command=self.trainer_list.yview)
+        sb.pack(side="right", fill="y")
+        self.trainer_list.pack(side="left", fill="both", expand=True)
+        self.trainer_list.bind("<<ListboxSelect>>", self._trainer_select)
+
+        bf = ttk.Frame(left)
+        bf.pack(fill="x")
+        ttk.Button(bf, text="+ 新增", command=self._trainer_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="× 删除", command=self._trainer_delete).pack(side="left")
+
+        # ── right: placeholder + form ──
+        self._trainer_placeholder = ttk.Label(self.trainer_tab, text="  选择一个角色开始编辑", foreground="gray")
+        self._trainer_placeholder.pack(side="right", fill="both", expand=True)
+
+        self._trainer_form_frame = ttk.Frame(self.trainer_tab)
+
+        ms_canvas = tk.Canvas(self._trainer_form_frame, borderwidth=0, highlightthickness=0)
+        ms_vbar   = ttk.Scrollbar(self._trainer_form_frame, orient="vertical", command=ms_canvas.yview)
+        self._trainer_inner = ttk.Frame(ms_canvas)
+        self._trainer_inner.bind("<Configure>", lambda _: ms_canvas.configure(scrollregion=ms_canvas.bbox("all")))
+        ms_canvas.create_window((0, 0), window=self._trainer_inner, anchor="nw")
+        ms_canvas.configure(yscrollcommand=ms_vbar.set)
+        ms_canvas.pack(side="left", fill="both", expand=True)
+        ms_vbar.pack(side="right", fill="y")
+        ms_canvas.bind("<Enter>", lambda c=ms_canvas: c.bind_all("<MouseWheel>", lambda e: c.yview_scroll(-1*(e.delta//120), "units")))
+        ms_canvas.bind("<Leave>", lambda c=ms_canvas: c.unbind_all("<MouseWheel>"))
+
+        f = self._trainer_inner
+        row = 0
+
+        # ID
+        ttk.Label(f, text="ID:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_id_entry = ttk.Entry(f, width=20)
+        self.trainer_id_entry.grid(row=row, column=1, sticky="w", pady=3)
+        ttk.Button(f, text="💾 保存", command=self._trainer_save).grid(row=row, column=2, sticky="w", padx=(16, 0))
+        row += 1
+
+        # 名字
+        ttk.Label(f, text="名字:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_name_entry = ttk.Entry(f, width=20)
+        self.trainer_name_entry.grid(row=row, column=1, sticky="w", pady=3)
+        row += 1
+
+        # 性别 + 身份
+        ttk.Label(f, text="性别:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_gender = ttk.Combobox(f, values=TRAINER_GENDERS, width=8, state="readonly")
+        self.trainer_gender.grid(row=row, column=1, sticky="w", pady=3)
+        row += 1
+
+        ttk.Label(f, text="身份:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_class = ttk.Combobox(f, values=TRAINER_CLASSES, width=16, state="readonly")
+        self.trainer_class.grid(row=row, column=1, sticky="w", pady=3)
+        row += 1
+
+        # 赏金
+        ttk.Label(f, text="击败赏金:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_reward = ttk.Entry(f, width=10, justify="center")
+        self.trainer_reward.grid(row=row, column=1, sticky="w", pady=3)
+        row += 1
+
+        ttk.Separator(f, orient="horizontal").grid(row=row, column=0, columnspan=4, sticky="ew", pady=6)
+        row += 1
+
+        # 对话
+        ttk.Label(f, text="挑战台词:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_dialog_before = ttk.Entry(f, width=36)
+        self.trainer_dialog_before.grid(row=row, column=1, columnspan=2, sticky="ew", pady=3, padx=(0, 8))
+        row += 1
+
+        ttk.Label(f, text="败北台词:").grid(row=row, column=0, sticky="e", padx=(8, 4), pady=3)
+        self.trainer_dialog_win = ttk.Entry(f, width=36)
+        self.trainer_dialog_win.grid(row=row, column=1, columnspan=2, sticky="ew", pady=3, padx=(0, 8))
+        row += 1
+
+        ttk.Separator(f, orient="horizontal").grid(row=row, column=0, columnspan=4, sticky="ew", pady=6)
+        row += 1
+
+        # 队伍
+        ttk.Label(f, text="队伍精灵", font=("Microsoft YaHei", 9, "bold")).grid(row=row, column=0, columnspan=4, sticky="w", padx=8)
+        row += 1
+
+        team_cols = ("species", "level")
+        self.team_tree = ttk.Treeview(f, columns=team_cols, show="headings", height=6, selectmode="browse")
+        self.team_tree.heading("species", text="精灵")
+        self.team_tree.heading("level",   text="等级")
+        self.team_tree.column("species", width=160, anchor="w")
+        self.team_tree.column("level",   width=60,  anchor="center")
+        team_scroll = ttk.Scrollbar(f, orient="vertical", command=self.team_tree.yview)
+        self.team_tree.configure(yscrollcommand=team_scroll.set)
+        self.team_tree.grid(row=row, column=1, columnspan=2, sticky="ew", padx=(0, 8), pady=3)
+        team_scroll.grid(row=row, column=3, sticky="ns", padx=(0, 8))
+        row += 1
+
+        team_btn = ttk.Frame(f)
+        team_btn.grid(row=row, column=1, columnspan=2, sticky="w", padx=(0, 8), pady=3)
+        ttk.Button(team_btn, text="+ 添加精灵", command=self._team_add).pack(side="left", padx=(0, 6))
+        ttk.Button(team_btn, text="× 移除",     command=self._team_remove).pack(side="left")
+        row += 1
+
+        self._trainer_refresh_list()
+
+    def _trainer_show_form(self):
+        self._trainer_placeholder.pack_forget()
+        self._trainer_form_frame.pack(side="right", fill="both", expand=True, padx=5, pady=5)
+
+    def _trainer_refresh_list(self):
+        q = self.trainer_search.get().lower()
+        self.trainer_list.delete(0, "end")
+        for tid, td in sorted(self.trainers.items(), key=lambda x: x[1].get("name", x[0])):
+            name = td.get("name", tid)
+            if not q or q in name.lower() or q in tid.lower():
+                self.trainer_list.insert("end", f"{name}  [{tid}]")
+
+    def _trainer_get_id(self, display):
+        # "学员小闵  [t_xiaomin]" → "t_xiaomin"
+        if "[" in display and display.endswith("]"):
+            return display.rsplit("[", 1)[1][:-1]
+        return display
+
+    def _trainer_select(self, _=None):
+        sel = self.trainer_list.curselection()
+        if not sel: return
+        tid = self._trainer_get_id(self.trainer_list.get(sel[0]))
+        self._trainer_load(tid)
+
+    def _trainer_load(self, tid):
+        self._trainer_show_form()
+        d = self.trainers[tid]
+        self._current_trainer = tid
+
+        self.trainer_id_entry.delete(0, "end"); self.trainer_id_entry.insert(0, tid)
+        self.trainer_name_entry.delete(0, "end"); self.trainer_name_entry.insert(0, d.get("name", ""))
+        self.trainer_gender.set(d.get("gender", "男"))
+        self.trainer_class.set(d.get("class", "普通训练师"))
+        self.trainer_reward.delete(0, "end"); self.trainer_reward.insert(0, str(d.get("reward", 0)))
+        self.trainer_dialog_before.delete(0, "end"); self.trainer_dialog_before.insert(0, d.get("dialog_before", ""))
+        self.trainer_dialog_win.delete(0, "end");    self.trainer_dialog_win.insert(0, d.get("dialog_win", ""))
+
+        self.team_tree.delete(*self.team_tree.get_children())
+        for mem in d.get("team", []):
+            self.team_tree.insert("", "end", values=(mem.get("species", ""), mem.get("level", 1)))
+
+    def _trainer_save(self):
+        old_id  = self._current_trainer
+        new_id  = self.trainer_id_entry.get().strip()
+        name    = self.trainer_name_entry.get().strip()
+        if not new_id:
+            messagebox.showerror("错误", "ID 不能为空"); return
+        if not name:
+            messagebox.showerror("错误", "名字不能为空"); return
+
+        team = [
+            {"species": self.team_tree.item(iid, "values")[0],
+             "level":   _int(self.team_tree.item(iid, "values")[1])}
+            for iid in self.team_tree.get_children()
+        ]
+
+        d = {
+            "id":             new_id,
+            "name":           name,
+            "gender":         self.trainer_gender.get(),
+            "class":          self.trainer_class.get(),
+            "reward":         _int(self.trainer_reward.get()),
+            "dialog_before":  self.trainer_dialog_before.get().strip(),
+            "dialog_win":     self.trainer_dialog_win.get().strip(),
+            "team":           team,
+        }
+
+        if old_id and old_id != new_id:
+            del self.trainers[old_id]
+
+        self.trainers[new_id] = d
+        save_json(TRAINERS_FILE, self.trainers)
+        self._current_trainer = new_id
+        self._trainer_refresh_list()
+        self._update_status()
+        messagebox.showinfo("", "已保存 ✓")
+
+    def _trainer_add(self):
+        tid = "new_trainer"
+        i = 1
+        while tid in self.trainers:
+            i += 1; tid = f"new_trainer_{i}"
+        self.trainers[tid] = {
+            "id": tid, "name": "新训练师", "gender": "男",
+            "class": "普通训练师", "reward": 100,
+            "dialog_before": "", "dialog_win": "", "team": [],
+        }
+        self._trainer_refresh_list()
+        for i in range(self.trainer_list.size()):
+            if self._trainer_get_id(self.trainer_list.get(i)) == tid:
+                self.trainer_list.selection_clear(0, "end")
+                self.trainer_list.selection_set(i)
+                self.trainer_list.see(i)
+                self._trainer_load(tid); break
+
+    def _trainer_delete(self):
+        if not self._current_trainer: return
+        td = self.trainers[self._current_trainer]
+        if not messagebox.askyesno("确认", f"删除「{td.get('name', self._current_trainer)}」?"): return
+        del self.trainers[self._current_trainer]
+        save_json(TRAINERS_FILE, self.trainers)
+        self._current_trainer = None
+        self._trainer_refresh_list()
+        self._update_status()
+        self._trainer_form_frame.pack_forget()
+        self._trainer_placeholder.pack(side="right", fill="both", expand=True)
+
+    def _team_add(self):
+        dlg = tk.Toplevel(self.root)
+        dlg.title("添加队伍精灵")
+        dlg.geometry("300x110")
+        dlg.resizable(False, False)
+        dlg.transient(self.root); dlg.grab_set()
+
+        ttk.Label(dlg, text="精灵:").grid(row=0, column=0, padx=10, pady=8, sticky="e")
+        mon_names = sorted(self.species.keys())
+        cb = ttk.Combobox(dlg, values=mon_names, width=18, state="readonly")
+        cb.grid(row=0, column=1, sticky="w", pady=8)
+        if mon_names: cb.current(0)
+
+        ttk.Label(dlg, text="等级:").grid(row=1, column=0, padx=10, pady=4, sticky="e")
+        lv_var = tk.StringVar(value="10")
+        ttk.Spinbox(dlg, from_=1, to=100, width=6, textvariable=lv_var).grid(row=1, column=1, sticky="w")
+
+        def ok():
+            sp = cb.get(); lv = lv_var.get()
+            if sp and lv.isdigit():
+                self.team_tree.insert("", "end", values=(sp, int(lv)))
+                dlg.destroy()
+            else:
+                messagebox.showwarning("", "请选择精灵和等级", parent=dlg)
+
+        bf = ttk.Frame(dlg); bf.grid(row=2, column=0, columnspan=2, pady=6)
+        ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
+        ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
+
+    def _team_remove(self):
+        sel = self.team_tree.selection()
+        if sel: self.team_tree.delete(sel[0])
 
     # ── run ──────────────────────────────────────────────────────────────────
     def run(self):
