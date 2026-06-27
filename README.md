@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.2.3-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.5-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -139,7 +139,7 @@
 | 渲染 | 像素风，NEAREST 采样 |
 | 字体 | Microsoft YaHei / 微软雅黑（系统字体） |
 | 数据 | JSON（species / moves / items） |
-| 素材 | 256×256 PNG（通过 Git LFS 管理） |
+| 素材 | 512×512 PNG（通过 Git LFS 管理） |
 
 ---
 
@@ -176,13 +176,32 @@ RPG_Demo/
 
 ## 🚀 运行方法
 
+> **本项目使用 Git LFS 管理图片资源（PNG/JPG），克隆前必须先安装 git-lfs，否则精灵图会变成空文件。**
+
+### 第一步：安装 Git LFS（仅需一次）
+
+- **Windows**：前往 [git-lfs.github.com](https://git-lfs.github.com/) 下载安装包
+- **macOS**：`brew install git-lfs`
+- **Linux**：`sudo apt install git-lfs`
+
+安装后运行：
+```bash
+git lfs install
+```
+
+### 第二步：克隆并运行
+
 1. 安装 [Godot 4.7](https://godotengine.org/download/)
-2. 克隆本仓库：
+2. 克隆本仓库（LFS 文件会自动下载）：
    ```bash
    git clone <repo-url>
    ```
-3. 在 Godot 中打开 `RPG_Demo/project.godot`
-4. 点击运行（F5）
+3. 若图片未自动下载，手动拉取：
+   ```bash
+   git lfs pull
+   ```
+4. 在 Godot 中打开 `RPG_Demo/project.godot`
+5. 点击运行（F5）
 
 ### 运行编辑器
 
