@@ -17,45 +17,19 @@ func _ready() -> void:
 
 # ── 背景 ─────────────────────────────────────────────────────────────────────
 func _build_bg() -> void:
-	# 深夜星空背景
-	var bg = ColorRect.new()
-	bg.size = Vector2(VW, VH)
-	bg.color = Color(0.04, 0.04, 0.12)
-	add_child(bg)
-
-	# 星点（固定随机种子，每次一致）
-	var rng = RandomNumberGenerator.new()
-	rng.seed = 20260101
-	for i in range(120):
-		var dot = ColorRect.new()
-		dot.size = Vector2(1, 1)
-		dot.position = Vector2(rng.randi_range(0, VW - 1), rng.randi_range(0, 210))
-		var b = rng.randf_range(0.3, 1.0)
-		dot.color = Color(b, b, b * 0.85)
-		add_child(dot)
-
-	# 远山剪影（深绿层叠）
-	for i in range(3):
-		var hill = ColorRect.new()
-		var hw = VW + 20
-		var hh = 40 + i * 14
-		hill.size = Vector2(hw, hh)
-		hill.position = Vector2(-10, VH - 70 - i * 20)
-		hill.color = Color(0.04 + i * 0.02, 0.10 + i * 0.03, 0.04 + i * 0.01)
-		add_child(hill)
-
-	# 月亮
-	var moon = ColorRect.new()
-	moon.size = Vector2(30, 30)
-	moon.position = Vector2(390, 20)
-	moon.color = Color(0.96, 0.94, 0.80)
-	add_child(moon)
-	# 月亮高光
-	var moon_hl = ColorRect.new()
-	moon_hl.size = Vector2(22, 22)
-	moon_hl.position = Vector2(392, 22)
-	moon_hl.color = Color(1.0, 0.98, 0.88)
-	add_child(moon_hl)
+	var tex = load("res://assets/backgrounds/登录界面.png")
+	if tex:
+		var bg = TextureRect.new()
+		bg.texture = tex
+		bg.size = Vector2(VW, VH)
+		bg.stretch_mode = TextureRect.STRETCH_SCALE
+		add_child(bg)
+	else:
+		# 回退：深夜星空背景
+		var bg = ColorRect.new()
+		bg.size = Vector2(VW, VH)
+		bg.color = Color(0.04, 0.04, 0.12)
+		add_child(bg)
 
 # ── 标题 Logo ─────────────────────────────────────────────────────────────────
 func _build_logo() -> void:

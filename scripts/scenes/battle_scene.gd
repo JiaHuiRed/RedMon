@@ -112,36 +112,41 @@ func _ready() -> void:
 # BUILD – Battle field
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_battle_field() -> void:
-	# Sky gradient (top → bottom: deep blue → light blue → pale horizon)
-	var sky_strips = [
-		[0,          FIELD_H * 0.4, Color(0.30, 0.55, 0.90)],
-		[FIELD_H * 0.4, FIELD_H * 0.35, Color(0.50, 0.72, 0.96)],
-		[FIELD_H * 0.75, FIELD_H * 0.25, Color(0.72, 0.88, 0.99)],
-	]
-	for s in sky_strips:
-		var r = ColorRect.new()
-		r.position = Vector2(0, s[0])
-		r.size     = Vector2(VW, s[1] + 2)
-		r.color    = s[2]
-		add_child(r)
-
-	# Clouds
-	_draw_cloud(Vector2(60,  22), 32, 14)
-	_draw_cloud(Vector2(300, 14), 48, 18)
-	_draw_cloud(Vector2(420, 30), 28, 12)
-
-	# Ground strip (two-tone)
-	var ground_dark = ColorRect.new()
-	ground_dark.size     = Vector2(VW, 64)
-	ground_dark.position = Vector2(0, FIELD_H - 64)
-	ground_dark.color    = Color(0.28, 0.52, 0.20)
-	add_child(ground_dark)
-
-	var ground_light = ColorRect.new()
-	ground_light.size     = Vector2(VW, 28)
-	ground_light.position = Vector2(0, FIELD_H - 36)
-	ground_light.color    = Color(0.38, 0.64, 0.27)
-	add_child(ground_light)
+	# 战斗背景图（草原）
+	var tex = load("res://assets/backgrounds/战斗背景_草原.png")
+	if tex:
+		var bg = TextureRect.new()
+		bg.texture = tex
+		bg.position = Vector2(0, 0)
+		bg.size = Vector2(VW, FIELD_H)
+		bg.stretch_mode = TextureRect.STRETCH_SCALE
+		add_child(bg)
+	else:
+		# 回退：代码画天空
+		var sky_strips = [
+			[0,          FIELD_H * 0.4, Color(0.30, 0.55, 0.90)],
+			[FIELD_H * 0.4, FIELD_H * 0.35, Color(0.50, 0.72, 0.96)],
+			[FIELD_H * 0.75, FIELD_H * 0.25, Color(0.72, 0.88, 0.99)],
+		]
+		for s in sky_strips:
+			var r = ColorRect.new()
+			r.position = Vector2(0, s[0])
+			r.size     = Vector2(VW, s[1] + 2)
+			r.color    = s[2]
+			add_child(r)
+		_draw_cloud(Vector2(60,  22), 32, 14)
+		_draw_cloud(Vector2(300, 14), 48, 18)
+		_draw_cloud(Vector2(420, 30), 28, 12)
+		var ground_dark = ColorRect.new()
+		ground_dark.size     = Vector2(VW, 64)
+		ground_dark.position = Vector2(0, FIELD_H - 64)
+		ground_dark.color    = Color(0.28, 0.52, 0.20)
+		add_child(ground_dark)
+		var ground_light = ColorRect.new()
+		ground_light.size     = Vector2(VW, 28)
+		ground_light.position = Vector2(0, FIELD_H - 36)
+		ground_light.color    = Color(0.38, 0.64, 0.27)
+		add_child(ground_light)
 
 	# Enemy platform (top-right)
 	var ep = _make_platform(Vector2(VW - 160, FIELD_H - 90), 100, 20, Color(0.45, 0.68, 0.32))
