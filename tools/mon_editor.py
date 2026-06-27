@@ -697,7 +697,7 @@ class App:
         ttk.Button(hf, text="💾 保存", command=self._mon_save).pack(side="left")
         ttk.Button(hf, text="⚡ 推荐", command=self._suggest_tier_role).pack(side="left", padx=(8, 0))
         tk.Frame(hf, bg=BORDER, width=1, height=20).pack(side="left", fill="y", padx=(12, 8))
-        _lbl(hf, "档次", bg=BG_MAIN).pack(side="left")
+        _lbl(hf, "品阶", bg=BG_MAIN).pack(side="left")
         self.mon_tier = ttk.Combobox(
             hf, values=["", "凡", "灵", "玄", "地", "神", "天"],
             width=4, state="readonly")
@@ -846,7 +846,7 @@ class App:
     # ── Mon tab helpers ─────────────────────────────────────────────────────
 
     def _suggest_tier_role(self):
-        """根据当前种族值自动推荐档次和定位"""
+        """根据当前种族值自动推荐品阶和定位"""
         v = {}
         for _, key in STAT_LABELS:
             try:    v[key] = int(self.mon_stat_entries[key].get())
@@ -859,7 +859,7 @@ class App:
         spd    = v.get("spd",    0)
         total  = hp + atk + def_ + sp_atk + sp_def + spd
 
-        # 档次（按BST阈值）
+        # 品阶（按BST阈值）
         if   total >= 650: tier = "天"
         elif total >= 600: tier = "神"
         elif total >= 535: tier = "地"
