@@ -28,13 +28,7 @@ var _dialog_label: Label
 
 # 商店
 const SHOP_DOOR_TILE := Vector2i(20, 4)
-const SHOP_ITEMS := [
-	{"name": "精灵葫芦", "price": 200},
-	{"name": "铜丹",     "price": 100},
-	{"name": "银丹",     "price": 300},
-	{"name": "金丹",     "price": 800},
-	{"name": "铁丹",     "price": 500},
-]
+var SHOP_ITEMS := ["精灵葫芦", "铜丹", "银丹", "金丹", "铁丹"]  # 从 MonDB.items 加载
 var _shop_active: bool = false
 var _shop_cursor: int  = 0
 var _shop_panel:  Control
@@ -210,11 +204,13 @@ func _draw_grass_tile(col: int, row: int) -> void:
 	add_child(spr)
 
 func _place_path() -> void:
-	# Dirt path: horizontal strip row 9, then turn down to row 15
+	# Dirt path: top entrance from town, horizontal strip row 9, then turn down
 	var path_tiles: Array = []
 	for c in range(2, 28):
 		path_tiles.append(Vector2i(c, 9))
 	for r in range(10, 20):
+		path_tiles.append(Vector2i(14, r))
+	for r in range(1, 9):
 		path_tiles.append(Vector2i(14, r))
 	for t in path_tiles:
 		_draw_path_tile(t.x, t.y)
@@ -309,6 +305,10 @@ func _place_trees() -> void:
 	for r in range(1, ROWS - 1):
 		tree_positions.append(Vector2i(0, r))
 		tree_positions.append(Vector2i(COLS - 1, r))
+	# Leave gap at top center for town exit
+	for c in range(12, 18):
+		tree_positions.erase(Vector2i(c, 0))
+		tree_positions.erase(Vector2i(c, ROWS - 1))
 	for tp in tree_positions:
 		_draw_tree(tp.x, tp.y)
 
@@ -616,7 +616,7 @@ func _build_dialog() -> void:
 
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(TILE * 14, TILE * 18)  # Start at bottom path entrance (arriving from village)
+	_player.position = Vector2(TILE * 14, TILE * 2)   # Start at top path entrance (arriving from town)
 	add_child(_player)
 
 	_player_sprite = Sprite2D.new()
@@ -751,11 +751,12 @@ func _refresh_shop_panel() -> void:
 	var money_lbl = _shop_panel.get_node_or_null("ShopMoney")
 	if money_lbl: money_lbl.text = "%dG" % GameState.money
 	for i in range(SHOP_ITEMS.size()):
-		var item = SHOP_ITEMS[i]
+		var item_key = SHOP_ITEMS[i]
+		var item_def = MonDB.items.get(item_key, {})
 		var row  = _shop_panel.get_node_or_null("ShopRow%d" % i)
 		if not row: continue
 		var sel = (i == _shop_cursor)
-		row.text = ("%s%s  %dG" % ["▶ " if sel else "  ", item["name"], item["price"]])
+		row.text = ("%s%s  %dG" % ["▶ " if sel else "  ", item_def.get("name", item_key), item_def.get("price", 0)])
 		row.add_theme_color_override("font_color",
 			Color.WHITE if sel else Color(0.70, 0.70, 0.85))
 
@@ -769,13 +770,15 @@ func _close_shop() -> void:
 	_shop_active = false; _shop_panel.visible = false
 
 func _shop_buy() -> void:
-	var item = SHOP_ITEMS[_shop_cursor]
-	if GameState.money < item["price"]:
+	var item_key = SHOP_ITEMS[_shop_cursor]
+	var item_def = MonDB.items.get(item_key, {})
+	var price = item_def.get("price", 0)
+	if GameState.money < price:
 		_shop_result_label.text = "钱不够！"
 		return
-	GameState.money -= item["price"]
-	GameState.items[item["name"]] = GameState.items.get(item["name"], 0) + 1
-	_shop_result_label.text = "购买了%s！" % item["name"]
+	GameState.money -= price
+	GameState.items[item_key] = GameState.items.get(item_key, 0) + 1
+	_shop_result_label.text = "购买了%s！" % item_def.get("name", item_key)
 	_refresh_shop_panel()
 
 func _physics_process(_delta: float) -> void:
@@ -843,7 +846,9 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_accept"):
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
-		if tile == CLINIC_DOOR_TILE:
+		if tile.y <= 1 and tile.x >= 12 and tile.x <= 17:
+			request_scene.emit("town", {})
+		elif tile == CLINIC_DOOR_TILE:
 			_open_clinic()
 		elif tile == SHOP_DOOR_TILE:
 			_open_shop()

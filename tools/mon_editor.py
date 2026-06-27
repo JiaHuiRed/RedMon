@@ -23,6 +23,7 @@ SPECIES_FILE  = os.path.join(ROOT, "data", "species.json")
 MOVES_FILE    = os.path.join(ROOT, "data", "moves.json")
 TRAINERS_FILE = os.path.join(ROOT, "data", "trainers.json")
 DIALOGS_FILE  = os.path.join(ROOT, "data", "dialogs.json")
+ITEMS_FILE    = os.path.join(ROOT, "data", "items.json")
 SPRITES_DIR   = os.path.join(ROOT, "assets", "sprites")
 
 TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢"]
@@ -263,6 +264,7 @@ class App:
         self.species  = load_json(SPECIES_FILE)
         self.moves    = load_json(MOVES_FILE)
         self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
+        self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
 
         # 隐藏根窗口用于保留任务栏图标，实际 UI 在 Toplevel 上
         self._ghost = tk.Tk()
@@ -304,13 +306,16 @@ class App:
         self.move_tab    = ttk.Frame(self.notebook)
         self.trainer_tab = ttk.Frame(self.notebook)
         self.dialog_tab  = ttk.Frame(self.notebook)
+        self.item_tab    = ttk.Frame(self.notebook)
         self.notebook.add(self.mon_tab,     text="  精灵图鉴  ")
         self.notebook.add(self.move_tab,    text="  技能库  ")
+        self.notebook.add(self.item_tab,    text="  道具编辑  ")
         self.notebook.add(self.trainer_tab, text="  角色编辑  ")
         self.notebook.add(self.dialog_tab,  text="  剧情文本  ")
 
         self._build_mon_tab()
         self._build_move_tab()
+        self._build_item_tab()
         self._build_trainer_tab()
         self._build_dialog_tab()
 
@@ -2219,6 +2224,156 @@ class App:
             self._refresh_dlg_tree()
             self._dlg_right.pack_forget()
             self._dlg_placeholder.pack(fill="both", expand=True)
+
+    # ── 道具编辑 Tab ──────────────────────────────────────────────────────────
+
+    def _build_item_tab(self):
+        left = tk.Frame(self.item_tab, bg=BG_SIDE, width=200)
+        left.pack(side="left", fill="y")
+        left.pack_propagate(False)
+
+        _lbl(left, "道具列表", bg=BG_SIDE, bold=True).pack(
+            anchor="w", padx=12, pady=(12, 2))
+        self.item_search = ttk.Entry(left)
+        self.item_search.pack(fill="x", padx=10)
+        self.item_search.bind("<KeyRelease>",
+                              lambda _: self._item_refresh_list())
+
+        lf = tk.Frame(left, bg=BG_SIDE)
+        lf.pack(fill="both", expand=True, padx=10, pady=(6, 4))
+        sb = ttk.Scrollbar(lf, orient="vertical")
+        self.item_list = tk.Listbox(
+            lf, yscrollcommand=sb.set, font=(FONT_CJK, 10),
+            bg=BG_CARD, fg=TEXT_PRI,
+            selectbackground=ACCENT, selectforeground="white",
+            borderwidth=0, highlightthickness=0, relief="flat",
+            activestyle="none")
+        sb.config(command=self.item_list.yview)
+        sb.pack(side="right", fill="y")
+        self.item_list.pack(side="left", fill="both", expand=True)
+        self.item_list.bind("<<ListboxSelect>>", self._item_select)
+
+        bf = tk.Frame(left, bg=BG_SIDE)
+        bf.pack(fill="x", padx=10, pady=(0, 12))
+        ttk.Button(bf, text="+ 新增",
+                   command=self._item_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="× 删除",
+                   command=self._item_del).pack(side="left")
+
+        self._item_placeholder = tk.Label(
+            self.item_tab, text="← 选择一个道具开始编辑",
+            bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
+        self._item_placeholder.pack(side="right", fill="both", expand=True)
+
+        self._item_form = tk.Frame(self.item_tab, bg=BG_MAIN)
+        f = self._item_form
+        PAD = (10, 4)
+
+        hf = tk.Frame(f, bg=BG_MAIN)
+        hf.pack(fill="x", padx=12, pady=(14, 4))
+        _lbl(hf, "名称", bg=BG_MAIN).pack(side="left")
+        self.item_name = ttk.Entry(hf, width=18)
+        self.item_name.pack(side="left", padx=(4, 16))
+        ttk.Button(hf, text="💾 保存",
+                   command=self._item_save).pack(side="left")
+
+        self._item_row = tk.Frame(f, bg=BG_MAIN)
+        self._item_row.pack(fill="x", padx=12, pady=8)
+
+        r = 0
+        _lbl(self._item_row, "分类").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.item_category = ttk.Combobox(
+            self._item_row, values=["捕捉", "回复", "状态", "进化", "关键"],
+            width=10, state="readonly")
+        self.item_category.grid(row=r, column=1, sticky="w", pady=3)
+        _lbl(self._item_row, "价格").grid(row=r, column=2, padx=(16, 4))
+        self.item_price = ttk.Entry(self._item_row, width=8, justify="center")
+        self.item_price.grid(row=r, column=3, sticky="w", pady=3)
+        r += 1
+
+        _lbl(self._item_row, "描述").grid(row=r, column=0, sticky="ne", padx=PAD, pady=3)
+        self.item_desc = tk.Text(
+            self._item_row, width=46, height=4, wrap="word", bg=BG_CARD,
+            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
+            highlightthickness=1, highlightcolor=ACCENT,
+            highlightbackground=BORDER)
+        self.item_desc.grid(row=r, column=1, columnspan=3, sticky="ew", pady=3)
+
+        self._item_refresh_list()
+
+    def _item_show_form(self):
+        self._item_placeholder.pack_forget()
+        self._item_form.pack(side="right", fill="both", expand=True, padx=6, pady=6)
+
+    def _item_refresh_list(self):
+        q = self.item_search.get().lower()
+        self.item_list.delete(0, "end")
+        for n in sorted(self.items.keys()):
+            if not q or q in n.lower():
+                self.item_list.insert("end", n)
+
+    def _item_select(self, _=None):
+        sel = self.item_list.curselection()
+        if not sel: return
+        self._item_load(self.item_list.get(sel[0]))
+
+    def _item_load(self, name):
+        self._item_show_form()
+        d = self.items[name]
+        self._current_item = name
+        self.item_name.delete(0, "end"); self.item_name.insert(0, name)
+        self.item_category.set(d.get("category", ""))
+        self.item_price.delete(0, "end")
+        self.item_price.insert(0, str(d.get("price", 0)))
+        self.item_desc.delete("1.0", "end")
+        self.item_desc.insert("1.0", d.get("desc", ""))
+
+    def _item_save(self):
+        old = self._current_item
+        new = self.item_name.get().strip()
+        if not new:
+            messagebox.showerror("错误", "名称不能为空"); return
+        d = {
+            "name":     new,
+            "category": self.item_category.get(),
+            "price":    _int(self.item_price.get()),
+            "desc":     self.item_desc.get("1.0", "end-1c").strip(),
+        }
+        if old and old != new:
+            del self.items[old]
+        self.items[new] = d
+        save_json(ITEMS_FILE, self.items)
+        self._current_item = new
+        self._item_refresh_list()
+        self._update_status()
+
+    def _item_add(self):
+        n = "新道具"
+        while n in self.items:
+            n += "_"
+        self.items[n] = {"name": n, "category": "", "price": 0, "desc": ""}
+        save_json(ITEMS_FILE, self.items)
+        self._item_refresh_list()
+        for i in range(self.item_list.size()):
+            if self.item_list.get(i) == n:
+                self.item_list.selection_set(i)
+                self.item_list.see(i)
+                break
+        self._item_load(n)
+        self.item_name.focus_set()
+
+    def _item_del(self):
+        sel = self.item_list.curselection()
+        if not sel: return
+        name = self.item_list.get(sel[0])
+        if messagebox.askyesno("删除", f"确定删除 '{name}'？", parent=self.root):
+            self.items.pop(name, None)
+            save_json(ITEMS_FILE, self.items)
+            self._item_refresh_list()
+            self._current_item = None
+            self._item_form.pack_forget()
+            self._item_placeholder.pack(fill="both", expand=True)
+            self._update_status()
 
     def run(self):
         self._ghost.mainloop()

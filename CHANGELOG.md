@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.2.8] - 2026-06-27
+
+#### Added
+- **新精灵素材**：吉他小猪→乐手伯德进化链，小结（新精灵）
+- **道具系统外置**：`data/items.json` 集中管理8种道具，MonDB.gd 动态加载
+- **碧溪镇**：`town_scene.gd` 新地图，含百药堂和杂货铺
+- **编辑器道具 tab**：`mon_editor.py` 新增「道具编辑」页面
+
+#### Changed
+- **流程改造**：青木村→碧溪镇→华灵草原（原村→草原改经城镇中转）
+- 杂货铺/野外商店改用 `MonDB.items` 读取道具数据
+- 吉他小猪移至新ID，id=33 留空待新精灵
+
 ### [0.2.7] - 2026-06-27
 
 #### Added

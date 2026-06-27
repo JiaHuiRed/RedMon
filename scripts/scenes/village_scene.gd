@@ -413,7 +413,7 @@ func _input(event: InputEvent) -> void:
 			if not _rival_done:
 				_start_rival_battle()
 			else:
-				request_scene.emit("world", {})
+				request_scene.emit("town", {})
 		# Talk to NPCs
 		if tile.distance_to(Vector2i(8, 12)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc1"), -1)
