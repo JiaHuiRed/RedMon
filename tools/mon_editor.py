@@ -1036,24 +1036,31 @@ class App:
             elif mult < 1.0:
                 resist.append((atk, f"{mult:g}x"))
 
-        # Offensive: for THIS species' types as attacker, find what they're strong against
-        super_eff = []  # types this species is super effective against
-        not_eff = []    # types this species is not very effective against
-        no_dmg = []     # types this species deals 0 damage to
+        # Offensive: for THIS species' types as attacker, find what they're strong/weak against
+        # Build per-defending-type list of multipliers from each of attacker's types
+        off_map = {}  # def_type -> [mult_from_t1, mult_from_t2]
         for my_atk in [t1] + ([t2] if t2 else []):
             chart = TYPE_CHART.get(my_atk, {})
-            for def_type, mult in chart.items():
-                # Skip duplicates (dual-type species might list same def_type from both types)
-                if mult == 1.0:
-                    continue
-                label = f"{mult:g}x"
-                entry = (def_type, label)
-                if mult == 0 and entry not in no_dmg:
-                    no_dmg.append(entry)
-                elif mult > 1.0 and entry not in super_eff:
-                    super_eff.append(entry)
-                elif mult < 1.0 and entry not in not_eff:
-                    not_eff.append(entry)
+            for def_type in ALL_TYPES:
+                mult = chart.get(def_type, 1.0)
+                off_map.setdefault(def_type, []).append(mult)
+
+        super_eff = []
+        not_eff = []
+        no_dmg = []
+        for def_type, mults in off_map.items():
+            has_super  = any(m > 1.0 for m in mults)
+            has_resist = any(0 < m < 1.0 for m in mults)
+            has_immune = any(m == 0 for m in mults)
+            # Only show if all types agree on the direction (no conflicting coverage)
+            if has_immune and not has_super:
+                no_dmg.append((def_type, "0"))
+            elif has_super and not has_resist and not has_immune:
+                super_eff.append((def_type, f"{max(mults):g}x"))
+            elif (has_resist or has_immune) and not has_super:
+                worst = min(mults)
+                if worst > 0:
+                    not_eff.append((def_type, f"{worst:g}x"))
 
         def _render_section(title, entries, bg_c, max_per_row=8):
             if not entries:
@@ -1432,8 +1439,8 @@ class App:
         i = 1
         while name in self.species:
             i += 1; name = f"新精灵{i}"
-        max_id = max((d.get("id", 0) or 0)
-                     for d in self.species.values()) + 1
+        used_ids = {d.get("id", 0) for d in self.species.values()}
+        max_id = next(i for i in range(1, 9999) if i not in used_ids)
         self.species[name] = {
             "id": max_id, "name": name, "type1": "", "type2": "",
             "base": {"hp": 50, "atk": 50, "def": 50,
