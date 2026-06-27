@@ -5,7 +5,7 @@ RedMon 数据编辑器 — 精灵 & 技能 & 角色
 用法: python -X utf8 tools/mon_editor.py
 """
 
-import json, os, sys, tkinter as tk
+import json, os, re, sys, tkinter as tk
 from tkinter import ttk, messagebox
 
 try:
@@ -288,9 +288,14 @@ class App:
         self._drag_y = 0
         self._is_maximized  = False
         self._normal_geo    = None
+        self._resize_dir    = None
+        self._resize_x0     = 0
+        self._resize_y0     = 0
+        self._resize_geom   = (1360, 800, 0, 0)
 
         self._apply_theme()
         self._build_titlebar()
+        self._setup_resize()
 
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill="both", expand=True)
@@ -398,9 +403,75 @@ class App:
         self._drag_y = event.y_root - self.root.winfo_y()
 
     def _on_drag_motion(self, event):
-        if self._is_maximized:
+        if self._is_maximized or self._resize_dir:
             return
         self.root.geometry(f"+{event.x_root - self._drag_x}+{event.y_root - self._drag_y}")
+
+    # ── Resize (root-level binding, works over any child widget) ────────────
+
+    def _setup_resize(self):
+        self.root.bind("<Motion>",          self._resize_hover)
+        self.root.bind("<ButtonPress-1>",   self._resize_press)
+        self.root.bind("<B1-Motion>",       self._resize_move)
+        self.root.bind("<ButtonRelease-1>", self._resize_release)
+
+    def _resize_zone(self, rx, ry):
+        """Return resize direction string or None based on window-relative coords."""
+        W = self.root.winfo_width()
+        H = self.root.winfo_height()
+        E = 8
+        on_w = rx < E
+        on_e = rx > W - E
+        on_s = ry > H - E
+        if on_s and on_w: return "sw"
+        if on_s and on_e: return "se"
+        if on_s:          return "s"
+        if on_w:          return "w"
+        if on_e:          return "e"
+        return None
+
+    def _resize_hover(self, event):
+        if self._is_maximized: return
+        zone = self._resize_zone(event.x_root - self.root.winfo_x(),
+                                 event.y_root - self.root.winfo_y())
+        cur = {"sw": "sizing", "se": "sizing",
+               "s":  "sb_v_double_arrow",
+               "w":  "sb_h_double_arrow",
+               "e":  "sb_h_double_arrow"}.get(zone, "")
+        self.root.config(cursor=cur)
+
+    def _resize_press(self, event):
+        if self._is_maximized: return
+        zone = self._resize_zone(event.x_root - self.root.winfo_x(),
+                                 event.y_root - self.root.winfo_y())
+        if zone:
+            self._resize_dir = zone
+            self._resize_x0  = event.x_root
+            self._resize_y0  = event.y_root
+            geo = self.root.geometry()
+            m = re.match(r"(\d+)x(\d+)([+-]\d+)([+-]\d+)", geo)
+            if m:
+                self._resize_geom = tuple(int(m.group(i)) for i in range(1, 5))
+        else:
+            self._resize_dir = None
+
+    def _resize_move(self, event):
+        if not self._resize_dir or self._is_maximized: return
+        dx = event.x_root - self._resize_x0
+        dy = event.y_root - self._resize_y0
+        W, H, X, Y = self._resize_geom
+        nW, nH, nX, nY = W, H, X, Y
+        MIN_W, MIN_H = self.root.minsize()
+        d = self._resize_dir
+        if "e" in d: nW = max(MIN_W, W + dx)
+        if "s" in d: nH = max(MIN_H, H + dy)
+        if "w" in d:
+            nW = max(MIN_W, W - dx)
+            nX = X + W - nW
+        self.root.geometry(f"{nW}x{nH}+{nX}+{nY}")
+
+    def _resize_release(self, event):
+        self._resize_dir = None
 
     def _toggle_maximize(self):
         if self._is_maximized:
@@ -624,6 +695,19 @@ class App:
         self.mon_name = ttk.Entry(hf, width=14)
         self.mon_name.pack(side="left", padx=(4, 18))
         ttk.Button(hf, text="💾 保存", command=self._mon_save).pack(side="left")
+        ttk.Button(hf, text="⚡ 推荐", command=self._suggest_tier_role).pack(side="left", padx=(8, 0))
+        tk.Frame(hf, bg=BORDER, width=1, height=20).pack(side="left", fill="y", padx=(12, 8))
+        _lbl(hf, "档次", bg=BG_MAIN).pack(side="left")
+        self.mon_tier = ttk.Combobox(
+            hf, values=["", "凡", "灵", "玄", "地", "神", "天"],
+            width=4, state="readonly")
+        self.mon_tier.pack(side="left", padx=(4, 10))
+        _lbl(hf, "定位", bg=BG_MAIN).pack(side="left")
+        self.mon_role = ttk.Combobox(
+            hf, values=["", "物攻手", "特攻手", "混攻手", "快攻手",
+                        "物盾", "特盾", "全盾", "辅助", "均衡"],
+            width=6, state="readonly")
+        self.mon_role.pack(side="left", padx=(4, 0))
         row += 1
 
         # 属性
@@ -690,10 +774,13 @@ class App:
         self.mon_total_label.pack(side="left", padx=6)
         row += 1
 
-        # 其他属性
+        # 其他属性 + 进化分支（并排）
         _sep(f, row=row, col=0); row += 1
-        misc = tk.Frame(f, bg=BG_MAIN)
-        misc.grid(row=row, column=0, columnspan=5, sticky="ew", padx=12, pady=2)
+        misc_evo_f = tk.Frame(f, bg=BG_MAIN)
+        misc_evo_f.grid(row=row, column=0, columnspan=5, sticky="ew", padx=12, pady=2)
+
+        misc = tk.Frame(misc_evo_f, bg=BG_MAIN)
+        misc.pack(side="left", anchor="n", padx=(0, 8))
         for r2, (lbl_txt, attr, w2) in enumerate([
             ("捕获率", "mon_catch",  6),
             ("经验值", "mon_exp",    6),
@@ -716,20 +803,21 @@ class App:
         self.mon_growth.grid(row=1, column=1, sticky="w", pady=2)
         self.mon_gender = ttk.Combobox(misc, values=GENDERS, width=12, state="normal")
         self.mon_gender.grid(row=1, column=4, sticky="w", pady=2)
-        row += 1
 
-        # 进化分支
-        _sep(f, row=row, col=0); row += 1
-        _lbl(f, "进化分支").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
-        evo_f = tk.Frame(f, bg=BG_MAIN)
-        evo_f.grid(row=row, column=1, columnspan=3, sticky="ew", pady=3, padx=(0, 12))
+        # 进化分支（与捕获率并列，同行右侧）
+        tk.Frame(misc_evo_f, bg=BORDER, width=1).pack(side="left", fill="y", padx=(0, 8))
+        evo_col = tk.Frame(misc_evo_f, bg=BG_MAIN)
+        evo_col.pack(side="left", anchor="n", fill="x", expand=True)
+        _lbl(evo_col, "进化分支", bg=BG_MAIN).pack(anchor="w", pady=(0, 2))
+        evo_f = tk.Frame(evo_col, bg=BG_MAIN)
+        evo_f.pack(fill="x")
         self.evo_tree = ttk.Treeview(
             evo_f, columns=("into", "level"), show="headings",
             height=3, selectmode="browse")
         self.evo_tree.heading("into",  text="进化为")
         self.evo_tree.heading("level", text="等级")
-        self.evo_tree.column("into",  width=130, anchor="w")
-        self.evo_tree.column("level", width=55,  anchor="center")
+        self.evo_tree.column("into",  width=120, anchor="w")
+        self.evo_tree.column("level", width=50,  anchor="center")
         self.evo_tree.pack(side="left", fill="x", expand=True)
         evo_btn = tk.Frame(evo_f, bg=BG_MAIN)
         evo_btn.pack(side="left", padx=(4, 0))
@@ -743,12 +831,12 @@ class App:
         _sep(f, row=row, col=0); row += 1
         _lbl(f, "图鉴描述").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
         self.mon_desc = tk.Text(
-            f, width=36, height=4, wrap="word", bg=BG_CARD,
+            f, width=28, height=4, wrap="word", bg=BG_CARD,
             font=(FONT_CJK, 9), relief="flat", borderwidth=1,
             highlightthickness=1, highlightcolor=ACCENT,
             highlightbackground=BORDER)
         self.mon_desc.grid(
-            row=row, column=1, columnspan=3,
+            row=row, column=1, columnspan=4,
             sticky="ew", pady=3, padx=(0, 12))
         row += 1
 
@@ -756,6 +844,55 @@ class App:
         self._refresh_stat_bars()
 
     # ── Mon tab helpers ─────────────────────────────────────────────────────
+
+    def _suggest_tier_role(self):
+        """根据当前种族值自动推荐档次和定位"""
+        v = {}
+        for _, key in STAT_LABELS:
+            try:    v[key] = int(self.mon_stat_entries[key].get())
+            except: v[key] = 0
+        hp     = v.get("hp",     0)
+        atk    = v.get("atk",    0)
+        def_   = v.get("def",    0)
+        sp_atk = v.get("sp_atk", 0)
+        sp_def = v.get("sp_def", 0)
+        spd    = v.get("spd",    0)
+        total  = hp + atk + def_ + sp_atk + sp_def + spd
+
+        # 档次（按BST阈值）
+        if   total >= 650: tier = "天"
+        elif total >= 600: tier = "神"
+        elif total >= 535: tier = "地"
+        elif total >= 450: tier = "玄"
+        elif total >= 360: tier = "灵"
+        else:              tier = "凡"
+
+        # 定位（极差 > 20 为单攻手判定线）
+        diff     = atk - sp_atk          # 正=偏物，负=偏特
+        main_atk = max(atk, sp_atk)
+        avg_off  = (atk + sp_atk) / 2
+        avg_def  = (def_ + sp_def) / 2
+        top_stat = max(hp, atk, def_, sp_atk, sp_def, spd)
+
+        if spd == top_stat and main_atk >= 65:
+            role = "快攻手"
+        elif diff > 20:
+            role = "物攻手"
+        elif diff < -20:
+            role = "特攻手"
+        elif avg_def > avg_off + 15 and main_atk < 75:
+            if   def_ >= sp_def + 20: role = "物盾"
+            elif sp_def >= def_ + 20: role = "特盾"
+            else:                      role = "全盾"
+        elif main_atk >= 70 and abs(diff) <= 20:
+            role = "混攻手"
+        elif spd >= 80 and main_atk < 65:
+            role = "辅助"
+        else:
+            role = "均衡"
+
+        self.mon_tier.set(tier)
+        self.mon_role.set(role)
 
     def _mon_show_form(self):
         self._mon_placeholder.pack_forget()
@@ -828,6 +965,8 @@ class App:
 
         self.mon_desc.delete("1.0", "end")
         self.mon_desc.insert("1.0", d.get("desc", ""))
+        self.mon_tier.set(d.get("tier", ""))
+        self.mon_role.set(d.get("role", ""))
 
         # learnset
         self._learnset = []
@@ -916,47 +1055,31 @@ class App:
                 elif mult < 1.0 and entry not in not_eff:
                     not_eff.append(entry)
 
-        sections = [
-            ("弱点", weak, "#FFE0E0"),
-            ("抗性", resist, "#E0FFE0"),
-            ("免疫", immune, "#E8E8F0"),
-        ]
-        for title, entries, bg_c in sections:
+        def _render_section(title, entries, bg_c, max_per_row=8):
             if not entries:
-                continue
-            row_f = tk.Frame(self._matchup_inner, bg=BG_CARD)
-            row_f.pack(fill="x", pady=1)
-            tk.Label(row_f, text=f"{title}:", bg=BG_CARD, fg=TEXT_SEC,
-                     font=(FONT_CJK, 8), width=4, anchor="e").pack(side="left")
-            for typ, mult_s in entries:
-                cell = tk.Frame(row_f, bg=bg_c, bd=1, relief="groove")
-                cell.pack(side="left", padx=1, pady=1)
-                fg, tbg = TYPE_COLORS.get(typ, ("#1C1C1E", "#AAAAAA"))
-                tk.Label(cell, text=typ, bg=tbg, fg=fg,
-                         font=(FONT_CJK, 8, "bold"), width=2).pack(side="left")
-                tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
-                         font=(FONT_CJK, 7)).pack(side="left", padx=1)
+                return
+            for chunk_i in range(0, len(entries), max_per_row):
+                chunk = entries[chunk_i:chunk_i + max_per_row]
+                row_f = tk.Frame(self._matchup_inner, bg=BG_CARD)
+                row_f.pack(fill="x", pady=0)
+                tk.Label(row_f,
+                         text=f"{title}:" if chunk_i == 0 else "",
+                         bg=BG_CARD, fg=TEXT_SEC,
+                         font=(FONT_CJK, 8), width=4, anchor="e").pack(side="left")
+                for typ, mult_s in chunk:
+                    cell = tk.Frame(row_f, bg=bg_c, bd=1, relief="groove")
+                    cell.pack(side="left", padx=1, pady=1)
+                    fg, tbg = TYPE_COLORS.get(typ, ("#1C1C1E", "#AAAAAA"))
+                    tk.Label(cell, text=typ, bg=tbg, fg=fg,
+                             font=(FONT_CJK, 8, "bold"), width=2).pack(side="left")
+                    tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
+                             font=(FONT_CJK, 7)).pack(side="left", padx=1)
 
-        # Offensive section
-        off_sections = [
-            ("克制", super_eff, "#D0F0D0"),
-            ("抵抗", not_eff, "#FFF5D0"),
-        ]
-        for title, entries, bg_c in off_sections:
-            if not entries:
-                continue
-            row_f = tk.Frame(self._matchup_inner, bg=BG_CARD)
-            row_f.pack(fill="x", pady=1)
-            tk.Label(row_f, text=f"{title}:", bg=BG_CARD, fg=TEXT_SEC,
-                     font=(FONT_CJK, 8), width=4, anchor="e").pack(side="left")
-            for typ, mult_s in entries:
-                cell = tk.Frame(row_f, bg=bg_c, bd=1, relief="groove")
-                cell.pack(side="left", padx=1, pady=1)
-                fg, tbg = TYPE_COLORS.get(typ, ("#1C1C1E", "#AAAAAA"))
-                tk.Label(cell, text=typ, bg=tbg, fg=fg,
-                         font=(FONT_CJK, 8, "bold"), width=2).pack(side="left")
-                tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
-                         font=(FONT_CJK, 7)).pack(side="left", padx=1)
+        _render_section("弱点", weak,      "#FFE0E0")
+        _render_section("抵抗", resist,    "#E0FFE0")
+        _render_section("抗性", immune,    "#E8E8F0")
+        _render_section("克制", super_eff, "#D0F0D0")
+        _render_section("被克", not_eff, "#FFF5D0")
 
     def _refresh_evo_compare(self, name, d):
         for w in self._evo_bar.winfo_children():
@@ -990,14 +1113,17 @@ class App:
 
         if not ancestor_chain and not branches:
             self._evo_bar.pack_forget()
-            # Always show matchup in bottom right
-            self._matchup_card.pack(side="right", fill="both", padx=(0, 6), pady=(4, 4))
+            self._matchup_card.pack(side="left", fill="both", expand=True,
+                                    padx=6, pady=(4, 4))
             return
 
-        self._evo_bar.pack(side="left", fill="both", expand=True, padx=(6, 0), pady=(4, 4))
-        self._matchup_card.pack(side="right", fill="both", padx=(0, 6), pady=(4, 4))
+        # Evo bar: only as wide as its content; matchup gets the rest
+        self._matchup_card.pack(side="right", fill="both", expand=True,
+                                padx=(0, 6), pady=(4, 4))
+        self._evo_bar.pack(side="left", fill="y", padx=(6, 0), pady=(4, 4))
         col = 0
 
+        # Ancestor chain — all on row 0
         for anc_name, alv in ancestor_chain:
             self._evo_card(self._evo_bar, anc_name,
                            self.species[anc_name], False, 0, col)
@@ -1007,17 +1133,21 @@ class App:
                      font=(FONT_CJK, 8)).grid(row=0, column=col, padx=2)
             col += 1
 
+        # Current species — row 0
         self._evo_card(self._evo_bar, name, d, True, 0, col)
         col += 1
 
-        for br_row, br in enumerate(branches):
-            # Repeat current species as clear branch starting point
-            self._evo_card(self._evo_bar, name, d, False, 0, col)
-            col += 1
+        # Branches — all on row 0, separated by ┃
+        for br_idx, br in enumerate(branches):
+            if br_idx > 0:
+                tk.Label(self._evo_bar, text="┃",
+                         bg=BG_MAIN, fg=TEXT_SEC,
+                         font=(FONT_CJK, 33)).grid(row=0, column=col, padx=4)
+                col += 1
             tk.Label(self._evo_bar, text=f"→Lv{br['level']}",
                      bg=BG_MAIN, fg=TEXT_SEC,
-                     font=(FONT_CJK, 8)).grid(
-                row=0, column=col, padx=2, sticky="w")
+                     font=(FONT_CJK, 8)).grid(row=0, column=col,
+                                              padx=2, sticky="w")
             col += 1
             br_name = br["into"]
             self._evo_card(self._evo_bar, br_name,
@@ -1049,11 +1179,12 @@ class App:
                 seen_fwd.add(nxt["into"])
                 cur_fwd = nxt["into"]
 
-    def _evo_card(self, parent, mname, mdata, is_cur, row, col):
+    def _evo_card(self, parent, mname, mdata, is_cur, row, col, rowspan=1):
         bg = BG_CARD if is_cur else BG_MAIN
         cf = tk.Frame(parent, bg=bg, bd=1,
                       relief="solid" if is_cur else "flat")
-        cf.grid(row=row, column=col, padx=6, pady=4, sticky="n")
+        cf.grid(row=row, column=col, padx=6, pady=4, sticky="n",
+                rowspan=rowspan)
 
         tk.Label(cf, text=mname, bg=bg,
                  fg=ACCENT if is_cur else TEXT_PRI,
@@ -1094,12 +1225,13 @@ class App:
             self.mon_stat_lv50[key].config(text=str(lv50))
             self.mon_stat_lv100[key].config(text=str(lv100))
         self.mon_total_label.config(text=str(total))
-        # Color-code BST tier: 650+红 / 600+金 / 500+紫 / 380+蓝 / 其余白
-        if   total >= 650: col = "#D42020"   # 红 — 神兽级
-        elif total >= 600: col = "#B8860B"   # 金 — 准神级
-        elif total >= 500: col = "#7B2FBE"   # 紫 — 强化种
-        elif total >= 380: col = "#1A56CC"   # 蓝 — 普通进化型
-        else:              col = TEXT_SEC    # 白(灰) — 基础形态
+        # Color-code BST tier: 天/神/地/玄/灵/凡
+        if   total >= 650: col = "#D42020"   # 红   — 天（顶级神兽 650+）
+        elif total >= 600: col = "#C85A00"   # 橙红  — 神（幻兽/弱神兽 600-649）
+        elif total >= 535: col = "#B8860B"   # 金   — 地（伪神/准神 535-599）
+        elif total >= 450: col = "#7B2FBE"   # 紫   — 玄（强力进化型 450-534）
+        elif total >= 360: col = "#1A56CC"   # 蓝   — 灵（普通进化型 360-449）
+        else:              col = TEXT_SEC    # 灰   — 凡（基础形态 <360）
         self.mon_total_label.config(fg=col)
 
     def _refresh_ls_table(self):
@@ -1116,9 +1248,13 @@ class App:
     def _evo_add(self):
         dlg = tk.Toplevel(self.root)
         dlg.title("添加进化分支")
-        dlg.geometry("340x130")
         dlg.resizable(False, False)
         dlg.transient(self.root); dlg.grab_set()
+        dw, dh = 340, 130
+        dlg.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width() - dw) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - dh) // 2
+        dlg.geometry(f"{dw}x{dh}+{x}+{y}")
 
         tk.Label(dlg, text="进化为:").grid(
             row=0, column=0, padx=12, pady=12, sticky="e")
@@ -1245,6 +1381,8 @@ class App:
             "exp_yield":   _int(self.mon_exp.get()),
             "growth_rate": self.mon_growth.get(),
             "desc":        self.mon_desc.get("1.0", "end-1c").strip(),
+            "tier":        self.mon_tier.get(),
+            "role":        self.mon_role.get(),
             "gender_ratio": self.mon_gender.get(),
             "height":      self.mon_height.get().strip(),
             "weight":      self.mon_weight.get().strip(),
@@ -1279,6 +1417,13 @@ class App:
         save_json(SPECIES_FILE, self.species)
         self._current_mon = new
         self._mon_refresh_list()
+        # Restore selection to the saved mon
+        for i in range(self.mon_list.size()):
+            if self._mon_get_name(self.mon_list.get(i)) == new:
+                self.mon_list.selection_clear(0, "end")
+                self.mon_list.selection_set(i)
+                self.mon_list.see(i)
+                break
         self._update_status()
         messagebox.showinfo("", "已保存 ✓")
 

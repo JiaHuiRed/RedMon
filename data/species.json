@@ -16,8 +16,11 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "身怀火焰之力的灵猫，耳尖常有小火苗跳动，毛色橙红温暖。性情热烈好动，活泼又黏人。",
+    "tier": "凡",
+    "role": "均衡",
     "gender_ratio": "87.5/12.5",
-    "size_info": "小型 / 0.4m / 4.1kg",
+    "height": "0.4",
+    "weight": "4.1",
     "evolutions": [
       {
         "into": "烈火猫",
@@ -59,8 +62,11 @@
     "exp_yield": 142,
     "growth_rate": "中速",
     "desc": "进化后火焰覆盖全身，战斗时鬃毛如焰般燃烧。速度与力量兼备，已初显王者之气。",
+    "tier": "灵",
+    "role": "混攻手",
     "gender_ratio": "87.5/12.5",
-    "size_info": "中型 / 1.0m / 19.0kg",
+    "height": "1.0",
+    "weight": "19.0",
     "evolutions": [
       {
         "into": "焚焰狮",
@@ -90,7 +96,7 @@
     "id": 6,
     "name": "焚焰狮",
     "type1": "火",
-    "type2": "",
+    "type2": "暗",
     "base": {
       "hp": 78,
       "atk": 102,
@@ -103,8 +109,11 @@
     "exp_yield": 240,
     "growth_rate": "中速",
     "desc": "焚焰狮啸声震山，烈焰鬃毛可熔岩石，是华灵大陆最强的火系精灵之一。",
+    "tier": "玄",
+    "role": "快攻手",
     "gender_ratio": "87.5/12.5",
-    "size_info": "大型 / 1.9m / 90.5kg",
+    "height": "1.9",
+    "weight": "90.5",
     "learnset": {
       "1": [
         "撕咬",
@@ -139,8 +148,11 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "通体蔚蓝小水蛇，鳞片闪闪发亮。性情温顺，能喷清冽水流护身，深受村民喜爱。",
+    "tier": "凡",
+    "role": "全盾",
     "gender_ratio": "50/50",
-    "size_info": "小型 / 0.5m / 6.9kg",
+    "height": "0.5",
+    "weight": "6.9",
     "evolutions": [
       {
         "into": "江蛟",
@@ -182,8 +194,11 @@
     "exp_yield": 142,
     "growth_rate": "缓慢",
     "desc": "蓝蛇化蛟，体型急速扩大，在江河中穿行如电。性情变得沉稳坚毅，防御坚如磐石。",
+    "tier": "灵",
+    "role": "特攻手",
     "gender_ratio": "50/50",
-    "size_info": "中型 / 1.0m / 22.5kg",
+    "height": "1.0",
+    "weight": "22.5",
     "evolutions": [
       {
         "into": "覆海龙",
@@ -226,8 +241,11 @@
     "exp_yield": 240,
     "growth_rate": "中速",
     "desc": "覆海龙翻腾时能掀起滔天巨浪，龙威震慑四海，是传说中守护江河的神龙。",
+    "tier": "玄",
+    "role": "特攻手",
     "gender_ratio": "50/50",
-    "size_info": "大型 / 2.1m / 101.5kg",
+    "height": "2.1",
+    "weight": "101.5",
     "learnset": {
       "1": [
         "撞击",
@@ -262,8 +280,11 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "圆滚滚的竹林小熊，以竹叶为食，浑身毛茸茸的。天生能感应草木之灵气，憨态可掬。",
+    "tier": "凡",
+    "role": "物攻手",
     "gender_ratio": "87.5/12.5",
-    "size_info": "小型 / 0.7m / 32kg",
+    "height": "0.7",
+    "weight": "32",
     "evolutions": [
       {
         "into": "武道熊",
@@ -296,8 +317,11 @@
     "exp_yield": 142,
     "growth_rate": "中速",
     "desc": "熟习竹林功法的少年熊，拳风带着草木之力。憨厚中透着认真，正在苦练绝世绝学。",
+    "tier": "灵",
+    "role": "物攻手",
     "gender_ratio": "50/50",
-    "size_info": "中型 / 1.2m / 65.5kg",
+    "height": "1.2",
+    "weight": "65.5",
     "evolutions": [
       {
         "into": "功夫熊师",
@@ -330,8 +354,11 @@
     "exp_yield": 240,
     "growth_rate": "中速",
     "desc": "功夫熊师身披竹甲，一招一式蕴含天地灵气，是竹林武道的最强传承者。",
+    "tier": "玄",
+    "role": "物攻手",
     "gender_ratio": "87.5/12.5",
-    "size_info": "大型 / 1.9m / 100.5kg",
+    "height": "1.9",
+    "weight": "100.5",
     "learnset": {
       "1": [
         "成长",
@@ -371,7 +398,9 @@
         "吐丝",
         "撞击"
       ]
-    }
+    },
+    "height": "0.3",
+    "weight": "4.5"
   },
   "蛹甲": {
     "id": 13,
@@ -404,7 +433,9 @@
       "1": [
         "撞击"
       ]
-    }
+    },
+    "height": "0.5",
+    "weight": "9.5"
   },
   "岩灵": {
     "id": 19,
@@ -471,13 +502,15 @@
       "5": [
         "微笑"
       ]
-    }
+    },
+    "height": "0.4",
+    "weight": "5.2"
   },
   "小灯鼠": {
     "id": 15,
     "name": "小灯鼠",
     "type1": "空",
-    "type2": "",
+    "type2": "鬼",
     "base": {
       "hp": 40,
       "atk": 55,
@@ -490,9 +523,19 @@
     "exp_yield": 36,
     "growth_rate": "中速",
     "desc": "灰白小灵鼠，大眼睛乌溜溜灵动。尾巴末端散发微光，在黑暗中照亮前路，跑得飞快。",
+    "tier": "",
+    "role": "",
     "gender_ratio": "50/50",
     "height": "0.3",
     "weight": "3.5",
+    "evolutions": [
+      {
+        "into": "眀灯鼠",
+        "level": 18
+      }
+    ],
+    "evolves_into": "眀灯鼠",
+    "evolve_level": 18,
     "learnset": {
       "1": [
         "啃咬",
@@ -649,8 +692,11 @@
     "exp_yield": 50,
     "growth_rate": "中速",
     "desc": "绒毛浅黄的小雉鸡，喙和脚明亮橙黄。天生懂得借助风力滑翔，奔跑时身姿格外轻盈。",
+    "tier": "凡",
+    "role": "均衡",
     "gender_ratio": "50/50",
-    "size_info": "小型 / 0.3m / 2.0kg",
+    "height": "0.3",
+    "weight": "2.8",
     "evolutions": [
       {
         "into": "坤鸡",
@@ -709,7 +755,9 @@
       "42": [
         "飓风"
       ]
-    }
+    },
+    "height": "0.7",
+    "weight": "11.5"
   },
   "绿螳螂": {
     "id": 22,
@@ -744,7 +792,9 @@
       "1": [
         "撞击"
       ]
-    }
+    },
+    "height": "0.9",
+    "weight": "15.5"
   },
   "蓝焰螳螂": {
     "id": 23,
@@ -769,7 +819,9 @@
       "1": [
         "撞击"
       ]
-    }
+    },
+    "height": "1.2",
+    "weight": "35.0"
   },
   "赤金螳螂": {
     "id": 24,
@@ -794,7 +846,9 @@
       "1": [
         "撞击"
       ]
-    }
+    },
+    "height": "1.2",
+    "weight": "42.0"
   },
   "元英": {
     "id": 26,
@@ -819,7 +873,9 @@
       "1": [
         "撞击"
       ]
-    }
+    },
+    "height": "5.0",
+    "weight": "320.0"
   },
   "智敏": {
     "id": 27,
@@ -844,7 +900,9 @@
       "1": [
         "撞击"
       ]
-    }
+    },
+    "height": "1.4",
+    "weight": "52.0"
   },
   "舒华": {
     "id": 25,
@@ -891,7 +949,9 @@
     "desc": "丘陵中诞生的雷之精灵，身躯包裹着蓬松的雷云绒毛，头顶小角会迸出细小电火花。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.5m / 5.0kg",
-    "learnset": {}
+    "learnset": {},
+    "height": "0.6",
+    "weight": "10.5"
   },
   "幼冰犬": {
     "id": 30,
@@ -984,7 +1044,9 @@
       "38": [
         "极光幕"
       ]
-    }
+    },
+    "height": "1.0",
+    "weight": "35.5"
   },
   "铠霜战狼": {
     "id": 32,
@@ -1022,7 +1084,9 @@
       "60": [
         "绝对零度"
       ]
-    }
+    },
+    "height": "1.5",
+    "weight": "82.0"
   },
   "大蝶": {
     "id": 14,
@@ -1043,7 +1107,9 @@
     "desc": "破茧后的华丽形态，双翼展开可遮蔽阳光，鳞粉折射彩虹般光泽，传说能穿越万里云海。",
     "gender_ratio": "50/50",
     "size_info": "小型 / 0.3m / 2.0kg",
-    "learnset": {}
+    "learnset": {},
+    "height": "0.8",
+    "weight": "8.5"
   },
   "吉他小猪": {
     "id": 33,
@@ -1063,8 +1129,8 @@
     "growth_rate": "中速",
     "desc": "背着大吉他、穿蓝色西装的矮胖小猪，表情总是一脸苦恼，弹起琴来却异常动听。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.7",
+    "weight": "28.0",
     "learnset": {}
   },
   "君美": {
@@ -1085,8 +1151,8 @@
     "growth_rate": "中速",
     "desc": "戴着菱格纹毛衣和眼镜的知性精灵，总背着鼓鼓的挎包，里面装满了各地收集的珍稀标本。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "1.1",
+    "weight": "22.0",
     "learnset": {}
   },
   "瑜伽小妹": {
@@ -1107,8 +1173,8 @@
     "growth_rate": "中速",
     "desc": "热爱瑜伽修行的精灵，赤脚感受大地，腰间系粉色纱巾，动作柔中带刚，气质沉静淡然。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "1.0",
+    "weight": "19.5",
     "evolutions": [
       {
         "into": "酷姐",
@@ -1137,8 +1203,8 @@
     "growth_rate": "中速",
     "desc": "穿黑色蕾丝上衣的冷酷精灵，编着精致鱼骨辫，喜欢坐在高处俯瞰众生，手拿一瓶饮料。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "1.2",
+    "weight": "42.0",
     "learnset": {}
   },
   "雨琦": {
@@ -1159,8 +1225,8 @@
     "growth_rate": "中速",
     "desc": "穿黑色背心短裤的干练精灵，双手叉腰充满斗志。短发利落眼神坚定，是天生的战斗家。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "1.1",
+    "weight": "28.0",
     "learnset": {}
   },
   "石面具": {
@@ -1181,8 +1247,8 @@
     "growth_rate": "中速",
     "desc": "古老祭祀面具被灵气唤醒，双眼一红一绿闪烁不定，身后拖着紫色灵体触须。",
     "gender_ratio": "无性别",
-    "height": "",
-    "weight": "",
+    "height": "0.2",
+    "weight": "1.5",
     "evolutions": [
       {
         "into": "岩傩神",
@@ -1211,8 +1277,8 @@
     "growth_rate": "中速",
     "desc": "石面具觉醒后的傩神战士，身披岩石铠甲，胸口嵌灵能宝珠，头顶烈焰角冠背负紫色神幡。",
     "gender_ratio": "无性别",
-    "height": "",
-    "weight": "",
+    "height": "1.8",
+    "weight": "145.0",
     "learnset": {}
   },
   "泥蛙": {
@@ -1233,8 +1299,8 @@
     "growth_rate": "中速",
     "desc": "浑身土黄的小蛙，皮肤龟裂如干泥，大眼睛圆滚滚，常蹲在泥塘边晒太阳。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.2",
+    "weight": "1.2",
     "evolutions": [
       {
         "into": "沼蟾",
@@ -1263,8 +1329,8 @@
     "growth_rate": "中速",
     "desc": "进化后体型壮硕，背部长出岩石棘刺，腮帮鼓着紫色毒囊，脾气暴躁。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.6",
+    "weight": "22.5",
     "evolutions": [
       {
         "into": "毒沼王",
@@ -1293,8 +1359,8 @@
     "growth_rate": "中速",
     "desc": "沼泽之王，披覆墨绿岩甲，头顶双角冒紫烟，胸腹紫毒脉络清晰，背甲刻有古篆纹。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "1.4",
+    "weight": "98.0",
     "learnset": {}
   },
   "绿叶蜥": {
@@ -1315,8 +1381,8 @@
     "growth_rate": "中速",
     "desc": "趴在树枝上的小变色龙，背上长满翠绿叶片，大眼睛好奇地张望，卷曲的尾巴缠绕树枝。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.4",
+    "weight": "5.5",
     "evolutions": [
       {
         "into": "刺尾蜥",
@@ -1345,8 +1411,8 @@
     "growth_rate": "中速",
     "desc": "进化后尾巴长满尖刺，舌头滴着毒液，性情凶猛好斗，能喷射腐蚀性毒汁。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.8",
+    "weight": "19.5",
     "evolutions": [
       {
         "into": "瘴龙",
@@ -1375,8 +1441,8 @@
     "growth_rate": "中速",
     "desc": "密林深处的霸主，全身覆盖刺叶鳞甲，口吐剧毒瘴气，背脊荆棘如森林般茂密。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "1.7",
+    "weight": "115.0",
     "learnset": {}
   },
   "绵绵羊": {
@@ -1397,8 +1463,8 @@
     "growth_rate": "中速",
     "desc": "浑身蓬松白毛的小羊精灵，紫色大眼睛水汪汪的，小角圆润可爱，性情温顺亲人。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.5",
+    "weight": "8.5",
     "evolutions": [
       {
         "into": "绒绒云",
@@ -1427,8 +1493,8 @@
     "growth_rate": "中速",
     "desc": "进化后绒毛变为梦幻粉色，金色卷角闪耀星辉，据说抱着它入睡会做美梦。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.9",
+    "weight": "27.0",
     "learnset": {}
   },
   "草御剑": {
@@ -1449,8 +1515,8 @@
     "growth_rate": "中速",
     "desc": "头顶嫩芽的小蜥剑士，双手各持一柄叶片利剑，虽然个头小但眼神坚毅，时刻准备战斗。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.4",
+    "weight": "3.5",
     "evolutions": [
       {
         "into": "花剑客",
@@ -1479,8 +1545,8 @@
     "growth_rate": "中速",
     "desc": "头顶盛开火红百合的木甲剑客，双刃叶剑锋利无比，膝肘缠绕花藤，是草木武道的大师。",
     "gender_ratio": "50/50",
-    "height": "",
-    "weight": "",
+    "height": "0.9",
+    "weight": "18.5",
     "learnset": {}
   },
   "绒心": {
@@ -1928,6 +1994,30 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "眀灯鼠": {
+    "id": 16,
+    "name": "眀灯鼠",
+    "type1": "空",
+    "type2": "鬼",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "role": "",
     "gender_ratio": "50/50",
     "height": "0.5",
     "weight": "5.0",
