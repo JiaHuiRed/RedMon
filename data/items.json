@@ -1,38 +1,56 @@
 {
   "精灵葫芦": {
-    "name": "精灵葫芦", "category": "ball", "ball_bonus": 1.0, "color": "#E0E0E0",
+    "name": "精灵葫芦",
+    "category": "捕捉",
+    "price": 0,
     "desc": "素白葫芦，入门训练师常用。"
   },
   "超级葫芦": {
-    "name": "超级葫芦", "category": "ball", "ball_bonus": 1.5, "color": "#4488FF",
+    "name": "超级葫芦",
+    "category": "捕捉",
+    "price": 0,
     "desc": "染蓝的葫芦，捕捉率提升。"
   },
   "高级葫芦": {
-    "name": "高级葫芦", "category": "ball", "ball_bonus": 2.0, "color": "#FFCC00",
+    "name": "高级葫芦",
+    "category": "捕捉",
+    "price": 0,
     "desc": "金黄葫芦，捕捉率大幅提升。"
   },
   "大师葫芦": {
-    "name": "大师葫芦", "category": "ball", "ball_bonus": 255, "color": "#9933FF",
+    "name": "大师葫芦",
+    "category": "捕捉",
+    "price": 0,
     "desc": "稀有紫葫芦，百分百捕捉成功。"
   },
   "豪华葫芦": {
-    "name": "豪华葫芦", "category": "ball", "ball_bonus": 1.5, "color": "#AAAAAA",
+    "name": "豪华葫芦",
+    "category": "捕捉",
+    "price": 0,
     "desc": "乌黑葫芦，夜晚才敢拿出来用。"
   },
   "铁丹": {
-    "name": "铁丹", "category": "heal", "heal_amount": 50, "mp_heal_amount": 10,
+    "name": "铁丹",
+    "category": "回复",
+    "price": 0,
     "desc": "铁制丹药，恢复50点HP，10点MP。"
   },
   "铜丹": {
-    "name": "铜丹", "category": "heal", "heal_amount": 100, "mp_heal_amount": 30,
+    "name": "铜丹",
+    "category": "回复",
+    "price": 0,
     "desc": "铜制丹药，恢复100点HP，30点MP。"
   },
   "银丹": {
-    "name": "银丹", "category": "heal", "heal_amount": 200, "mp_heal_amount": 50,
+    "name": "银丹",
+    "category": "回复",
+    "price": 0,
     "desc": "银制丹药，恢复200点HP，50点MP。"
   },
   "金丹": {
-    "name": "金丹", "category": "heal", "full_heal": true, "mp_heal_percent": 50,
+    "name": "金丹",
+    "category": "回复",
+    "price": 0,
     "desc": "金色仙丹，完全恢复HP与MP。"
   }
 }
