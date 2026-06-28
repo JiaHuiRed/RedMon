@@ -42,3 +42,6 @@ RPG_Demo/
 
 # RedCode config
 .redcode/
+
+# Reference materials (local only, not pushed)
+material/
