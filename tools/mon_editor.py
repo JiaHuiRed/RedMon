@@ -546,7 +546,28 @@ class App:
         srch_f.pack(fill="x", padx=10, pady=(0, 6))
         self.mon_search = ttk.Entry(srch_f)
         self.mon_search.pack(fill="x")
-        self.mon_search.bind("<KeyRelease>", lambda _: self._mon_refresh_list())
+        self._mon_search_val = ""
+        self.mon_search.bind("<KeyRelease>", self._mon_on_search)
+
+        # ── Type/tier filters ──────────────────────────────────────────────
+        flt_f = tk.Frame(left, bg=BG_SIDE)
+        flt_f.pack(fill="x", padx=10, pady=(0, 4))
+        tk.Label(flt_f, text="属性", bg=BG_SIDE, fg=TEXT_SEC,
+                 font=(FONT_CJK, 9)).pack(anchor="w")
+        self.mon_filter_t1 = ttk.Combobox(flt_f, width=20, state="readonly")
+        self.mon_filter_t1["values"] = ["全部"] + TYPES
+        self.mon_filter_t1.set("全部")
+        self.mon_filter_t1.pack(fill="x")
+        self.mon_filter_t1.bind("<<ComboboxSelected>>",
+                                lambda _: self._mon_refresh_list())
+        tk.Label(flt_f, text="品阶", bg=BG_SIDE, fg=TEXT_SEC,
+                 font=(FONT_CJK, 9)).pack(anchor="w", pady=(4, 0))
+        self.mon_filter_tier = ttk.Combobox(flt_f, width=20, state="readonly")
+        self.mon_filter_tier["values"] = ["全部", "凡", "灵", "玄", "地", "神", "天"]
+        self.mon_filter_tier.set("全部")
+        self.mon_filter_tier.pack(fill="x")
+        self.mon_filter_tier.bind("<<ComboboxSelected>>",
+                                  lambda _: self._mon_refresh_list())
 
         lf = tk.Frame(left, bg=BG_SIDE)
         lf.pack(fill="both", expand=True, padx=10)
@@ -841,12 +862,14 @@ class App:
         evo_f = tk.Frame(evo_col, bg=BG_MAIN)
         evo_f.pack(fill="x")
         self.evo_tree = ttk.Treeview(
-            evo_f, columns=("into", "level"), show="headings",
+            evo_f, columns=("into", "level", "item"), show="headings",
             height=3, selectmode="browse")
         self.evo_tree.heading("into",  text="进化为")
         self.evo_tree.heading("level", text="等级")
+        self.evo_tree.heading("item",  text="道具")
         self.evo_tree.column("into",  width=120, anchor="w")
-        self.evo_tree.column("level", width=50,  anchor="center")
+        self.evo_tree.column("level", width=40,  anchor="center")
+        self.evo_tree.column("item",  width=80,  anchor="w")
         self.evo_tree.pack(side="left", fill="x", expand=True)
         evo_btn = tk.Frame(evo_f, bg=BG_MAIN)
         evo_btn.pack(side="left", padx=(4, 0))
@@ -943,13 +966,26 @@ class App:
     def _mon_get_name(self, display):
         return display.split(" ", 1)[1] if " " in display else display
 
+    def _mon_on_search(self, _=None):
+        v = self.mon_search.get()
+        if v == self._mon_search_val:
+            return
+        self._mon_search_val = v
+        self._mon_refresh_list()
+
     def _mon_refresh_list(self):
         q = self.mon_search.get().lower()
+        ft1 = self.mon_filter_t1.get()
+        fti = self.mon_filter_tier.get()
         self.mon_list.delete(0, "end")
-        items = [(d.get("id", 0) or 0, n)
-                 for n, d in self.species.items()
-                 if not q or q in n.lower() or q in str(d.get("id", 0))]
-        for mid, n in sorted(items):
+        for n, d in self.species.items():
+            if ft1 != "全部" and d.get("type1", "") != ft1 and d.get("type2", "") != ft1:
+                continue
+            if fti != "全部" and d.get("tier", "") != fti:
+                continue
+            if q and q not in n.lower() and q not in str(d.get("id", 0)):
+                continue
+            mid = d.get("id", 0) or 0
             self.mon_list.insert("end", f"{mid:03d} {n}")
 
     def _mon_select(self, _=None):
@@ -1003,7 +1039,7 @@ class App:
             evolutions = [{"into": d["evolves_into"],
                            "level": d.get("evolve_level", 0)}]
         for ev in evolutions:
-            self.evo_tree.insert("", "end", values=(ev["into"], ev["level"]))
+            self.evo_tree.insert("", "end", values=(ev["into"], ev["level"], ev.get("item", "")))
 
         self.mon_desc.delete("1.0", "end")
         self.mon_desc.insert("1.0", d.get("desc", ""))
@@ -1045,12 +1081,16 @@ class App:
                 lbl.configure(image="", text="无图片")
 
     def _refresh_badges(self):
-        for w in self._badge_frame.winfo_children():
-            w.destroy()
-        for tp in [self.mon_t1.get(), self.mon_t2.get()]:
-            if tp:
-                _type_badge(self._badge_frame, tp, BG_CARD).pack(
-                    side="left", padx=(0, 4))
+        children = self._badge_frame.winfo_children()
+        tps = [tp for tp in (self.mon_t1.get(), self.mon_t2.get()) if tp]
+        # Reuse existing badge labels instead of destroy/create
+        for i, w in enumerate(children):
+            if i < len(tps):
+                w.config(text=tps[i], bg=TYPE_COLORS.get(tps[i], ("white", BG_CARD))[1])
+            else:
+                w.pack_forget()
+        for i in range(len(children), len(tps)):
+            _type_badge(self._badge_frame, tps[i], BG_CARD).pack(side="left", padx=(0, 4))
         self._refresh_type_matchup()
 
     def _refresh_type_matchup(self):
@@ -1318,16 +1358,22 @@ class App:
         ttk.Spinbox(dlg, from_=1, to=100, width=7,
                     textvariable=lv_var).grid(row=1, column=1, sticky="w")
 
+        tk.Label(dlg, text="进化道具:").grid(
+            row=2, column=0, padx=12, pady=6, sticky="e")
+        item_cb = SearchableCombo(dlg, sorted(self.items.keys()), width=20)
+        item_cb.grid(row=2, column=1, sticky="w")
+        item_cb.set("")
+
         def ok():
-            tgt = cb.get(); lv = lv_var.get()
+            tgt = cb.get(); lv = lv_var.get(); item = item_cb.get()
             if tgt and lv.isdigit():
-                self.evo_tree.insert("", "end", values=(tgt, int(lv)))
+                self.evo_tree.insert("", "end", values=(tgt, int(lv), item))
                 dlg.destroy()
             else:
                 messagebox.showwarning("", "请选择目标精灵和等级", parent=dlg)
 
         bf = ttk.Frame(dlg)
-        bf.grid(row=2, column=0, columnspan=2, pady=10)
+        bf.grid(row=3, column=0, columnspan=2, pady=10)
         ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
         ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
 
@@ -1437,11 +1483,14 @@ class App:
             "weight":      self.mon_weight.get().strip(),
         }
 
-        evolutions = [
-            {"into":  self.evo_tree.item(iid, "values")[0],
-             "level": _int(self.evo_tree.item(iid, "values")[1])}
-            for iid in self.evo_tree.get_children()
-        ]
+        evolutions = []
+        for iid in self.evo_tree.get_children():
+            vals = self.evo_tree.item(iid, "values")
+            evo = {"into": vals[0], "level": _int(vals[1])}
+            item = vals[2].strip() if len(vals) > 2 and vals[2] else ""
+            if item:
+                evo["item"] = item
+            evolutions.append(evo)
         if evolutions:
             d["evolutions"] = evolutions
             if len(evolutions) == 1:

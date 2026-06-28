@@ -467,9 +467,12 @@ func _physics_process(_delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		get_viewport().set_input_as_handled()
-		if _shop_active: _close_shop(); return
-		if _dialog_active: return
+		if _shop_active:
+			get_viewport().set_input_as_handled()
+			_close_shop(); return
+		if _dialog_active:
+			get_viewport().set_input_as_handled()
+			return
 
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):

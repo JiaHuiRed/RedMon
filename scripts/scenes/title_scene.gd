@@ -8,6 +8,7 @@ const VH := 640
 var _cursor: int = 0
 var _has_save: bool = false
 var _labels: Array = []
+var _arrow: Label
 var _texts: Array = ["新游戏", "继续游戏"]  # YYMMDD Red 提升到类作用域
 
 func _ready() -> void:
@@ -23,7 +24,7 @@ func _build_bg() -> void:
 		var bg = TextureRect.new()
 		bg.texture = tex
 		bg.size = Vector2(VW, VH)
-		bg.stretch_mode = TextureRect.STRETCH_SCALE
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		add_child(bg)
 	else:
 		# 回退：深夜星空背景
@@ -66,35 +67,46 @@ func _build_logo() -> void:
 
 # ── 选项菜单 ──────────────────────────────────────────────────────────────────
 func _build_options() -> void:
+	var pw := 220
+	var px := (VW - pw) / 2
+	var py := 144
+	var ph := 112
+
 	# 菜单背景框
-	var panel_bg = ColorRect.new()
-	panel_bg.size = Vector2(170, 100)
-	panel_bg.position = Vector2((VW - 170) / 2, 158)
-	panel_bg.color = Color(0.06, 0.06, 0.22, 0.90)
+	var panel_bg := ColorRect.new()
+	panel_bg.size = Vector2(pw, ph)
+	panel_bg.position = Vector2(px, py)
+	panel_bg.color = Color(0.06, 0.06, 0.22, 0.92)
 	add_child(panel_bg)
 
-	var border_top = ColorRect.new()
-	border_top.size = Vector2(170, 2)
-	border_top.position = Vector2((VW - 170) / 2, 158)
-	border_top.color = Color(0.55, 0.55, 0.88)
-	add_child(border_top)
+	# 边框
+	for y in [py, py + ph - 2]:
+		var b := ColorRect.new()
+		b.size = Vector2(pw, 2)
+		b.position = Vector2(px, y)
+		b.color = Color(0.55, 0.55, 0.88) if y == py else Color(0.30, 0.30, 0.55)
+		add_child(b)
 
-	var border_bot = ColorRect.new()
-	border_bot.size = Vector2(170, 2)
-	border_bot.position = Vector2((VW - 170) / 2, 256)
-	border_bot.color = Color(0.30, 0.30, 0.55)
-	add_child(border_bot)
-
+	# 选项标签
 	for i in range(_texts.size()):
-		var lbl = Label.new()
+		var lbl := Label.new()
 		lbl.text = _texts[i]
-		lbl.position = Vector2((VW - 170) / 2 + 18, 174 + i * 40)
-		lbl.add_theme_font_size_override("font_size", 17)
+		lbl.size = Vector2(pw, 36)
+		lbl.position = Vector2(px, py + 8 + i * 48)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 18)
 		add_child(lbl)
 		_labels.append(lbl)
 
+	# 光标（箭头指示器）
+	_arrow = Label.new()
+	_arrow.text = "▶"
+	_arrow.add_theme_font_size_override("font_size", 18)
+	_arrow.add_theme_color_override("font_color", Color(1.0, 0.88, 0.18))
+	add_child(_arrow)
+
 	# 版权
-	var ver = Label.new()
+	var ver := Label.new()
 	ver.text = "© 2026  华灵工作室"
 	ver.position = Vector2(0, VH - 16)
 	ver.size.x = VW
@@ -106,7 +118,6 @@ func _build_options() -> void:
 	_refresh()
 
 func _route_load_scene() -> String:
-	# YYMMDD Red 根据进度路由到正确场景
 	if not GameState.has_starter:
 		return "title"
 	if not GameState.rival_done:
@@ -116,17 +127,19 @@ func _route_load_scene() -> String:
 	return "world"
 
 func _refresh() -> void:
+	var pw := 220
+	var px := (VW - pw) / 2
+	var py := 144
 	for i in range(_labels.size()):
-		var lbl = _labels[i]
-		var grayed = (i == 1 and not _has_save)
-		var selected = (i == _cursor)
-		lbl.text = ("▶  " if selected else "   ") + _texts[i]
-		if grayed:
-			lbl.add_theme_color_override("font_color", Color(0.28, 0.28, 0.45))
-		elif selected:
-			lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.18))
-		else:
-			lbl.add_theme_color_override("font_color", Color(0.78, 0.78, 0.92))
+		var lbl := _labels[i]
+		var grayed := (i == 1 and not _has_save)
+		var sel := (i == _cursor)
+		lbl.add_theme_color_override("font_color",
+			Color(0.30, 0.30, 0.50) if grayed else
+			Color(1.0, 0.88, 0.18) if sel else
+			Color(0.78, 0.78, 0.92))
+	_arrow.visible = not (_cursor == 1 and not _has_save)
+	_arrow.position = Vector2(px - 4, py + 8 + _cursor * 48)
 
 # ── 输入 ──────────────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:

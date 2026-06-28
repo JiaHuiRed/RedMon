@@ -14,6 +14,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.3.4] - 2026-06-28
+
+#### Added
+- **16 只新精灵**：145→146→147 珑儿→珑蟠→灵珑（灵龙三段）、148→149 蹦蹦草→蒲蒲团、150→152 锈铁剑→青锋剑、151→153 断刃→斩铁刀、154→155 霜翎雏→凌霜鹤、156→157→158 蛰蚕→冬夏草→不死蛊（冬虫夏草三段）、159→160 狰崽→狰（山海雷兽）。`data/species.json`
+- **编辑器属性/品阶过滤**：精灵列表上方增加属性、品阶筛选下拉框，配合搜索快速定位。`tools/mon_editor.py`
+- **编辑器搜索防抖**：搜索输入只在文本真正变化时重绘，减少无效刷新。`tools/mon_editor.py`
+
+#### Optimized
+- **编辑器 badge 复用**：切换属性时复用已有标签而非销毁重建，减少 widget 操作。`tools/mon_editor.py`
+
+---
+
+### [0.3.3] - 2026-06-28
+
+#### Added
+- **全局暂停菜单**：home/village/town 场景按 X/Esc 弹出完整菜单（精灵/背包/存档/回到标题），精灵列表含 HP 条显示。`scripts/main.gd`
+- **标题画面美化**：`project.godot` 窗口 `aspect=keep` 防裁剪，`title_scene.gd` 背景 `STRETCH_KEEP_ASPECT_CENTERED`，菜单面板 220px 加宽，▶ 箭头光标独立 Label。
+- **战斗精灵缩放**：512×512 精灵缩至 0.2 倍（~102px），适配战场框。`battle_scene.gd`
+
+#### Fixed
+- **town_scene X/Esc 误拦**：ui_cancel 处理器只在商店/对话活跃时调 `set_input_as_handled()`，其余情况让事件冒泡到全局暂停菜单。`scripts/scenes/town_scene.gd`
+
+---
+
+### [0.3.2] - 2026-06-28
+
+#### Added
+- **分支进化系统**：露比5条进化分支（奔雷/骑侠/潜游/喷火/挖洞露比）改为道具触发，武徒弟25级可选择进化枪兵或棍勇。`mon_db.gd` 进化系统重构为 `check_evolution`（纯等级）+ `get_potential_evolutions`（多分支）+ `evolve_to`（指定物种），`battle_scene.gd` 升级后弹出分支选择覆盖层，消耗道具后进化。
+- **7种进化道具**：雷霆石、格斗卷轴、水之晶核、烈焰石、大地之核、翎羽枪、玄铁棍。`data/items.json`
+- **编辑器进化道具支持**：`mon_editor.py` 进化分支新增「道具」列，添加时可选道具，加载/保存完整。`tools/mon_editor.py`
+
+---
+
 ### [0.3.0] - 2026-06-28
 
 #### Added

@@ -345,34 +345,44 @@ func level_up(mon: Dictionary) -> Array:
 
 	return new_moves
 
-# 检查是否满足进化条件，满足则返回进化目标 species_id，否则返回 ""
-# 分支进化时返回第一个满足条件的分支（后续可扩展为玩家选择）
+# ── 进化系统 ──────────────────────────────────────────────────────────────────
+# 注意：evolutions 中的 item 字段由调用方检查，mon_db 只做等级判断
+
+# 检查等级是否满足进化条件，返回第一个满足等级的进化目标
 func check_evolution(mon: Dictionary) -> String:
+	var evos = get_potential_evolutions(mon)
+	if evos.size() > 0:
+		return evos[0]["into"]
+	# 旧格式兼容（单线进化）
 	var sp = species.get(mon["species_id"], {})
-	# 新格式：evolutions 列表
-	var evolutions = sp.get("evolutions", [])
-	for evo in evolutions:
-		if mon["level"] >= evo.get("level", 0):
-			return evo["into"]
-	# 旧格式兼容
 	var evo_into  = sp.get("evolves_into", "")
 	var evo_level = sp.get("evolve_level", 0)
 	if evo_into != "" and mon["level"] >= evo_level:
 		return evo_into
 	return ""
 
-# 执行进化：就地修改 mon，保留等级/经验/IVs/状态
-func evolve(mon: Dictionary) -> void:
-	var new_id = check_evolution(mon)
-	if new_id == "" or not species.has(new_id):
+# 返回所有满足等级条件的进化分支列表
+# 每个元素 dict: {"into": String, "level": int, "item": String(可选)}
+# 不检查道具——调用方负责过滤 GameState.items
+func get_potential_evolutions(mon: Dictionary) -> Array:
+	var sp = species.get(mon["species_id"], {})
+	var result = []
+	for evo in sp.get("evolutions", []):
+		if mon["level"] >= evo.get("level", 0):
+			result.append(evo.duplicate())
+	return result
+
+# 进化到指定物种（保留等级/经验/IVs/状态）
+func evolve_to(mon: Dictionary, species_id: String) -> void:
+	if not species.has(species_id):
 		return
-	var new_sp = species[new_id]
+	var new_sp = species[species_id]
 	var b      = new_sp["base"]
 	var ivs    = mon["ivs"]
 	var lv     = mon["level"]
 
-	mon["species_id"] = new_id
-	mon["nickname"]   = ""   # 进化后清除昵称（可按需保留）
+	mon["species_id"] = species_id
+	mon["nickname"]   = ""
 
 	var old_max = mon["max_hp"]
 	mon["max_hp"] = int((3.0 * b["hp"] + ivs["hp"]) * lv / 100.0) + lv + 10
@@ -394,6 +404,12 @@ func evolve(mon: Dictionary) -> void:
 				mon["moves"].append(entry)
 			else:
 				mon["moves"][0] = entry
+
+# 自动进化（纯等级触发，取第一个满足条件的，调用了检查道具）
+func evolve(mon: Dictionary) -> void:
+	var target = check_evolution(mon)
+	if target != "":
+		evolve_to(mon, target)
 
 # ── 捕捉系统 ─────────────────────────────────────────────────────────────────
 # 返回是否捕捉成功。HP越低、状态异常、捕捉率越高，成功率越高。

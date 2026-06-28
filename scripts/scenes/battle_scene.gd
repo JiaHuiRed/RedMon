@@ -6,6 +6,7 @@ extends Node2D
 #   500–640: 指令区（战斗/背包/精灵/逃跑 → 四技能选择）
 
 signal request_scene(scene_name: String, data: Dictionary)
+signal _evo_choice_made
 
 const VW := 960
 const VH := 640
@@ -48,6 +49,8 @@ var _mon_close_btn: Button
 
 var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
+var _evo_panel:       Control
+var _evo_result:      Dictionary = {}
 
 # ── 键盘 / 手柄导航 ────────────────────────────────────────────────────────────
 var _active_panel:      String = "none"  # "action"|"move"|"bag"|"mon"|"none"
@@ -164,12 +167,14 @@ func _build_battle_field() -> void:
 	_enemy_spr = Sprite2D.new()
 	_enemy_spr.texture = _draw_enemy_sprite(_enemy_mon["species_id"])
 	_enemy_spr.position = Vector2(VW - 110, FIELD_H - 110)
+	_enemy_spr.scale = Vector2(0.2, 0.2)
 	add_child(_enemy_spr)
 
 	# Player sprite (mon back-facing, left side)
 	_player_spr = Sprite2D.new()
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 	_player_spr.position = Vector2(110, FIELD_H - 68)
+	_player_spr.scale = Vector2(0.2, 0.2)
 	add_child(_player_spr)
 
 func _draw_cloud(pos: Vector2, w: float, h: float) -> void:
@@ -736,6 +741,60 @@ func _refresh_move_panel() -> void:
 			btn.disabled = true
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Branch evolution choice
+# ══════════════════════════════════════════════════════════════════════════════
+func _show_evolution_choice(evos: Array) -> Dictionary:
+	_evo_result = {}
+	_evo_panel = Control.new()
+	_evo_panel.position = Vector2(0, 0)
+	_evo_panel.size = Vector2(VW, VH)
+	add_child(_evo_panel)
+
+	var bg = ColorRect.new()
+	bg.size = Vector2(VW, VH)
+	bg.color = Color(0.0, 0.0, 0.0, 0.75)
+	_evo_panel.add_child(bg)
+
+	var title = Label.new()
+	title.text = "进化选择！"
+	title.position = Vector2(VW * 0.25, 80)
+	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	title.add_theme_font_size_override("font_size", 18)
+	_evo_panel.add_child(title)
+
+	var hint = Label.new()
+	hint.text = "选择进化方向："
+	hint.position = Vector2(VW * 0.25, 110)
+	hint.add_theme_color_override("font_color", Color(0.75, 0.75, 0.80))
+	hint.add_theme_font_size_override("font_size", 12)
+	_evo_panel.add_child(hint)
+
+	for i in range(evos.size()):
+		var evo = evos[i]
+		var sp = MonDB.species.get(evo["into"], {})
+		var type_str = sp.get("type1", "")
+		var t2 = sp.get("type2", "")
+		if t2 != "":
+			type_str += "/" + t2
+		var item_str = ""
+		if evo.has("item"):
+			item_str = "  [需%s]" % evo["item"]
+		var btn = Button.new()
+		btn.text = "%s  [%s]%s" % [evo["into"], type_str, item_str]
+		btn.size = Vector2(400, 30)
+		btn.position = Vector2(VW * 0.25, 140 + i * 38)
+		btn.pressed.connect(_on_evo_choice.bind(evo))
+		_evo_panel.add_child(btn)
+
+	await _evo_choice_made
+	_evo_panel.queue_free()
+	return _evo_result
+
+func _on_evo_choice(evo: Dictionary) -> void:
+	_evo_result = evo
+	_evo_choice_made.emit()
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Panel helpers
 # ══════════════════════════════════════════════════════════════════════════════
 func _show_action_panel() -> void:
@@ -1122,12 +1181,29 @@ func _handle_victory() -> void:
 			await _show_message_async("%s 学会了【%s】！" % [MonDB.display_name(_player_mon), mv_id])
 
 		# 进化检查（升级后）
-		var evo_target = MonDB.check_evolution(_player_mon)
-		if evo_target != "":
+		var evos = MonDB.get_potential_evolutions(_player_mon)
+		# 过滤道具要求：有 item 字段且持有数量 > 0 才可选
+		var available = []
+		for evo in evos:
+			if evo.has("item"):
+				if GameState.items.get(evo["item"], 0) > 0:
+					available.append(evo)
+			else:
+				available.append(evo)
+		if available.size() > 0:
 			var old_name = MonDB.display_name(_player_mon)
+			var chosen = available[0]
+			if available.size() > 1:
+				chosen = await _show_evolution_choice(available)
+				if chosen.is_empty():
+					chosen = available[0]
+			# 消耗进化道具
+			var req_item = chosen.get("item", "")
+			if req_item != "" and GameState.items.has(req_item):
+				GameState.items[req_item] -= 1
+			# 执行进化
 			await _show_message_async("啊！\n%s 要进化了！" % old_name)
-			MonDB.evolve(_player_mon)
-			# 更新我方精灵图像
+			MonDB.evolve_to(_player_mon, chosen["into"])
 			_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 			_refresh_info()
 			_refresh_move_panel()
