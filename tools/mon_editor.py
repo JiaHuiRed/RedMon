@@ -5,7 +5,7 @@ RedMon 数据编辑器 — 精灵 & 技能 & 角色
 用法: python -X utf8 tools/mon_editor.py
 """
 
-import json, os, re, sys, tkinter as tk
+import json, os, re, sys, statistics, tkinter as tk
 from tkinter import ttk, messagebox
 
 try:
@@ -731,9 +731,11 @@ class App:
         self.mon_tier.pack(side="left", padx=(4, 10))
         _lbl(hf, "定位", bg=BG_MAIN).pack(side="left")
         self.mon_role = ttk.Combobox(
-            hf, values=["", "物攻手", "特攻手", "混攻手", "快攻手",
-                        "物盾", "特盾", "全盾", "辅助", "均衡"],
-            width=6, state="readonly")
+            hf, values=["", "均衡", "物攻手", "特攻手", "混攻手", "快攻手",
+                        "肉盾", "高速均衡", "高速物攻手", "高速特攻手",
+                        "高速混攻手", "高速肉盾", "肉盾均衡",
+                        "肉盾物攻手", "肉盾特攻手"],
+            width=8, state="readonly")
         self.mon_role.pack(side="left", padx=(4, 0))
         row += 1
 
@@ -873,7 +875,7 @@ class App:
     # ── Mon tab helpers ─────────────────────────────────────────────────────
 
     def _suggest_tier_role(self):
-        """根据当前种族值自动推荐品阶和定位"""
+        """根据当前种族值自动推荐品阶和定位（六维偏离度 + 复合标签）"""
         v = {}
         for _, key in STAT_LABELS:
             try:    v[key] = int(self.mon_stat_entries[key].get())
@@ -887,36 +889,49 @@ class App:
         total  = hp + atk + def_ + sp_atk + sp_def + spd
 
         # 品阶（按BST阈值）
-        if   total >= 650: tier = "天"
+        if   total >= 670: tier = "天"
         elif total >= 600: tier = "神"
         elif total >= 535: tier = "地"
         elif total >= 450: tier = "玄"
         elif total >= 360: tier = "灵"
         else:              tier = "凡"
 
-        # 定位（极差 > 20 为单攻手判定线）
-        diff     = atk - sp_atk          # 正=偏物，负=偏特
-        main_atk = max(atk, sp_atk)
-        avg_off  = (atk + sp_atk) / 2
-        avg_def  = (def_ + sp_def) / 2
-        top_stat = max(hp, atk, def_, sp_atk, sp_def, spd)
+        # z-score 组内标准化定位算法
+        vals = {"hp": hp, "atk": atk, "def": def_, "sp_atk": sp_atk, "sp_def": sp_def, "spd": spd}
+        nums = list(vals.values())
+        avg  = statistics.mean(nums)
+        sd   = statistics.stdev(nums) or 1
+        z    = {k: (v - avg) / sd for k, v in vals.items()}
+        high = {k for k, v in z.items() if v > 1.0}
+        top2 = {k for k, v in sorted(vals.items(), key=lambda x: -x[1])[:2]}
 
-        if spd == top_stat and main_atk >= 65:
+        # 核心类型（z-score > 1.0 = 显著偏离）
+        if "spd" in high and ("atk" in high or "sp_atk" in high
+                              or ("spd" in top2 and ("atk" in top2 or "sp_atk" in top2))):
             role = "快攻手"
-        elif diff > 20:
+        elif "def" in high and "sp_def" in high and "atk" not in high and "sp_atk" not in high:
+            role = "肉盾"
+        elif "atk" in high and "sp_atk" not in high:
             role = "物攻手"
-        elif diff < -20:
+        elif "sp_atk" in high and "atk" not in high:
             role = "特攻手"
-        elif avg_def > avg_off + 15 and main_atk < 75:
-            if   def_ >= sp_def + 20: role = "物盾"
-            elif sp_def >= def_ + 20: role = "特盾"
-            else:                      role = "全盾"
-        elif main_atk >= 70 and abs(diff) <= 20:
+        elif "atk" in high and "sp_atk" in high:
             role = "混攻手"
-        elif spd >= 80 and main_atk < 65:
-            role = "辅助"
+        elif (def_ + sp_def) >= (atk + sp_atk) * 1.5:
+            role = "肉盾"  # 明显偏肉无突出攻击
         else:
             role = "均衡"
+
+        # 复合前缀（二选一，不叠加；肉盾权重大于高速）
+        sorted_vals = sorted([hp, atk, def_, sp_atk, sp_def, spd], reverse=True)
+        spd_ok = spd >= 80 and spd >= sorted_vals[2] and role != "快攻手" and "高速" not in role
+        def_ok = (def_ + sp_def) >= (atk + sp_atk) * 1.15 and role != "肉盾" and "肉盾" not in role
+        if spd_ok and def_ok:
+            role = "肉盾" + role
+        elif spd_ok:
+            role = "高速" + role
+        elif def_ok:
+            role = "肉盾" + role
 
         self.mon_tier.set(tier)
         self.mon_role.set(role)
@@ -1260,8 +1275,8 @@ class App:
             self.mon_stat_lv100[key].config(text=str(lv100))
         self.mon_total_label.config(text=str(total))
         # Color-code BST tier: 天/神/地/玄/灵/凡
-        if   total >= 650: col = "#D42020"   # 红   — 天（顶级神兽 650+）
-        elif total >= 600: col = "#C85A00"   # 橙红  — 神（幻兽/弱神兽 600-649）
+        if   total >= 670: col = "#D42020"   # 红   — 天（顶级神兽 670+）
+        elif total >= 600: col = "#C85A00"   # 橙红  — 神（幻兽/弱神兽 600-669）
         elif total >= 535: col = "#B8860B"   # 金   — 地（伪神/准神 535-599）
         elif total >= 450: col = "#7B2FBE"   # 紫   — 玄（强力进化型 450-534）
         elif total >= 360: col = "#1A56CC"   # 蓝   — 灵（普通进化型 360-449）

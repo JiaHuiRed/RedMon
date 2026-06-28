@@ -8,6 +8,7 @@
 
 **所有精灵图生成时，在具体描述之后追加以下内容：**
 
+**正面图后缀：**
 ```
 Chinese mythology inspired original monster.
 Pokemon GBA pixel art style, clean readable design.
@@ -17,14 +18,29 @@ Light source from upper-left, consistent three-layer shading.
 Clear silhouette recognizable at small size.
 Natural creature anatomy. No robotic or mechanical parts (unless Steel type).
 Transparent background.
-Front view and back view (slightly turned right) side by side.
+Front view facing forward. Centered full body.
 512x512.
 ```
 
-**追加规则：**
-- 正面图：面朝观众，作为敌方战斗显示
-- 背面图：背对观众、微向右转（3/4 背面），作为我方战斗显示
-- 两个视角放同一张图里，左前右背，生成后裁剪
+**背面图后缀：**
+```
+Chinese mythology inspired original monster.
+Pokemon GBA pixel art style, clean readable design.
+Warm saturated color palette. No grey tones.
+Dark brown outlines (not pure black).
+Light source from upper-left, consistent three-layer shading.
+Clear silhouette recognizable at small size.
+Natural creature anatomy. No robotic or mechanical parts (unless Steel type).
+Transparent background.
+Back view, body slightly turned to the right (3/4 back view). Centered full body.
+512x512.
+```
+
+**规则：**
+- 每次生图只生成一个视角，不再拼图
+- 正面图：精灵面朝观众，全幅居中，用于敌方战斗显示
+- 背面图：精灵背对观众、微向右转（3/4 背面），全幅居中，用于我方战斗显示
+- 两个视角分两次生成，各 512×512
 
 ---
 
@@ -119,8 +135,8 @@ Front view and back view (slightly turned right) side by side.
 | 灵 | 360-449 | 蓝 | 普通进化型 | 烈火猫、沼蟾 |
 | 玄 | 450-534 | 紫 | 强力终进化 | 焚焰狮、覆海龙 |
 | 地 | 535-599 | 金 | 准神/伪神 | 蚩极、猿圣 |
-| 神 | 600-649 | 橙红 | 幻兽/弱神兽 | 盘丝妖后、天蚕铠 |
-| 天 | 650+ | 红 | 顶级神兽 | 苍渊(720)、太一(720) |
+| 神 | 600-669 | 橙红 | 幻兽/弱神兽 | 盘丝妖后、天蚕铠 |
+| 天 | 670+ | 红 | 顶级神兽 | 苍渊(720)、太一(720) |
 
 ---
 
