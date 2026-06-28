@@ -4,8 +4,8 @@ extends Node2D
 
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 const TILE  := 16
 const COLS  := 30
 const ROWS  := 20
@@ -256,6 +256,10 @@ func _build_clinic() -> void:
 	# Pharmacy interior is handled via dialog when player walks to door
 	pass
 
+func _build_shop() -> void:
+	# Shop panel built in _build_shop_panel; interaction via door
+	pass
+
 func _heal_all_mons() -> void:
 	for mon in GameState.player_team:
 		mon["current_hp"] = mon["max_hp"]
@@ -493,10 +497,12 @@ func _input(event: InputEvent) -> void:
 
 		# Top exit → 青木村
 		if tile.y <= 1 and tile.x >= 12 and tile.x <= 17:
+			GameState.last_scene = "town"  # YYMMDD Red
 			request_scene.emit("village", {})
 
 		# Bottom exit → 华灵草原
 		if tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:
+			GameState.last_scene = "town"  # YYMMDD Red
 			request_scene.emit("world", {})
 
 		# 百药堂 door

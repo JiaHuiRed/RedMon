@@ -4,8 +4,8 @@ extends Node2D
 
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 const TILE  := 16
 const COLS  := 30
 const ROWS  := 20
@@ -64,9 +64,9 @@ var _pending_trainer: Dictionary = {}   # 等待确认开战的训练师
 # 主菜单
 const MENU_W   := 210
 const MENU_H   := 280
-const MENU_X   := 268   # 480 - 212
+const MENU_X   := 748   # 960 - 212
 const MENU_Y   := 20
-const MAIN_OPTIONS := ["精灵", "背包", "存档", "关闭"]
+const MAIN_OPTIONS := ["精灵", "背包", "存档", "退出游戏", "关闭"]
 
 var _menu_active: bool = false
 var _menu_cursor: int  = 0
@@ -847,6 +847,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 		if tile.y <= 1 and tile.x >= 12 and tile.x <= 17:
+			GameState.last_scene = "world"  # YYMMDD Red
 			request_scene.emit("town", {})
 		elif tile == CLINIC_DOOR_TILE:
 			_open_clinic()
@@ -1042,7 +1043,8 @@ func _select_main_option() -> void:
 		0: _menu_sub = "party";  _refresh_menu()
 		1: _menu_sub = "bag";    _refresh_menu()
 		2: GameState.save_game(); _menu_sub = "saved"; _refresh_menu()
-		3: _close_menu()
+		3: GameState.save_game(); get_tree().quit()
+		4: _close_menu()
 
 func _check_trainer_sight() -> void:
 	if _battling or _dialog_active: return

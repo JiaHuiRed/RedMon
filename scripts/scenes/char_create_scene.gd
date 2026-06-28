@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 角色创建场景（性别选择 + 取名）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 
 # 阶段：0=教授开场白, 1=性别选择, 2=取名, 3=劲敌取名
 var _phase: int = 0
@@ -65,35 +65,38 @@ func _build_professor() -> void:
 
 	var spr = Sprite2D.new()
 	spr.texture = tex
-	var s = 118.0 / maxf(tex.get_size().x, tex.get_size().y)
+	var s = 180.0 / maxf(tex.get_size().x, tex.get_size().y)
 	spr.scale = Vector2(s, s)
-	spr.position = Vector2(68, VH - 34)
+	spr.position = Vector2(68, VH - 280)
+	spr.z_index = 5  # YYMMDD Red 确保在对话框之上
 	add_child(spr)
 
 	var name_lbl = Label.new()
 	name_lbl.text = "陈教授"
-	name_lbl.position = Vector2(8, VH - 92)
+	name_lbl.position = Vector2(8, 360)  # YYMMDD Red 移到教授头顶上方
 	name_lbl.add_theme_color_override("font_color", Color(0.20, 0.20, 0.25))
 	name_lbl.add_theme_font_size_override("font_size", 11)
 	add_child(name_lbl)
 
 # ── 对话框 ───────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
+	# YYMMDD Red 对话框放在 floor 上方，不再和 floor 重叠
+	var dialog_h = 72
 	var box = ColorRect.new()
-	box.size = Vector2(VW, 86)
-	box.position = Vector2(0, VH - 86)
+	box.size = Vector2(VW, dialog_h)
+	box.position = Vector2(0, VH - 88 - dialog_h)
 	box.color = Color(0.06, 0.06, 0.16, 0.93)
 	add_child(box)
 
 	var border = ColorRect.new()
 	border.size = Vector2(VW, 2)
-	border.position = Vector2(0, VH - 86)
+	border.position = Vector2(0, VH - 88 - dialog_h)
 	border.color = Color(0.65, 0.65, 0.92)
 	add_child(border)
 
 	_dialog_lbl = Label.new()
-	_dialog_lbl.position = Vector2(142, VH - 82)
-	_dialog_lbl.size = Vector2(328, 76)
+	_dialog_lbl.position = Vector2(142, VH - 88 - dialog_h + 8)
+	_dialog_lbl.size = Vector2(VW - 170, dialog_h - 16)
 	_dialog_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_dialog_lbl.add_theme_color_override("font_color", Color.WHITE)
 	_dialog_lbl.add_theme_font_size_override("font_size", 13)
@@ -101,8 +104,8 @@ func _build_dialog() -> void:
 
 	_dialog_hint = Label.new()
 	_dialog_hint.text = "Enter 继续 ▼"
-	_dialog_hint.position = Vector2(VW - 104, VH - 18)
-	_dialog_hint.add_theme_color_override("font_color", Color(0.50, 0.50, 0.70))
+	_dialog_hint.position = Vector2(VW - 104, VH - 88 - dialog_h + 6)
+	_dialog_hint.add_theme_color_override("font_color", Color(0.50, 0.50, 0.72))
 	_dialog_hint.add_theme_font_size_override("font_size", 10)
 	add_child(_dialog_hint)
 

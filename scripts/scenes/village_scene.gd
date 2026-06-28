@@ -3,8 +3,8 @@ extends Node2D
 # 家出门后的小村落，劲敌在村口等着
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 const TILE  := 16
 const COLS  := 30
 const ROWS  := 20
@@ -411,8 +411,10 @@ func _input(event: InputEvent) -> void:
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 		if tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:
 			if not _rival_done:
+				GameState.last_scene = "village"  # YYMMDD Red
 				_start_rival_battle()
 			else:
+				GameState.last_scene = "village"  # YYMMDD Red
 				request_scene.emit("town", {})
 		# Talk to NPCs
 		if tile.distance_to(Vector2i(8, 12)) < 3:
@@ -456,6 +458,7 @@ func _start_battle() -> void:
 		"dialog_before": "来吧！",
 		"dialog_win": "还行嘛！"
 	}
+	GameState.last_scene = "village"  # YYMMDD Red
 	request_scene.emit("battle", {
 		"trainer": trainer_data,
 		"return_scene": "village",

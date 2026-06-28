@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 御三家选择场景（含前置剧情 + 后置对话）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 
 const STARTERS := ["炎喵", "蓝蛇", "小竹熊"]
 const STARTER_DESCS := [
@@ -85,15 +85,16 @@ func _build_professor() -> void:
 	var spr = Sprite2D.new()
 	spr.texture = tex
 	var tex_size := tex.get_size()
-	# 目标高度 ~120px（站在画面底部），按高度缩放
-	var s := 120.0 / maxf(tex_size.x, tex_size.y)
+	# 目标高度 ~180px，让教授立绘完整显示在对话框上方
+	var s := 180.0 / maxf(tex_size.x, tex_size.y)
 	spr.scale = Vector2(s, s)
-	spr.position = Vector2(60, VH - 30)
+	spr.position = Vector2(60, VH - 200)
+	spr.z_index = 5  # YYMMDD Red 确保在对话框和卡片之上
 	add_child(spr)
 
 	var name_lbl = Label.new()
 	name_lbl.text = PROFESSOR_NAME
-	name_lbl.position = Vector2(10, VH - 36)
+	name_lbl.position = Vector2(10, 450)  # YYMMDD Red 移到教授头顶上方
 	name_lbl.add_theme_color_override("font_color", Color(0.2, 0.2, 0.2))
 	add_child(name_lbl)
 

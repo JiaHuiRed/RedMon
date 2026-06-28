@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 玩家的家（室内）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 const TILE  := 16
 const SPEED := 100.0
 
@@ -15,7 +15,7 @@ var _dialog_panel: Control
 var _dialog_label: Label
 
 var _mom_spr: Sprite2D
-var _door_spr: Sprite2D
+var _door_spr: ColorRect
 
 func _ready() -> void:
 	_build_interior()
@@ -297,7 +297,8 @@ func _input(event: InputEvent) -> void:
 		# Check if player is near the door
 		var door_center = Vector2(VW / 2, VH - 18)
 		if _player.position.distance_to(door_center) < 24:
-			request_scene.emit("village", {})
+			GameState.last_scene = "home"  # YYMMDD Red 记录最后场景
+		request_scene.emit("village", {})
 		# Check if player is near mom
 		var mom_pos = Vector2(VW / 2 + 50, VH - 38)
 		if _player.position.distance_to(mom_pos) < 24 and not _dialog_active:

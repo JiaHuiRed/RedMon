@@ -395,6 +395,28 @@ class App:
         tk.Label(hdr, text="RedMon 数据编辑器", bg=BG_SIDE, fg=TEXT_PRI,
                  font=(FONT_CJK, 10, "bold")).place(relx=0.5, rely=0.5, anchor="center")
 
+        # 重新加载按钮
+        reload_btn = tk.Button(hdr, text="⟳ 重新加载", bg=BG_SIDE, fg=TEXT_SEC,
+                               font=(FONT_CJK, 9), relief="flat", cursor="hand2",
+                               command=self._reload_data)
+        reload_btn.place(relx=1.0, x=-14, rely=0.5, anchor="e")
+
+    def _reload_data(self):
+        """重新从文件读取所有数据"""
+        try:
+            self.species  = load_json(SPECIES_FILE)
+            self.moves    = load_json(MOVES_FILE)
+            self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
+            self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
+            self._mon_refresh_list()
+            self._move_refresh_list()
+            self._trainer_refresh_list()
+            self._item_refresh_list()
+            self._refresh_dlg_tree()
+            messagebox.showinfo("", "数据已重新加载")
+        except Exception as e:
+            messagebox.showerror("加载失败", str(e))
+
     def _on_close(self):
         self.root.destroy()
         self._ghost.destroy()

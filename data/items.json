@@ -1,58 +1,38 @@
 {
   "精灵葫芦": {
-    "id": 1,
-    "name": "精灵葫芦",
-    "category": "捕捉",
-    "price": 200,
-    "desc": "捕捉野生精灵的必备工具，对野生精灵使用可以尝试收服。"
+    "name": "精灵葫芦", "category": "ball", "ball_bonus": 1.0, "color": "#E0E0E0",
+    "desc": "素白葫芦，入门训练师常用。"
   },
   "超级葫芦": {
-    "id": 2,
-    "name": "超级葫芦",
-    "category": "捕捉",
-    "price": 600,
-    "desc": "比普通葫芦更结实，捕捉成功率提升。"
+    "name": "超级葫芦", "category": "ball", "ball_bonus": 1.5, "color": "#4488FF",
+    "desc": "染蓝的葫芦，捕捉率提升。"
   },
-  "铜丹": {
-    "id": 10,
-    "name": "铜丹",
-    "category": "回复",
-    "price": 100,
-    "desc": "铜炉炼制的低级丹药，恢复精灵20点HP。"
+  "高级葫芦": {
+    "name": "高级葫芦", "category": "ball", "ball_bonus": 2.0, "color": "#FFCC00",
+    "desc": "金黄葫芦，捕捉率大幅提升。"
   },
-  "银丹": {
-    "id": 11,
-    "name": "银丹",
-    "category": "回复",
-    "price": 300,
-    "desc": "银炉炼制的中级丹药，恢复精灵50点HP。"
+  "大师葫芦": {
+    "name": "大师葫芦", "category": "ball", "ball_bonus": 255, "color": "#9933FF",
+    "desc": "稀有紫葫芦，百分百捕捉成功。"
   },
-  "金丹": {
-    "id": 12,
-    "name": "金丹",
-    "category": "回复",
-    "price": 800,
-    "desc": "金炉炼制的上品丹药，完全恢复精灵HP。"
+  "豪华葫芦": {
+    "name": "豪华葫芦", "category": "ball", "ball_bonus": 1.5, "color": "#AAAAAA",
+    "desc": "乌黑葫芦，夜晚才敢拿出来用。"
   },
   "铁丹": {
-    "id": 13,
-    "name": "铁丹",
-    "category": "回复",
-    "price": 500,
-    "desc": "铁甲炼制，复活濒死的精灵并恢复一半HP。"
+    "name": "铁丹", "category": "heal", "heal_amount": 50, "mp_heal_amount": 10,
+    "desc": "铁制丹药，恢复50点HP，10点MP。"
   },
-  "解毒丹": {
-    "id": 14,
-    "name": "解毒丹",
-    "category": "回复",
-    "price": 150,
-    "desc": "解百毒，解除精灵的中毒状态。"
+  "铜丹": {
+    "name": "铜丹", "category": "heal", "heal_amount": 100, "mp_heal_amount": 30,
+    "desc": "铜制丹药，恢复100点HP，30点MP。"
   },
-  "清醒丹": {
-    "id": 15,
-    "name": "清醒丹",
-    "category": "回复",
-    "price": 150,
-    "desc": "清心醒脑，解除精灵的睡眠状态。"
+  "银丹": {
+    "name": "银丹", "category": "heal", "heal_amount": 200, "mp_heal_amount": 50,
+    "desc": "银制丹药，恢复200点HP，50点MP。"
+  },
+  "金丹": {
+    "name": "金丹", "category": "heal", "full_heal": true, "mp_heal_percent": 50,
+    "desc": "金色仙丹，完全恢复HP与MP。"
   }
 }

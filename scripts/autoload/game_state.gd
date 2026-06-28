@@ -10,6 +10,7 @@ var money: int = 500
 var items: Dictionary = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
 var defeated_trainers: Array = []   # 已击败的训练师 id 列表
 var rival_done: bool = false       # 第一次劲敌战已结束（无论输赢）
+var last_scene: String = ""        # YYMMDD Red 最后所在场景，用于读档回跳
 
 var font: SystemFont  # 全局中文字体，所有场景共用
 
@@ -76,6 +77,7 @@ func save_game() -> void:
 		"player_team":       player_team,
 		"defeated_trainers": defeated_trainers,
 		"rival_done":        rival_done,
+		"last_scene":        last_scene,
 	}
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -108,7 +110,8 @@ func load_game() -> bool:
 	player_team       = data.get("player_team", [])
 	defeated_trainers = data.get("defeated_trainers", [])
 	rival_done        = data.get("rival_done", false)
-	print("[SAVE] 存档读取完成，队伍：%d 只精灵" % player_team.size())
+	last_scene        = data.get("last_scene", "")
+	print("[SAVE] 存档读取完成，上次场景：%s，队伍：%d 只精灵" % [last_scene, player_team.size()])
 	return true
 
 func start_new_game(name: String, rname: String = "小敏") -> void:
@@ -121,6 +124,7 @@ func start_new_game(name: String, rname: String = "小敏") -> void:
 	items = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
 	defeated_trainers = []
 	rival_done = false
+	last_scene = ""  # YYMMDD Red 新游戏重置
 
 func add_mon(mon: Dictionary) -> void:
 	player_team.append(mon)

@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.2.9] - 2026-06-28
+
+#### Added
+- **新精灵 3 只**：鳄蛙（水/凡）→ 小鳄龙（水/灵）→ 大蓝鳄（水/暗/玄），三段进化链，全种族值+技能池
+- **编辑器重新加载按钮**：`mon_editor.py` 标题栏右上角「⟳ 重新加载」，修改 JSON 后一键刷新
+
+#### Fixed
+- **博士素材修复**：博士_front.jpg/博士_back.jpg → 512×512 透明 PNG，移除白色背景导致的棋盘格问题
+- **species-design skill 修正**：数据路径、补全 design_guide 缺失规则
+
+---
+
 ### [0.2.8] - 2026-06-27
 
 #### Added

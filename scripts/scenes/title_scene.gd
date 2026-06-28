@@ -2,12 +2,13 @@ extends Node2D
 # RedMon – 标题画面
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 480
-const VH := 320
+const VW := 960
+const VH := 640
 
 var _cursor: int = 0
 var _has_save: bool = false
 var _labels: Array = []
+var _texts: Array = ["新游戏", "继续游戏"]  # YYMMDD Red 提升到类作用域
 
 func _ready() -> void:
 	_has_save = GameState.has_save()
@@ -84,10 +85,9 @@ func _build_options() -> void:
 	border_bot.color = Color(0.30, 0.30, 0.55)
 	add_child(border_bot)
 
-	var texts = ["新游戏", "继续游戏"]
-	for i in range(texts.size()):
+	for i in range(_texts.size()):
 		var lbl = Label.new()
-		lbl.text = texts[i]
+		lbl.text = _texts[i]
 		lbl.position = Vector2((VW - 170) / 2 + 18, 174 + i * 40)
 		lbl.add_theme_font_size_override("font_size", 17)
 		add_child(lbl)
@@ -105,13 +105,22 @@ func _build_options() -> void:
 
 	_refresh()
 
+func _route_load_scene() -> String:
+	# YYMMDD Red 根据进度路由到正确场景
+	if not GameState.has_starter:
+		return "title"
+	if not GameState.rival_done:
+		return "village"
+	if not GameState.last_scene.is_empty():
+		return GameState.last_scene
+	return "world"
+
 func _refresh() -> void:
-	var texts = ["新游戏", "继续游戏"]
 	for i in range(_labels.size()):
 		var lbl = _labels[i]
 		var grayed = (i == 1 and not _has_save)
 		var selected = (i == _cursor)
-		lbl.text = ("▶  " if selected else "   ") + texts[i]
+		lbl.text = ("▶  " if selected else "   ") + _texts[i]
 		if grayed:
 			lbl.add_theme_color_override("font_color", Color(0.28, 0.28, 0.45))
 		elif selected:
@@ -134,4 +143,5 @@ func _input(event: InputEvent) -> void:
 			request_scene.emit("char_create", {})
 		elif _has_save:
 			GameState.load_game()
-			request_scene.emit("world", {})
+			var target = _route_load_scene()
+			request_scene.emit(target, {})
