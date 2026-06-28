@@ -9,29 +9,40 @@ var _cursor: int = 0
 var _has_save: bool = false
 var _labels: Array = []
 var _arrow: Label
-var _texts: Array = ["新游戏", "继续游戏"]  # YYMMDD Red 提升到类作用域
+var _texts: Array = ["新游戏", "继续游戏"]
 
 func _ready() -> void:
 	_has_save = GameState.has_save()
 	_build_bg()
 	_build_logo()
 	_build_options()
+	get_viewport().size_changed.connect(_resize_bg)
 
 # ── 背景 ─────────────────────────────────────────────────────────────────────
+var _bg: Sprite2D
+
 func _build_bg() -> void:
 	var tex = load("res://assets/backgrounds/登录界面.png")
 	if tex:
-		var bg = TextureRect.new()
-		bg.texture = tex
-		bg.size = Vector2(VW, VH)
-		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		add_child(bg)
+		_bg = Sprite2D.new()
+		_bg.texture = tex
+		_bg.centered = false
+		_resize_bg()
+		add_child(_bg)
 	else:
 		# 回退：深夜星空背景
 		var bg = ColorRect.new()
-		bg.size = Vector2(VW, VH)
+		bg.size = get_viewport_rect().size
 		bg.color = Color(0.04, 0.04, 0.12)
 		add_child(bg)
+
+func _resize_bg() -> void:
+	if not _bg:
+		return
+	var vs = get_viewport_rect().size
+	var ts = _bg.texture.get_size()
+	var s = max(vs.x / ts.x, vs.y / ts.y)
+	_bg.scale = Vector2(s, s)
 
 # ── 标题 Logo ─────────────────────────────────────────────────────────────────
 func _build_logo() -> void:
@@ -131,7 +142,7 @@ func _refresh() -> void:
 	var px := (VW - pw) / 2
 	var py := 144
 	for i in range(_labels.size()):
-		var lbl := _labels[i]
+		var lbl = _labels[i]
 		var grayed := (i == 1 and not _has_save)
 		var sel := (i == _cursor)
 		lbl.add_theme_color_override("font_color",

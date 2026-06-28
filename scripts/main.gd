@@ -95,7 +95,7 @@ func _build_pause() -> void:
 
 func _open_pause() -> void:
 	if _scene_name in _PAUSE_EXEMPT: return
-	if _current != null and _current.get("_dialog_active", false): return
+	if _current != null and _current.get("_dialog_active"): return
 	_pause_active = true
 	_pause_cursor = 0
 	_pause_sub    = ""

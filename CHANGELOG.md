@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.3.5] - 2026-06-28
+
+> 修复登录背景左上角裁剪、属性克制表冰→火缺失、编辑器进攻端双属性冲突条目被隐藏。
+
+#### Fixed
+
+- **登录背景显示不全**：`title_scene.gd` 背景 TextureRect 改 Sprite2D（`centered=false` + 等比覆盖），适配任意窗口大小，不再只显示左上角。
+- **属性克制表冰→火缺失**：编辑器 `mon_editor.py` 的 TYPE_CHART 冰系条目补 `"火": 0.6`，同步到 `mon_db.gd` 的 `_type_chart`。
+- **编辑器双属性进攻端冲突被隐藏**：`_refresh_type_matchup` 重写为逐属性独立展示（冰·克制/微弱 + 土·克制/微弱），避免双属性一克一抵时整条消失。
+
+---
+
 ### [0.3.4] - 2026-06-28
 
 #### Added

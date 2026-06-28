@@ -56,7 +56,7 @@ TYPE_CHART = {
     "水": {"火": 1.5, "土": 1.5, "岩": 1.5, "水": 0.6, "木": 0.6, "龙": 0.6},
     "木": {"水": 1.5, "土": 1.5, "岩": 1.5, "火": 0.6, "木": 0.6, "毒": 0.6, "风": 0.6, "虫": 0.6, "龙": 0.6, "钢": 0.6},
     "雷": {"水": 1.5, "风": 1.5, "雷": 0.6, "木": 0.6, "龙": 0.6, "土": 0.0},
-    "冰": {"木": 1.5, "土": 1.5, "风": 1.5, "龙": 1.5, "水": 0.6, "冰": 0.6, "钢": 0.6},
+    "冰": {"木": 1.5, "土": 1.5, "风": 1.5, "龙": 1.5, "火": 0.6, "水": 0.6, "冰": 0.6, "钢": 0.6},
     "格": {"空": 1.5, "冰": 1.5, "岩": 1.5, "暗": 1.5, "钢": 1.5, "毒": 0.6, "风": 0.6, "灵": 0.6, "虫": 0.6, "仙": 0.6, "鬼": 0.0},
     "毒": {"木": 1.5, "仙": 1.5, "毒": 0.6, "土": 0.6, "岩": 0.6, "鬼": 0.6, "钢": 0.0},
     "土": {"火": 1.5, "雷": 1.5, "毒": 1.5, "岩": 1.5, "钢": 1.5, "木": 0.6, "虫": 0.6, "风": 0.0},
@@ -1118,32 +1118,6 @@ class App:
             elif mult < 1.0:
                 resist.append((atk, f"{mult:g}x"))
 
-        # Offensive: for THIS species' types as attacker, find what they're strong/weak against
-        # Build per-defending-type list of multipliers from each of attacker's types
-        off_map = {}  # def_type -> [mult_from_t1, mult_from_t2]
-        for my_atk in [t1] + ([t2] if t2 else []):
-            chart = TYPE_CHART.get(my_atk, {})
-            for def_type in ALL_TYPES:
-                mult = chart.get(def_type, 1.0)
-                off_map.setdefault(def_type, []).append(mult)
-
-        super_eff = []
-        not_eff = []
-        no_dmg = []
-        for def_type, mults in off_map.items():
-            has_super  = any(m > 1.0 for m in mults)
-            has_resist = any(0 < m < 1.0 for m in mults)
-            has_immune = any(m == 0 for m in mults)
-            # Only show if all types agree on the direction (no conflicting coverage)
-            if has_immune and not has_super:
-                no_dmg.append((def_type, "0"))
-            elif has_super and not has_resist and not has_immune:
-                super_eff.append((def_type, f"{max(mults):g}x"))
-            elif (has_resist or has_immune) and not has_super:
-                worst = min(mults)
-                if worst > 0:
-                    not_eff.append((def_type, f"{worst:g}x"))
-
         def _render_section(title, entries, bg_c, max_per_row=8):
             if not entries:
                 return
@@ -1164,11 +1138,30 @@ class App:
                     tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
                              font=(FONT_CJK, 7)).pack(side="left", padx=1)
 
+        def _off_by_type(atk_type: str) -> None:
+            chart = TYPE_CHART.get(atk_type, {})
+            se, ne, nd = [], [], []
+            for def_type in ALL_TYPES:
+                mult = chart.get(def_type, 1.0)
+                if mult == 0:
+                    nd.append((def_type, "0"))
+                elif mult > 1.0:
+                    se.append((def_type, f"{mult:g}x"))
+                elif mult < 1.0:
+                    ne.append((def_type, f"{mult:g}x"))
+            _render_section(f"{atk_type}·克制", se, "#D0F0D0")
+            _render_section(f"{atk_type}·微弱", ne, "#FFF5D0")
+            _render_section(f"{atk_type}·无效", nd, "#E8E8F0")
+
+        if t2:
+            for at in [t1, t2]:
+                _off_by_type(at)
+        else:
+            _off_by_type(t1)
+
         _render_section("弱点", weak,      "#FFE0E0")
         _render_section("抵抗", resist,    "#E0FFE0")
-        _render_section("抗性", immune,    "#E8E8F0")
-        _render_section("克制", super_eff, "#D0F0D0")
-        _render_section("被克", not_eff, "#FFF5D0")
+        _render_section("免疫", immune,    "#E8E8F0")
 
     def _refresh_evo_compare(self, name, d):
         for w in self._evo_bar.winfo_children():
