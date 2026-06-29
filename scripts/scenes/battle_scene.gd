@@ -1670,3 +1670,93 @@ func _draw_zhuling_back() -> Texture2D:
 	var tex = ImageTexture.new()
 	tex.set_image(img)
 	return tex
+
+# ── 葫芦投掷捕捉动画 ─────────────────────────────────────────────────────────
+func _anim_throw_gourd(item_id: String, ball_bonus: float) -> void:
+	# 1. 加载葫芦贴图
+	var gourd_tex := load("res://assets/ui/items/" + item_id + ".png") as Texture2D
+	if not gourd_tex:
+		gourd_tex = load("res://assets/ui/items/精灵葫芦.png")
+	var gourd_spr := Sprite2D.new()
+	gourd_spr.texture = gourd_tex
+	gourd_spr.scale   = Vector2(2.0, 2.0)
+	var start_pos := Vector2(160, FIELD_H - 40)
+	var end_pos   := Vector2(VW - 160, FIELD_H - 80)
+	gourd_spr.position = start_pos
+	add_child(gourd_spr)
+
+	# 2. 葫芦飞行弧线
+	var t_val := [0.0]
+	var fly_tw := create_tween()
+	fly_tw.tween_method(func(t: float):
+		var p := start_pos.lerp(end_pos, t)
+		p.y -= sin(t * PI) * 80.0
+		gourd_spr.position = p
+		gourd_spr.rotation = t * TAU * 1.5
+	, 0.0, 1.0, 0.5)
+	await fly_tw.finished
+	gourd_spr.rotation = 0.0
+
+	# 3. 敌方精灵吸入 + 特效
+	var suck_tw := create_tween().set_parallel(true)
+	suck_tw.tween_property(_enemy_spr, "scale", Vector2(0.0, 0.0), 0.35)
+	suck_tw.tween_property(_enemy_spr, "modulate:a", 0.0, 0.35)
+	var fx_names := ["葫芦特效_1小旋涡", "葫芦特效_2扩散", "葫芦特效_3卷入"]
+	var fx_spr   := Sprite2D.new()
+	fx_spr.position = end_pos
+	fx_spr.scale    = Vector2(0.12, 0.12)
+	add_child(fx_spr)
+	for fx in fx_names:
+		var ftex := load("res://assets/ui/items/" + fx + ".png") as Texture2D
+		if ftex: fx_spr.texture = ftex
+		await get_tree().create_timer(0.12).timeout
+	fx_spr.queue_free()
+	await suck_tw.finished
+
+	# 4. 葫芦落地
+	var land_pos := Vector2(end_pos.x, FIELD_H - 24)
+	var land_tw  := create_tween()
+	land_tw.tween_property(gourd_spr, "position", land_pos, 0.18)
+	await land_tw.finished
+
+	# 5. 判断捕捉
+	var success := MonDB.calc_catch(_enemy_mon, ball_bonus)
+	var shakes  := 3 if success else randi_range(1, 2)
+	for _i in range(shakes):
+		var stw := create_tween()
+		stw.tween_property(gourd_spr, "rotation_degrees", 25.0, 0.10)
+		stw.tween_property(gourd_spr, "rotation_degrees", -25.0, 0.10)
+		stw.tween_property(gourd_spr, "rotation_degrees", 0.0, 0.10)
+		await stw.finished
+		await get_tree().create_timer(0.28).timeout
+
+	if success:
+		# 成功：消散特效
+		var dtex := load("res://assets/ui/items/葫芦特效_4消散.png") as Texture2D
+		if dtex:
+			var d_spr := Sprite2D.new()
+			d_spr.texture  = dtex
+			d_spr.position = land_pos
+			d_spr.scale    = Vector2(0.06, 0.06)
+			add_child(d_spr)
+			await get_tree().create_timer(0.5).timeout
+			d_spr.queue_free()
+		gourd_spr.queue_free()
+		await _show_message_async("捕捉成功！")
+		if GameState.player_team.size() < 6:
+			GameState.player_team.append(_enemy_mon)
+			await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
+		else:
+			await _show_message_async("队伍已满，%s 被放生了……" % MonDB.display_name(_enemy_mon))
+		_busy = false
+		GameState.save_game()
+		_end_battle("caught")
+	else:
+		# 失败：葫芦消失，精灵复出
+		gourd_spr.queue_free()
+		_enemy_spr.scale     = Vector2(0.2, 0.2)
+		_enemy_spr.modulate.a = 1.0
+		await _show_message_async("差一点！
+%s 挣脱了！" % MonDB.display_name(_enemy_mon))
+		_busy = false
+		_show_action_panel()

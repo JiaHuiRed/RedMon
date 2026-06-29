@@ -58,7 +58,19 @@ func _setup_gba_keys() -> void:
 		ev_x.keycode = KEY_X
 		InputMap.action_add_event("ui_cancel", ev_x)
 
-	print("[INPUT] GBA 按键已注册: Z=A(确认)  X=B(取消)  Esc/X=菜单  手柄自动支持")
+	# Enter → ui_menu (Start 按钮，开关世界菜单)
+	if not InputMap.has_action("ui_menu"):
+		InputMap.add_action("ui_menu")
+	var has_enter := false
+	for ev in InputMap.action_get_events("ui_menu"):
+		if ev is InputEventKey and ev.keycode == KEY_ENTER:
+			has_enter = true; break
+	if not has_enter:
+		var ev_enter := InputEventKey.new()
+		ev_enter.keycode = KEY_ENTER
+		InputMap.action_add_event("ui_menu", ev_enter)
+
+	print("[INPUT] GBA 按键已注册: Z=确认  X=取消  Enter=菜单  手柄自动支持")
 
 const SAVE_PATH := "user://save.json"
 

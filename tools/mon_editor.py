@@ -967,18 +967,16 @@ class App:
         return display.split(" ", 1)[1] if " " in display else display
 
     def _mon_on_search(self, _=None):
-        v = self.mon_search.get()
-        if v == self._mon_search_val:
-            return
-        self._mon_search_val = v
-        self._mon_refresh_list()
+        if hasattr(self, "_search_after"):
+            self.root.after_cancel(self._search_after)
+        self._search_after = self.root.after(200, self._mon_refresh_list)
 
     def _mon_refresh_list(self):
         q = self.mon_search.get().lower()
         ft1 = self.mon_filter_t1.get()
         fti = self.mon_filter_tier.get()
         self.mon_list.delete(0, "end")
-        for n, d in self.species.items():
+        for n, d in sorted(self.species.items(), key=lambda x: x[1].get("id", 0)):
             if ft1 != "全部" and d.get("type1", "") != ft1 and d.get("type2", "") != ft1:
                 continue
             if fti != "全部" and d.get("tier", "") != fti:
@@ -1081,16 +1079,11 @@ class App:
                 lbl.configure(image="", text="无图片")
 
     def _refresh_badges(self):
-        children = self._badge_frame.winfo_children()
+        for w in self._badge_frame.winfo_children():
+            w.destroy()
         tps = [tp for tp in (self.mon_t1.get(), self.mon_t2.get()) if tp]
-        # Reuse existing badge labels instead of destroy/create
-        for i, w in enumerate(children):
-            if i < len(tps):
-                w.config(text=tps[i], bg=TYPE_COLORS.get(tps[i], ("white", BG_CARD))[1])
-            else:
-                w.pack_forget()
-        for i in range(len(children), len(tps)):
-            _type_badge(self._badge_frame, tps[i], BG_CARD).pack(side="left", padx=(0, 4))
+        for tp in tps:
+            _type_badge(self._badge_frame, tp, BG_CARD).pack(side="left", padx=(0, 4))
         self._refresh_type_matchup()
 
     def _refresh_type_matchup(self):
@@ -1138,26 +1131,21 @@ class App:
                     tk.Label(cell, text=mult_s, bg=bg_c, fg=TEXT_PRI,
                              font=(FONT_CJK, 7)).pack(side="left", padx=1)
 
-        def _off_by_type(atk_type: str) -> None:
-            chart = TYPE_CHART.get(atk_type, {})
-            se, ne, nd = [], [], []
-            for def_type in ALL_TYPES:
-                mult = chart.get(def_type, 1.0)
-                if mult == 0:
-                    nd.append((def_type, "0"))
-                elif mult > 1.0:
-                    se.append((def_type, f"{mult:g}x"))
-                elif mult < 1.0:
-                    ne.append((def_type, f"{mult:g}x"))
-            _render_section(f"{atk_type}·克制", se, "#D0F0D0")
-            _render_section(f"{atk_type}·微弱", ne, "#FFF5D0")
-            _render_section(f"{atk_type}·无效", nd, "#E8E8F0")
-
-        if t2:
-            for at in [t1, t2]:
-                _off_by_type(at)
-        else:
-            _off_by_type(t1)
+        # 进攻侧：每个防御属性取己方所有属性技能中最高倍率
+        atk_types = [t for t in [t1, t2] if t]
+        off_se, off_ne, off_nd = [], [], []
+        for def_type in ALL_TYPES:
+            mults = [TYPE_CHART.get(at, {}).get(def_type, 1.0) for at in atk_types]
+            best = max(mults)
+            if best > 1.0:
+                off_se.append((def_type, f"{best:g}x"))
+            elif best == 0.0:
+                off_nd.append((def_type, "0"))
+            elif best < 1.0:
+                off_ne.append((def_type, f"{best:g}x"))
+        _render_section("进攻克制", off_se, "#D0F0D0")
+        _render_section("进攻微弱", off_ne, "#FFF5D0")
+        _render_section("进攻无效", off_nd, "#E8E8F0")
 
         _render_section("弱点", weak,      "#FFE0E0")
         _render_section("抵抗", resist,    "#E0FFE0")
@@ -1369,6 +1357,51 @@ class App:
         bf.grid(row=3, column=0, columnspan=2, pady=10)
         ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
         ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
+
+    def _evo_edit_selected(self):
+        sel = self.evo_tree.selection()
+        if not sel:
+            return
+        iid = sel[0]
+        vals = self.evo_tree.item(iid, "values")
+        into  = vals[0] if vals else ""
+        level = vals[1] if len(vals) > 1 else "0"
+        item  = vals[2] if len(vals) > 2 else ""
+        dlg = tk.Toplevel(self.root)
+        dlg.title("编辑进化分支")
+        dlg.resizable(False, False)
+        dlg.transient(self.root)
+        dlg.grab_set()
+        dw, dh = 340, 145
+        dlg.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width()  - dw) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - dh) // 2
+        dlg.geometry(f"{dw}x{dh}+{x}+{y}")
+        g = tk.Frame(dlg, padx=14, pady=12)
+        g.pack(fill="both", expand=True)
+        entries = {}
+        for r, (lbl, val, key) in enumerate([
+            ("进化为", into,  "into"),
+            ("等级",   level, "level"),
+            ("道具",   item,  "item"),
+        ]):
+            tk.Label(g, text=lbl, width=6, anchor="e").grid(row=r, column=0, pady=3)
+            e = tk.Entry(g, width=22)
+            e.insert(0, val)
+            e.grid(row=r, column=1, padx=(6, 0))
+            entries[key] = e
+        def _ok(_=None):
+            self.evo_tree.item(iid, values=(
+                entries["into"].get().strip(),
+                entries["level"].get().strip() or "0",
+                entries["item"].get().strip()))
+            dlg.destroy()
+        bf = tk.Frame(g)
+        bf.grid(row=3, column=0, columnspan=2, pady=(8, 0))
+        ttk.Button(bf, text="确认", command=_ok).pack(side="left", padx=4)
+        ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left")
+        entries["into"].focus_set()
+        dlg.bind("<Return>", _ok)
 
     def _evo_remove(self):
         sel = self.evo_tree.selection()

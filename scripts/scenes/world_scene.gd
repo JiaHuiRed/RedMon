@@ -16,6 +16,10 @@ var _grass_tiles: Array = []
 var _player: CharacterBody2D
 var _player_sprite: Sprite2D
 var _step_counter: int = 0
+var _walk_dir:   int   = 0      # 0=下 1=上 2=左 3=右
+var _walk_frame: int   = 0      # 0=idle 1=left_step 2=right_step
+var _walk_anim_t: float = 0.0
+const WALK_FRAME_SEC := 0.15    # 每帧间隔
 var _battling: bool = false
 var _hud: Control
 
@@ -96,71 +100,45 @@ func _ready() -> void:
 	print("[WORLD] 华灵草原")
 
 # ── World construction ───────────────────────────────────────────────────────
+var _tilemap: TileMap
+
 func _build_world() -> void:
-	# Sky gradient (top strip for visual depth)
-	_draw_sky()
-
-	# Base ground
-	var ground = _create_ground_sprite()
-	add_child(ground)
-
-	# Grass patches (darker green overlay tiles that trigger encounters)
-	_place_grass_patches()
-
-	# Decorative elements
-	_place_path()
-	_place_pond()
+	_setup_tilemap()
+	_paint_terrain()
 	_place_flowers()
-
-	# Border trees
 	_place_trees()
 
-func _draw_sky() -> void:
-	# Multi-strip sky gradient: deep blue → light blue → pale horizon
-	var sky_colors = [
-		Color(0.28, 0.52, 0.88),
-		Color(0.42, 0.68, 0.95),
-		Color(0.60, 0.80, 0.97),
-		Color(0.78, 0.90, 0.98),
-	]
-	var strip_h: float = float(TILE * ROWS) / sky_colors.size()
-	for i in range(sky_colors.size()):
-		var s = ColorRect.new()
-		s.size = Vector2(TILE * COLS, strip_h + 2)
-		s.position = Vector2(0, i * strip_h)
-		s.color = sky_colors[i]
-		s.z_index = -10
-		add_child(s)
+func _setup_tilemap() -> void:
+	var tileset := TileSet.new()
+	tileset.tile_size = Vector2i(TILE, TILE)
 
-func _create_ground_sprite() -> Sprite2D:
-	var img = Image.create(TILE * COLS, TILE * ROWS, false, Image.FORMAT_RGBA8)
-	# 每个格子用统一颜色（加少量随机），避免像素噪点
-	for row in range(ROWS):
-		for col in range(COLS):
-			var base = Color(
-				0.24 + randf() * 0.04,
-				0.50 + randf() * 0.06,
-				0.21 + randf() * 0.04
-			)
-			img.fill_rect(Rect2i(col * TILE, row * TILE, TILE, TILE), base)
-			# 每格加 2 个深色小点，模拟草地质感
-			for _k in range(2):
-				img.set_pixel(
-					col * TILE + randi() % TILE,
-					row * TILE + randi() % TILE,
-					Color(0.14, 0.36, 0.14)
-				)
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.offset = Vector2(TILE * COLS / 2.0, TILE * ROWS / 2.0)
-	spr.position = Vector2(0, 0)
-	return spr
+	var src := TileSetAtlasSource.new()
+	src.texture = load("res://assets/tilemaps/world_tiles16.png")
+	src.texture_region_size = Vector2i(TILE, TILE)
+	for r in range(8):
+		for c in range(8):
+			src.create_tile(Vector2i(c, r))
+	var sid := tileset.add_source(src)
 
-func _place_grass_patches() -> void:
-	# Define rectangular grass zones (col, row, width_tiles, height_tiles)
-	var patches = [
+	_tilemap = TileMap.new()
+	_tilemap.tile_set = tileset
+	_tilemap.z_index = -5
+	add_child(_tilemap)
+
+func _paint_terrain() -> void:
+	# Atlas 坐标定义
+	var T_GRASS      := Vector2i(0, 0)   # 草地
+	var T_TALL_GRASS := Vector2i(2, 0)   # 高草（触发遇怪）
+	var T_DIRT       := Vector2i(4, 0)   # 土路
+	var T_WATER      := Vector2i(0, 1)   # 水面
+
+	# 底层：全部草地
+	for r in range(ROWS):
+		for c in range(COLS):
+			_tilemap.set_cell(0, Vector2i(c, r), 0, T_GRASS)
+
+	# 高草区（遇怪区）
+	var patches := [
 		[4,  4,  6, 4],
 		[12, 3,  5, 5],
 		[20, 6,  7, 4],
@@ -168,94 +146,27 @@ func _place_grass_patches() -> void:
 		[16, 13, 6, 3],
 	]
 	for patch in patches:
-		var pc: int = patch[0]
-		var pr: int = patch[1]
-		var pw: int = patch[2]
-		var ph: int = patch[3]
-		for r in range(ph):
-			for c in range(pw):
-				_grass_tiles.append(Vector2i(pc + c, pr + r))
-				_draw_grass_tile(pc + c, pr + r)
+		var pc: int = patch[0]; var pr: int = patch[1]
+		var pw: int = patch[2]; var ph: int = patch[3]
+		for row in range(ph):
+			for col in range(pw):
+				_grass_tiles.append(Vector2i(pc + col, pr + row))
+				_tilemap.set_cell(0, Vector2i(pc + col, pr + row), 0, T_TALL_GRASS)
 
-func _draw_grass_tile(col: int, row: int) -> void:
-	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	# 深绿底色（不透明）
-	img.fill(Color(0.13, 0.42, 0.13))
-	# 随机草丛纹路
-	for _i in range(6):
-		var tx = randi() % (TILE - 2)
-		var ty = randi() % (TILE - 4)
-		# 竖向草叶
-		img.set_pixel(tx + 1, ty,     Color(0.08, 0.62, 0.08))
-		img.set_pixel(tx + 1, ty + 1, Color(0.10, 0.58, 0.10))
-		img.set_pixel(tx,     ty + 2, Color(0.09, 0.55, 0.09))
-		img.set_pixel(tx + 2, ty + 2, Color(0.09, 0.55, 0.09))
-	# 四边加深色边框，让格子边界可见
-	for i in range(TILE):
-		img.set_pixel(i, 0,        Color(0.08, 0.32, 0.08))
-		img.set_pixel(i, TILE - 1, Color(0.08, 0.32, 0.08))
-		img.set_pixel(0,        i, Color(0.08, 0.32, 0.08))
-		img.set_pixel(TILE - 1, i, Color(0.08, 0.32, 0.08))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.position = Vector2(col * TILE + TILE / 2.0, row * TILE + TILE / 2.0)
-	add_child(spr)
-
-func _place_path() -> void:
-	# Dirt path: top entrance from town, horizontal strip row 9, then turn down
-	var path_tiles: Array = []
+	# 土路（横穿 row9 + 纵穿 col14）
 	for c in range(2, 28):
-		path_tiles.append(Vector2i(c, 9))
-	for r in range(10, 20):
-		path_tiles.append(Vector2i(14, r))
-	for r in range(1, 9):
-		path_tiles.append(Vector2i(14, r))
-	for t in path_tiles:
-		_draw_path_tile(t.x, t.y)
+		_tilemap.set_cell(0, Vector2i(c, 9), 0, T_DIRT)
+	for r in range(1, 20):
+		_tilemap.set_cell(0, Vector2i(14, r), 0, T_DIRT)
 
-func _draw_path_tile(col: int, row: int) -> void:
-	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0.62, 0.50, 0.34))
-	# Subtle variation
-	for _i in range(4):
-		var px = randi() % TILE
-		var py = randi() % TILE
-		img.set_pixel(px, py, Color(0.54, 0.43, 0.28))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.position = Vector2(col * TILE + TILE / 2.0, row * TILE + TILE / 2.0)
-	spr.z_index = 1
-	add_child(spr)
-
-func _place_pond() -> void:
-	# Small water pond in bottom-right area
-	var pond_tiles = [
-		[22, 14], [23, 14], [24, 14],
-		[21, 15], [22, 15], [23, 15], [24, 15], [25, 15],
-		[22, 16], [23, 16], [24, 16],
+	# 水池
+	var pond_tiles := [
+		[22,14],[23,14],[24,14],
+		[21,15],[22,15],[23,15],[24,15],[25,15],
+		[22,16],[23,16],[24,16],
 	]
 	for t in pond_tiles:
-		_draw_water_tile(t[0], t[1])
-
-func _draw_water_tile(col: int, row: int) -> void:
-	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0.20, 0.55, 0.90))
-	# Wave shimmer lines
-	for x in range(2, TILE - 2, 4):
-		img.set_pixel(x,     TILE / 2,     Color(0.55, 0.80, 1.0))
-		img.set_pixel(x + 1, TILE / 2,     Color(0.55, 0.80, 1.0))
-		img.set_pixel(x + 2, TILE / 2 + 3, Color(0.55, 0.80, 1.0))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.position = Vector2(col * TILE + TILE / 2.0, row * TILE + TILE / 2.0)
-	spr.z_index = 1
-	add_child(spr)
+		_tilemap.set_cell(0, Vector2i(t[0], t[1]), 0, T_WATER)
 
 func _place_flowers() -> void:
 	# Scatter small flower dots in non-grass open areas
@@ -614,24 +525,36 @@ func _build_dialog() -> void:
 	hint.add_theme_font_size_override("font_size", 10)
 	_dialog_panel.add_child(hint)
 
+const WALK_FRAME_W := 48   # spritesheet 每帧宽
+const WALK_FRAME_H := 48   # spritesheet 每帧高
+
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(TILE * 14, TILE * 2)   # Start at top path entrance (arriving from town)
+	_player.position = Vector2(TILE * 14, TILE * 2)
 	add_child(_player)
 
 	_player_sprite = Sprite2D.new()
-	_player_sprite.texture = _draw_player()
 	_player_sprite.z_index = 5
+	# 根据性别选择 spritesheet
+	var sheet_name := "男主_walk_sheet.png" if GameState.player_gender == "男" else "女主_walk_sheet.png"
+	var sheet_tex = load("res://assets/sprites/" + sheet_name)
+	if sheet_tex:
+		_player_sprite.texture = sheet_tex
+		_player_sprite.region_enabled = true
+		_player_sprite.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		_player_sprite.centered = true
+	else:
+		_player_sprite.texture = _draw_player_fallback()
 	_player.add_child(_player_sprite)
 
-	# Shadow under player
-	var shadow_img = Image.create(16, 4, false, Image.FORMAT_RGBA8)
-	shadow_img.fill(Color(0, 0, 0, 0.25))
+	# 脚下阴影
+	var shadow_img = Image.create(28, 6, false, Image.FORMAT_RGBA8)
+	shadow_img.fill(Color(0, 0, 0, 0.22))
 	var shadow_tex = ImageTexture.new()
 	shadow_tex.set_image(shadow_img)
 	var shadow = Sprite2D.new()
 	shadow.texture = shadow_tex
-	shadow.position = Vector2(0, 11)
+	shadow.position = Vector2(0, 18)
 	shadow.z_index = 4
 	_player.add_child(shadow)
 
@@ -641,7 +564,29 @@ func _build_player() -> void:
 	_player.add_child(cam)
 	cam.call_deferred("make_current")
 
-func _draw_player() -> ImageTexture:
+func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
+	if not _player_sprite.region_enabled:
+		return
+	# 更新方向
+	if moving:
+		if   dir.y > 0: _walk_dir = 0
+		elif dir.y < 0: _walk_dir = 1
+		elif dir.x < 0: _walk_dir = 2
+		elif dir.x > 0: _walk_dir = 3
+		# 推进动画帧
+		_walk_anim_t += delta
+		if _walk_anim_t >= WALK_FRAME_SEC:
+			_walk_anim_t = 0.0
+			_walk_frame = (_walk_frame + 1) % 3
+	else:
+		_walk_frame  = 0
+		_walk_anim_t = 0.0
+	_player_sprite.region_rect = Rect2(
+		_walk_frame * WALK_FRAME_W,
+		_walk_dir   * WALK_FRAME_H,
+		WALK_FRAME_W, WALK_FRAME_H)
+
+func _draw_player_fallback() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 
@@ -793,6 +738,7 @@ func _physics_process(_delta: float) -> void:
 		dir = dir.normalized()
 
 	var moved = dir != Vector2.ZERO
+	_update_walk_sprite(dir, moved, _delta)
 	_player.velocity = dir * SPEED
 	_player.move_and_slide()
 
@@ -807,7 +753,8 @@ func _physics_process(_delta: float) -> void:
 		_check_trainer_sight()
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	# Enter = 菜单键（开关菜单）
+	if event.is_action_pressed("ui_menu"):
 		get_viewport().set_input_as_handled()
 		if _dialog_active: return
 		if _shop_active:   _close_shop(); return
@@ -818,6 +765,18 @@ func _input(event: InputEvent) -> void:
 				_close_menu()
 		else:
 			_open_menu()
+		return
+
+	# X = 取消/回退
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		if _dialog_active: return
+		if _shop_active:   _close_shop(); return
+		if _menu_active:
+			if _menu_sub != "":
+				_menu_sub = ""; _menu_cursor = 0; _refresh_menu()
+			else:
+				_close_menu()
 		return
 
 	if _dialog_active:

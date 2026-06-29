@@ -4,7 +4,7 @@ extends Node2D
 var _current: Node = null
 var _scene_name: String = ""
 # 暂停菜单免检场景（标题/创建角色/选初始精灵）
-const _PAUSE_EXEMPT := ["title", "starter", "char_create"]
+const _PAUSE_EXEMPT := ["title", "starter", "char_create", "battle"]
 
 # ── 全局暂停菜单 ──────────────────────────────────────────────
 var _pause_panel: Control
@@ -52,6 +52,16 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		_current.request_scene.connect(_on_request_scene)
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Enter = 菜单开关（全局暂停菜单）
+	if event.is_action_pressed("ui_menu"):
+		get_viewport().set_input_as_handled()
+		if _pause_active:
+			_close_pause()
+		else:
+			_open_pause()
+		return
+
+	# X = 取消/返回上一级（暂停菜单内部）
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		if _pause_active:
@@ -59,8 +69,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				_pause_sub = ""; _pause_cursor = 0; _draw_pause()
 			else:
 				_close_pause()
-		else:
-			_open_pause()
 		return
 
 	if not _pause_active:

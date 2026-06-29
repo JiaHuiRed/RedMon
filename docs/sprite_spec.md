@@ -119,21 +119,33 @@ ui_icons:
     priority: 低
 
 # ============================================================
-# 五、GPT Image 2 生成 Prompt 参考
+# 五、Gemini 生图规范（260629 更新）
 # ============================================================
+
+# ── 生图原则 ─────────────────────────────────────────────────
+# 1. 每次只生成【一张图】——不要在同一图中并排正面+背面，
+#    否则会被裁剪成左半/右半，像素比例变形。
+# 2. 正面图：纯白背景，精灵完整居中，单张 512×512 输出。
+# 3. 背面图：精灵背面，身体朝右侧偏转约30°（战场上玩家精灵
+#    在左下，背影应面向右上方的敌方）；纯白背景，512×512。
+# 4. 生成后由脚本去白底、裁内容边框、填透明 padding 至 3:4
+#    比例，再 resize 到目标尺寸，不手动裁剪。
+# ──────────────────────────────────────────────────────────────
 
 prompt_templates:
 
   pokemon_front: >
-    GBA Pokemon FireRed style pixel art, <精灵名称> monster sprite,
-    front-facing battle pose, 96x96 pixels, transparent background,
-    clean pixel art, limited color palette, no anti-aliasing,
-    chibi style, cute, [描述该精灵的颜色/特征]
+    宝可梦火红风格像素艺术，[精灵名称及特征描述]，
+    正面站立战斗姿态，纯白色背景，单张图，完整居中，
+    精灵全身可见（头顶不截断、脚底不截断），
+    像素艺术风格，简洁配色，Q版可爱，无抗锯齿。
 
   pokemon_back: >
-    GBA Pokemon FireRed style pixel art, <精灵名称> monster sprite,
-    back-facing battle pose (seen from behind), 96x96 pixels,
-    transparent background, pixel art, limited palette
+    宝可梦火红风格像素艺术，[精灵名称及特征描述]，
+    背面视角战斗姿态，身体朝右偏转约30°（面向右上方），
+    纯白色背景，单张图，完整居中，
+    精灵全身可见（头顶不截断、脚底不截断），
+    像素艺术风格，简洁配色，Q版可爱，无抗锯齿。
 
   professor_portrait: >
     GBA Pokemon style NPC portrait, elderly male professor,
