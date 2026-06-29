@@ -14,6 +14,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.5.0] - 2026-06-29
+
+> 精灵总数突破 200！新增 7 只精灵填补空位（ID 175-181），新增二周目御三家 9 只（ID 201-209），满编 209 种。
+
+#### Added
+- **鬼虫两段**：血孑孓(Lv35)→蜇蚊王（鬼/虫，BST 555 地）
+- **水钢二段**：碧波豚(Lv32)→钢背豚（水/钢，BST 510 玄）
+- **空岩三段**：小石偶(Lv26)→石兵俑(Lv44)→镇岳石尊（空/岩，BST 520 玄）
+- **木灵三段**（二周目御三家·木）：竹笋娃(Lv18)→竹节郎(Lv36)→翠竹武者（木/灵，BST 480 玄）
+- **火系三段**（二周目御三家·火）：火尾蜥(Lv18)→燧鳞蜥(Lv36)→炎纹龙（火，BST 485 玄）
+- **水钢三段**（二周目御三家·水）：水圆獭(Lv18)→镰尾獭(Lv36)→钢爪大獭（水/钢，BST 485 玄）
+
+### [0.4.1] - 2026-06-29
+
+> 进化编辑优化 + 素材缩放修复。进化编辑对话支持下拉搜索、下拉按钮可开关。三只精灵正背面图统一缩放至 512×512 RGBA。
+
+#### Added
+- **进化面板编辑按钮**：进化分支 Treeview 旁增加 ✎ 编辑按钮，复用已有 `_evo_edit_selected`（`mon_editor.py`）
+- **编辑进化分支下拉搜索**：`_evo_edit_selected` 对话框的"进化为"和"道具"字段改为 SearchableCombo，带搜索过滤和下拉开关（`mon_editor.py`）
+
+#### Changed
+- **SearchableCombo 下拉样式统一**：箭头按钮改为 tk.Label，与 Entry 风格一致；点▼打开/关闭弹窗（`mon_editor.py`）
+- **进化链对比布局修复**：`_evo_bar` 移除 `fill="y"` 限制，`_ensure_grid` 动态设置网格权重，修复 Treeview 折叠（`mon_editor.py`）
+
+#### Fixes
+- **进化预览崩溃修复**：`_place_lbl` 的 `font` 参数与 `**kw` 冲突导致 `TypeError`，改用 dict opts 合并（`mon_editor.py`）
+- **分支进化精灵图鉴黑屏**：`ev["level"]` 硬取值改为 `ev.get("level", 0)`，处理道具进化条目（`mon_editor.py`）
+
+#### Assets
+- **小茶宠**：front（1664×928）、back（602×798）→ 去背景 + LANCZOS 缩放居中至 512×512 RGBA
+- **茶壶灵**：front（1664×928）、back（908×887）→ 同上
+- **幻念露比**：front（767×848 RGBA）、back（846×835 RGBA）→ 缩放居中
+
 ### [0.4.0] - 2026-06-29
 
 > 合并公司版 v0.3.9 全量资源：188 种精灵、17 种道具、tilemaps/UI/建筑背景、NPC 行走图、旧精灵复原。本地仓库与公司版完全同步。

@@ -133,7 +133,13 @@ class SearchableCombo(tk.Frame):
         self._lb    = None
 
         self._entry = ttk.Entry(self, textvariable=self._var, width=width)
-        self._entry.pack(fill="x", expand=True)
+        self._entry.pack(side="left", fill="x", expand=True)
+
+        # Small arrow button with matching style
+        self._arrow = tk.Label(self, text="▼", font=(FONT_CJK, 7),
+                               bg=BG_MAIN, fg=TEXT_SEC)
+        self._arrow.pack(side="left", padx=(2, 0))
+        self._arrow.bind("<ButtonPress-1>", lambda _: self._btn_click())
 
         self._entry.bind("<KeyRelease>",  self._on_key)
         self._entry.bind("<Down>",        self._focus_list)
@@ -213,6 +219,13 @@ class SearchableCombo(tk.Frame):
         except Exception:
             pass
         self._close()
+
+    def _btn_click(self):
+        if self._popup and self._popup.winfo_exists():
+            self._close()
+        else:
+            self._entry.focus_set()
+            self._open_popup(list(self._all))
 
     def _close(self):
         if self._popup and self._popup.winfo_exists():
@@ -860,21 +873,27 @@ class App:
         evo_col.pack(side="left", anchor="n", fill="x", expand=True)
         _lbl(evo_col, "进化分支", bg=BG_MAIN).pack(anchor="w", pady=(0, 2))
         evo_f = tk.Frame(evo_col, bg=BG_MAIN)
-        evo_f.pack(fill="x")
+        evo_f.pack(fill="x", expand=True)
         self.evo_tree = ttk.Treeview(
             evo_f, columns=("into", "level", "item"), show="headings",
-            height=3, selectmode="browse")
+            height=8, selectmode="browse")
         self.evo_tree.heading("into",  text="进化为")
         self.evo_tree.heading("level", text="等级")
         self.evo_tree.heading("item",  text="道具")
         self.evo_tree.column("into",  width=120, anchor="w")
         self.evo_tree.column("level", width=40,  anchor="center")
         self.evo_tree.column("item",  width=80,  anchor="w")
+        evo_scroll = ttk.Scrollbar(evo_f, orient="vertical",
+                                    command=self.evo_tree.yview)
+        evo_scroll.pack(side="right", fill="y")
+        self.evo_tree.configure(yscrollcommand=evo_scroll.set)
         self.evo_tree.pack(side="left", fill="x", expand=True)
         evo_btn = tk.Frame(evo_f, bg=BG_MAIN)
         evo_btn.pack(side="left", padx=(4, 0))
         ttk.Button(evo_btn, text="+", width=3,
                    command=self._evo_add).pack(pady=(0, 2))
+        ttk.Button(evo_btn, text="✎", width=3,
+                   command=self._evo_edit_selected).pack(pady=(0, 2))
         ttk.Button(evo_btn, text="×", width=3,
                    command=self._evo_remove).pack()
         row += 1
@@ -1037,7 +1056,7 @@ class App:
             evolutions = [{"into": d["evolves_into"],
                            "level": d.get("evolve_level", 0)}]
         for ev in evolutions:
-            self.evo_tree.insert("", "end", values=(ev["into"], ev["level"], ev.get("item", "")))
+            self.evo_tree.insert("", "end", values=(ev["into"], ev.get("level", 0), ev.get("item", "")))
 
         self.mon_desc.delete("1.0", "end")
         self.mon_desc.insert("1.0", d.get("desc", ""))
@@ -1169,7 +1188,7 @@ class App:
             visited.add(pre)
             pd   = self.species[pre]
             pe   = pd.get("evolutions", [])
-            alv  = next((e["level"] for e in pe if e["into"] == cur),
+            alv  = next((e.get("level") or e.get("item", "?") for e in pe if e["into"] == cur),
                         pd.get("evolve_level", "?"))
             ancestor_chain.append((pre, alv))
             cur = pre
@@ -1190,39 +1209,52 @@ class App:
         # Evo bar: only as wide as its content; matchup gets the rest
         self._matchup_card.pack(side="right", fill="both", expand=True,
                                 padx=(0, 6), pady=(4, 4))
-        self._evo_bar.pack(side="left", fill="y", padx=(6, 0), pady=(4, 4))
-        col = 0
+        self._evo_bar.pack(side="left", padx=(6, 0), pady=(4, 4))
 
-        # Ancestor chain — all on row 0
+        MAX_PER_ROW = 5
+        row = 0; col = 0; cards_this_row = 0
+
+        def _ensure_grid(size):
+            """Ensure grid has enough columns with weight."""
+            for i in range(size):
+                self._evo_bar.columnconfigure(i, weight=1)
+            self._evo_bar.rowconfigure(row, weight=1)
+
+        def _place_card(mname, mdata, is_cur):
+            nonlocal row, col, cards_this_row
+            if cards_this_row >= MAX_PER_ROW:
+                row += 1; col = 0; cards_this_row = 0
+            _ensure_grid(col + 1)
+            self._evo_card(self._evo_bar, mname, mdata, is_cur, row, col)
+            col += 1; cards_this_row += 1
+
+        def _place_lbl(text, **kw):
+            nonlocal row, col, cards_this_row
+            if cards_this_row >= MAX_PER_ROW:
+                row += 1; col = 0; cards_this_row = 0
+            _ensure_grid(col + 1)
+            opts = dict(bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 8))
+            opts.update(kw)
+            tk.Label(self._evo_bar, text=text,
+                     **opts).grid(row=row, column=col, padx=2)
+            col += 1
+
+        # Ancestor chain
         for anc_name, alv in ancestor_chain:
-            self._evo_card(self._evo_bar, anc_name,
-                           self.species[anc_name], False, 0, col)
-            col += 1
-            tk.Label(self._evo_bar, text=f"→Lv{alv}",
-                     bg=BG_MAIN, fg=TEXT_SEC,
-                     font=(FONT_CJK, 8)).grid(row=0, column=col, padx=2)
-            col += 1
+            _place_card(anc_name, self.species[anc_name], False)
+            _place_lbl(f"→Lv{alv}")
 
-        # Current species — row 0
-        self._evo_card(self._evo_bar, name, d, True, 0, col)
-        col += 1
+        # Current species
+        _place_card(name, d, True)
 
-        # Branches — all on row 0, separated by ┃
+        # Branches
         for br_idx, br in enumerate(branches):
             if br_idx > 0:
-                tk.Label(self._evo_bar, text="┃",
-                         bg=BG_MAIN, fg=TEXT_SEC,
-                         font=(FONT_CJK, 33)).grid(row=0, column=col, padx=4)
-                col += 1
-            tk.Label(self._evo_bar, text=f"→Lv{br['level']}",
-                     bg=BG_MAIN, fg=TEXT_SEC,
-                     font=(FONT_CJK, 8)).grid(row=0, column=col,
-                                              padx=2, sticky="w")
-            col += 1
+                _place_lbl("┃", font=(FONT_CJK, 33))
+            ev_lbl = f"→Lv{br['level']}" if 'level' in br else f"→{br.get('item', '?')}"
+            _place_lbl(ev_lbl)
             br_name = br["into"]
-            self._evo_card(self._evo_bar, br_name,
-                           self.species[br_name], False, 0, col)
-            col += 1
+            _place_card(br_name, self.species[br_name], False)
 
             seen_fwd = visited | {br_name}
             cur_fwd  = br_name
@@ -1238,14 +1270,9 @@ class App:
                 if len(fe) != 1:
                     break
                 nxt = fe[0]
-                tk.Label(self._evo_bar, text=f"→Lv{nxt['level']}",
-                         bg=BG_MAIN, fg=TEXT_SEC,
-                         font=(FONT_CJK, 8)).grid(
-                    row=0, column=col, padx=2, sticky="w")
-                col += 1
-                self._evo_card(self._evo_bar, nxt["into"],
-                               self.species[nxt["into"]], False, 0, col)
-                col += 1
+                nxt_lbl = f"→Lv{nxt['level']}" if 'level' in nxt else f"→{nxt.get('item', '?')}"
+                _place_lbl(nxt_lbl)
+                _place_card(nxt["into"], self.species[nxt["into"]], False)
                 seen_fwd.add(nxt["into"])
                 cur_fwd = nxt["into"]
 
@@ -1320,7 +1347,7 @@ class App:
         dlg.title("添加进化分支")
         dlg.resizable(False, False)
         dlg.transient(self.root); dlg.grab_set()
-        dw, dh = 340, 130
+        dw, dh = 340, 210
         dlg.update_idletasks()
         x = self.root.winfo_x() + (self.root.winfo_width() - dw) // 2
         y = self.root.winfo_y() + (self.root.winfo_height() - dh) // 2
@@ -1370,37 +1397,44 @@ class App:
         dlg = tk.Toplevel(self.root)
         dlg.title("编辑进化分支")
         dlg.resizable(False, False)
-        dlg.transient(self.root)
-        dlg.grab_set()
-        dw, dh = 340, 145
+        dlg.transient(self.root); dlg.grab_set()
+        dw, dh = 340, 175
         dlg.update_idletasks()
         x = self.root.winfo_x() + (self.root.winfo_width()  - dw) // 2
         y = self.root.winfo_y() + (self.root.winfo_height() - dh) // 2
         dlg.geometry(f"{dw}x{dh}+{x}+{y}")
-        g = tk.Frame(dlg, padx=14, pady=12)
+        g = tk.Frame(dlg, padx=14, pady=10)
         g.pack(fill="both", expand=True)
-        entries = {}
-        for r, (lbl, val, key) in enumerate([
-            ("进化为", into,  "into"),
-            ("等级",   level, "level"),
-            ("道具",   item,  "item"),
-        ]):
-            tk.Label(g, text=lbl, width=6, anchor="e").grid(row=r, column=0, pady=3)
-            e = tk.Entry(g, width=22)
-            e.insert(0, val)
-            e.grid(row=r, column=1, padx=(6, 0))
-            entries[key] = e
+
+        tk.Label(g, text="进化为:").grid(
+            row=0, column=0, pady=6, sticky="e")
+        mon_names = sorted(n for n in self.species if n != self._current_mon)
+        into_cb = SearchableCombo(g, mon_names, width=20)
+        into_cb.grid(row=0, column=1, padx=(6, 0))
+        into_cb.set(into)
+
+        tk.Label(g, text="等级:").grid(
+            row=1, column=0, pady=6, sticky="e")
+        lv_spin = ttk.Spinbox(g, from_=1, to=100, width=7)
+        lv_spin.set(level)
+        lv_spin.grid(row=1, column=1, padx=(6, 0), sticky="w")
+
+        tk.Label(g, text="道具:").grid(
+            row=2, column=0, pady=6, sticky="e")
+        item_cb = SearchableCombo(g, sorted(self.items.keys()), width=20)
+        item_cb.grid(row=2, column=1, padx=(6, 0), sticky="w")
+        item_cb.set(item)
+
         def _ok(_=None):
             self.evo_tree.item(iid, values=(
-                entries["into"].get().strip(),
-                entries["level"].get().strip() or "0",
-                entries["item"].get().strip()))
+                into_cb.get().strip(),
+                lv_spin.get().strip() or "0",
+                item_cb.get().strip()))
             dlg.destroy()
         bf = tk.Frame(g)
-        bf.grid(row=3, column=0, columnspan=2, pady=(8, 0))
+        bf.grid(row=3, column=0, columnspan=2, pady=(10, 0))
         ttk.Button(bf, text="确认", command=_ok).pack(side="left", padx=4)
         ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left")
-        entries["into"].focus_set()
         dlg.bind("<Return>", _ok)
 
     def _evo_remove(self):
