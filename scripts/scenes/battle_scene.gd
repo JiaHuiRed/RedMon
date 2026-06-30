@@ -47,6 +47,7 @@ var _mon_panel:    Control
 var _mon_btns:     Array = []
 var _mon_close_btn: Button
 
+var _bg_path:         String = "res://assets/backgrounds/战斗背景_草原.png"
 var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 var _evo_panel:       Control
@@ -89,6 +90,7 @@ func _ready() -> void:
 	_player_mon     = GameState.first_mon()
 	_player_mon_idx = 0
 	_return_scene   = data.get("return_scene", "world")
+	_bg_path        = data.get("bg", "res://assets/backgrounds/战斗背景_草原.png")
 
 	var trainer_data = data.get("trainer", {})
 	if not trainer_data.is_empty():
@@ -119,8 +121,8 @@ func _ready() -> void:
 # BUILD – Battle field
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_battle_field() -> void:
-	# 战斗背景图（草原）
-	var tex = load("res://assets/backgrounds/战斗背景_草原.png")
+	# 战斗背景图（由调用方传入，默认草原）
+	var tex = load(_bg_path) if ResourceLoader.exists(_bg_path) else null
 	if tex:
 		var bg = TextureRect.new()
 		bg.texture = tex
@@ -539,11 +541,13 @@ func _on_use_item(item_id: String) -> void:
 				tw.tween_property(_enemy_spr, "modulate:a", 0.0, 0.5)
 				await get_tree().create_timer(0.6).timeout
 				await _show_message_async("捕捉成功！")
+				GameState.caught_count += 1  # 260630 Red
 				if GameState.player_team.size() < 6:
 					GameState.player_team.append(_enemy_mon)
 					await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
 				else:
-					await _show_message_async("队伍已满，%s 被放生了……" % MonDB.display_name(_enemy_mon))
+					GameState.pc_box.append(_enemy_mon)
+					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
 				_busy = false
 				GameState.save_game()
 				_end_battle("caught")
@@ -1450,7 +1454,7 @@ func _draw_circle(img: Image, center: Vector2i, radius: int, color: Color) -> vo
 				img.set_pixel(x, y, color)
 
 func _draw_enemy_sprite(species_id: String) -> Texture2D:
-	var path = "res://assets/sprites/%s_front.png" % species_id
+	var path = "res://assets/sprites/%sfront.png" % species_id
 	if ResourceLoader.exists(path):
 		return load(path)
 	match species_id:
@@ -1594,7 +1598,7 @@ func _draw_player_back() -> Texture2D:
 
 # 根据 species_id 返回对应精灵的背面图
 func _draw_mon_back(species_id: String) -> Texture2D:
-	var path = "res://assets/sprites/%s_back.png" % species_id
+	var path = "res://assets/sprites/%sback.png" % species_id
 	if ResourceLoader.exists(path):
 		return load(path)
 	match species_id:
@@ -1743,6 +1747,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> void:
 			d_spr.queue_free()
 		gourd_spr.queue_free()
 		await _show_message_async("捕捉成功！")
+		GameState.caught_count += 1  # 260630 Red
 		if GameState.player_team.size() < 6:
 			GameState.player_team.append(_enemy_mon)
 			await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))

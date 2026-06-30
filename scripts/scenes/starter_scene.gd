@@ -73,7 +73,7 @@ func _build_bg() -> void:
 
 # ── Professor sprite (procedural) ────────────────────────────────────────────
 const PROFESSOR_NAME := "陈教授"
-const PROFESSOR_SPRITE := "res://assets/sprites/博士_front.png"
+const PROFESSOR_SPRITE := "res://assets/sprites/博士front.png"
 
 func _build_professor() -> void:
 	var tex: Texture2D
@@ -240,7 +240,7 @@ func _start_outro() -> void:
 func _advance_outro() -> void:
 	_outro_idx += 1
 	if _outro_idx >= OUTRO_LINES.size():
-		request_scene.emit("home", {})
+		request_scene.emit("village", {})
 		return
 	var text = OUTRO_LINES[_outro_idx]
 	text = MonDB.dlg_sub(text, {"player": GameState.player_name, "mon": MonDB.display_name(GameState.player_team[0])})
@@ -422,7 +422,7 @@ func _draw_circle(img: Image, center: Vector2i, radius: int, color: Color) -> vo
 
 func _draw_starter_sprite(idx: int) -> Texture2D:
 	var names = ["炎喵", "蓝蛇", "小竹熊"]
-	var path = "res://assets/sprites/%s_front.png" % names[idx]
+	var path = "res://assets/sprites/%sfront.png" % names[idx]
 	if ResourceLoader.exists(path):
 		return load(path)
 	match idx:

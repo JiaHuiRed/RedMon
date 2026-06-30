@@ -516,6 +516,10 @@ func _input(event: InputEvent) -> void:
 		if tile == SHOP_DOOR_TILE:
 			_open_shop()
 
+		# 翠竹馆（道馆）door
+		if tile.x >= 13 and tile.x <= 16 and tile.y >= 13 and tile.y <= 15:
+			request_scene.emit("gym", {"from": "town"})
+
 		# NPC talk
 		if tile.distance_to(Vector2i(10, 10)) < 2.5:
 			_show_dialog("路人：前面就是华灵草原了，那边的精灵比村子附近要强一些，你准备好了吗？", -1)

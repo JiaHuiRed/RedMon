@@ -130,13 +130,25 @@ func _build_interior() -> void:
 	add_child(door_lbl)
 
 func _build_mom() -> void:
-	# Simple procedural mom sprite
-	var tex = _draw_mom()
-	_mom_spr = Sprite2D.new()
-	_mom_spr.texture = tex
-	_mom_spr.position = Vector2(VW / 2 + 50, VH - 38)
-	_mom_spr.z_index = 3
-	add_child(_mom_spr)
+	var tex: Texture2D
+	var sheet_path = "res://assets/sprites/npc_young_womanwalk_sheet.png"
+	if ResourceLoader.exists(sheet_path):
+		# Use first frame (down-facing center): col=1, row=0 of 48×48 grid
+		var spr = Sprite2D.new()
+		spr.texture = load(sheet_path)
+		spr.region_enabled = true
+		spr.region_rect = Rect2(48, 0, 48, 48)  # center frame, down row
+		spr.position = Vector2(VW / 2 + 50, VH - 38)
+		spr.z_index = 3
+		_mom_spr = spr
+		add_child(spr)
+	else:
+		tex = _draw_mom()
+		_mom_spr = Sprite2D.new()
+		_mom_spr.texture = tex
+		_mom_spr.position = Vector2(VW / 2 + 50, VH - 38)
+		_mom_spr.z_index = 3
+		add_child(_mom_spr)
 
 	var name_lbl = Label.new()
 	name_lbl.text = "妈妈"
@@ -249,20 +261,13 @@ func _start_mom_dialog() -> void:
 	_dialog_active = true
 	_dialog_phase = 0
 	_dialog_panel.visible = true
-	_dialog_label.text = MonDB.dlg("home", "mom_morning").replace("{player}", GameState.player_name)
+	_dialog_label.text = MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name)
 
 func _advance_dialog() -> void:
 	_dialog_phase += 1
 	match _dialog_phase:
 		1:
-			_dialog_label.text = MonDB.dlg("home", "mom_encourage").replace("{player}", GameState.player_name)
-		2:
-			var t = MonDB.dlg("home", "mom_rival")
-			t = t.replace("{player}", GameState.player_name)
-			t = t.replace("{rival}", GameState.rival_name)
-			_dialog_label.text = t
-		3:
-			_dialog_label.text = MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name)
+			_dialog_label.text = MonDB.dlg("home", "mom_professor")
 		_:
 			_dialog_active = false
 			_dialog_panel.visible = false
@@ -294,12 +299,10 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
-		# Check if player is near the door
 		var door_center = Vector2(VW / 2, VH - 18)
-		if _player.position.distance_to(door_center) < 24:
-			GameState.last_scene = "home"  # YYMMDD Red 记录最后场景
-		request_scene.emit("village", {})
-		# Check if player is near mom
 		var mom_pos = Vector2(VW / 2 + 50, VH - 38)
-		if _player.position.distance_to(mom_pos) < 24 and not _dialog_active:
+		if _player.position.distance_to(door_center) < 40:
+			GameState.last_scene = "home"
+			request_scene.emit("village", {})
+		elif _player.position.distance_to(mom_pos) < 30 and not _dialog_active:
 			_start_mom_dialog()

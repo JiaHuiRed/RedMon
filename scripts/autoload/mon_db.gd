@@ -5,6 +5,7 @@ var moves:   Dictionary = {}
 var species: Dictionary = {}
 var items:   Dictionary = {}
 var dialogs: Dictionary = {}
+var trainers: Dictionary = {}  # 260630 Red 所有训练师数据
 
 # ── 属性克制表 ────────────────────────────────────────────────────────────────
 # 18属性完整版（对应宝可梦第六世代起）
@@ -120,6 +121,7 @@ func _ready() -> void:
 	_load_json("res://data/moves.json",   moves)
 	_load_json("res://data/items.json",   items)
 	_load_json("res://data/dialogs.json", dialogs)
+	_load_json("res://data/trainers.json", trainers)  # 260630 Red
 	_load_species_json()
 
 func _load_json(path: String, target: Dictionary) -> void:
@@ -413,6 +415,16 @@ func evolve(mon: Dictionary) -> void:
 
 # ── 捕捉系统 ─────────────────────────────────────────────────────────────────
 # 返回是否捕捉成功。HP越低、状态异常、捕捉率越高，成功率越高。
+# 按地点生成遭遇表 [[species_id, rate], ...]
+func get_encounters(location: String) -> Array:
+	var result: Array = []
+	for sp_id in species:
+		var sp = species[sp_id]
+		for enc in sp.get("encounters", []):
+			if enc.get("location", "") == location:
+				result.append([sp_id, enc.get("rate", 0)])
+	return result
+
 func calc_catch(mon: Dictionary, ball_bonus: float = 1.0) -> bool:
 	var sp         = species.get(mon["species_id"], {})
 	var catch_rate = sp.get("catch_rate", 45)

@@ -14,7 +14,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### [0.5.0] - 2026-06-29
+### [0.5.1] - 2026-06-30
+
+> 遭遇系统数据化、训练师外部化、翠竹馆场景、林薇NPC、标题画面改版、精灵立绘重命名统一。
+
+#### Added
+- **遭遇系统**：species.json 新增 `encounters` 字段（地点+出现率），MonDB 提供 `get_encounters(location)` API，world_scene 改为动态读取
+- **编辑器·遭遇地**：精灵图鉴 Tab 新增遭遇地 Treeview（SearchableCombo 地点联想 + 出现率%）
+- **翠竹馆场景** (`gym_scene.gd`)：室内背景 `翠竹馆内.png`，专属战斗背景 `战斗背景_竹馆.png`
+- **林薇NPC** (`village_scene.gd`)：陈教授助手，赠送跑步鞋 + 每捕捉10只奖励 1000G
+- **训练师数据外部化**：`trainers.json` 新增翠竹馆 3 位训练师（g1 林小凡、g2 江木青、leader_qingsong 林青松）
+- **GameState 新字段**：`caught_count`、`linwei_reward_tier`、`has_running_shoes`（均存档）
+- **Godot MCP 插件**：addons/godot_mcp 全套接入
+- **标题画面**：title_scene.gd 大幅改版
+
+#### Changed
+- **训练师架构**：world_scene / gym_scene 的训练师拆分为 layout（tile/dir/sight）+ data（trainers.json），支持编辑器调整
+- **精灵立绘命名**：`_back/_front` → `back/front`（去除下划线），484 张新立绘替换 445 张旧立绘
+- **battle_scene**：捕捉成功时自增 `GameState.caught_count`
+- **dialogs.json / items.json / species.json**：多项数据补充与修正
+
+### [0.4.2] - 2026-06-29
 
 > 精灵总数突破 200！新增 7 只精灵填补空位（ID 175-181），新增二周目御三家 9 只（ID 201-209），满编 209 种。
 

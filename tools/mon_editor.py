@@ -284,7 +284,7 @@ class App:
         self._ghost.title("RedMon 数据编辑器")
         self._ghost.geometry("0x0+0+0")
         self._ghost.attributes("-alpha", 0)
-        self._ghost.bind("<Map>", lambda e: self.root.deiconify())
+        self._ghost.bind("<Map>", self._on_ghost_map)
         self._ghost.bind("<Unmap>", lambda e: self.root.withdraw())
         self._ghost.protocol("WM_DELETE_WINDOW", self._on_close)
         # 设置任务栏图标（使用 Godot 项目图标，若无则用默认）
@@ -294,11 +294,17 @@ class App:
 
         self.root = tk.Toplevel(self._ghost)
         self.root.title("RedMon 数据编辑器")
-        self.root.geometry("1360x800")
-        self.root.minsize(960, 620)
+        self.root.minsize(960, 660)
         self.root.configure(bg=BG_MAIN)
         self.root.overrideredirect(True)   # 移除系统标题栏
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+        # 居中显示
+        self.root.update_idletasks()
+        _sw = self.root.winfo_screenwidth()
+        _sh = self.root.winfo_screenheight()
+        _w, _h = min(1440, _sw), min(900, _sh)
+        _x, _y = (_sw - _w) // 2, (_sh - _h) // 2
+        self.root.geometry(f"{_w}x{_h}+{_x}+{_y}")
         self._drag_x = 0
         self._drag_y = 0
         self._is_maximized  = False
@@ -306,7 +312,7 @@ class App:
         self._resize_dir    = None
         self._resize_x0     = 0
         self._resize_y0     = 0
-        self._resize_geom   = (1360, 800, 0, 0)
+        self._resize_geom   = (_w, _h, _x, _y)
 
         self._apply_theme()
         self._build_titlebar()
@@ -429,6 +435,11 @@ class App:
             messagebox.showinfo("", "数据已重新加载")
         except Exception as e:
             messagebox.showerror("加载失败", str(e))
+
+    def _on_ghost_map(self, _=None):
+        self.root.deiconify()
+        self.root.lift()
+        self.root.focus_force()
 
     def _on_close(self):
         self.root.destroy()
@@ -898,6 +909,27 @@ class App:
                    command=self._evo_remove).pack()
         row += 1
 
+        # 遭遇地 260630 Red
+        _sep(f, row=row, col=0); row += 1
+        _lbl(f, "遭遇地").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
+        enc_f = tk.Frame(f, bg=BG_MAIN)
+        enc_f.grid(row=row, column=1, columnspan=4, sticky="ew", padx=(0, 12), pady=2)
+        self.enc_tree = ttk.Treeview(
+            enc_f, columns=("location", "rate"), show="headings",
+            height=3, selectmode="browse")
+        self.enc_tree.heading("location", text="地点")
+        self.enc_tree.heading("rate", text="出现率%")
+        self.enc_tree.column("location", width=160, anchor="w")
+        self.enc_tree.column("rate", width=60, anchor="center")
+        self.enc_tree.pack(side="left", fill="x", expand=True)
+        enc_btn = tk.Frame(enc_f, bg=BG_MAIN)
+        enc_btn.pack(side="left", padx=(4, 0))
+        ttk.Button(enc_btn, text="+", width=3,
+                   command=self._enc_add).pack(pady=(0, 2))
+        ttk.Button(enc_btn, text="×", width=3,
+                   command=self._enc_remove).pack()
+        row += 1
+
         # 描述
         _sep(f, row=row, col=0); row += 1
         _lbl(f, "图鉴描述").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
@@ -1049,6 +1081,11 @@ class App:
         self.mon_height.delete(0, "end"); self.mon_height.insert(0, str(height))
         self.mon_weight.delete(0, "end"); self.mon_weight.insert(0, str(weight))
 
+        # 遭遇地 260630 Red
+        self.enc_tree.delete(*self.enc_tree.get_children())
+        for enc in d.get("encounters", []):
+            self.enc_tree.insert("", "end", values=(enc.get("location", ""), enc.get("rate", 0)))
+
         # evolutions
         self.evo_tree.delete(*self.evo_tree.get_children())
         evolutions = d.get("evolutions", [])
@@ -1081,7 +1118,7 @@ class App:
         self._photo_back  = None
         for suffix, lbl in [("front", self._sprite_front_lbl),
                              ("back",  self._sprite_back_lbl)]:
-            path = os.path.join(SPRITES_DIR, f"{name}_{suffix}.png")
+            path = os.path.join(SPRITES_DIR, f"{name}{suffix}.png")
             if os.path.exists(path):
                 try:
                     img   = Image.open(path).convert("RGBA")
@@ -1162,9 +1199,7 @@ class App:
                 off_nd.append((def_type, "0"))
             elif best < 1.0:
                 off_ne.append((def_type, f"{best:g}x"))
-        _render_section("进攻克制", off_se, "#D0F0D0")
-        _render_section("进攻微弱", off_ne, "#FFF5D0")
-        _render_section("进攻无效", off_nd, "#E8E8F0")
+        _render_section("克制", off_se, "#D0F0D0")
 
         _render_section("弱点", weak,      "#FFE0E0")
         _render_section("抵抗", resist,    "#E0FFE0")
@@ -1341,6 +1376,39 @@ class App:
                 m.get("power", "-"), m.get("accuracy", "-"),
                 m.get("max_pp", "-"),
             ))
+
+    # ── 遭遇地编辑 260630 Red ──────────────────────────────────────────────────
+    LOCATIONS = ["华灵草原", "翠竹镇", "翠竹馆", "炎心山道", "碧波湖畔",
+                 "磐石洞穴", "厚土荒原", "冰晶雪峰", "黑风堂据点"]
+
+    def _enc_add(self):
+        dlg = tk.Toplevel(self.root)
+        dlg.title("添加遭遇地"); dlg.resizable(False, False)
+        dlg.transient(self.root); dlg.grab_set()
+        dw, dh = 300, 140
+        dlg.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width() - dw) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - dh) // 2
+        dlg.geometry(f"{dw}x{dh}+{x}+{y}")
+        tk.Label(dlg, text="地点:").grid(row=0, column=0, padx=12, pady=8, sticky="e")
+        loc_cb = SearchableCombo(dlg, items=list(self.LOCATIONS), width=18)
+        loc_cb.grid(row=0, column=1, pady=8)
+        tk.Label(dlg, text="出现率%:").grid(row=1, column=0, padx=12, pady=4, sticky="e")
+        rate_e = ttk.Entry(dlg, width=8, justify="center")
+        rate_e.grid(row=1, column=1, sticky="w", pady=4)
+        rate_e.insert(0, "10")
+        def ok():
+            loc = loc_cb.get().strip()
+            rate = rate_e.get().strip()
+            if loc:
+                self.enc_tree.insert("", "end", values=(loc, rate))
+            dlg.destroy()
+        ttk.Button(dlg, text="确定", command=ok).grid(row=2, column=0, columnspan=2, pady=10)
+
+    def _enc_remove(self):
+        sel = self.enc_tree.selection()
+        if sel:
+            self.enc_tree.delete(sel[0])
 
     def _evo_add(self):
         dlg = tk.Toplevel(self.root)
@@ -1542,6 +1610,15 @@ class App:
             "height":      self.mon_height.get().strip(),
             "weight":      self.mon_weight.get().strip(),
         }
+
+        # 遭遇地 260630 Red
+        encounters = []
+        for iid in self.enc_tree.get_children():
+            vals = self.enc_tree.item(iid, "values")
+            enc = {"location": vals[0], "rate": _int(vals[1])}
+            encounters.append(enc)
+        if encounters:
+            d["encounters"] = encounters
 
         evolutions = []
         for iid in self.evo_tree.get_children():

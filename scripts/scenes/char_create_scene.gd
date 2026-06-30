@@ -18,7 +18,7 @@ var _name_input: LineEdit
 var _rival_panel: Control     # 劲敌取名面板
 var _rival_input: LineEdit
 
-const PROFESSOR_SPRITE := "res://assets/sprites/博士_front.png"
+const PROFESSOR_SPRITE := "res://assets/sprites/博士front.png"
 
 var INTRO_LINES: Array = []
 
@@ -133,7 +133,7 @@ func _build_gender_panel() -> Control:
 	panel.add_child(m_box)
 
 	var m_spr = Sprite2D.new()
-	var m_path = "res://assets/sprites/男主_front.png"
+	var m_path = "res://assets/sprites/男主front.png"
 	if ResourceLoader.exists(m_path):
 		m_spr.texture = load(m_path)
 		var ms = 80.0 / maxf(m_spr.texture.get_size().x, m_spr.texture.get_size().y)
@@ -159,7 +159,7 @@ func _build_gender_panel() -> Control:
 	panel.add_child(f_box)
 
 	var f_spr = Sprite2D.new()
-	var f_path = "res://assets/sprites/女主_front.png"
+	var f_path = "res://assets/sprites/女主front.png"
 	if ResourceLoader.exists(f_path):
 		f_spr.texture = load(f_path)
 		var fs = 80.0 / maxf(f_spr.texture.get_size().x, f_spr.texture.get_size().y)
@@ -368,5 +368,5 @@ func _on_rival_confirmed(text: String) -> void:
 	if n.is_empty():
 		n = "小敏"
 	GameState.rival_name = n
-	GameState.start_new_game(GameState.player_name, n)
-	request_scene.emit("starter", {})
+	GameState.start_new_game(GameState.player_name, n, GameState.current_slot)
+	request_scene.emit("home", {})

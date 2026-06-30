@@ -37,6 +37,7 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		"home":        script = load("res://scripts/scenes/home_scene.gd")
 		"village":     script = load("res://scripts/scenes/village_scene.gd")
 		"town":        script = load("res://scripts/scenes/town_scene.gd")
+		"gym":         script = load("res://scripts/scenes/gym_scene.gd")
 		"world":       script = load("res://scripts/scenes/world_scene.gd")
 		"battle":      script = load("res://scripts/scenes/battle_scene.gd")
 		_:
@@ -215,7 +216,8 @@ func _draw_pause_saved() -> void:
 	_pause_lbl("■ 存档", 8, 8, 14, Color(1.0, 0.85, 0.2))
 	_pause_div(26)
 	_pause_lbl("✦ 游戏已保存！", 14, 90, 13, Color(0.28, 0.98, 0.52))
-	_pause_lbl("Enter 返回菜单", 32, 126, 10, Color(0.52, 0.52, 0.66))
+	_pause_lbl("（档位 %d）" % GameState.current_slot, 14, 112, 10, Color(0.55, 0.75, 0.55))
+	_pause_lbl("Enter 返回菜单", 32, 134, 10, Color(0.52, 0.52, 0.66))
 
 func _select_pause() -> void:
 	match _pause_cursor:

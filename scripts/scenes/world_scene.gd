@@ -38,31 +38,27 @@ var _shop_cursor: int  = 0
 var _shop_panel:  Control
 var _shop_result_label: Label
 
-# 训练师
-const TRAINERS := [
+# 静态NPC（不战斗，按Z对话）
+const STATIC_NPCS := [
 	{
-		"id":       "t_xiaomin",
-		"name":     "学员小闵",
-		"tile":     Vector2i(8, 8),
-		"dir":      Vector2i(1, 0),   # 朝右
-		"sight":    4,
-		"team":     [{"species": "绿肥虫", "level": 6}, {"species": "小灯鼠", "level": 5}],
-		"reward":   200,
-		"dialog_before": "前面的！站住！",
-		"dialog_win":    "你……你真厉害！",
-	},
-	{
-		"id":       "t_laoka",
-		"name":     "武者老卡",
-		"tile":     Vector2i(20, 9),
-		"dir":      Vector2i(-1, 0),  # 朝左
-		"sight":    4,
-		"team":     [{"species": "岩灵", "level": 8}],
-		"reward":   350,
-		"dialog_before": "哼，路过此地？先过了我这关！",
-		"dialog_win":    "哼……你有两下子。",
+		"name":   "博士",
+		"sprite": "博士",
+		"tile":   Vector2i(14, 8),
+		"dir":    0,
+		"dialog": ["欢迎来到华灵大陆！我是陈教授。", "精灵与人类共存千年，每段旅途都是一段传奇。"],
 	},
 ]
+var _npc_nodes: Array = []
+var _npc_dialog_lines: Array = []
+var _npc_dialog_idx: int = 0
+
+# 训练师
+# 260630 Red 场景布局（队伍/名字/奖金/对话从 trainers.json 读取）
+const TRAINER_LAYOUT := [
+	{"id": "t_xiaomin", "tile": Vector2i(8, 8),  "dir": Vector2i(1, 0),  "sight": 4},
+	{"id": "t_laoka",   "tile": Vector2i(20, 9), "dir": Vector2i(-1, 0), "sight": 4},
+]
+var TRAINERS: Array = []  # 运行时合并后的数据
 var _pending_trainer: Dictionary = {}   # 等待确认开战的训练师
 
 # 主菜单
@@ -77,20 +73,29 @@ var _menu_cursor: int  = 0
 var _menu_sub:   String = ""   # "" | "party" | "bag" | "saved"
 var _menu_panel: Control
 
-# Wild encounter table for this area (species_id, weight)
-const ENCOUNTER_TABLE := [
-	["绿肥虫", 40],
-	["小灯鼠", 27],
-	["岩灵",   15],
-	["粉粉丘", 10],
-	["小雉鸡",  8],
-]
+# 遭遇表从 species.json encounters 字段动态生成
+var ENCOUNTER_TABLE: Array = []
 
 func _ready() -> void:
+	ENCOUNTER_TABLE = MonDB.get_encounters("华灵草原")
+	_load_trainer_data()
 	_build_world()
+
+# 260630 Red 从 trainers.json 合并训练师数据
+func _load_trainer_data() -> void:
+	for tl in TRAINER_LAYOUT:
+		var td = MonDB.trainers.get(tl["id"], {})
+		var t = tl.duplicate()
+		t["name"]          = td.get("name", "训练师")
+		t["team"]          = td.get("team", [])
+		t["reward"]        = td.get("reward", 100)
+		t["dialog_before"] = td.get("dialog_before", "……！")
+		t["dialog_win"]    = td.get("dialog_win", "……")
+		TRAINERS.append(t)
 	_build_signpost()
 	_build_clinic()
 	_build_shop()
+	_build_npcs()
 	_build_trainers()
 	_build_player()
 	_build_hud()
@@ -405,14 +410,42 @@ func _build_shop() -> void:
 	sign_lbl.add_theme_font_size_override("font_size", 9)
 	sign_lbl.z_index = 4; add_child(sign_lbl)
 
+func _build_npcs() -> void:
+	for npc in STATIC_NPCS:
+		var spr = Sprite2D.new()
+		var path = "res://assets/sprites/%swalk_sheet.png" % npc["sprite"]
+		if ResourceLoader.exists(path):
+			spr.texture = load(path)
+			spr.region_enabled = true
+			spr.region_rect = Rect2(0, npc.get("dir", 0) * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
+		else:
+			spr.texture = _draw_trainer(npc["name"][0])
+		spr.centered = true
+		spr.z_index = 5
+		spr.position = Vector2(npc["tile"].x * TILE + TILE / 2.0, npc["tile"].y * TILE + TILE / 2.0)
+		spr.set_meta("npc_data", npc)
+		add_child(spr)
+		_npc_nodes.append(spr)
+
 func _build_trainers() -> void:
 	for td in TRAINERS:
 		if td["id"] in GameState.defeated_trainers:
-			continue   # 已击败的不再显示（或可显示不同姿态）
+			continue
 		var spr = Sprite2D.new()
-		spr.texture = _draw_trainer(td["name"][0])
+		if td.has("sprite"):
+			var path = "res://assets/sprites/%swalk_sheet.png" % td["sprite"]
+			if ResourceLoader.exists(path):
+				spr.texture = load(path)
+				spr.region_enabled = true
+				spr.region_rect = Rect2(0, td.get("dir_row", 0) * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
+				spr.centered = true
+			else:
+				spr.texture = _draw_trainer(td["name"][0])
+		else:
+			spr.texture = _draw_trainer(td["name"][0])
 		spr.position = Vector2(td["tile"].x * TILE + TILE/2.0, td["tile"].y * TILE + TILE/2.0)
 		spr.z_index = 5
+		spr.set_meta("trainer_data", td)
 		add_child(spr)
 
 func _draw_trainer(initial: String) -> ImageTexture:
@@ -536,7 +569,7 @@ func _build_player() -> void:
 	_player_sprite = Sprite2D.new()
 	_player_sprite.z_index = 5
 	# 根据性别选择 spritesheet
-	var sheet_name := "男主_walk_sheet.png" if GameState.player_gender == "男" else "女主_walk_sheet.png"
+	var sheet_name := "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
 	var sheet_tex = load("res://assets/sprites/" + sheet_name)
 	if sheet_tex:
 		_player_sprite.texture = sheet_tex
@@ -812,6 +845,24 @@ func _input(event: InputEvent) -> void:
 			_open_clinic()
 		elif tile == SHOP_DOOR_TILE:
 			_open_shop()
+		else:
+			_try_talk_npc()
+
+func _try_talk_npc() -> void:
+	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+	const OFFSETS := [Vector2i(0, 1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0)]
+	var face_tile = tile + OFFSETS[_walk_dir]
+	for spr in _npc_nodes:
+		if not spr.has_meta("npc_data"): continue
+		var npc: Dictionary = spr.get_meta("npc_data")
+		if npc["tile"] == face_tile:
+			_npc_dialog_lines = npc.get("dialog", ["..."])
+			_npc_dialog_idx = 0
+			_dialog_active = true
+			_dialog_phase = 200
+			_dialog_panel.visible = true
+			_dialog_label.text = _npc_dialog_lines[0]
+			return
 
 func _open_clinic() -> void:
 	_dialog_active = true
@@ -834,6 +885,15 @@ func _advance_dialog() -> void:
 		101:  # 训练师战后对话结束
 			_dialog_active = false; _dialog_panel.visible = false
 			_pending_trainer = {}
+		200:  # 静态NPC对话翻页
+			_npc_dialog_idx += 1
+			if _npc_dialog_idx < _npc_dialog_lines.size():
+				_dialog_label.text = _npc_dialog_lines[_npc_dialog_idx]
+			else:
+				_dialog_active = false
+				_dialog_panel.visible = false
+				_npc_dialog_lines = []
+				_npc_dialog_idx = 0
 
 func _heal_all_mons() -> void:
 	for mon in GameState.player_team:

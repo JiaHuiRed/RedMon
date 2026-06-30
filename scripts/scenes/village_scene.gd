@@ -20,6 +20,11 @@ var _dialog_phase: int = 0
 var _dialog_panel: Control
 var _dialog_label: Label
 var _battling: bool = false
+var _linwei_spr: Sprite2D          # 260630 Red 林薇NPC
+const LINWEI_TILE := Vector2i(21, 4)  # 研究所门旁
+
+# 研究所
+const LAB_DOOR_TILE := Vector2i(23, 4)  # 研究所门口tile坐标
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
@@ -79,13 +84,23 @@ func _build_village() -> void:
 	add_child(lbl1)
 
 	# House 2 (neighbor)
-	_draw_house(20, 1, 4, 3, Color(0.82, 0.92, 0.98))
+	_draw_house(12, 1, 4, 3, Color(0.82, 0.92, 0.98))
 	var lbl2 = Label.new()
 	lbl2.text = "邻居"
-	lbl2.position = Vector2(22 * TILE, 4)
+	lbl2.position = Vector2(13 * TILE, 4)
 	lbl2.add_theme_font_size_override("font_size", 9)
 	lbl2.add_theme_color_override("font_color", Color(0.20, 0.20, 0.30))
 	add_child(lbl2)
+
+	# 陈氏精灵研究所 (right side, larger, distinctive blue-white color)
+	_draw_lab(20, 1, 7, 4)
+	var lab_sign = Label.new()
+	lab_sign.text = "陈氏精灵研究所"
+	lab_sign.position = Vector2(20 * TILE + 4, 4)
+	lab_sign.add_theme_font_size_override("font_size", 9)
+	lab_sign.add_theme_color_override("font_color", Color(0.10, 0.20, 0.72))
+	lab_sign.z_index = 8
+	add_child(lab_sign)
 
 	# Fence (border decorations)
 	_draw_fence()
@@ -151,6 +166,57 @@ func _draw_house(tx: int, ty: int, w: int, h: int, wall_color: Color) -> void:
 	roof_spr.z_index = 3
 	add_child(roof_spr)
 
+func _draw_lab(tx: int, ty: int, w: int, h: int) -> void:
+	var bw = w * TILE; var bh = h * TILE
+	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
+	wall_img.fill(Color(0.88, 0.94, 0.99))  # bright blue-white
+	# Two windows
+	wall_img.fill_rect(Rect2i(8, 14, 14, 12), Color(0.60, 0.82, 0.96))
+	wall_img.fill_rect(Rect2i(8, 14, 14, 1),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(8, 25, 14, 1),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(8, 14, 1, 12),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(21, 14, 1, 12), Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(14, 14, 1, 12), Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(bw-30, 14, 14, 12), Color(0.60, 0.82, 0.96))
+	wall_img.fill_rect(Rect2i(bw-30, 14, 14, 1),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(bw-30, 25, 14, 1),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(bw-30, 14, 1, 12),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(bw-17, 14, 1, 12),  Color(0.30, 0.30, 0.30))
+	wall_img.fill_rect(Rect2i(bw-24, 14, 1, 12),  Color(0.30, 0.30, 0.30))
+	# Door (center)
+	var dx = bw / 2 - 10
+	wall_img.fill_rect(Rect2i(dx, bh - 22, 20, 22), Color(0.40, 0.24, 0.10))
+	wall_img.fill_rect(Rect2i(dx+1, bh - 21, 18, 20), Color(0.62, 0.42, 0.22))
+	# Decorative frame stripe above door
+	wall_img.fill_rect(Rect2i(0, bh - 26, bw, 4), Color(0.20, 0.40, 0.80, 0.5))
+	# Outline
+	for x in range(bw):
+		wall_img.set_pixel(x, 0, Color(0.20, 0.30, 0.60))
+		wall_img.set_pixel(x, bh - 1, Color(0.20, 0.30, 0.60))
+	for y in range(bh):
+		wall_img.set_pixel(0, y, Color(0.20, 0.30, 0.60))
+		wall_img.set_pixel(bw - 1, y, Color(0.20, 0.30, 0.60))
+	var wall_tex = ImageTexture.new(); wall_tex.set_image(wall_img)
+	var wall_spr = Sprite2D.new()
+	wall_spr.texture = wall_tex
+	wall_spr.offset = Vector2(bw/2.0, bh/2.0)
+	wall_spr.position = Vector2(tx * TILE, ty * TILE)
+	wall_spr.z_index = 2; add_child(wall_spr)
+
+	# Roof (teal/dark blue, gives it a scientific look)
+	var roof_img = Image.create(bw + 8, 18, false, Image.FORMAT_RGBA8)
+	roof_img.fill(Color(0, 0, 0, 0))
+	var rc = Color(0.15, 0.30, 0.62)
+	for i in range(9):
+		roof_img.fill_rect(Rect2i(i, i*2, bw+8-i*2, 2), rc)
+	roof_img.fill_rect(Rect2i(0, 16, bw+8, 2), Color(0.10, 0.18, 0.45))
+	var roof_tex = ImageTexture.new(); roof_tex.set_image(roof_img)
+	var roof_spr = Sprite2D.new()
+	roof_spr.texture = roof_tex
+	roof_spr.offset = Vector2((bw+8)/2.0, 0)
+	roof_spr.position = Vector2(tx * TILE - 4, ty * TILE - 18)
+	roof_spr.z_index = 3; add_child(roof_spr)
+
 func _draw_fence() -> void:
 	for c in range(COLS):
 		if c < 10 or c > 21:
@@ -200,11 +266,53 @@ func _build_npcs() -> void:
 	s1.position = Vector2(8 * TILE + TILE / 2, 12 * TILE + TILE / 2)
 	s1.z_index = 5; add_child(s1)
 
-	# NPC 2 — old man near fence
+	# NPC 2 — villager near well area
 	var npc2 = _draw_npc(Color(0.40, 0.30, 0.50), Color(0.70, 0.68, 0.66))
 	var s2 = Sprite2D.new(); s2.texture = npc2
-	s2.position = Vector2(24 * TILE + TILE / 2, 10 * TILE + TILE / 2)
+	s2.position = Vector2(9 * TILE + TILE / 2, 15 * TILE + TILE / 2)
 	s2.z_index = 5; add_child(s2)
+
+	# 教授 NPC — inside the lab, visible near the door (tile 23,4)
+	var prof_tex: Texture2D
+	var prof_path = "res://assets/sprites/博士walk_sheet.png"
+	if ResourceLoader.exists(prof_path):
+		var spr = Sprite2D.new()
+		spr.texture = load(prof_path)
+		spr.region_enabled = true
+		spr.region_rect = Rect2(48, 0, 48, 48)
+		spr.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE / 2, LAB_DOOR_TILE.y * TILE + TILE / 2)
+		spr.z_index = 6; add_child(spr)
+	else:
+		# Fallback: draw professor pixel
+		var prof_spr = Sprite2D.new()
+		prof_spr.texture = _draw_npc(Color(0.85, 0.85, 0.90), Color(0.60, 0.60, 0.62))
+		prof_spr.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE / 2, LAB_DOOR_TILE.y * TILE + TILE / 2)
+		prof_spr.z_index = 6; add_child(prof_spr)
+	# Professor name label
+	var plbl = Label.new()
+	plbl.text = "陈教授"
+	plbl.position = Vector2(LAB_DOOR_TILE.x * TILE - 8, LAB_DOOR_TILE.y * TILE - 14)
+	plbl.add_theme_font_size_override("font_size", 8)
+	plbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.60))
+	plbl.z_index = 7; add_child(plbl)
+
+	# 260630 Red 林薇（陈教授助手）
+	_linwei_spr = Sprite2D.new()
+	var lw_path = "res://assets/sprites/林薇walk_sheet.png"
+	if ResourceLoader.exists(lw_path):
+		_linwei_spr.texture = load(lw_path)
+		_linwei_spr.region_enabled = true
+		_linwei_spr.region_rect = Rect2(48, 0, 48, 48)
+	else:
+		_linwei_spr.texture = _draw_npc(Color(0.90, 0.45, 0.55), Color(0.15, 0.10, 0.08))
+	_linwei_spr.position = Vector2(LINWEI_TILE.x * TILE + TILE / 2, LINWEI_TILE.y * TILE + TILE / 2)
+	_linwei_spr.z_index = 6; add_child(_linwei_spr)
+	var lw_lbl = Label.new()
+	lw_lbl.text = "林薇"
+	lw_lbl.position = Vector2(LINWEI_TILE.x * TILE - 2, LINWEI_TILE.y * TILE - 14)
+	lw_lbl.add_theme_font_size_override("font_size", 8)
+	lw_lbl.add_theme_color_override("font_color", Color(0.85, 0.30, 0.45))
+	lw_lbl.z_index = 7; add_child(lw_lbl)
 
 	# Well decoration
 	var well = ColorRect.new()
@@ -220,6 +328,15 @@ func _build_npcs() -> void:
 	sign_lbl.add_theme_font_size_override("font_size", 14)
 	sign_lbl.add_theme_color_override("font_color", Color(0.12, 0.12, 0.22))
 	add_child(sign_lbl)
+
+	# North exit sign (points toward grass / professor)
+	var north_sign = Label.new()
+	north_sign.text = "↑ 华灵草原  陈教授研究区"
+	north_sign.position = Vector2(10 * TILE, 7 * TILE - 14)
+	north_sign.add_theme_font_size_override("font_size", 9)
+	north_sign.add_theme_color_override("font_color", Color(0.15, 0.35, 0.15))
+	north_sign.z_index = 3
+	add_child(north_sign)
 
 func _draw_npc(shirt_color: Color, hair_color: Color) -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -246,7 +363,7 @@ func _build_rival() -> void:
 
 	# Rival stands at the bottom exit (col 14-15, row 18-19)
 	var tex: Texture2D
-	var path = "res://assets/sprites/劲敌_front.png"
+	var path = "res://assets/sprites/劲敌front.png"
 	if ResourceLoader.exists(path):
 		tex = load(path)
 	else:
@@ -398,6 +515,13 @@ func _physics_process(_delta: float) -> void:
 	_player.position.x = clamp(_player.position.x, TILE * 1, TILE * (COLS - 1))
 	_player.position.y = clamp(_player.position.y, TILE * 1, TILE * (ROWS - 1))
 
+	# North exit: walk into the fence gap → professor encounter (triggers starter selection)
+	var col = int(_player.position.x / TILE)
+	if _player.position.y <= TILE * 7 and col >= 10 and col <= 21:
+		_player.position.y = TILE * 7  # hold at fence line
+		if not GameState.has_starter:
+			request_scene.emit("starter", {})
+
 func _input(event: InputEvent) -> void:
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
@@ -407,19 +531,27 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
-		# Bottom exit check (col 14-15, row 19)
+		# Bottom exit check (col 12-17, row 19)
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 		if tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:
-			if not _rival_done:
-				GameState.last_scene = "village"  # YYMMDD Red
+			if not GameState.has_starter:
+				_show_dialog("先去村北的草原找找陈教授吧！\n听说他遇到麻烦了……", -1)
+			elif not _rival_done:
+				GameState.last_scene = "village"
 				_start_rival_battle()
 			else:
-				GameState.last_scene = "village"  # YYMMDD Red
+				GameState.last_scene = "village"
 				request_scene.emit("town", {})
+		# Talk to professor at lab door
+		if tile.distance_to(LAB_DOOR_TILE) < 2:
+			_open_lab()
+		# 260630 Red 林薇
+		elif tile.distance_to(Vector2i(LINWEI_TILE.x, LINWEI_TILE.y)) < 3:
+			_talk_linwei()
 		# Talk to NPCs
-		if tile.distance_to(Vector2i(8, 12)) < 3:
+		elif tile.distance_to(Vector2i(8, 12)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc1"), -1)
-		elif tile.distance_to(Vector2i(24, 10)) < 3:
+		elif tile.distance_to(Vector2i(9, 15)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc2"), -1)
 
 func _advance_dialog() -> void:
@@ -476,6 +608,17 @@ func _get_rival_counter() -> String:
 		"小竹熊": return "炎喵"
 	return "炎喵"
 
+func _open_lab() -> void:
+	if not GameState.has_starter:
+		_show_dialog("陈教授似乎不在研究所……\n也许他去草原那边考察了？", -1)
+	elif not GameState.items.has("精灵葫芦") or GameState.items.get("精灵葫芦", 0) == 0:
+		# First visit after getting starter — give starter kit
+		GameState.items["精灵葫芦"] = GameState.items.get("精灵葫芦", 0) + 3
+		GameState.save_game()
+		_show_dialog("陈教授：%s，你回来了！感谢你之前的帮忙。\n这是三个精灵葫芦，出门探险必备，拿去用吧！" % GameState.player_name, -1)
+	else:
+		_show_dialog("陈教授：去吧！华灵大陆上有无数精灵等着你去发现。\n遇到强大的训练师就勇敢挑战！", -1)
+
 # After returning from battle, show post-rival dialog
 func _on_rival_battle_done() -> void:
 	_battling = false
@@ -488,3 +631,27 @@ func _on_rival_battle_done() -> void:
 	# Show tutorial after a moment
 	await get_tree().create_timer(0.5).timeout
 	_show_dialog(MonDB.dlg("rival", "tutorial"), -1)
+
+# ── 林薇对话 ─────────────────────────────────────────────────────────────────
+# 260630 Red 陈教授助手：首次送跑步鞋，每捕捉10只送奖励
+func _talk_linwei() -> void:
+	if not GameState.has_starter:
+		_show_dialog("林薇：你好呀！我是陈教授的助手林薇。\n教授好像去北边的草原了，你可以去找找他。", -1)
+		return
+	# 首次对话：送跑步鞋
+	if not GameState.has_running_shoes:
+		GameState.has_running_shoes = true
+		GameState.save_game()
+		_show_dialog("林薇：%s，恭喜你拿到了第一只精灵！\n教授让我把这双跑步鞋给你——穿上会走得更快哦！\n\n获得了【跑步鞋】！" % GameState.player_name, -1)
+		return
+	# 捕捉奖励检查
+	var tier = GameState.caught_count / 10
+	if tier > GameState.linwei_reward_tier:
+		GameState.linwei_reward_tier = tier
+		var reward_money = tier * 1000
+		GameState.money += reward_money
+		GameState.save_game()
+		_show_dialog("林薇：哇，你已经捕捉了 %d 只精灵了！太厉害了！\n教授让我给你奖金 %dG 作为鼓励！\n\n获得了 %dG！" % [GameState.caught_count, reward_money, reward_money], -1)
+		return
+	# 日常对话
+	_show_dialog("林薇：继续加油哦！每捕捉满 10 只精灵，教授都准备了奖励！\n你已经捕捉了 %d 只了。" % GameState.caught_count, -1)

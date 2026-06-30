@@ -410,7 +410,10 @@
       "22": [
         "疾风击"
       ]
-    }
+    },
+    "encounters": [
+      {"location": "华灵草原", "rate": 8}
+    ]
   },
   "坤鸡": {
     "id": 11,
@@ -486,7 +489,10 @@
         "吐丝",
         "撞击"
       ]
-    }
+    },
+    "encounters": [
+      {"location": "华灵草原", "rate": 40}
+    ]
   },
   "蛹甲": {
     "id": 13,
@@ -584,8 +590,8 @@
     "exp_yield": 36,
     "growth_rate": "中速",
     "desc": "灰白小灵鼠，大眼睛乌溜溜灵动。尾巴末端散发微光，在黑暗中照亮前路，跑得飞快。喜欢收集各种发光的小石子，藏在巢穴里点亮自己的家。",
-    "tier": "",
-    "role": "物攻手",
+    "tier": "凡",
+    "role": "快攻手",
     "gender_ratio": "50/50",
     "height": "0.3",
     "weight": "3.5",
@@ -614,7 +620,10 @@
       "24": [
         "暗影球"
       ]
-    }
+    },
+    "encounters": [
+      {"location": "华灵草原", "rate": 27}
+    ]
   },
   "眀灯鼠": {
     "id": 16,
@@ -782,7 +791,10 @@
       "4": [
         "石击"
       ]
-    }
+    },
+    "encounters": [
+      {"location": "华灵草原", "rate": 15}
+    ]
   },
   "岩偶小将": {
     "id": 20,
@@ -801,8 +813,8 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "古人用泥土和岩石捏制的小偶，被大地之灵赋予生命。关节是粗糙石块，胸前有古老刻痕。虽然笨拙可爱，但对训练家忠心耿耿。",
-    "tier": "凡",
-    "role": "均衡",
+    "tier": "灵",
+    "role": "肉盾",
     "gender_ratio": "50/50",
     "height": "0.8",
     "weight": "35",
@@ -844,7 +856,7 @@
     "growth_rate": "中速",
     "desc": "岩偶小将的最终形态，巍峨如山，身躯由整块巨石铸就。远古时期的大地守护者，在荒原上伫立万年不移半步，风吹雨打也挡不住它的守护之心。",
     "tier": "灵",
-    "role": "肉盾物攻手",
+    "role": "肉盾",
     "gender_ratio": "50/50",
     "height": "2.5",
     "weight": "280",
@@ -1085,7 +1097,10 @@
       }
     ],
     "evolves_into": "霆啸",
-    "evolve_level": 36
+    "evolve_level": 36,
+    "encounters": [
+      {"location": "华灵草原", "rate": 10}
+    ]
   },
   "浅浅丘": {
     "id": 29,
@@ -1835,7 +1850,7 @@
     "base": {
       "hp": 92,
       "atk": 97,
-      "def": 2,
+      "def": 92,
       "sp_atk": 92,
       "sp_def": 88,
       "spd": 94
@@ -1844,8 +1859,8 @@
     "exp_yield": 240,
     "growth_rate": "中速",
     "desc": "密林深处的霸主，全身覆盖刺叶鳞甲，口吐剧毒瘴气。背脊荆棘如森林般茂密，所到之处草木枯萎，连飞鸟也不敢靠近，令人闻风丧胆。",
-    "tier": "玄",
-    "role": "高速混攻手",
+    "tier": "地",
+    "role": "高速物攻手",
     "gender_ratio": "50/50",
     "height": "1.7",
     "weight": "115.0",
@@ -3824,7 +3839,7 @@
     "growth_rate": "中速",
     "desc": "身披焱形虎纹的烈风猛虎，一跃可腾空百丈。虎啸时火焰虎纹绽放光芒，方圆百里草木皆焚。",
     "design_origin": "白虎 + 焱字纹 + 风火轮",
-    "tier": "玄",
+    "tier": "地",
     "role": "高速混攻手",
     "gender_ratio": "50/50",
     "height": "2.0",
@@ -3991,7 +4006,7 @@
     "exp_yield": 64,
     "growth_rate": "中速",
     "desc": "通体墨色的小蛇，行动无声无息，常藏身于阴暗潮湿的石缝中。它喷出的毒液如墨汁般浓黑，能在水中扩散却不消散。据说看到它蜕皮的人会交好运。",
-    "tier": "",
+    "tier": "凡",
     "role": "物攻手",
     "gender_ratio": "50/50",
     "height": "0.5",
@@ -4031,7 +4046,7 @@
     "learnset": {}
   },
   "蛛优优": {
-    "id": 92,
+    "id": 93,
     "name": "蛛优优",
     "type1": "虫",
     "type2": "毒",
@@ -4047,7 +4062,6 @@
     "exp_yield": 45,
     "growth_rate": "快速",
     "desc": "刚出生的幼蛛，圆滚滚的身体缀满彩色斑点，像一颗彩色的糯米团子。喜欢跟在母蛛身后摇摇晃晃地学织网，虽然织出来的网总是歪歪扭扭的。",
-    "design_origin": "幼蛛 + 可爱蜘蛛",
     "tier": "凡",
     "role": "均衡",
     "gender_ratio": "50/50",
@@ -4063,8 +4077,8 @@
     "evolve_level": 24,
     "learnset": {
       "1": [
-        "撞击",
-        "吐丝"
+        "吐丝",
+        "撞击"
       ],
       "4": [
         "乱抓"
@@ -4075,7 +4089,7 @@
     }
   },
   "毒影": {
-    "id": 93,
+    "id": 92,
     "name": "毒影",
     "type1": "土",
     "type2": "毒",
@@ -5612,7 +5626,7 @@
     "growth_rate": "缓慢",
     "desc": "进化后生出一对雷电翼膜的西方翼龙，翅翼拍动可引发局部雷暴。栖息于高压电塔顶端，以闪电为食。",
     "design_origin": "西方翼龙 + 雷电 + 电蜥",
-    "tier": "玄",
+    "tier": "地",
     "role": "高速混攻手",
     "gender_ratio": "50/50",
     "height": "4.5",
@@ -5702,7 +5716,7 @@
     "growth_rate": "中速",
     "desc": "肚子更圆了的少年企鹅，在冰面上靠肚皮滑行比用脚走路还快。翅膀短短的，偶尔会拍不到痒痒的地方。",
     "design_origin": "国王企鹅 + 胖乎乎",
-    "tier": "灵",
+    "tier": "凡",
     "role": "特攻手",
     "gender_ratio": "0/100",
     "height": "0.9",
@@ -6000,7 +6014,7 @@
     "exp_yield": 170,
     "growth_rate": "中速",
     "desc": "吸取暗月精华后成精的南瓜灵。通体紫黑，鬼面透出幽蓝紫光，漂浮在半空中，荆棘般的藤蔓在身周游走。",
-    "tier": "灵",
+    "tier": "玄",
     "role": "特攻手",
     "gender_ratio": "50/50",
     "height": "0.8",
@@ -6087,9 +6101,9 @@
     "type1": "雷",
     "type2": "",
     "base": {
-      "hp": 85,
+      "hp": 95,
       "atk": 50,
-      "def": 60,
+      "def": 80,
       "sp_atk": 120,
       "sp_def": 65,
       "spd": 110
@@ -6133,29 +6147,25 @@
     "type2": "",
     "base": {
       "hp": 80,
-      "atk": 135,
-      "def": 85,
+      "atk": 100,
+      "def": 100,
       "sp_atk": 55,
       "sp_def": 85,
-      "spd": 50
+      "spd": 100
     },
     "catch_rate": 45,
     "exp_yield": 178,
     "growth_rate": "中速",
     "desc": "格斗技巧精湛的露比形态，拳风呼啸如龙。身披绯色宝石战甲，在战斗中化作一道赤色流光。拳脚所到之处，敌人应声倒地，是陆战之王。",
-    "design_origin": "红宝石 + 武者",
     "tier": "玄",
-    "role": "物攻手",
+    "role": "肉盾均衡",
     "gender_ratio": "87.5/12.5",
     "height": "0.9",
     "weight": "32.0",
-    "evolutions": [],
-    "evolves_into": "",
-    "evolve_level": 0,
     "learnset": {
       "1": [
-        "撞击",
         "叫声",
+        "撞击",
         "踢击"
       ],
       "5": [
@@ -6181,12 +6191,12 @@
     "type1": "水",
     "type2": "",
     "base": {
-      "hp": 110,
+      "hp": 120,
       "atk": 50,
       "def": 92,
       "sp_atk": 75,
       "sp_def": 98,
-      "spd": 65
+      "spd": 85
     },
     "catch_rate": 45,
     "exp_yield": 180,
@@ -6226,30 +6236,26 @@
     "type1": "火",
     "type2": "",
     "base": {
-      "hp": 75,
+      "hp": 100,
       "atk": 50,
-      "def": 65,
-      "sp_atk": 130,
+      "def": 85,
+      "sp_atk": 125,
       "sp_def": 70,
-      "spd": 100
+      "spd": 90
     },
     "catch_rate": 45,
     "exp_yield": 184,
     "growth_rate": "中速",
     "desc": "体内烈焰翻涌的露比形态，体温高得惊人，呼出的气息都能点燃草木。双足踏地时火焰四溅，奔跑起来像一团滚动的火焰流星。",
-    "design_origin": "红宝石 + 火山 + 火焰",
     "tier": "玄",
-    "role": "特攻手",
+    "role": "高速特攻手",
     "gender_ratio": "87.5/12.5",
     "height": "0.8",
     "weight": "22.0",
-    "evolutions": [],
-    "evolves_into": "",
-    "evolve_level": 0,
     "learnset": {
       "1": [
-        "撞击",
         "叫声",
+        "撞击",
         "火花"
       ],
       "5": [
@@ -6277,29 +6283,25 @@
     "base": {
       "hp": 95,
       "atk": 120,
-      "def": 100,
+      "def": 105,
       "sp_atk": 50,
       "sp_def": 70,
-      "spd": 55
+      "spd": 80
     },
     "catch_rate": 45,
     "exp_yield": 178,
     "growth_rate": "中速",
     "desc": "擅长钻地的露比形态，四肢末端长出坚硬的晶爪，能轻易挖穿岩层。挖掘速度极快，在地下穿梭如鱼，是当之无愧的大地行者。",
-    "design_origin": "红宝石 + 鼹鼠 + 钻石",
     "tier": "玄",
     "role": "物攻手",
     "gender_ratio": "87.5/12.5",
     "height": "0.7",
     "weight": "36.0",
-    "evolutions": [],
-    "evolves_into": "",
-    "evolve_level": 0,
     "learnset": {
       "1": [
-        "撞击",
         "叫声",
-        "掷泥"
+        "掷泥",
+        "撞击"
       ],
       "5": [
         "玩泥巴"
@@ -7896,7 +7898,7 @@
     "exp_yield": 150,
     "growth_rate": "中速",
     "desc": "一把锋芒毕露的银色长剑，剑身如秋水般澄澈。剑出鞘时能削铁如泥，传说它曾在古战场上斩过千军万马。",
-    "tier": "凡",
+    "tier": "灵",
     "role": "",
     "gender_ratio": "无性别",
     "height": "1.0",
@@ -7920,7 +7922,7 @@
     "exp_yield": 170,
     "growth_rate": "中速",
     "desc": "一把通体乌黑的长刀，刀身隐现暗纹。刀锋出鞘时如黑云压境，传说它能斩断一切阻碍，是剑冢中最锋利的一件兵器。",
-    "tier": "凡",
+    "tier": "灵",
     "role": "",
     "gender_ratio": "无性别",
     "height": "1.2",
@@ -7976,7 +7978,7 @@
     "exp_yield": 180,
     "growth_rate": "中速",
     "desc": "通体雪白的灵鹤，长喙如朱砂，头顶一点鲜红。站立时气度超凡，飞翔时羽翼遮天，所到之处霜雪纷飞。",
-    "tier": "凡",
+    "tier": "玄",
     "role": "",
     "gender_ratio": "50/50",
     "height": "1.5",
@@ -8032,7 +8034,7 @@
     "exp_yield": 110,
     "growth_rate": "中速",
     "desc": "一株生长在极寒之地的灵草，一分为二，左半边冰封，右半边灼热。两种截然相反的气息在它身上完美共存。",
-    "tier": "凡",
+    "tier": "灵",
     "role": "",
     "gender_ratio": "50/50",
     "height": "0.5",
@@ -8064,7 +8066,7 @@
     "exp_yield": 220,
     "growth_rate": "中速",
     "desc": "一枚形如红莲的蛊虫，传说饮下它的血就能百毒不侵。但它从不伤人，只守护那些心怀善念的人，是万蛊之王。",
-    "tier": "凡",
+    "tier": "玄",
     "role": "",
     "gender_ratio": "无性别",
     "height": "0.8",
@@ -8128,12 +8130,12 @@
     "type1": "冰",
     "type2": "鬼",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 38,
+      "atk": 55,
+      "def": 30,
+      "sp_atk": 35,
+      "sp_def": 32,
+      "spd": 60
     },
     "catch_rate": 190,
     "exp_yield": 58,
@@ -8158,12 +8160,12 @@
     "type1": "冰",
     "type2": "鬼",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 72,
+      "atk": 108,
+      "def": 65,
+      "sp_atk": 50,
+      "sp_def": 68,
+      "spd": 118
     },
     "catch_rate": 45,
     "exp_yield": 179,
@@ -8183,12 +8185,12 @@
     "type1": "冰",
     "type2": "土",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 50,
+      "atk": 38,
+      "def": 60,
+      "sp_atk": 22,
+      "sp_def": 45,
+      "spd": 28
     },
     "catch_rate": 190,
     "exp_yield": 60,
@@ -8213,12 +8215,12 @@
     "type1": "冰",
     "type2": "土",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 100,
+      "atk": 85,
+      "def": 120,
+      "sp_atk": 40,
+      "sp_def": 95,
+      "spd": 45
     },
     "catch_rate": 45,
     "exp_yield": 182,
@@ -8238,12 +8240,12 @@
     "type1": "鬼",
     "type2": "",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 25,
+      "atk": 30,
+      "def": 20,
+      "sp_atk": 55,
+      "sp_def": 30,
+      "spd": 50
     },
     "catch_rate": 200,
     "exp_yield": 55,
@@ -8268,12 +8270,12 @@
     "type1": "鬼",
     "type2": "木",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 62,
+      "atk": 62,
+      "def": 50,
+      "sp_atk": 65,
+      "sp_def": 58,
+      "spd": 70
     },
     "catch_rate": 90,
     "exp_yield": 120,
@@ -8298,12 +8300,12 @@
     "type1": "鬼",
     "type2": "木",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 75,
+      "atk": 78,
+      "def": 62,
+      "sp_atk": 92,
+      "sp_def": 70,
+      "spd": 88
     },
     "catch_rate": 45,
     "exp_yield": 172,
@@ -8323,12 +8325,12 @@
     "type1": "风",
     "type2": "",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 32,
+      "atk": 28,
+      "def": 22,
+      "sp_atk": 38,
+      "sp_def": 30,
+      "spd": 68
     },
     "catch_rate": 190,
     "exp_yield": 58,
@@ -8353,12 +8355,12 @@
     "type1": "风",
     "type2": "",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 58,
+      "atk": 50,
+      "def": 42,
+      "sp_atk": 75,
+      "sp_def": 58,
+      "spd": 98
     },
     "catch_rate": 90,
     "exp_yield": 128,
@@ -8383,12 +8385,12 @@
     "type1": "风",
     "type2": "灵",
     "base": {
-      "hp": 0,
-      "atk": 0,
-      "def": 0,
-      "sp_atk": 0,
-      "sp_def": 0,
-      "spd": 0
+      "hp": 80,
+      "atk": 65,
+      "def": 62,
+      "sp_atk": 105,
+      "sp_def": 82,
+      "spd": 112
     },
     "catch_rate": 45,
     "exp_yield": 178,
@@ -9438,5 +9440,390 @@
         "竹笋刺"
       ]
     }
+  },
+  "绣球狮": {
+    "id": 210,
+    "name": "绣球狮",
+    "type1": "格",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 65,
+      "def": 40,
+      "sp_atk": 25,
+      "sp_def": 35,
+      "spd": 60
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "一只裹着大红绣球布套的小狮崽，橙黄色绒毛圆滚滚的，走起路来绣球布套在地上拖着跑，根本站不稳。整天追着自己的尾巴练功，笨拙又可爱。",
+    "tier": "凡",
+    "role": "物攻手",
+    "gender_ratio": "50/50",
+    "height": "0.4",
+    "weight": "6.5",
+    "evolutions": [
+      {
+        "into": "舞狮郎",
+        "level": 16
+      }
+    ],
+    "evolves_into": "舞狮郎",
+    "evolve_level": 16,
+    "learnset": {
+      "1": [
+        "撞击",
+        "瞪眼"
+      ]
+    }
+  },
+  "舞狮郎": {
+    "id": 211,
+    "name": "舞狮郎",
+    "type1": "格",
+    "type2": "火",
+    "base": {
+      "hp": 68,
+      "atk": 90,
+      "def": 58,
+      "sp_atk": 35,
+      "sp_def": 50,
+      "spd": 84
+    },
+    "catch_rate": 45,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "desc": "已能半直立行走的少年舞狮，前爪的绣球布换成了红色武术绑带，脖子上系着彩绸铃铛。认真练武时尾巴上的大毛球一甩一甩的，热血沸腾时鬃毛会冒出零星火花。",
+    "tier": "灵",
+    "role": "物攻手",
+    "gender_ratio": "50/50",
+    "height": "0.8",
+    "weight": "18.0",
+    "evolutions": [
+      {
+        "into": "醒狮宗",
+        "level": 36
+      }
+    ],
+    "evolves_into": "醒狮宗",
+    "evolve_level": 36,
+    "learnset": {
+      "1": [
+        "撞击",
+        "瞪眼"
+      ],
+      "16": [
+        "火花"
+      ],
+      "22": [
+        "连续拳"
+      ],
+      "28": [
+        "火焰拳"
+      ]
+    }
+  },
+  "醒狮宗": {
+    "id": 212,
+    "name": "醒狮宗",
+    "type1": "格",
+    "type2": "火",
+    "base": {
+      "hp": 85,
+      "atk": 112,
+      "def": 72,
+      "sp_atk": 40,
+      "sp_def": 65,
+      "spd": 111
+    },
+    "catch_rate": 3,
+    "exp_yield": 240,
+    "growth_rate": "中速",
+    "desc": "一只完整活过来的醒狮成精，低重心蹲伏起势，双目如炬。鬃毛如烈火炸开翻飞，红绸绑带随风飘动。狮被上织着金边云纹，一舞起势百兽震惶，拳风裹烈焰，万夫莫敌。",
+    "tier": "玄",
+    "role": "高速物攻手",
+    "gender_ratio": "50/50",
+    "height": "1.4",
+    "weight": "72.0",
+    "evolutions": [],
+    "learnset": {
+      "1": [
+        "撞击",
+        "火花"
+      ],
+      "36": [
+        "火焰拳",
+        "健美"
+      ],
+      "44": [
+        "闪焰冲锋"
+      ],
+      "52": [
+        "近身战"
+      ]
+    }
+  },
+  "灰鼠": {
+    "id": 213,
+    "name": "灰鼠",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 55,
+      "def": 30,
+      "sp_atk": 20,
+      "sp_def": 25,
+      "spd": 45
+    },
+    "catch_rate": 200,
+    "exp_yield": 51,
+    "growth_rate": "中速",
+    "desc": "最普通的灰色田鼠，跟田埂上到处跑的那种一模一样。尾巴末梢有一小撮白毛，是它唯一特别的地方。喜欢在草丛里钻来钻去，遇到危险会用后腿站起来挥动小爪子——但因为太普通了，连路过的麻雀都懒得躲。",
+    "tier": "凡",
+    "role": "物攻手",
+    "gender_ratio": "50/50",
+    "height": "0.3",
+    "weight": "3.5",
+    "evolutions": [
+      {
+        "into": "大灰鼠",
+        "level": 18
+      }
+    ],
+    "evolves_into": "大灰鼠",
+    "evolve_level": 18,
+    "learnset": {
+      "1": [
+        "撞击",
+        "瞪眼"
+      ],
+      "5": [
+        "抓"
+      ],
+      "9": [
+        "电光一闪"
+      ],
+      "13": [
+        "挖洞"
+      ]
+    }
+  },
+  "大灰鼠": {
+    "id": 214,
+    "name": "大灰鼠",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 75,
+      "atk": 82,
+      "def": 48,
+      "sp_atk": 30,
+      "sp_def": 45,
+      "spd": 70
+    },
+    "catch_rate": 200,
+    "exp_yield": 142,
+    "growth_rate": "中速",
+    "desc": "一只长到比猫还大的灰色老鼠，浑身皮毛粗糙，尾巴粗壮有力。前爪厚实，能轻松扒开泥土和草根。眼神狡黠，一看就不是好惹的——但说到底，也就是只大老鼠而已。",
+    "tier": "灵",
+    "role": "物攻手",
+    "gender_ratio": "50/50",
+    "height": "0.7",
+    "weight": "15.0",
+    "evolutions": [],
+    "learnset": {
+      "1": [
+        "重踏"
+      ],
+      "18": [
+        "挖洞"
+      ],
+      "24": [
+        "岩崩"
+      ],
+      "30": [
+        "地震"
+      ],
+      "38": [
+        "尖石攻击"
+      ]
+    }
+  },
+  "卷叶虫": {
+    "id": 215,
+    "name": "卷叶虫",
+    "type1": "虫",
+    "type2": "",
+    "base": {
+      "hp": 45,
+      "atk": 20,
+      "def": 50,
+      "sp_atk": 30,
+      "sp_def": 35,
+      "spd": 25
+    },
+    "catch_rate": 220,
+    "exp_yield": 45,
+    "growth_rate": "较快",
+    "desc": "一条随处可见的碧绿色小毛虫，没什么特别的，最喜欢把叶子卷起来躲在里面睡觉。遇到危险会笨拙地扭动身体，但因为既没毒又不会咬人，连小鸟都嫌它吃起来不够塞牙缝。",
+    "tier": "凡",
+    "role": "特攻手",
+    "gender_ratio": "50/50",
+    "height": "0.3",
+    "weight": "2.8",
+    "evolutions": [
+      {
+        "into": "花蝴蝶",
+        "level": 14
+      }
+    ],
+    "evolves_into": "花蝴蝶",
+    "evolve_level": 14,
+    "learnset": {
+      "1": [
+        "撞击",
+        "吐丝"
+      ],
+      "5": [
+        "虫咬"
+      ],
+      "9": [
+        "睡眠粉"
+      ]
+    }
+  },
+  "花蝴蝶": {
+    "id": 216,
+    "name": "花蝴蝶",
+    "type1": "虫",
+    "type2": "风",
+    "base": {
+      "hp": 62,
+      "atk": 35,
+      "def": 52,
+      "sp_atk": 72,
+      "sp_def": 58,
+      "spd": 62
+    },
+    "catch_rate": 220,
+    "exp_yield": 160,
+    "growth_rate": "较快",
+    "desc": "从一条小虫变成的普通花蝴蝶，翅膀上有淡蓝色和白色相间的花纹，飞起来轻飘飘的。说不上多好看，就是田埂上菜地里最常见的那种，在花丛间扑棱扑棱地飞，偶尔会被蜘蛛网挂住。",
+    "tier": "灵",
+    "role": "特攻手",
+    "gender_ratio": "50/50",
+    "height": "0.6",
+    "weight": "7.5",
+    "evolutions": [],
+    "learnset": {
+      "1": [
+        "起风"
+      ],
+      "14": [
+        "虫鸣"
+      ],
+      "20": [
+        "银色旋风"
+      ],
+      "26": [
+        "空气斩"
+      ],
+      "32": [
+        "蝶舞"
+      ],
+      "38": [
+        "暴风"
+      ]
+    }
+  },
+  "云幼": {
+    "id": 217,
+    "name": "云幼",
+    "type1": "空",
+    "type2": "",
+    "base": {
+      "hp": 70,
+      "atk": 45,
+      "def": 50,
+      "sp_atk": 36,
+      "sp_def": 50,
+      "spd": 55
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "凡",
+    "role": "肉盾均衡",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "evolutions": [
+      {
+        "into": "猫星星",
+        "level": 17
+      }
+    ],
+    "evolves_into": "猫星星",
+    "evolve_level": 17,
+    "learnset": {}
+  },
+  "猫星星": {
+    "id": 218,
+    "name": "猫星星",
+    "type1": "空",
+    "type2": "冰",
+    "base": {
+      "hp": 80,
+      "atk": 52,
+      "def": 70,
+      "sp_atk": 68,
+      "sp_def": 57,
+      "spd": 76
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "role": "均衡",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "evolutions": [
+      {
+        "into": "冰芊芊",
+        "level": 33
+      }
+    ],
+    "evolves_into": "冰芊芊",
+    "evolve_level": 33,
+    "learnset": {}
+  },
+  "冰芊芊": {
+    "id": 219,
+    "name": "冰芊芊",
+    "type1": "冰",
+    "type2": "",
+    "base": {
+      "hp": 85,
+      "atk": 71,
+      "def": 100,
+      "sp_atk": 97,
+      "sp_def": 88,
+      "spd": 87
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "玄",
+    "role": "均衡",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
   }
 }

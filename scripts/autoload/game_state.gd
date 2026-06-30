@@ -8,9 +8,15 @@ var has_starter: bool = false
 var badges: int = 0
 var money: int = 500
 var items: Dictionary = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
+var pc_box: Array = []              # 精灵堂仓库（队伍满6时捕捉的精灵送到这里）
+var caught_count: int = 0           # 260630 Red 累计捕捉数（林薇奖励用）
+var linwei_reward_tier: int = 0     # 260630 Red 林薇已发放的奖励阶段（每10只+1）
+var has_running_shoes: bool = false  # 260630 Red 跑步鞋（林薇赠送）
 var defeated_trainers: Array = []   # 已击败的训练师 id 列表
 var rival_done: bool = false       # 第一次劲敌战已结束（无论输赢）
+var cleared_gyms: Array = []       # 已通关的道馆 id 列表
 var last_scene: String = ""        # YYMMDD Red 最后所在场景，用于读档回跳
+var current_slot: int = 1          # 当前使用的存档槽位（1-3）
 
 var font: SystemFont  # 全局中文字体，所有场景共用
 
@@ -72,10 +78,31 @@ func _setup_gba_keys() -> void:
 
 	print("[INPUT] GBA 按键已注册: Z=确认  X=取消  Enter=菜单  手柄自动支持")
 
-const SAVE_PATH := "user://save.json"
+func slot_path(slot: int) -> String:
+	return "user://save_slot_%d.json" % slot
 
-func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
+func has_save(slot: int = 0) -> bool:
+	if slot == 0:
+		for s in [1, 2, 3]:
+			if FileAccess.file_exists(slot_path(s)): return true
+		return false
+	return FileAccess.file_exists(slot_path(slot))
+
+func get_slot_summary(slot: int) -> Dictionary:
+	if not has_save(slot):
+		return {"exists": false}
+	var file = FileAccess.open(slot_path(slot), FileAccess.READ)
+	if not file: return {"exists": false}
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK: return {"exists": false}
+	file.close()
+	var d: Dictionary = json.get_data()
+	return {
+		"exists":     true,
+		"name":       d.get("player_name", "???"),
+		"badges":     d.get("badges", 0),
+		"last_scene": d.get("last_scene", ""),
+	}
 
 func save_game() -> void:
 	var data := {
@@ -87,22 +114,30 @@ func save_game() -> void:
 		"money":             money,
 		"items":             items,
 		"player_team":       player_team,
+		"pc_box":            pc_box,
+		"caught_count":      caught_count,
+		"linwei_reward_tier": linwei_reward_tier,
+		"has_running_shoes": has_running_shoes,
 		"defeated_trainers": defeated_trainers,
 		"rival_done":        rival_done,
+		"cleared_gyms":      cleared_gyms,
 		"last_scene":        last_scene,
 	}
-	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	var path = slot_path(current_slot)
+	var file = FileAccess.open(path, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(data, "\t"))
 		file.close()
-		print("[SAVE] 游戏已保存")
+		print("[SAVE] 存到档位%d" % current_slot)
 	else:
-		push_error("[SAVE] 无法写入存档: " + SAVE_PATH)
+		push_error("[SAVE] 无法写入存档: " + path)
 
-func load_game() -> bool:
-	if not FileAccess.file_exists(SAVE_PATH):
+func load_game(slot: int = 0) -> bool:
+	if slot > 0: current_slot = slot
+	var path = slot_path(current_slot)
+	if not FileAccess.file_exists(path):
 		return false
-	var file = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file = FileAccess.open(path, FileAccess.READ)
 	if not file:
 		return false
 	var json = JSON.new()
@@ -120,22 +155,33 @@ func load_game() -> bool:
 	money             = data.get("money", 500)
 	items             = data.get("items", {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5})
 	player_team       = data.get("player_team", [])
+	pc_box            = data.get("pc_box", [])
+	caught_count      = data.get("caught_count", 0)
+	linwei_reward_tier = data.get("linwei_reward_tier", 0)
+	has_running_shoes = data.get("has_running_shoes", false)
 	defeated_trainers = data.get("defeated_trainers", [])
 	rival_done        = data.get("rival_done", false)
+	cleared_gyms      = data.get("cleared_gyms", [])
 	last_scene        = data.get("last_scene", "")
 	print("[SAVE] 存档读取完成，上次场景：%s，队伍：%d 只精灵" % [last_scene, player_team.size()])
 	return true
 
-func start_new_game(name: String, rname: String = "小敏") -> void:
+func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> void:
+	current_slot = slot
 	player_name = name
 	rival_name = rname
 	player_team = []
+	pc_box = []
+	caught_count = 0
+	linwei_reward_tier = 0
+	has_running_shoes = false
 	has_starter = false
 	badges = 0
 	money = 500
 	items = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
 	defeated_trainers = []
 	rival_done = false
+	cleared_gyms = []
 	last_scene = ""  # YYMMDD Red 新游戏重置
 
 func add_mon(mon: Dictionary) -> void:
