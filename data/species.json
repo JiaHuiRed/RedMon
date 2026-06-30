@@ -10023,5 +10023,188 @@
     "height": "0.5",
     "weight": "5.0",
     "learnset": {}
+  },
+  "墨螈": {
+    "id": 223,
+    "type1": "水",
+    "type2": "",
+    "hp": 50,
+    "atk": 40,
+    "def": 35,
+    "sp_atk": 55,
+    "sp_def": 40,
+    "spd": 45,
+    "tier": "凡",
+    "role": "特攻手",
+    "desc": "栖息在深山暗潭中的小蝾螈，背部的墨色斑纹会随情绪变化。受惊时从口中喷出黑色墨汁遮蔽视野后逃走。",
+    "design_origin": "大鲵幼体+墨鱼喷墨",
+    "catch_rate": 190,
+    "exp_yield": 55,
+    "growth_rate": "medium",
+    "gender_ratio": 50,
+    "height": 0.4,
+    "weight": 5.2,
+    "evolves_into": "渊螈",
+    "evolve_level": 18,
+    "learnset": [
+      {
+        "id": "水枪",
+        "level": 1
+      },
+      {
+        "id": "瞪眼",
+        "level": 1
+      },
+      {
+        "id": "咬住",
+        "level": 8
+      },
+      {
+        "id": "水之波动",
+        "level": 13
+      },
+      {
+        "id": "大闹一通",
+        "level": 17
+      },
+      {
+        "id": "恶之波动",
+        "level": 22
+      },
+      {
+        "id": "水流喷射",
+        "level": 26
+      }
+    ]
+  },
+  "渊螈": {
+    "id": 224,
+    "type1": "水",
+    "type2": "暗",
+    "hp": 70,
+    "atk": 55,
+    "def": 55,
+    "sp_atk": 80,
+    "sp_def": 60,
+    "spd": 60,
+    "tier": "灵",
+    "role": "特攻手",
+    "desc": "进化后眼睛变为金色竖瞳，能在完全黑暗的水底精准捕猎。会用尾巴拍击水面制造漩涡困住猎物。",
+    "design_origin": "中国大鲵+深海掠食者",
+    "catch_rate": 90,
+    "exp_yield": 145,
+    "growth_rate": "medium",
+    "gender_ratio": 50,
+    "height": 1.1,
+    "weight": 28.5,
+    "evolves_into": "冥渊鲵",
+    "evolve_level": 36,
+    "learnset": [
+      {
+        "id": "水枪",
+        "level": 1
+      },
+      {
+        "id": "瞪眼",
+        "level": 1
+      },
+      {
+        "id": "咬住",
+        "level": 8
+      },
+      {
+        "id": "水之波动",
+        "level": 13
+      },
+      {
+        "id": "大闹一通",
+        "level": 17
+      },
+      {
+        "id": "恶之波动",
+        "level": 22
+      },
+      {
+        "id": "水流喷射",
+        "level": 26
+      },
+      {
+        "id": "咬碎",
+        "level": 30
+      },
+      {
+        "id": "冲浪",
+        "level": 35
+      }
+    ]
+  },
+  "冥渊鲵": {
+    "id": 225,
+    "type1": "水",
+    "type2": "暗",
+    "hp": 95,
+    "atk": 70,
+    "def": 75,
+    "sp_atk": 110,
+    "sp_def": 80,
+    "spd": 75,
+    "tier": "玄",
+    "role": "特攻手",
+    "desc": "地下暗河的绝对霸主。全身暗紫色的纹路会在捕猎时发出幽蓝光芒，猎物见到光时已无法逃脱。据说它能吞噬周围一切光线。",
+    "design_origin": "大鲵王+深渊巨兽+山海经",
+    "catch_rate": 45,
+    "exp_yield": 240,
+    "growth_rate": "medium",
+    "gender_ratio": 50,
+    "height": 2.3,
+    "weight": 98.0,
+    "evolves_into": "",
+    "evolve_level": 0,
+    "learnset": [
+      {
+        "id": "水枪",
+        "level": 1
+      },
+      {
+        "id": "瞪眼",
+        "level": 1
+      },
+      {
+        "id": "咬住",
+        "level": 8
+      },
+      {
+        "id": "水之波动",
+        "level": 13
+      },
+      {
+        "id": "大闹一通",
+        "level": 17
+      },
+      {
+        "id": "恶之波动",
+        "level": 22
+      },
+      {
+        "id": "水流喷射",
+        "level": 26
+      },
+      {
+        "id": "咬碎",
+        "level": 30
+      },
+      {
+        "id": "冲浪",
+        "level": 35
+      },
+      {
+        "id": "水炮",
+        "level": 40
+      },
+      {
+        "id": "恶之波动",
+        "level": 45
+      }
+    ]
   }
 }
