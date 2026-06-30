@@ -167,7 +167,7 @@ func _draw_pause_main() -> void:
 		_pause_lbl(("▶ " if sel else "  ") + _POPTS[i], 10, 36 + i * 34, 12,
 			Color.WHITE if sel else Color(0.70, 0.70, 0.82))
 	_pause_div(_PH - 28)
-	_pause_lbl("↑↓选择  Enter确定  Esc关闭", 6, _PH - 22, 9, Color(0.52, 0.52, 0.66))
+	_pause_lbl("↑↓选择  Z确定  X/Esc关闭", 6, _PH - 22, 9, Color(0.52, 0.52, 0.66))
 
 func _draw_pause_party() -> void:
 	_pause_lbl("■ 我的精灵", 8, 8, 14, Color(1.0, 0.85, 0.2))
@@ -197,7 +197,7 @@ func _draw_pause_party() -> void:
 						 Color(0.9, 0.2, 0.1))
 			_pause_panel.add_child(bar)
 			_pause_lbl("%d/%d" % [mon["current_hp"], mon["max_hp"]], 8, ry + 22, 9, Color(0.55, 0.55, 0.60))
-	_pause_lbl("Esc 返回", 8, _PH - 20, 9, Color(0.52, 0.52, 0.66))
+	_pause_lbl("X/Esc 返回", 8, _PH - 20, 9, Color(0.52, 0.52, 0.66))
 
 func _draw_pause_bag() -> void:
 	_pause_lbl("■ 背包", 8, 8, 14, Color(1.0, 0.85, 0.2))
@@ -210,14 +210,14 @@ func _draw_pause_bag() -> void:
 		_pause_lbl(item_name, 10, 36 + row * 28, 11, col)
 		_pause_lbl("×%d" % qty, _PW - 34, 36 + row * 28, 11, col)
 		row += 1
-	_pause_lbl("Esc 返回", 8, _PH - 20, 9, Color(0.52, 0.52, 0.66))
+	_pause_lbl("X/Esc 返回", 8, _PH - 20, 9, Color(0.52, 0.52, 0.66))
 
 func _draw_pause_saved() -> void:
 	_pause_lbl("■ 存档", 8, 8, 14, Color(1.0, 0.85, 0.2))
 	_pause_div(26)
 	_pause_lbl("✦ 游戏已保存！", 14, 90, 13, Color(0.28, 0.98, 0.52))
 	_pause_lbl("（档位 %d）" % GameState.current_slot, 14, 112, 10, Color(0.55, 0.75, 0.55))
-	_pause_lbl("Enter 返回菜单", 32, 134, 10, Color(0.52, 0.52, 0.66))
+	_pause_lbl("Z 返回菜单", 32, 134, 10, Color(0.52, 0.52, 0.66))
 
 func _select_pause() -> void:
 	match _pause_cursor:

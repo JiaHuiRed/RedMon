@@ -535,12 +535,9 @@ func _on_use_item(item_id: String) -> void:
 	var item = MonDB.items.get(item_id, {})
 	match item.get("category", ""):
 		"ball":
-			await _show_message_async("你投出了%s！" % item_id)
-			if MonDB.calc_catch(_enemy_mon, item.get("ball_bonus", 1.0)):
-				var tw = create_tween()
-				tw.tween_property(_enemy_spr, "modulate:a", 0.0, 0.5)
-				await get_tree().create_timer(0.6).timeout
-				await _show_message_async("捕捉成功！")
+			var success = await _anim_throw_gourd(item_id, item.get("ball_bonus", 1.0))
+
+			if success:
 				GameState.caught_count += 1  # 260630 Red
 				if GameState.player_team.size() < 6:
 					GameState.player_team.append(_enemy_mon)
@@ -552,8 +549,7 @@ func _on_use_item(item_id: String) -> void:
 				GameState.save_game()
 				_end_battle("caught")
 				return
-			# 捕捉失败
-			await _show_message_async("差一点！\n%s 挣脱了！" % MonDB.display_name(_enemy_mon))
+			# 捕捉失败 → 继续敌方回合
 		"heal":
 			var item_data = MonDB.items.get(item_id, {})
 			if item_data.get("full_heal", false):
@@ -1675,8 +1671,8 @@ func _draw_zhuling_back() -> Texture2D:
 	tex.set_image(img)
 	return tex
 
-# ── 葫芦投掷捕捉动画 ─────────────────────────────────────────────────────────
-func _anim_throw_gourd(item_id: String, ball_bonus: float) -> void:
+# ── 葫芦投掷捕捉动画（纯视觉，返回成功/失败） ────────────────────────────
+func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	# 1. 加载葫芦贴图
 	var gourd_tex := load("res://assets/ui/items/" + item_id + ".png") as Texture2D
 	if not gourd_tex:
@@ -1690,7 +1686,6 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> void:
 	add_child(gourd_spr)
 
 	# 2. 葫芦飞行弧线
-	var t_val := [0.0]
 	var fly_tw := create_tween()
 	fly_tw.tween_method(func(t: float):
 		var p := start_pos.lerp(end_pos, t)
@@ -1723,7 +1718,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> void:
 	land_tw.tween_property(gourd_spr, "position", land_pos, 0.18)
 	await land_tw.finished
 
-	# 5. 判断捕捉
+	# 5. 摇晃判定（纯动画，不处理游戏逻辑）
 	var success := MonDB.calc_catch(_enemy_mon, ball_bonus)
 	var shakes  := 3 if success else randi_range(1, 2)
 	for _i in range(shakes):
@@ -1746,22 +1741,10 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> void:
 			await get_tree().create_timer(0.5).timeout
 			d_spr.queue_free()
 		gourd_spr.queue_free()
-		await _show_message_async("捕捉成功！")
-		GameState.caught_count += 1  # 260630 Red
-		if GameState.player_team.size() < 6:
-			GameState.player_team.append(_enemy_mon)
-			await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
-		else:
-			await _show_message_async("队伍已满，%s 被放生了……" % MonDB.display_name(_enemy_mon))
-		_busy = false
-		GameState.save_game()
-		_end_battle("caught")
 	else:
 		# 失败：葫芦消失，精灵复出
 		gourd_spr.queue_free()
 		_enemy_spr.scale     = Vector2(0.2, 0.2)
 		_enemy_spr.modulate.a = 1.0
-		await _show_message_async("差一点！
-%s 挣脱了！" % MonDB.display_name(_enemy_mon))
-		_busy = false
-		_show_action_panel()
+
+	return success

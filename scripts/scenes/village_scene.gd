@@ -1,34 +1,35 @@
 extends Node2D
 # RedMon – 新手村（青木村）
-# 家出门后的小村落，劲敌在村口等着
+# 素材替换版：TileMap 地面 + 建筑 Sprite2D + walk_sheet NPC/玩家
 signal request_scene(scene_name: String, data: Dictionary)
 
 const VW := 960
 const VH := 640
-const TILE  := 16
+const TILE  := 32
 const COLS  := 30
 const ROWS  := 20
 const SPEED := 100.0
+const WALK_FRAME_W := 36
+const WALK_FRAME_H := 48
+const BUILD_SCALE := 0.35
 
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
 var _rival_spr: Sprite2D
-var _rival_node: Node2D               # Container for rival sprite + label
-var _rival_done: bool = false         # 劲敌战已结束（无论输赢）
+var _rival_node: Node2D
+var _rival_done: bool = false
 var _dialog_active: bool = false
 var _dialog_phase: int = 0
 var _dialog_panel: Control
 var _dialog_label: Label
 var _battling: bool = false
-var _linwei_spr: Sprite2D          # 260630 Red 林薇NPC
-const LINWEI_TILE := Vector2i(21, 4)  # 研究所门旁
+var _linwei_spr: Sprite2D
+const LINWEI_TILE := Vector2i(23, 4)
+const LAB_DOOR_TILE := Vector2i(21, 4)
 
-# 研究所
-const LAB_DOOR_TILE := Vector2i(23, 4)  # 研究所门口tile坐标
-
+# ── Lifecycle ──────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
-	# 劲敌战结束后（无论输赢），劲敌让路
 	var battle_result = data.get("battle_result", "")
 	if battle_result in ["win", "lose"]:
 		_rival_done = true
@@ -36,355 +37,272 @@ func _ready() -> void:
 	elif GameState.rival_done:
 		_rival_done = true
 
-	_build_village()
+	_build_ground()
+	_build_buildings()
 	_build_npcs()
 	_build_rival()
 	_build_player()
 	_build_dialog()
+	_build_labels()
 	if GameState.rival_name.is_empty():
 		GameState.rival_name = "小敏"
 
-	# If returning from rival battle, move rival aside and show post-battle dialog
 	if _rival_done:
 		_rival_leave()
 		call_deferred("_on_rival_battle_done")
 
-# ── Village Construction ──────────────────────────────────────────────────────
-func _build_village() -> void:
-	# Sky
-	var sky = ColorRect.new()
-	sky.size = Vector2(VW, VH)
-	sky.color = Color(0.60, 0.80, 0.98)
-	add_child(sky)
+# ── Ground (TileMap) ──────────────────────────────────────────────────────────
+func _make_tile_set() -> TileSet:
+	var ts = TileSet.new()
+	ts.tile_size = Vector2i(TILE, TILE)
+	var src = TileSetAtlasSource.new()
+	src.texture = load("res://assets/tilemaps/tiles16_indexed.png")
+	src.tile_size = Vector2i(TILE, TILE)
+	src.margins = Vector2i(0, 0)
+	src.separation = Vector2i(0, 0)
+	# Create tiles for the 8x8 preview grid
+	for r in 8:
+		for c in 8:
+			src.create_tile(Vector2i(c, r))
+	ts.add_source(src, 0)
+	return ts
 
-	# Ground (green grass)
-	var ground = ColorRect.new()
-	ground.size = Vector2(VW, VH)
-	ground.color = Color(0.38, 0.62, 0.30)
-	add_child(ground)
+func _build_ground() -> void:
+	var tm = TileMap.new()
+	tm.name = "GroundTileMap"
+	tm.tile_set = _make_tile_set()
+	add_child(tm)
 
-	# Dirt path going down from center to bottom
-	for r in range(ROWS - 2):
-		var y = (r + 7) * TILE
-		_draw_dirt_tile(14, r + 7)
-		_draw_dirt_tile(15, r + 7)
+	# Fill entire 30x20 grid with grass (tile_0_0 = atlas 0,0)
+	for x in COLS:
+		for y in ROWS:
+			tm.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
 
-	# Dirt path horizontal at top (road)
-	for c in range(10, 22):
-		_draw_dirt_tile(c, 7)
-		_draw_dirt_tile(c, 8)
+	# Horizontal dirt path at rows 7-8 (tile_1_5 and tile_3_5)
+	for x in COLS:
+		tm.set_cell(0, Vector2i(x, 7), 0, Vector2i(5, 1))
+		tm.set_cell(0, Vector2i(x, 8), 0, Vector2i(5, 3))
 
-	# House 1 (player's home, left side — visual only, exit is managed by home scene)
-	_draw_house(4, 1, 4, 3, Color(0.95, 0.88, 0.78))
-	var lbl1 = Label.new()
-	lbl1.text = "我家"
-	lbl1.position = Vector2(6 * TILE, 4)
-	lbl1.add_theme_font_size_override("font_size", 9)
-	lbl1.add_theme_color_override("font_color", Color(0.20, 0.20, 0.30))
-	add_child(lbl1)
+	# Vertical dirt path at cols 14-15 (rows 7-19)
+	for y in range(7, ROWS):
+		tm.set_cell(0, Vector2i(14, y), 0, Vector2i(5, 1))
+		tm.set_cell(0, Vector2i(15, y), 0, Vector2i(5, 3))
 
-	# House 2 (neighbor)
-	_draw_house(12, 1, 4, 3, Color(0.82, 0.92, 0.98))
-	var lbl2 = Label.new()
-	lbl2.text = "邻居"
-	lbl2.position = Vector2(13 * TILE, 4)
-	lbl2.add_theme_font_size_override("font_size", 9)
-	lbl2.add_theme_color_override("font_color", Color(0.20, 0.20, 0.30))
-	add_child(lbl2)
-
-	# 陈氏精灵研究所 (right side, larger, distinctive blue-white color)
-	_draw_lab(20, 1, 7, 4)
-	var lab_sign = Label.new()
-	lab_sign.text = "陈氏精灵研究所"
-	lab_sign.position = Vector2(20 * TILE + 4, 4)
-	lab_sign.add_theme_font_size_override("font_size", 9)
-	lab_sign.add_theme_color_override("font_color", Color(0.10, 0.20, 0.72))
-	lab_sign.z_index = 8
-	add_child(lab_sign)
-
-	# Fence (border decorations)
-	_draw_fence()
-
-	# Decorative flowers and bushes
+	# Decorative bushes around village
 	for spot in [[3, 14], [8, 11], [18, 14], [25, 10], [12, 15]]:
-		_draw_bush(spot[0], spot[1])
+		tm.set_cell(0, Vector2i(spot[0], spot[1]), 0, Vector2i(0, 4))  # bush
 
-func _draw_dirt_tile(col: int, row: int) -> void:
-	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0.62, 0.50, 0.34))
-	for _i in range(3):
-		img.set_pixel(randi() % TILE, randi() % TILE, Color(0.54, 0.43, 0.28))
-	var tex = ImageTexture.new(); tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.position = Vector2(col * TILE + TILE / 2.0, row * TILE + TILE / 2.0)
-	spr.z_index = 1
-	add_child(spr)
+# ── Buildings ─────────────────────────────────────────────────────────────────
+func _build_buildings() -> void:
+	# 普通小屋 (player's home, top-left)
+	var home = Sprite2D.new()
+	home.texture = _load_tex("res://assets/sprites/普通小屋.png")
+	if home.texture:
+		home.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
+		home.position = Vector2(4 * TILE + 60, 3 * TILE + 30)
+		home.z_index = 2
+		add_child(home)
 
-func _draw_house(tx: int, ty: int, w: int, h: int, wall_color: Color) -> void:
-	var bw = w * TILE; var bh = h * TILE
-	# Wall
-	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
-	wall_img.fill(wall_color)
-	# Window
-	wall_img.fill_rect(Rect2i(8, 10, 14, 14), Color(0.60, 0.82, 0.96))
-	wall_img.fill_rect(Rect2i(8, 10, 14, 1), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 23, 14, 1), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 10, 1, 14), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(21, 10, 1, 14), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(14, 10, 1, 14), Color(0.30, 0.30, 0.30))
-	# Door
-	wall_img.fill_rect(Rect2i(30, 16, 16, 18), Color(0.50, 0.30, 0.15))
-	wall_img.fill_rect(Rect2i(31, 17, 14, 16), Color(0.70, 0.48, 0.28))
-	# Outline
-	for x in range(bw):
-		wall_img.set_pixel(x, 0, Color(0.30, 0.18, 0.12))
-		wall_img.set_pixel(x, bh - 1, Color(0.30, 0.18, 0.12))
-	for y in range(bh):
-		wall_img.set_pixel(0, y, Color(0.30, 0.18, 0.12))
-		wall_img.set_pixel(bw - 1, y, Color(0.30, 0.18, 0.12))
-	var wall_tex = ImageTexture.new(); wall_tex.set_image(wall_img)
-	var wall_spr = Sprite2D.new()
-	wall_spr.texture = wall_tex
-	wall_spr.offset = Vector2(bw / 2.0, bh / 2.0)
-	wall_spr.position = Vector2(tx * TILE, ty * TILE)
-	wall_spr.z_index = 2
-	add_child(wall_spr)
+	# 杂货铺 (shop, top-center)
+	var shop = Sprite2D.new()
+	shop.texture = _load_tex("res://assets/sprites/杂货铺.png")
+	if shop.texture:
+		shop.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
+		shop.position = Vector2(10 * TILE + 80, 2 * TILE + 80)
+		shop.z_index = 2
+		add_child(shop)
 
-	# Roof
-	var roof_img = Image.create(bw + 8, 16, false, Image.FORMAT_RGBA8)
-	roof_img.fill(Color(0, 0, 0, 0))
-	var rc = Color(0.70, 0.20, 0.18)
-	for i in range(8):
-		roof_img.fill_rect(Rect2i(i, i * 2, bw + 8 - i * 2, 2), rc)
-	roof_img.fill_rect(Rect2i(0, 14, bw + 8, 2), Color(0.50, 0.10, 0.10))
-	var roof_tex = ImageTexture.new(); roof_tex.set_image(roof_img)
-	var roof_spr = Sprite2D.new()
-	roof_spr.texture = roof_tex
-	roof_spr.offset = Vector2((bw + 8) / 2.0, 0)
-	roof_spr.position = Vector2(tx * TILE - 4, ty * TILE - 16)
-	roof_spr.z_index = 3
-	add_child(roof_spr)
+	# 精灵堂 (healing center / lab, top-right)
+	var center = Sprite2D.new()
+	center.texture = _load_tex("res://assets/sprites/精灵堂.png")
+	if center.texture:
+		center.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
+		center.position = Vector2(20 * TILE + 100, 2 * TILE + 60)
+		center.z_index = 2
+		add_child(center)
 
-func _draw_lab(tx: int, ty: int, w: int, h: int) -> void:
-	var bw = w * TILE; var bh = h * TILE
-	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
-	wall_img.fill(Color(0.88, 0.94, 0.99))  # bright blue-white
-	# Two windows
-	wall_img.fill_rect(Rect2i(8, 14, 14, 12), Color(0.60, 0.82, 0.96))
-	wall_img.fill_rect(Rect2i(8, 14, 14, 1),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 25, 14, 1),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 14, 1, 12),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(21, 14, 1, 12), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(14, 14, 1, 12), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(bw-30, 14, 14, 12), Color(0.60, 0.82, 0.96))
-	wall_img.fill_rect(Rect2i(bw-30, 14, 14, 1),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(bw-30, 25, 14, 1),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(bw-30, 14, 1, 12),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(bw-17, 14, 1, 12),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(bw-24, 14, 1, 12),  Color(0.30, 0.30, 0.30))
-	# Door (center)
-	var dx = bw / 2 - 10
-	wall_img.fill_rect(Rect2i(dx, bh - 22, 20, 22), Color(0.40, 0.24, 0.10))
-	wall_img.fill_rect(Rect2i(dx+1, bh - 21, 18, 20), Color(0.62, 0.42, 0.22))
-	# Decorative frame stripe above door
-	wall_img.fill_rect(Rect2i(0, bh - 26, bw, 4), Color(0.20, 0.40, 0.80, 0.5))
-	# Outline
-	for x in range(bw):
-		wall_img.set_pixel(x, 0, Color(0.20, 0.30, 0.60))
-		wall_img.set_pixel(x, bh - 1, Color(0.20, 0.30, 0.60))
-	for y in range(bh):
-		wall_img.set_pixel(0, y, Color(0.20, 0.30, 0.60))
-		wall_img.set_pixel(bw - 1, y, Color(0.20, 0.30, 0.60))
-	var wall_tex = ImageTexture.new(); wall_tex.set_image(wall_img)
-	var wall_spr = Sprite2D.new()
-	wall_spr.texture = wall_tex
-	wall_spr.offset = Vector2(bw/2.0, bh/2.0)
-	wall_spr.position = Vector2(tx * TILE, ty * TILE)
-	wall_spr.z_index = 2; add_child(wall_spr)
-
-	# Roof (teal/dark blue, gives it a scientific look)
-	var roof_img = Image.create(bw + 8, 18, false, Image.FORMAT_RGBA8)
-	roof_img.fill(Color(0, 0, 0, 0))
-	var rc = Color(0.15, 0.30, 0.62)
-	for i in range(9):
-		roof_img.fill_rect(Rect2i(i, i*2, bw+8-i*2, 2), rc)
-	roof_img.fill_rect(Rect2i(0, 16, bw+8, 2), Color(0.10, 0.18, 0.45))
-	var roof_tex = ImageTexture.new(); roof_tex.set_image(roof_img)
-	var roof_spr = Sprite2D.new()
-	roof_spr.texture = roof_tex
-	roof_spr.offset = Vector2((bw+8)/2.0, 0)
-	roof_spr.position = Vector2(tx * TILE - 4, ty * TILE - 18)
-	roof_spr.z_index = 3; add_child(roof_spr)
-
-func _draw_fence() -> void:
-	for c in range(COLS):
-		if c < 10 or c > 21:
-			_draw_fence_post(c, 7)
-	# Bottom fence (non-exit part)
-	for c in range(COLS):
-		if c < 12 or c > 17:
-			_draw_fence_post(c, ROWS - 1)
-
-func _draw_fence_post(col: int, row: int) -> void:
-	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	# Post
-	img.fill_rect(Rect2i(7, 4, 3, 12), Color(0.45, 0.28, 0.12))
-	img.fill_rect(Rect2i(3, 6, 10, 2), Color(0.50, 0.32, 0.14))
-	img.fill_rect(Rect2i(4, 9, 8, 2), Color(0.50, 0.32, 0.14))
-	var tex = ImageTexture.new(); tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.position = Vector2(col * TILE + TILE / 2.0, row * TILE + TILE / 2.0)
-	spr.z_index = 2
-	add_child(spr)
-
-func _draw_bush(col: int, row: int) -> void:
-	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var green = Color(0.20, 0.55, 0.20)
-	var dgreen = Color(0.12, 0.42, 0.12)
-	img.fill_rect(Rect2i(3, 8, 10, 8), dgreen)
-	img.fill_rect(Rect2i(1, 6, 14, 6), green)
-	img.fill_rect(Rect2i(4, 4, 8, 6), green)
-	# Small flowers
-	img.set_pixel(6, 5, Color(1.0, 0.3, 0.4))
-	img.set_pixel(10, 7, Color(1.0, 0.9, 0.2))
-	var tex = ImageTexture.new(); tex.set_image(img)
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.position = Vector2(col * TILE + TILE / 2.0, row * TILE + TILE / 2.0)
-	spr.z_index = 2
-	add_child(spr)
+func _load_tex(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path)
+	return null
 
 # ── NPCs ──────────────────────────────────────────────────────────────────────
 func _build_npcs() -> void:
-	# NPC 1 — standing near the well
-	var npc1 = _draw_npc(Color(0.15, 0.35, 0.85), Color(0.35, 0.22, 0.12))
-	var s1 = Sprite2D.new(); s1.texture = npc1
-	s1.position = Vector2(8 * TILE + TILE / 2, 12 * TILE + TILE / 2)
-	s1.z_index = 5; add_child(s1)
+	# NPC 1 — 老奶奶 near well
+	var npc1 = Sprite2D.new()
+	npc1.texture = _load_tex("res://assets/sprites/老奶奶.png")
+	if npc1.texture:
+		npc1.region_enabled = true
+		npc1.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		npc1.centered = true
+	else:
+		npc1.texture = _draw_npc_fallback(Color(0.15, 0.35, 0.85), Color(0.70, 0.68, 0.66))
+	npc1.position = Vector2(8 * TILE + TILE/2, 12 * TILE + TILE/2)
+	npc1.z_index = 5
+	add_child(npc1)
 
-	# NPC 2 — villager near well area
-	var npc2 = _draw_npc(Color(0.40, 0.30, 0.50), Color(0.70, 0.68, 0.66))
-	var s2 = Sprite2D.new(); s2.texture = npc2
-	s2.position = Vector2(9 * TILE + TILE / 2, 15 * TILE + TILE / 2)
-	s2.z_index = 5; add_child(s2)
+	# NPC 2 — 青年 near well
+	var npc2 = Sprite2D.new()
+	npc2.texture = _load_tex("res://assets/sprites/青年.png")
+	if npc2.texture:
+		npc2.region_enabled = true
+		npc2.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		npc2.centered = true
+	else:
+		npc2.texture = _draw_npc_fallback(Color(0.40, 0.30, 0.50), Color(0.70, 0.68, 0.66))
+	npc2.position = Vector2(9 * TILE + TILE/2, 15 * TILE + TILE/2)
+	npc2.z_index = 5
+	add_child(npc2)
 
-	# 教授 NPC — inside the lab, visible near the door (tile 23,4)
-	var prof_tex: Texture2D
+	# 博士 — at lab door (精灵堂 entrance)
+	var prof = Sprite2D.new()
 	var prof_path = "res://assets/sprites/博士walk_sheet.png"
 	if ResourceLoader.exists(prof_path):
-		var spr = Sprite2D.new()
-		spr.texture = load(prof_path)
-		spr.region_enabled = true
-		spr.region_rect = Rect2(48, 0, 48, 48)
-		spr.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE / 2, LAB_DOOR_TILE.y * TILE + TILE / 2)
-		spr.z_index = 6; add_child(spr)
+		prof.texture = load(prof_path)
+		prof.region_enabled = true
+		prof.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		prof.centered = true
+		prof.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2 - 4)
+		prof.z_index = 6
+		add_child(prof)
 	else:
-		# Fallback: draw professor pixel
-		var prof_spr = Sprite2D.new()
-		prof_spr.texture = _draw_npc(Color(0.85, 0.85, 0.90), Color(0.60, 0.60, 0.62))
-		prof_spr.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE / 2, LAB_DOOR_TILE.y * TILE + TILE / 2)
-		prof_spr.z_index = 6; add_child(prof_spr)
-	# Professor name label
-	var plbl = Label.new()
-	plbl.text = "陈教授"
-	plbl.position = Vector2(LAB_DOOR_TILE.x * TILE - 8, LAB_DOOR_TILE.y * TILE - 14)
-	plbl.add_theme_font_size_override("font_size", 8)
-	plbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.60))
-	plbl.z_index = 7; add_child(plbl)
+		var fallback = Sprite2D.new()
+		fallback.texture = _draw_npc_fallback(Color(0.85, 0.85, 0.90), Color(0.60, 0.60, 0.62))
+		fallback.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2)
+		fallback.z_index = 6
+		add_child(fallback)
 
-	# 260630 Red 林薇（陈教授助手）
+	# 林薇
 	_linwei_spr = Sprite2D.new()
 	var lw_path = "res://assets/sprites/林薇walk_sheet.png"
 	if ResourceLoader.exists(lw_path):
 		_linwei_spr.texture = load(lw_path)
 		_linwei_spr.region_enabled = true
-		_linwei_spr.region_rect = Rect2(48, 0, 48, 48)
+		_linwei_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		_linwei_spr.centered = true
 	else:
-		_linwei_spr.texture = _draw_npc(Color(0.90, 0.45, 0.55), Color(0.15, 0.10, 0.08))
-	_linwei_spr.position = Vector2(LINWEI_TILE.x * TILE + TILE / 2, LINWEI_TILE.y * TILE + TILE / 2)
-	_linwei_spr.z_index = 6; add_child(_linwei_spr)
-	var lw_lbl = Label.new()
-	lw_lbl.text = "林薇"
-	lw_lbl.position = Vector2(LINWEI_TILE.x * TILE - 2, LINWEI_TILE.y * TILE - 14)
-	lw_lbl.add_theme_font_size_override("font_size", 8)
-	lw_lbl.add_theme_color_override("font_color", Color(0.85, 0.30, 0.45))
-	lw_lbl.z_index = 7; add_child(lw_lbl)
+		_linwei_spr.texture = _draw_npc_fallback(Color(0.90, 0.45, 0.55), Color(0.15, 0.10, 0.08))
+	_linwei_spr.position = Vector2(LINWEI_TILE.x * TILE + TILE/2, LINWEI_TILE.y * TILE + TILE/2 - 4)
+	_linwei_spr.z_index = 6
+	add_child(_linwei_spr)
 
 	# Well decoration
 	var well = ColorRect.new()
-	well.size = Vector2(16, 12)
-	well.position = Vector2(7 * TILE + 8, 11 * TILE + 8)
+	well.size = Vector2(24, 20)
+	well.position = Vector2(7 * TILE + 12, 11 * TILE + 14)
 	well.color = Color(0.40, 0.38, 0.35)
-	well.z_index = 4; add_child(well)
+	well.z_index = 4
+	add_child(well)
 
-	# Village name sign
-	var sign_lbl = Label.new()
-	sign_lbl.text = "青木村"
-	sign_lbl.position = Vector2(12 * TILE, 2)
-	sign_lbl.add_theme_font_size_override("font_size", 14)
-	sign_lbl.add_theme_color_override("font_color", Color(0.12, 0.12, 0.22))
-	add_child(sign_lbl)
-
-	# North exit sign (points toward grass / professor)
-	var north_sign = Label.new()
-	north_sign.text = "↑ 华灵草原  陈教授研究区"
-	north_sign.position = Vector2(10 * TILE, 7 * TILE - 14)
-	north_sign.add_theme_font_size_override("font_size", 9)
-	north_sign.add_theme_color_override("font_color", Color(0.15, 0.35, 0.15))
-	north_sign.z_index = 3
-	add_child(north_sign)
-
-func _draw_npc(shirt_color: Color, hair_color: Color) -> ImageTexture:
+func _draw_npc_fallback(shirt: Color, hair: Color) -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var skin   = Color(0.95, 0.82, 0.70)
 	var black  = Color(0.10, 0.10, 0.12)
-	img.fill_rect(Rect2i(2, 4, 2, 3), hair_color)
-	img.fill_rect(Rect2i(12, 4, 2, 3), hair_color)
+	img.fill_rect(Rect2i(2, 4, 2, 3), hair)
+	img.fill_rect(Rect2i(12, 4, 2, 3), hair)
 	img.fill_rect(Rect2i(3, 4, 10, 6), skin)
 	img.fill_rect(Rect2i(5, 7, 2, 1), black)
 	img.fill_rect(Rect2i(9, 7, 2, 1), black)
-	img.fill_rect(Rect2i(1, 10, 14, 6), shirt_color)
+	img.fill_rect(Rect2i(1, 10, 14, 6), shirt)
 	img.fill_rect(Rect2i(2, 16, 5, 4), Color(0.18, 0.12, 0.06))
 	img.fill_rect(Rect2i(9, 16, 5, 4), Color(0.18, 0.12, 0.06))
 	img.fill_rect(Rect2i(1, 18, 6, 2), Color(0.30, 0.18, 0.10))
 	img.fill_rect(Rect2i(9, 18, 6, 2), Color(0.30, 0.18, 0.10))
-	var tex = ImageTexture.new(); tex.set_image(img)
+	var tex = ImageTexture.new()
+	tex.set_image(img)
 	return tex
 
-# ── Rival ────────────────────────────────────────────────────────────────────
+# ── Labels (name signs) ───────────────────────────────────────────────────────
+func _build_labels() -> void:
+	# 普通小屋 label
+	var lbl1 = Label.new()
+	lbl1.text = "我家"
+	lbl1.position = Vector2(4 * TILE + TILE, 5 * TILE - 6)
+	lbl1.add_theme_font_size_override("font_size", 10)
+	lbl1.add_theme_color_override("font_color", Color(0.20, 0.20, 0.30))
+	lbl1.z_index = 8
+	add_child(lbl1)
+
+	# 杂货铺 label
+	var lbl2 = Label.new()
+	lbl2.text = "杂货铺"
+	lbl2.position = Vector2(10 * TILE + TILE + 16, 4 * TILE - 6)
+	lbl2.add_theme_font_size_override("font_size", 10)
+	lbl2.add_theme_color_override("font_color", Color(0.65, 0.30, 0.10))
+	lbl2.z_index = 8
+	add_child(lbl2)
+
+	# 精灵堂 label
+	var lbl3 = Label.new()
+	lbl3.text = "陈氏精灵研究所"
+	lbl3.position = Vector2(19 * TILE + TILE, 4 * TILE - 6)
+	lbl3.add_theme_font_size_override("font_size", 10)
+	lbl3.add_theme_color_override("font_color", Color(0.10, 0.20, 0.72))
+	lbl3.z_index = 8
+	add_child(lbl3)
+
+	# 博士 name label
+	var plbl = Label.new()
+	plbl.text = "陈教授"
+	plbl.position = Vector2(LAB_DOOR_TILE.x * TILE + 4, LAB_DOOR_TILE.y * TILE - 22)
+	plbl.add_theme_font_size_override("font_size", 9)
+	plbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.60))
+	plbl.z_index = 8
+	add_child(plbl)
+
+	# 林薇 name label
+	var lw_lbl = Label.new()
+	lw_lbl.text = "林薇"
+	lw_lbl.position = Vector2(LINWEI_TILE.x * TILE + 14, LINWEI_TILE.y * TILE - 22)
+	lw_lbl.add_theme_font_size_override("font_size", 9)
+	lw_lbl.add_theme_color_override("font_color", Color(0.85, 0.30, 0.45))
+	lw_lbl.z_index = 8
+	add_child(lw_lbl)
+
+	# Village name sign
+	var sign = Label.new()
+	sign.text = "青木村"
+	sign.position = Vector2(12 * TILE, TILE / 2)
+	sign.add_theme_font_size_override("font_size", 16)
+	sign.add_theme_color_override("font_color", Color(0.12, 0.12, 0.22))
+	sign.z_index = 8
+	add_child(sign)
+
+	# North exit sign
+	var north = Label.new()
+	north.text = "↑ 华灵草原"
+	north.position = Vector2(10 * TILE, 7 * TILE - 22)
+	north.add_theme_font_size_override("font_size", 10)
+	north.add_theme_color_override("font_color", Color(0.15, 0.35, 0.15))
+	north.z_index = 3
+	add_child(north)
+
+# ── Rival ──────────────────────────────────────────────────────────────────────
 func _build_rival() -> void:
 	_rival_node = Node2D.new()
 	add_child(_rival_node)
 
-	# Rival stands at the bottom exit (col 14-15, row 18-19)
-	var tex: Texture2D
-	var path = "res://assets/sprites/劲敌front.png"
-	if ResourceLoader.exists(path):
-		tex = load(path)
-	else:
+	var tex: Texture2D = _load_tex("res://assets/sprites/劲敌front.png")
+	if not tex:
 		tex = _draw_rival_fallback()
-	_rival_spr = Sprite2D.new()
-	_rival_spr.texture = tex
-	var s = 28.0 / maxf(tex.get_size().x, tex.get_size().y)
-	_rival_spr.scale = Vector2(s, s)
-	_rival_spr.position = Vector2(15 * TILE + TILE / 2, 18 * TILE + TILE / 2)
-	_rival_spr.z_index = 5
-	_rival_node.add_child(_rival_spr)
+	var spr = Sprite2D.new()
+	spr.texture = tex
+	var s = 36.0 / maxf(tex.get_size().x, tex.get_size().y)
+	spr.scale = Vector2(s, s)
+	spr.position = Vector2(15 * TILE + TILE/2, 18 * TILE + TILE/2)
+	spr.z_index = 5
+	_rival_node.add_child(spr)
+	_rival_spr = spr
 
 	var name_lbl = Label.new()
 	name_lbl.name = "RivalLabel"
 	name_lbl.text = GameState.rival_name
 	name_lbl.position = Vector2(14 * TILE, 17 * TILE)
-	name_lbl.add_theme_font_size_override("font_size", 9)
+	name_lbl.add_theme_font_size_override("font_size", 10)
 	name_lbl.add_theme_color_override("font_color", Color(0.80, 0.10, 0.10))
 	_rival_node.add_child(name_lbl)
 
-	# If rival is done, hide container
 	if _rival_done:
 		_rival_node.visible = false
 
@@ -412,18 +330,27 @@ func _draw_rival_fallback() -> ImageTexture:
 	img.fill_rect(Rect2i(9, 16, 5, 4), black)
 	img.fill_rect(Rect2i(1, 18, 6, 2), bd)
 	img.fill_rect(Rect2i(9, 18, 6, 2), bd)
-	var tex = ImageTexture.new(); tex.set_image(img)
+	var tex = ImageTexture.new()
+	tex.set_image(img)
 	return tex
 
-# ── Player ───────────────────────────────────────────────────────────────────
+# ── Player (walk_sheet) ──────────────────────────────────────────────────────
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(15 * TILE, 12 * TILE)   # Start at path center
+	_player.position = Vector2(15 * TILE, 12 * TILE)
 	add_child(_player)
 
 	_player_spr = Sprite2D.new()
-	_player_spr.texture = _draw_player_spr()
 	_player_spr.z_index = 5
+	var sheet = "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
+	var tex = _load_tex("res://assets/sprites/" + sheet)
+	if tex:
+		_player_spr.texture = tex
+		_player_spr.region_enabled = true
+		_player_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		_player_spr.centered = true
+	else:
+		_player_spr.texture = _draw_player_fallback()
 	_player.add_child(_player_spr)
 
 	var cam = Camera2D.new()
@@ -432,8 +359,18 @@ func _build_player() -> void:
 	_player.add_child(cam)
 	cam.call_deferred("make_current")
 
-func _draw_player_spr() -> ImageTexture:
-	# Same red-cap kid sprite
+	# Shadow
+	var shadow_img = Image.create(20, 5, false, Image.FORMAT_RGBA8)
+	shadow_img.fill(Color(0, 0, 0, 0.20))
+	var shadow_tex = ImageTexture.new()
+	shadow_tex.set_image(shadow_img)
+	var shadow = Sprite2D.new()
+	shadow.texture = shadow_tex
+	shadow.position = Vector2(0, 22)
+	shadow.z_index = 4
+	_player.add_child(shadow)
+
+func _draw_player_fallback() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var red      = Color(0.85, 0.10, 0.10)
@@ -455,23 +392,28 @@ func _draw_player_spr() -> ImageTexture:
 	img.fill_rect(Rect2i(9, 16, 5, 4), black)
 	img.fill_rect(Rect2i(1, 18, 6, 2), red_dark)
 	img.fill_rect(Rect2i(9, 18, 6, 2), red_dark)
-	var tex = ImageTexture.new(); tex.set_image(img)
+	var tex = ImageTexture.new()
+	tex.set_image(img)
 	return tex
 
-# ── Dialog ───────────────────────────────────────────────────────────────────
+# ── Dialog ────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 10; add_child(cl)
+	var cl = CanvasLayer.new()
+	cl.layer = 10
+	add_child(cl)
 	_dialog_panel = Control.new()
 	_dialog_panel.visible = false
 	cl.add_child(_dialog_panel)
 
 	var bg = ColorRect.new()
-	bg.size = Vector2(VW, 60); bg.position = Vector2(0, VH - 60)
+	bg.size = Vector2(VW, 60)
+	bg.position = Vector2(0, VH - 60)
 	bg.color = Color(0.05, 0.05, 0.12, 0.92)
 	_dialog_panel.add_child(bg)
 
 	var border = ColorRect.new()
-	border.size = Vector2(VW, 2); border.position = Vector2(0, VH - 60)
+	border.size = Vector2(VW, 2)
+	border.position = Vector2(0, VH - 60)
 	border.color = Color(0.85, 0.85, 0.85)
 	_dialog_panel.add_child(border)
 
@@ -484,9 +426,9 @@ func _build_dialog() -> void:
 	_dialog_panel.add_child(_dialog_label)
 
 	var hint = Label.new()
-	hint.text = "【Z / Enter 继续】"
-	hint.size = Vector2(160, 14)
-	hint.position = Vector2(VW - 164, VH - 18)
+	hint.text = "【Z 继续】"
+	hint.size = Vector2(130, 14)
+	hint.position = Vector2(VW - 134, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	hint.add_theme_font_size_override("font_size", 10)
 	_dialog_panel.add_child(hint)
@@ -508,17 +450,18 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_pressed("ui_up"):    dir.y -= 1
 	if dir.length() > 1.0:
 		dir = dir.normalized()
-	_player.velocity = dir * SPEED
+	var speed = SPEED * (2.0 if Input.is_action_pressed("run") else 1.0)
+	_player.velocity = dir * speed
 	_player.move_and_slide()
 
 	# Clamp inside map (1 tile border)
-	_player.position.x = clamp(_player.position.x, TILE * 1, TILE * (COLS - 1))
-	_player.position.y = clamp(_player.position.y, TILE * 1, TILE * (ROWS - 1))
+	_player.position.x = clamp(_player.position.x, TILE, TILE * (COLS - 1))
+	_player.position.y = clamp(_player.position.y, TILE, TILE * (ROWS - 1))
 
-	# North exit: walk into the fence gap → professor encounter (triggers starter selection)
+	# North exit → starter encounter
 	var col = int(_player.position.x / TILE)
 	if _player.position.y <= TILE * 7 and col >= 10 and col <= 21:
-		_player.position.y = TILE * 7  # hold at fence line
+		_player.position.y = TILE * 7
 		if not GameState.has_starter:
 			request_scene.emit("starter", {})
 
@@ -531,8 +474,8 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
-		# Bottom exit check (col 12-17, row 19)
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+		# Bottom exit
 		if tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:
 			if not GameState.has_starter:
 				_show_dialog("先去村北的草原找找陈教授吧！\n听说他遇到麻烦了……", -1)
@@ -545,32 +488,36 @@ func _input(event: InputEvent) -> void:
 		# Talk to professor at lab door
 		if tile.distance_to(LAB_DOOR_TILE) < 2:
 			_open_lab()
-		# 260630 Red 林薇
+		# Talk to 林薇
 		elif tile.distance_to(Vector2i(LINWEI_TILE.x, LINWEI_TILE.y)) < 3:
 			_talk_linwei()
-		# Talk to NPCs
+		# Talk to NPC 1 (near well)
 		elif tile.distance_to(Vector2i(8, 12)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc1"), -1)
+		# Talk to NPC 2
 		elif tile.distance_to(Vector2i(9, 15)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc2"), -1)
 
 func _advance_dialog() -> void:
 	if _dialog_phase < 0:
-		_dialog_active = false; _dialog_panel.visible = false
+		_dialog_active = false
+		_dialog_panel.visible = false
 		return
 	match _dialog_phase:
-		0:  # Rival greeting
+		0:
 			_dialog_phase = 1
 			var btxt = MonDB.dlg("rival", "first_battle")
 			btxt = btxt.replace("{player}", GameState.player_name)
 			btxt = btxt.replace("{rival}", GameState.rival_name)
 			_dialog_label.text = btxt
-		1:  # Start battle
-			_dialog_active = false; _dialog_panel.visible = false
+		1:
+			_dialog_active = false
+			_dialog_panel.visible = false
 			_battling = true
 			_start_battle()
 		_:
-			_dialog_active = false; _dialog_panel.visible = false
+			_dialog_active = false
+			_dialog_panel.visible = false
 
 func _start_rival_battle() -> void:
 	var txt = MonDB.dlg("rival", "first_encounter")
@@ -579,7 +526,6 @@ func _start_rival_battle() -> void:
 	_show_dialog(txt, 0)
 
 func _start_battle() -> void:
-	# Determine what mon the rival uses — strong against player's starter
 	var rival_mon_id = _get_rival_counter()
 	var rival_team = [{"species": rival_mon_id, "level": 5}]
 	var trainer_data = {
@@ -590,7 +536,7 @@ func _start_battle() -> void:
 		"dialog_before": "来吧！",
 		"dialog_win": "还行嘛！"
 	}
-	GameState.last_scene = "village"  # YYMMDD Red
+	GameState.last_scene = "village"
 	request_scene.emit("battle", {
 		"trainer": trainer_data,
 		"return_scene": "village",
@@ -598,10 +544,8 @@ func _start_battle() -> void:
 	})
 
 func _get_rival_counter() -> String:
-	# 克制玩家的初始精灵
 	var player_mon = GameState.first_mon()
 	var pid = player_mon.get("species_id", "")
-	# 炎喵 → 蓝蛇, 蓝蛇 → 小竹熊, 小竹熊 → 炎喵
 	match pid:
 		"炎喵":   return "蓝蛇"
 		"蓝蛇":   return "小竹熊"
@@ -612,14 +556,12 @@ func _open_lab() -> void:
 	if not GameState.has_starter:
 		_show_dialog("陈教授似乎不在研究所……\n也许他去草原那边考察了？", -1)
 	elif not GameState.items.has("精灵葫芦") or GameState.items.get("精灵葫芦", 0) == 0:
-		# First visit after getting starter — give starter kit
 		GameState.items["精灵葫芦"] = GameState.items.get("精灵葫芦", 0) + 3
 		GameState.save_game()
 		_show_dialog("陈教授：%s，你回来了！感谢你之前的帮忙。\n这是三个精灵葫芦，出门探险必备，拿去用吧！" % GameState.player_name, -1)
 	else:
 		_show_dialog("陈教授：去吧！华灵大陆上有无数精灵等着你去发现。\n遇到强大的训练师就勇敢挑战！", -1)
 
-# After returning from battle, show post-rival dialog
 func _on_rival_battle_done() -> void:
 	_battling = false
 	GameState.save_game()
@@ -627,24 +569,19 @@ func _on_rival_battle_done() -> void:
 	dlg = dlg.replace("{rival}", GameState.rival_name)
 	dlg = dlg.replace("{player}", GameState.player_name)
 	_show_dialog(dlg, -1)
-
-	# Show tutorial after a moment
 	await get_tree().create_timer(0.5).timeout
 	_show_dialog(MonDB.dlg("rival", "tutorial"), -1)
 
-# ── 林薇对话 ─────────────────────────────────────────────────────────────────
-# 260630 Red 陈教授助手：首次送跑步鞋，每捕捉10只送奖励
+# ── 林薇 ──────────────────────────────────────────────────────────────────────
 func _talk_linwei() -> void:
 	if not GameState.has_starter:
 		_show_dialog("林薇：你好呀！我是陈教授的助手林薇。\n教授好像去北边的草原了，你可以去找找他。", -1)
 		return
-	# 首次对话：送跑步鞋
 	if not GameState.has_running_shoes:
 		GameState.has_running_shoes = true
 		GameState.save_game()
 		_show_dialog("林薇：%s，恭喜你拿到了第一只精灵！\n教授让我把这双跑步鞋给你——穿上会走得更快哦！\n\n获得了【跑步鞋】！" % GameState.player_name, -1)
 		return
-	# 捕捉奖励检查
 	var tier = GameState.caught_count / 10
 	if tier > GameState.linwei_reward_tier:
 		GameState.linwei_reward_tier = tier
@@ -653,5 +590,4 @@ func _talk_linwei() -> void:
 		GameState.save_game()
 		_show_dialog("林薇：哇，你已经捕捉了 %d 只精灵了！太厉害了！\n教授让我给你奖金 %dG 作为鼓励！\n\n获得了 %dG！" % [GameState.caught_count, reward_money, reward_money], -1)
 		return
-	# 日常对话
 	_show_dialog("林薇：继续加油哦！每捕捉满 10 只精灵，教授都准备了奖励！\n你已经捕捉了 %d 只了。" % GameState.caught_count, -1)

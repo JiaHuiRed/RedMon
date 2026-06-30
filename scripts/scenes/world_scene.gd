@@ -514,7 +514,7 @@ func _build_shop_panel() -> void:
 	_shop_result_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
 	_shop_panel.add_child(_shop_result_label)
 
-	var hint = Label.new(); hint.text = "↑↓选择  Enter购买1个  Esc离开"
+	var hint = Label.new(); hint.text = "↑↓选择  Z购买  X/Esc离开"
 	hint.position = Vector2(134, 244)
 	hint.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
 	hint.add_theme_font_size_override("font_size", 9); _shop_panel.add_child(hint)
@@ -551,7 +551,7 @@ func _build_dialog() -> void:
 	_dialog_panel.add_child(_dialog_label)
 
 	var hint = Label.new()
-	hint.text = "【Z / Enter 继续】"
+	hint.text = "【Z 继续】"
 	hint.size = Vector2(160, 14)
 	hint.position = Vector2(VW - 164, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -718,7 +718,7 @@ func _build_hud() -> void:
 
 	# 按键提示 bottom-right
 	var key_hint = Label.new()
-	key_hint.text = "X/Esc=菜单  Z/Enter=确认"
+	key_hint.text = "Enter=菜单  Z=确认  X/Esc=关闭"
 	key_hint.position = Vector2(VW - 158, VH - 18)
 	key_hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.55))
 	key_hint.add_theme_font_size_override("font_size", 9)
@@ -772,7 +772,8 @@ func _physics_process(_delta: float) -> void:
 
 	var moved = dir != Vector2.ZERO
 	_update_walk_sprite(dir, moved, _delta)
-	_player.velocity = dir * SPEED
+	var speed = SPEED * (2.0 if Input.is_action_pressed("run") else 1.0)
+	_player.velocity = dir * speed
 	_player.move_and_slide()
 
 	# Clamp inside world bounds (1 tile border)
@@ -987,7 +988,7 @@ func _menu_draw_main() -> void:
 		_menu_lbl(("▶ " if sel else "  ") + MAIN_OPTIONS[i], 14, 38 + i * 32, 12,
 			Color.WHITE if sel else Color(0.70, 0.70, 0.82))
 	_menu_div(MENU_H - 32)
-	_menu_lbl("↑↓移动  Enter确认  Esc关闭", 10, MENU_H - 24, 9, Color(0.52, 0.52, 0.66))
+	_menu_lbl("↑↓移动  Z确定  X/Esc关闭", 10, MENU_H - 24, 9, Color(0.52, 0.52, 0.66))
 
 func _menu_draw_party() -> void:
 	_menu_lbl("■ 我的精灵", 12, 10, 12, Color(1.0, 0.85, 0.2))
@@ -1017,7 +1018,7 @@ func _menu_draw_party() -> void:
 						 Color(0.9, 0.2, 0.1))
 			_menu_panel.add_child(bar)
 			_menu_lbl("%d/%d" % [mon["current_hp"], mon["max_hp"]], 12, ry + 22, 9, Color(0.65, 0.65, 0.68))
-	_menu_lbl("Esc 返回", 12, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
+	_menu_lbl("X/Esc 返回", 12, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
 
 func _menu_draw_bag() -> void:
 	_menu_lbl("■ 背包", 12, 10, 12, Color(1.0, 0.85, 0.2))
@@ -1030,13 +1031,13 @@ func _menu_draw_bag() -> void:
 		_menu_lbl(item_name, 14, 38 + row * 28, 11, col)
 		_menu_lbl("×%d" % qty, MENU_W - 36, 38 + row * 28, 11, col)
 		row += 1
-	_menu_lbl("Esc 返回", 12, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
+	_menu_lbl("X/Esc 返回", 12, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
 
 func _menu_draw_saved() -> void:
 	_menu_lbl("■ 存档", 12, 10, 12, Color(1.0, 0.85, 0.2))
 	_menu_div(28)
 	_menu_lbl("✦ 游戏已保存！✦", 18, 108, 13, Color(0.28, 0.98, 0.52))
-	_menu_lbl("Enter 返回菜单", 36, 144, 10, Color(0.52, 0.52, 0.66))
+	_menu_lbl("Z 返回菜单", 36, 144, 10, Color(0.52, 0.52, 0.66))
 
 # ── Input handling ────────────────────────────────────────────────────────────
 func _handle_menu_nav(event: InputEvent) -> void:

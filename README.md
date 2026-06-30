@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.5.2-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.6.0-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -28,6 +28,7 @@
 - **进化系统** — 等级进化 + 道具分支进化（如露比 5 条分支），战斗中弹出选择
 - **捕捉系统** — 精灵葫芦投掷动画，基于 HP、状态、种族捕获率的概率公式
 - **道具背包** — 精灵葫芦、回复药、进化道具等 18 种道具
+- **键盘全套映射** — Z 确认 / X 取消 / Enter 菜单 / Space 跑步，Godot input map 统一管理
 - **多精灵队伍** — 最多 6 只，战斗中可切换，被击倒后强制换场，PC 仓库存储
 - **道馆系统** — 翠竹馆（草系 1 号馆）已实装，含杂兵训练师 + 馆主战
 - **NPC 系统** — 林薇（跑步鞋 + 捕捉奖励）、训练师对战、商店、灵疗所
@@ -38,7 +39,7 @@
 
 ## 精灵图鉴
 
-游戏目前包含 **221 种精灵**（持续扩充中），覆盖 18 种属性。
+游戏目前包含 **237 种精灵**（持续扩充中），覆盖 18 种属性。
 
 > 完整数据见 `data/species.json`，可通过 `tools/mon_editor.py` 可视化浏览和编辑。
 
@@ -148,7 +149,7 @@ RPG_Demo/
 │   ├── sprites/          # 精灵素材（PNG，LFS 管理）
 │   └── backgrounds/      # 战斗/场景背景
 ├── data/
-│   ├── species.json      # 精灵种族数据（221 种）
+│   ├── species.json      # 精灵种族数据（237 种）
 │   ├── moves.json        # 技能数据（812 个）
 │   ├── items.json        # 道具数据（18 种）
 │   ├── trainers.json     # 训练师数据（队伍/对话/奖励）
@@ -252,7 +253,6 @@ python -X utf8 tools/mon_editor.py
 - [ ] 更多道馆（火/水/岩/土/冰）
 - [ ] 美美NPC支线 + 黑风堂剧情
 - [ ] 音效与背景音乐
-- [ ] 跑步鞋速度效果
 
 ---
 

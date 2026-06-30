@@ -28,3 +28,23 @@ window/stretch/mode="viewport"
 [rendering]
 
 2d/pixel_snap=true
+
+[input]
+
+ui_accept={
+"deadzone": 0.5,
+"events": [Object(InputEventKey, "keycode": 90)]
+}
+ui_cancel={
+"deadzone": 0.5,
+"events": [Object(InputEventKey, "keycode": 88),
+Object(InputEventKey, "keycode": 4194305)]
+}
+ui_menu={
+"deadzone": 0.5,
+"events": [Object(InputEventKey, "keycode": 4194306)]
+}
+run={
+"deadzone": 0.5,
+"events": [Object(InputEventKey, "keycode": 32)]
+}
