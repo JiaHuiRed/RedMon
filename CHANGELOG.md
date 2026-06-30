@@ -144,7 +144,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### [0.3.6] - 2026-06-30
+### [0.3.6] - 2026-06-28
 
 > 精灵素材全部收录完毕（177只），编辑器多项性能与逻辑优化。
 

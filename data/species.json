@@ -412,7 +412,10 @@
       ]
     },
     "encounters": [
-      {"location": "华灵草原", "rate": 8}
+      {
+        "location": "华灵草原",
+        "rate": 8
+      }
     ]
   },
   "坤鸡": {
@@ -452,7 +455,15 @@
       "42": [
         "飓风"
       ]
-    }
+    },
+    "evolutions": [
+      {
+        "into": "鸡傲天",
+        "level": 42
+      }
+    ],
+    "evolves_into": "鸡傲天",
+    "evolve_level": 42
   },
   "绿肥虫": {
     "id": 12,
@@ -491,7 +502,10 @@
       ]
     },
     "encounters": [
-      {"location": "华灵草原", "rate": 40}
+      {
+        "location": "华灵草原",
+        "rate": 40
+      }
     ]
   },
   "蛹甲": {
@@ -622,7 +636,10 @@
       ]
     },
     "encounters": [
-      {"location": "华灵草原", "rate": 27}
+      {
+        "location": "华灵草原",
+        "rate": 27
+      }
     ]
   },
   "眀灯鼠": {
@@ -793,7 +810,10 @@
       ]
     },
     "encounters": [
-      {"location": "华灵草原", "rate": 15}
+      {
+        "location": "华灵草原",
+        "rate": 15
+      }
     ]
   },
   "岩偶小将": {
@@ -1099,7 +1119,10 @@
     "evolves_into": "霆啸",
     "evolve_level": 36,
     "encounters": [
-      {"location": "华灵草原", "rate": 10}
+      {
+        "location": "华灵草原",
+        "rate": 10
+      }
     ]
   },
   "浅浅丘": {
@@ -1353,8 +1376,16 @@
     "tier": "玄",
     "role": "均衡",
     "gender_ratio": "0/100",
-    "height": "1.1",
+    "height": "1.6",
     "weight": "22.0",
+    "evolutions": [
+      {
+        "into": "芳泽霞",
+        "level": 40
+      }
+    ],
+    "evolves_into": "芳泽霞",
+    "evolve_level": 40,
     "learnset": {
       "1": [
         "辅助力量"
@@ -9821,6 +9852,173 @@
     "desc": "",
     "tier": "玄",
     "role": "均衡",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "learnset": {}
+  },
+  "鸡傲天": {
+    "id": 226,
+    "name": "鸡傲天",
+    "type1": "风",
+    "type2": "格",
+    "base": {
+      "hp": 82,
+      "atk": 125,
+      "def": 70,
+      "sp_atk": 55,
+      "sp_def": 68,
+      "spd": 130
+    },
+    "catch_rate": 30,
+    "exp_yield": 220,
+    "growth_rate": "中速",
+    "desc": "进化后的坤鸡，鸡冠如火焰般红艳，眼神锐利高傲。双翼展开时气流在翅尖形成锐利的刃风，一振翅便能卷起百米气旋。草原上的速度之王，高傲到不愿与弱者为伍。",
+    "tier": "玄",
+    "role": "高速物攻手",
+    "gender_ratio": "50/50",
+    "height": "1.2",
+    "weight": "22.0",
+    "evolutions": [],
+    "learnset": {
+      "1": [
+        "撞击",
+        "顺风"
+      ],
+      "42": [
+        "空气斩",
+        "聚气"
+      ],
+      "50": [
+        "断崖之剑"
+      ],
+      "58": [
+        "神速"
+      ]
+    }
+  },
+  "芳泽霞": {
+    "id": 227,
+    "name": "芳泽霞",
+    "type1": "灵",
+    "type2": "钢",
+    "base": {
+      "hp": 90,
+      "atk": 105,
+      "def": 95,
+      "sp_atk": 80,
+      "sp_def": 102,
+      "spd": 100
+    },
+    "catch_rate": 30,
+    "exp_yield": 255,
+    "growth_rate": "中速",
+    "desc": "进化后的君美，菱格纹毛衣换成了霞色纱裙，眼镜后透出更深邃的目光。挎包里不再只有标本，还收藏着各地采集的稀有矿石。知性中带着一丝神秘，传闻她能听见灵石的低语。",
+    "tier": "地",
+    "role": "高速物攻手",
+    "gender_ratio": "50/50",
+    "height": "1.65",
+    "weight": "45.0",
+    "learnset": {
+      "1": [
+        "念力",
+        "精神冲击"
+      ],
+      "50": [
+        "冥想",
+        "精神强念"
+      ],
+      "60": [
+        "月亮之力"
+      ],
+      "70": [
+        "破坏光线"
+      ]
+    }
+  },
+  "泡仔": {
+    "id": 220,
+    "name": "泡仔",
+    "type1": "水",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "凡",
+    "role": "均衡",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "evolutions": [
+      {
+        "into": "灰刺豚",
+        "level": 16
+      }
+    ],
+    "evolves_into": "灰刺豚",
+    "evolve_level": 16,
+    "learnset": {}
+  },
+  "灰刺豚": {
+    "id": 221,
+    "name": "灰刺豚",
+    "type1": "水",
+    "type2": "毒",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "role": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "evolutions": [
+      {
+        "into": "千针",
+        "level": 34
+      }
+    ],
+    "evolves_into": "千针",
+    "evolve_level": 34,
+    "learnset": {}
+  },
+  "千针": {
+    "id": 222,
+    "name": "千针",
+    "type1": "水",
+    "type2": "毒",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "role": "",
     "gender_ratio": "50/50",
     "height": "0.5",
     "weight": "5.0",
