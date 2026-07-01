@@ -1,6 +1,6 @@
 extends Node2D
 # RedMon – 碧溪镇
-# 青木村出来第一个城镇，有药店和杂货铺
+# 青木村出来第一个城镇，有精灵堂和杂货铺
 
 signal request_scene(scene_name: String, data: Dictionary)
 
@@ -14,7 +14,7 @@ const SPEED := 100.0
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
 
-# 药店
+# 精灵堂
 const CLINIC_DOOR_TILE := Vector2i(6, 5)
 var _dialog_active: bool = false
 var _dialog_phase: int = 0
@@ -26,10 +26,26 @@ const SHOP_DOOR_TILE := Vector2i(23, 5)
 var SHOP_ITEMS := ["精灵葫芦", "铜丹", "银丹", "金丹", "铁丹"]
 var _shop_active: bool = false
 var _shop_cursor: int  = 0
+var _shop_qty: int = 1
 var _shop_panel:  Control
 var _shop_result_label: Label
+var _shop_qty_label: Label
+
+# 精灵仓库
+const PCBOX_ROWS := 8
+var _pcbox_active: bool = false
+var _pcbox_cursor: int = 0
+var _pcbox_scroll: int = 0
+var _pcbox_panel: Control
+
+# 草丛遭遇
+var _grass_tiles: Array = []
+var _step_counter: int = 0
+var _battling: bool = false
+var ENCOUNTER_TABLE: Array = []
 
 func _ready() -> void:
+	ENCOUNTER_TABLE = MonDB.get_encounters("翠竹镇")
 	_build_town()
 	_build_clinic()
 	_build_shop()
@@ -37,6 +53,7 @@ func _ready() -> void:
 	_build_player()
 	_build_dialog()
 	_build_shop_panel()
+	_build_pcbox_panel()
 	print("[TOWN] 碧溪镇")
 
 # ── Town Construction ──────────────────────────────────────────────────────────
@@ -69,14 +86,14 @@ func _build_town() -> void:
 	_draw_fountain(14, 9)
 
 	# Houses
-	_draw_house(3, 1, 5, 4, Color(0.95, 0.82, 0.68))    # 药店 (left)
-	_draw_house(20, 1, 5, 4, Color(0.72, 0.88, 0.96))    # 杂货铺 (right)
+	_draw_house_sprite(3, 1, 5, 4, "res://assets/backgrounds/buildings/精灵堂.png")   # 精灵堂 (治疗+仓库, left)
+	_draw_house_sprite(20, 1, 5, 4, "res://assets/backgrounds/buildings/杂货铺.png")  # 杂货铺 (right)
 	_draw_house(2, 13, 4, 3, Color(0.90, 0.85, 0.75))    # 民居1
 	_draw_house(22, 13, 4, 3, Color(0.92, 0.80, 0.72))   # 民居2
 
 	# Signs on buildings
 	var clinic_sign = Label.new()
-	clinic_sign.text = "百药堂"
+	clinic_sign.text = "精灵堂"
 	clinic_sign.position = Vector2(5 * TILE + 8, 4)
 	clinic_sign.add_theme_color_override("font_color", Color(0.80, 0.10, 0.10))
 	clinic_sign.add_theme_font_size_override("font_size", 10)
@@ -100,6 +117,20 @@ func _build_town() -> void:
 	# Border trees
 	_place_trees()
 
+	# 草丛（遭遇区）
+	var grass_patches := [
+		[7, 16, 4, 3],
+		[18, 15, 4, 3],
+	]
+	for patch in grass_patches:
+		var pc: int = patch[0]; var pr: int = patch[1]
+		var pw: int = patch[2]; var ph: int = patch[3]
+		for row in range(ph):
+			for col in range(pw):
+				var gt = Vector2i(pc + col, pr + row)
+				_grass_tiles.append(gt)
+				_draw_grass_tile(gt.x, gt.y)
+
 	# Decorative bushes
 	for spot in [[5, 13], [9, 15], [19, 14], [25, 10], [10, 18], [8, 17]]:
 		_draw_bush(spot[0], spot[1])
@@ -115,6 +146,17 @@ func _draw_cobble_tile(col: int, row: int) -> void:
 	img.set_pixel(TILE - 1, 0, Color(0.50, 0.42, 0.32))
 	img.set_pixel(0, TILE - 1, Color(0.50, 0.42, 0.32))
 	img.set_pixel(TILE - 1, TILE - 1, Color(0.50, 0.42, 0.32))
+	var tex = ImageTexture.new(); tex.set_image(img)
+	var spr = Sprite2D.new()
+	spr.texture = tex
+	spr.position = Vector2(col * TILE + TILE/2.0, row * TILE + TILE/2.0)
+	spr.z_index = 1; add_child(spr)
+
+func _draw_grass_tile(col: int, row: int) -> void:
+	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0.28, 0.58, 0.24))
+	for _i in range(4):
+		img.set_pixel(randi() % TILE, randi() % TILE, Color(0.18, 0.44, 0.16))
 	var tex = ImageTexture.new(); tex.set_image(img)
 	var spr = Sprite2D.new()
 	spr.texture = tex
@@ -151,6 +193,8 @@ func _draw_fountain(cx: int, cy: int) -> void:
 	basin.color = Color(0.55, 0.50, 0.42)
 	basin.z_index = 4; add_child(basin)
 
+	_add_collider(Vector2(cx * TILE, cy * TILE), Vector2(4 * TILE, 4 * TILE))
+
 func _draw_house(tx: int, ty: int, w: int, h: int, wall_color: Color) -> void:
 	var bw = w * TILE; var bh = h * TILE
 	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
@@ -179,6 +223,8 @@ func _draw_house(tx: int, ty: int, w: int, h: int, wall_color: Color) -> void:
 	wall_spr.position = Vector2(tx * TILE, ty * TILE)
 	wall_spr.z_index = 2; add_child(wall_spr)
 
+	_add_collider(Vector2(tx * TILE + bw/2.0, ty * TILE + bh/2.0), Vector2(bw, bh))
+
 	# Roof (varied colors by position)
 	var roof_color = Color(0.65, 0.18, 0.16) if ty < 10 else Color(0.18, 0.40, 0.55)
 	var roof_img = Image.create(bw + 8, 16, false, Image.FORMAT_RGBA8)
@@ -192,6 +238,31 @@ func _draw_house(tx: int, ty: int, w: int, h: int, wall_color: Color) -> void:
 	roof_spr.offset = Vector2((bw+8)/2.0, 0)
 	roof_spr.position = Vector2(tx * TILE - 4, ty * TILE - 16)
 	roof_spr.z_index = 3; add_child(roof_spr)
+
+## 用真实建筑素材替代程序绘制的房子，占地/碰撞体积与原 _draw_house 保持一致
+func _draw_house_sprite(tx: int, ty: int, w: int, h: int, tex_path: String) -> void:
+	var bw = w * TILE; var bh = h * TILE
+	var tex: Texture2D = null
+	if ResourceLoader.exists(tex_path):
+		tex = load(tex_path)
+	else:
+		var abs = ProjectSettings.globalize_path(tex_path)
+		if FileAccess.file_exists(abs):
+			var img = Image.new()
+			if img.load(abs) == OK:
+				tex = ImageTexture.create_from_image(img)
+	if not tex:
+		_draw_house(tx, ty, w, h, Color(0.85, 0.82, 0.78))
+		return
+	var scale = float(bw) / tex.get_size().x
+	var final_h = tex.get_size().y * scale
+	var spr = Sprite2D.new()
+	spr.texture = tex
+	spr.scale = Vector2(scale, scale)
+	spr.position = Vector2(tx * TILE + bw / 2.0, ty * TILE + bh - final_h / 2.0)
+	spr.z_index = 2
+	add_child(spr)
+	_add_collider(Vector2(tx * TILE + bw / 2.0, ty * TILE + bh / 2.0), Vector2(bw, bh))
 
 func _draw_bush(col: int, row: int) -> void:
 	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
@@ -244,6 +315,16 @@ func _draw_tree(col: int, row: int) -> void:
 	spr.position = Vector2(col * TILE + TILE/2.0, row * TILE + TILE/2.0)
 	add_child(spr)
 
+func _add_collider(pos: Vector2, size: Vector2) -> void:
+	var body = StaticBody2D.new()
+	body.position = pos
+	var shape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = size
+	shape.shape = rect
+	body.add_child(shape)
+	add_child(body)
+
 func _draw_circle_img(img: Image, center: Vector2i, radius: int, color: Color) -> void:
 	var r2 = radius * radius
 	for y in range(max(0, center.y - radius), min(img.get_height(), center.y + radius + 1)):
@@ -275,7 +356,7 @@ func _build_shop_panel() -> void:
 	_shop_panel = Control.new(); _shop_panel.visible = false; cl.add_child(_shop_panel)
 
 	var bg = ColorRect.new()
-	bg.size = Vector2(220, 200); bg.position = Vector2(130, 60)
+	bg.size = Vector2(220, 220); bg.position = Vector2(130, 60)
 	bg.color = Color(0.04, 0.06, 0.18, 0.96); _shop_panel.add_child(bg)
 	var border = ColorRect.new()
 	border.size = Vector2(220, 2); border.position = Vector2(130, 60)
@@ -296,14 +377,20 @@ func _build_shop_panel() -> void:
 		row_lbl.position = Vector2(142, 90 + i * 22)
 		row_lbl.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(row_lbl)
 
+	_shop_qty_label = Label.new()
+	_shop_qty_label.position = Vector2(142, 90 + SHOP_ITEMS.size() * 22 + 6)
+	_shop_qty_label.add_theme_font_size_override("font_size", 11)
+	_shop_qty_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5))
+	_shop_panel.add_child(_shop_qty_label)
+
 	_shop_result_label = Label.new()
-	_shop_result_label.position = Vector2(142, 200)
+	_shop_result_label.position = Vector2(142, 90 + SHOP_ITEMS.size() * 22 + 24)
 	_shop_result_label.add_theme_font_size_override("font_size", 10)
 	_shop_result_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
 	_shop_panel.add_child(_shop_result_label)
 
-	var hint = Label.new(); hint.text = "↑↓选择  Enter购买1个  Esc离开"
-	hint.position = Vector2(134, 244)
+	var hint = Label.new(); hint.text = "↑↓选择 ←→数量 Enter购买 Esc离开"
+	hint.position = Vector2(134, 264)
 	hint.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
 	hint.add_theme_font_size_override("font_size", 9); _shop_panel.add_child(hint)
 
@@ -316,12 +403,18 @@ func _refresh_shop_panel() -> void:
 		var row  = _shop_panel.get_node_or_null("ShopRow%d" % i)
 		if not row: continue
 		var sel = (i == _shop_cursor)
-		row.text = ("%s%s  %dG" % ["▶ " if sel else "  ", item_def.get("name", item_key), item_def.get("price", 0)])
+		var owned = GameState.items.get(item_key, 0)
+		row.text = ("%s%s  %dG  持有x%d" %
+			["▶ " if sel else "  ", item_def.get("name", item_key), item_def.get("price", 0), owned])
 		row.add_theme_color_override("font_color",
 			Color.WHITE if sel else Color(0.70, 0.70, 0.85))
+	var cur_key = SHOP_ITEMS[_shop_cursor]
+	var cur_def = MonDB.items.get(cur_key, {})
+	var total = cur_def.get("price", 0) * _shop_qty
+	_shop_qty_label.text = "数量: ×%d   共计 %dG" % [_shop_qty, total]
 
 func _open_shop() -> void:
-	_shop_active = true; _shop_cursor = 0
+	_shop_active = true; _shop_cursor = 0; _shop_qty = 1
 	_shop_result_label.text = ""
 	_shop_panel.visible = true
 	_refresh_shop_panel()
@@ -333,13 +426,73 @@ func _shop_buy() -> void:
 	var item_key = SHOP_ITEMS[_shop_cursor]
 	var item_def = MonDB.items.get(item_key, {})
 	var price = item_def.get("price", 0)
-	if GameState.money < price:
+	var total = price * _shop_qty
+	if GameState.money < total:
 		_shop_result_label.text = "钱不够！"
 		return
-	GameState.money -= price
-	GameState.items[item_key] = GameState.items.get(item_key, 0) + 1
-	_shop_result_label.text = "购买了%s！" % item_def.get("name", item_key)
+	GameState.money -= total
+	GameState.items[item_key] = GameState.items.get(item_key, 0) + _shop_qty
+	_shop_result_label.text = "购买了%s ×%d！" % [item_def.get("name", item_key), _shop_qty]
+	_shop_qty = 1
 	_refresh_shop_panel()
+
+# ── 精灵仓库 ────────────────────────────────────────────────────────────────────
+func _build_pcbox_panel() -> void:
+	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
+	_pcbox_panel = Control.new(); _pcbox_panel.visible = false; cl.add_child(_pcbox_panel)
+
+	var bg = ColorRect.new()
+	bg.size = Vector2(260, 240); bg.position = Vector2(350, 60)
+	bg.color = Color(0.04, 0.06, 0.18, 0.96); _pcbox_panel.add_child(bg)
+	var border = ColorRect.new()
+	border.size = Vector2(260, 2); border.position = Vector2(350, 60)
+	border.color = Color(0.50, 0.70, 1.0); _pcbox_panel.add_child(border)
+
+	var title = Label.new(); title.text = "■ 精灵仓库"
+	title.position = Vector2(362, 66)
+	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	title.add_theme_font_size_override("font_size", 12); _pcbox_panel.add_child(title)
+
+	for i in range(PCBOX_ROWS):
+		var row_lbl = Label.new(); row_lbl.name = "PcRow%d" % i
+		row_lbl.position = Vector2(362, 90 + i * 20)
+		row_lbl.add_theme_font_size_override("font_size", 10); _pcbox_panel.add_child(row_lbl)
+
+	var hint = Label.new(); hint.text = "↑↓选择  Esc/X 离开"
+	hint.position = Vector2(362, 284)
+	hint.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
+	hint.add_theme_font_size_override("font_size", 9); _pcbox_panel.add_child(hint)
+
+func _refresh_pcbox_panel() -> void:
+	var box: Array = GameState.pc_box
+	if box.is_empty():
+		_pcbox_panel.get_node_or_null("PcRow0").text = "仓库里还没有精灵"
+		for i in range(1, PCBOX_ROWS):
+			_pcbox_panel.get_node_or_null("PcRow%d" % i).text = ""
+		return
+	if _pcbox_cursor < _pcbox_scroll:
+		_pcbox_scroll = _pcbox_cursor
+	elif _pcbox_cursor > _pcbox_scroll + PCBOX_ROWS - 1:
+		_pcbox_scroll = _pcbox_cursor - PCBOX_ROWS + 1
+	_pcbox_scroll = clamp(_pcbox_scroll, 0, max(0, box.size() - PCBOX_ROWS))
+	for i in range(PCBOX_ROWS):
+		var row = _pcbox_panel.get_node_or_null("PcRow%d" % i)
+		var idx = _pcbox_scroll + i
+		if idx >= box.size():
+			row.text = ""
+			continue
+		var mon = box[idx]
+		var sel = (idx == _pcbox_cursor)
+		row.text = "%s%s  Lv.%d" % ["▶ " if sel else "  ", MonDB.display_name(mon), mon["level"]]
+		row.add_theme_color_override("font_color", Color.WHITE if sel else Color(0.70, 0.70, 0.85))
+
+func _open_pcbox() -> void:
+	_pcbox_active = true; _pcbox_cursor = 0; _pcbox_scroll = 0
+	_pcbox_panel.visible = true
+	_refresh_pcbox_panel()
+
+func _close_pcbox() -> void:
+	_pcbox_active = false; _pcbox_panel.visible = false
 
 # ── NPCs ──────────────────────────────────────────────────────────────────────
 func _build_npcs() -> void:
@@ -348,12 +501,14 @@ func _build_npcs() -> void:
 	var s1 = Sprite2D.new(); s1.texture = npc1
 	s1.position = Vector2(10 * TILE + TILE/2, 10 * TILE + TILE/2)
 	s1.z_index = 5; add_child(s1)
+	_add_collider(s1.position, Vector2(24, 24))
 
 	# NPC near shop
 	var npc2 = _draw_npc(Color(0.15, 0.65, 0.35), Color(0.35, 0.22, 0.12))
 	var s2 = Sprite2D.new(); s2.texture = npc2
 	s2.position = Vector2(25 * TILE + TILE/2, 8 * TILE + TILE/2)
 	s2.z_index = 5; add_child(s2)
+	_add_collider(s2.position, Vector2(24, 24))
 
 func _draw_npc(shirt_color: Color, hair_color: Color) -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -383,6 +538,12 @@ func _build_player() -> void:
 	_player_spr.texture = _draw_player_spr()
 	_player_spr.z_index = 5
 	_player.add_child(_player_spr)
+
+	var col = CollisionShape2D.new()
+	var sh  = CircleShape2D.new(); sh.radius = 8.0
+	col.shape = sh
+	col.position = Vector2(0, 12)  # YYMMDD Red 碰撞点下移贴近脚底，避免视觉穿模
+	_player.add_child(col)
 
 	var cam = Camera2D.new()
 	cam.position_smoothing_enabled = true
@@ -441,7 +602,7 @@ func _build_dialog() -> void:
 	_dialog_panel.add_child(_dialog_label)
 
 	var hint = Label.new()
-	hint.text = "【Z / Enter 继续】"
+	hint.text = "【▼ 继续】"
 	hint.size = Vector2(160, 14)
 	hint.position = Vector2(VW - 164, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -450,7 +611,7 @@ func _build_dialog() -> void:
 
 # ── Movement & input ──────────────────────────────────────────────────────────
 func _physics_process(_delta: float) -> void:
-	if _dialog_active or _shop_active:
+	if _dialog_active or _shop_active or _pcbox_active or _battling:
 		return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
@@ -465,11 +626,44 @@ func _physics_process(_delta: float) -> void:
 	_player.position.x = clamp(_player.position.x, TILE * 1, TILE * (COLS - 1))
 	_player.position.y = clamp(_player.position.y, TILE * 1, TILE * (ROWS - 1))
 
+	if dir != Vector2.ZERO:
+		_step_counter += 1
+		if _step_counter % 4 == 0:
+			_check_encounter()
+
+func _check_encounter() -> void:
+	if _battling:
+		return
+	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+	if tile not in _grass_tiles:
+		return
+	if randf() > 0.15:
+		return
+	_trigger_encounter()
+
+func _trigger_encounter() -> void:
+	_battling = true
+	var roll = randi() % 100
+	var cumul = 0
+	var chosen_species = "绿肥虫"
+	for entry in ENCOUNTER_TABLE:
+		cumul += entry[1]
+		if roll < cumul:
+			chosen_species = entry[0]
+			break
+	var player_lv = GameState.first_mon().get("level", 5)
+	var wild_lv = max(2, player_lv + randi_range(-1, 1))
+	var wild_mon = MonDB.create_mon(chosen_species, wild_lv)
+	request_scene.emit("battle", {"wild_mon": wild_mon, "from_scene": "town", "return_scene": "town"})
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if _shop_active:
 			get_viewport().set_input_as_handled()
 			_close_shop(); return
+		if _pcbox_active:
+			get_viewport().set_input_as_handled()
+			_close_pcbox(); return
 		if _dialog_active:
 			get_viewport().set_input_as_handled()
 			return
@@ -480,14 +674,38 @@ func _input(event: InputEvent) -> void:
 			_advance_dialog()
 		return
 
+	if _pcbox_active:
+		if event.is_action_pressed("ui_up"):
+			get_viewport().set_input_as_handled()
+			_pcbox_cursor = max(0, _pcbox_cursor - 1)
+			_refresh_pcbox_panel()
+		elif event.is_action_pressed("ui_down"):
+			get_viewport().set_input_as_handled()
+			_pcbox_cursor = min(max(0, GameState.pc_box.size() - 1), _pcbox_cursor + 1)
+			_refresh_pcbox_panel()
+		elif event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			_close_pcbox()
+		return
+
 	if _shop_active:
 		if event.is_action_pressed("ui_up"):
 			get_viewport().set_input_as_handled()
 			_shop_cursor = (_shop_cursor - 1 + SHOP_ITEMS.size()) % SHOP_ITEMS.size()
+			_shop_qty = 1
 			_shop_result_label.text = ""; _refresh_shop_panel()
 		elif event.is_action_pressed("ui_down"):
 			get_viewport().set_input_as_handled()
 			_shop_cursor = (_shop_cursor + 1) % SHOP_ITEMS.size()
+			_shop_qty = 1
+			_shop_result_label.text = ""; _refresh_shop_panel()
+		elif event.is_action_pressed("ui_left"):
+			get_viewport().set_input_as_handled()
+			_shop_qty = max(1, _shop_qty - 1)
+			_shop_result_label.text = ""; _refresh_shop_panel()
+		elif event.is_action_pressed("ui_right"):
+			get_viewport().set_input_as_handled()
+			_shop_qty = min(99, _shop_qty + 1)
 			_shop_result_label.text = ""; _refresh_shop_panel()
 		elif event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
@@ -508,7 +726,7 @@ func _input(event: InputEvent) -> void:
 			GameState.last_scene = "town"  # YYMMDD Red
 			request_scene.emit("world", {})
 
-		# 百药堂 door
+		# 精灵堂 door
 		if tile == CLINIC_DOOR_TILE:
 			_open_clinic()
 
@@ -530,7 +748,7 @@ func _open_clinic() -> void:
 	_dialog_active = true
 	_dialog_phase = 0
 	_dialog_panel.visible = true
-	_dialog_label.text = "百药堂堂主：欢迎光临！要让你的精灵休息一下吗？"
+	_dialog_label.text = "精灵堂：欢迎光临！要让你的精灵休息一下吗？"
 
 func _advance_dialog() -> void:
 	if _dialog_phase < 0:
@@ -540,9 +758,10 @@ func _advance_dialog() -> void:
 		0:
 			_heal_all_mons()
 			_dialog_phase = 1
-			_dialog_label.text = "百药堂堂主：好了，精灵们都精神抖擞！路上小心。"
+			_dialog_label.text = "精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？"
 		1:
 			_dialog_active = false; _dialog_panel.visible = false
+			_open_pcbox()
 
 func _show_dialog(text: String, phase: int) -> void:
 	_dialog_active = true

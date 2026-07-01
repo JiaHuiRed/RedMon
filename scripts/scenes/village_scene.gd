@@ -9,13 +9,14 @@ const TILE  := 32
 const COLS  := 30
 const ROWS  := 20
 const SPEED := 100.0
-const WALK_FRAME_W := 36
+const WALK_FRAME_W := 48
 const WALK_FRAME_H := 48
 const BUILD_SCALE := 0.35
 
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
 var _rival_spr: Sprite2D
+var _rival_collider: StaticBody2D
 var _rival_node: Node2D
 var _rival_done: bool = false
 var _dialog_active: bool = false
@@ -23,9 +24,16 @@ var _dialog_phase: int = 0
 var _dialog_panel: Control
 var _dialog_label: Label
 var _battling: bool = false
+var _starter_alert_shown: bool = false
 var _linwei_spr: Sprite2D
-const LINWEI_TILE := Vector2i(23, 4)
+const LINWEI_TILE := Vector2i(24, 6)
 const LAB_DOOR_TILE := Vector2i(21, 4)
+const HOME_DOOR_TILE := Vector2i(6, 8)
+
+# ── 环境过场精灵（丰富画面，全程慢速游走，不参与战斗） ──────────────────────
+var _ambient_mons: Array = []  # [{node: Sprite2D, target: Vector2}]
+const AMBIENT_SPEED := 18.0
+const AMBIENT_AREA := Rect2(3 * 32, 10 * 32, 24 * 32, 8 * 32)  # 避开建筑/道路区
 
 # ── Lifecycle ──────────────────────────────────────────────────────────────────
 func _ready() -> void:
@@ -40,6 +48,7 @@ func _ready() -> void:
 	_build_ground()
 	_build_buildings()
 	_build_npcs()
+	_build_ambient_mons()
 	_build_rival()
 	_build_player()
 	_build_dialog()
@@ -56,8 +65,8 @@ func _make_tile_set() -> TileSet:
 	var ts = TileSet.new()
 	ts.tile_size = Vector2i(TILE, TILE)
 	var src = TileSetAtlasSource.new()
-	src.texture = load("res://assets/tilemaps/tiles16_indexed.png")
-	src.tile_size = Vector2i(TILE, TILE)
+	src.texture = load("res://assets/tilemaps/world_tiles32.png")
+	src.texture_region_size = Vector2i(TILE, TILE)
 	src.margins = Vector2i(0, 0)
 	src.separation = Vector2i(0, 0)
 	# Create tiles for the 8x8 preview grid
@@ -92,38 +101,48 @@ func _build_ground() -> void:
 	for spot in [[3, 14], [8, 11], [18, 14], [25, 10], [12, 15]]:
 		tm.set_cell(0, Vector2i(spot[0], spot[1]), 0, Vector2i(0, 4))  # bush
 
+# ── Collision helper ────────────────────────────────────────────────────────────
+func _add_collider(pos: Vector2, size: Vector2) -> void:
+	var body = StaticBody2D.new()
+	body.position = pos
+	var shape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = size
+	shape.shape = rect
+	body.add_child(shape)
+	add_child(body)
+
 # ── Buildings ─────────────────────────────────────────────────────────────────
 func _build_buildings() -> void:
 	# 普通小屋 (player's home, top-left)
 	var home = Sprite2D.new()
-	home.texture = _load_tex("res://assets/sprites/普通小屋.png")
+	home.texture = _load_tex("res://assets/backgrounds/buildings/普通小屋.png")
 	if home.texture:
 		home.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
 		home.position = Vector2(4 * TILE + 60, 3 * TILE + 30)
 		home.z_index = 2
 		add_child(home)
-
-	# 杂货铺 (shop, top-center)
-	var shop = Sprite2D.new()
-	shop.texture = _load_tex("res://assets/sprites/杂货铺.png")
-	if shop.texture:
-		shop.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
-		shop.position = Vector2(10 * TILE + 80, 2 * TILE + 80)
-		shop.z_index = 2
-		add_child(shop)
+		_add_collider(home.position + Vector2(0, 100), Vector2(110, 80))
 
 	# 精灵堂 (healing center / lab, top-right)
 	var center = Sprite2D.new()
-	center.texture = _load_tex("res://assets/sprites/精灵堂.png")
+	center.texture = _load_tex("res://assets/backgrounds/buildings/精灵堂.png")
 	if center.texture:
 		center.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
 		center.position = Vector2(20 * TILE + 100, 2 * TILE + 60)
 		center.z_index = 2
 		add_child(center)
+		_add_collider(center.position + Vector2(0, 90), Vector2(140, 90))  # YYMMDD Red 碰撞上移，让出教授门前站位
 
 func _load_tex(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
 		return load(path)
+	# 没有 .import 时直接读原始文件
+	var abs = ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(path) or FileAccess.file_exists(abs):
+		var img = Image.new()
+		if img.load(abs) == OK:
+			return ImageTexture.create_from_image(img)
 	return null
 
 # ── NPCs ──────────────────────────────────────────────────────────────────────
@@ -140,6 +159,7 @@ func _build_npcs() -> void:
 	npc1.position = Vector2(8 * TILE + TILE/2, 12 * TILE + TILE/2)
 	npc1.z_index = 5
 	add_child(npc1)
+	_add_collider(npc1.position, Vector2(24, 24))
 
 	# NPC 2 — 青年 near well
 	var npc2 = Sprite2D.new()
@@ -153,6 +173,7 @@ func _build_npcs() -> void:
 	npc2.position = Vector2(9 * TILE + TILE/2, 15 * TILE + TILE/2)
 	npc2.z_index = 5
 	add_child(npc2)
+	_add_collider(npc2.position, Vector2(24, 24))
 
 	# 博士 — at lab door (精灵堂 entrance)
 	var prof = Sprite2D.new()
@@ -165,12 +186,14 @@ func _build_npcs() -> void:
 		prof.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2 - 4)
 		prof.z_index = 6
 		add_child(prof)
+		_add_collider(prof.position, Vector2(24, 24))
 	else:
 		var fallback = Sprite2D.new()
 		fallback.texture = _draw_npc_fallback(Color(0.85, 0.85, 0.90), Color(0.60, 0.60, 0.62))
 		fallback.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2)
 		fallback.z_index = 6
 		add_child(fallback)
+		_add_collider(fallback.position, Vector2(24, 24))
 
 	# 林薇
 	_linwei_spr = Sprite2D.new()
@@ -185,6 +208,7 @@ func _build_npcs() -> void:
 	_linwei_spr.position = Vector2(LINWEI_TILE.x * TILE + TILE/2, LINWEI_TILE.y * TILE + TILE/2 - 4)
 	_linwei_spr.z_index = 6
 	add_child(_linwei_spr)
+	_add_collider(_linwei_spr.position, Vector2(24, 24))
 
 	# Well decoration
 	var well = ColorRect.new()
@@ -193,6 +217,44 @@ func _build_npcs() -> void:
 	well.color = Color(0.40, 0.38, 0.35)
 	well.z_index = 4
 	add_child(well)
+	_add_collider(well.position + well.size / 2, well.size)
+
+func _build_ambient_mons() -> void:
+	var encounters = MonDB.get_encounters("华灵草原")
+	if encounters.is_empty():
+		return
+	encounters.shuffle()
+	for i in mini(2, encounters.size()):
+		var sp_id = encounters[i][0]
+		var tex: Texture2D = _load_tex("res://assets/sprites/%sfront.png" % sp_id)
+		if not tex:
+			continue
+		var spr = Sprite2D.new()
+		spr.texture = tex
+		var s = 22.0 / maxf(tex.get_size().x, tex.get_size().y)
+		spr.scale = Vector2(s, s)
+		spr.position = _random_ambient_point()
+		spr.z_index = 3
+		spr.modulate = Color(1, 1, 1, 0.9)
+		add_child(spr)
+		_ambient_mons.append({"node": spr, "target": _random_ambient_point()})
+
+func _random_ambient_point() -> Vector2:
+	return Vector2(
+		randf_range(AMBIENT_AREA.position.x, AMBIENT_AREA.position.x + AMBIENT_AREA.size.x),
+		randf_range(AMBIENT_AREA.position.y, AMBIENT_AREA.position.y + AMBIENT_AREA.size.y)
+	)
+
+func _process(delta: float) -> void:
+	for m in _ambient_mons:
+		var node: Sprite2D = m["node"]
+		var target: Vector2 = m["target"]
+		if node.position.distance_to(target) < 4.0:
+			m["target"] = _random_ambient_point()
+			continue
+		var dir = (target - node.position).normalized()
+		node.position += dir * AMBIENT_SPEED * delta
+		node.flip_h = dir.x < 0
 
 func _draw_npc_fallback(shirt: Color, hair: Color) -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -224,18 +286,9 @@ func _build_labels() -> void:
 	lbl1.z_index = 8
 	add_child(lbl1)
 
-	# 杂货铺 label
-	var lbl2 = Label.new()
-	lbl2.text = "杂货铺"
-	lbl2.position = Vector2(10 * TILE + TILE + 16, 4 * TILE - 6)
-	lbl2.add_theme_font_size_override("font_size", 10)
-	lbl2.add_theme_color_override("font_color", Color(0.65, 0.30, 0.10))
-	lbl2.z_index = 8
-	add_child(lbl2)
-
 	# 精灵堂 label
 	var lbl3 = Label.new()
-	lbl3.text = "陈氏精灵研究所"
+	lbl3.text = "精灵中心"
 	lbl3.position = Vector2(19 * TILE + TILE, 4 * TILE - 6)
 	lbl3.add_theme_font_size_override("font_size", 10)
 	lbl3.add_theme_color_override("font_color", Color(0.10, 0.20, 0.72))
@@ -295,6 +348,15 @@ func _build_rival() -> void:
 	_rival_node.add_child(spr)
 	_rival_spr = spr
 
+	_rival_collider = StaticBody2D.new()
+	_rival_collider.position = spr.position
+	var rshape = CollisionShape2D.new()
+	var rrect = RectangleShape2D.new()
+	rrect.size = Vector2(24, 24)
+	rshape.shape = rrect
+	_rival_collider.add_child(rshape)
+	_rival_node.add_child(_rival_collider)
+
 	var name_lbl = Label.new()
 	name_lbl.name = "RivalLabel"
 	name_lbl.text = GameState.rival_name
@@ -305,10 +367,13 @@ func _build_rival() -> void:
 
 	if _rival_done:
 		_rival_node.visible = false
+		_rival_collider.get_child(0).disabled = true
 
 func _rival_leave() -> void:
 	if _rival_node:
 		_rival_node.visible = false
+	if _rival_collider:
+		_rival_collider.get_child(0).disabled = true
 
 func _draw_rival_fallback() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -337,7 +402,14 @@ func _draw_rival_fallback() -> ImageTexture:
 # ── Player (walk_sheet) ──────────────────────────────────────────────────────
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(15 * TILE, 12 * TILE)
+	var data = get_meta("scene_data", {})
+	match data.get("spawn", ""):
+		"world":  # YYMMDD Red 从华灵草原南下进入，出生在北边缺口内侧
+			_player.position = Vector2(15 * TILE, TILE * 7 + 20)
+		"home":   # YYMMDD Red 从家出门，出生在家门口
+			_player.position = Vector2(HOME_DOOR_TILE.x * TILE, HOME_DOOR_TILE.y * TILE + TILE)
+		_:
+			_player.position = Vector2(15 * TILE, 12 * TILE)
 	add_child(_player)
 
 	_player_spr = Sprite2D.new()
@@ -352,6 +424,12 @@ func _build_player() -> void:
 	else:
 		_player_spr.texture = _draw_player_fallback()
 	_player.add_child(_player_spr)
+
+	var col = CollisionShape2D.new()
+	var sh  = CircleShape2D.new(); sh.radius = 8.0
+	col.shape = sh
+	col.position = Vector2(0, 12)  # YYMMDD Red 碰撞点下移贴近脚底，避免视觉穿模
+	_player.add_child(col)
 
 	var cam = Camera2D.new()
 	cam.position_smoothing_enabled = true
@@ -426,7 +504,7 @@ func _build_dialog() -> void:
 	_dialog_panel.add_child(_dialog_label)
 
 	var hint = Label.new()
-	hint.text = "【Z 继续】"
+	hint.text = "【▼ 继续】"
 	hint.size = Vector2(130, 14)
 	hint.position = Vector2(VW - 134, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -458,12 +536,19 @@ func _physics_process(_delta: float) -> void:
 	_player.position.x = clamp(_player.position.x, TILE, TILE * (COLS - 1))
 	_player.position.y = clamp(_player.position.y, TILE, TILE * (ROWS - 1))
 
-	# North exit → starter encounter
+	# North exit → 有精灵后可自由前往华灵草原；否则触发剧情提示
 	var col = int(_player.position.x / TILE)
-	if _player.position.y <= TILE * 7 and col >= 10 and col <= 21:
+	if _player.position.y <= TILE * 7 and col >= 12 and col <= 17:
+		if GameState.has_starter:
+			GameState.last_scene = "village"
+			request_scene.emit("world", {"spawn": "village"})
+			return
 		_player.position.y = TILE * 7
-		if not GameState.has_starter:
-			request_scene.emit("starter", {})
+		if not _starter_alert_shown:
+			_starter_alert_shown = true
+			_show_dialog("北边似乎传来了打斗的声音……\n是陈教授的声音！他好像被什么围住了！", 2)
+	elif _player.position.y <= TILE * 7 and col >= 10 and col <= 21:
+		_player.position.y = TILE * 7
 
 func _input(event: InputEvent) -> void:
 	if _dialog_active:
@@ -485,8 +570,12 @@ func _input(event: InputEvent) -> void:
 			else:
 				GameState.last_scene = "village"
 				request_scene.emit("town", {})
+		# Enter home
+		if tile.distance_to(HOME_DOOR_TILE) < 2:
+			GameState.last_scene = "village"
+			request_scene.emit("home", {})
 		# Talk to professor at lab door
-		if tile.distance_to(LAB_DOOR_TILE) < 2:
+		elif tile.distance_to(LAB_DOOR_TILE) <= 2:
 			_open_lab()
 		# Talk to 林薇
 		elif tile.distance_to(Vector2i(LINWEI_TILE.x, LINWEI_TILE.y)) < 3:
@@ -515,6 +604,10 @@ func _advance_dialog() -> void:
 			_dialog_panel.visible = false
 			_battling = true
 			_start_battle()
+		2:
+			_dialog_active = false
+			_dialog_panel.visible = false
+			request_scene.emit("starter", {})
 		_:
 			_dialog_active = false
 			_dialog_panel.visible = false

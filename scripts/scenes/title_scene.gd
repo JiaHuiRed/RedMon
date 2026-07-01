@@ -15,6 +15,7 @@ var _slot_panel: Control
 var _slot_cursor: int = 0
 var _slot_mode: String = ""   # "new" or "load"
 var _slot_labels: Array = []
+var _delete_confirm: bool = false  # YYMMDD Red 删档二次确认
 
 # 横向菜单：贴底全宽，高 48px，三格并排
 const ITEM_W  := VW / 3   # 320
@@ -209,16 +210,56 @@ func _draw_slot_picker() -> void:
 		_slot_labels.append(info_lbl)
 
 	var hint_lbl := Label.new()
-	hint_lbl.text = "↑↓ 选择   Z 确认   X 取消"
-	hint_lbl.position = Vector2(VW/2 - 100, 530)
+	hint_lbl.text = "↑↓ 选择   Z 确认   X 取消   Enter 删除存档"
+	hint_lbl.position = Vector2(VW/2 - 130, 530)
 	hint_lbl.add_theme_font_size_override("font_size", 10)
 	hint_lbl.add_theme_color_override("font_color", Color(0.45, 0.45, 0.65))
 	_slot_panel.add_child(hint_lbl)
+
+	if _delete_confirm:
+		var dim := ColorRect.new()
+		dim.size = Vector2(VW, VH); dim.color = Color(0, 0, 0, 0.55)
+		_slot_panel.add_child(dim)
+
+		var box := ColorRect.new()
+		box.size = Vector2(320, 100); box.position = Vector2(VW/2 - 160, VH/2 - 50)
+		box.color = Color(0.12, 0.12, 0.28, 0.98)
+		_slot_panel.add_child(box)
+
+		var border := ColorRect.new()
+		border.size = Vector2(320, 2); border.position = Vector2(VW/2 - 160, VH/2 - 50)
+		border.color = Color(0.85, 0.30, 0.30)
+		_slot_panel.add_child(border)
+
+		var msg := Label.new()
+		msg.text = "确定要删除档位 %d 的存档吗？\n此操作无法撤销。" % (_slot_cursor + 1)
+		msg.position = Vector2(VW/2 - 140, VH/2 - 34)
+		msg.add_theme_font_size_override("font_size", 13)
+		msg.add_theme_color_override("font_color", Color.WHITE)
+		_slot_panel.add_child(msg)
+
+		var confirm_hint := Label.new()
+		confirm_hint.text = "Z 确认删除   X 取消"
+		confirm_hint.position = Vector2(VW/2 - 140, VH/2 + 24)
+		confirm_hint.add_theme_font_size_override("font_size", 10)
+		confirm_hint.add_theme_color_override("font_color", Color(0.85, 0.60, 0.60))
+		_slot_panel.add_child(confirm_hint)
 
 # ── 输入 ──────────────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:
 	# 选档面板打开时
 	if _slot_panel.visible:
+		if _delete_confirm:
+			if event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				GameState.delete_save(_slot_cursor + 1)
+				_delete_confirm = false
+				_draw_slot_picker()
+			elif event.is_action_pressed("ui_cancel"):
+				get_viewport().set_input_as_handled()
+				_delete_confirm = false
+				_draw_slot_picker()
+			return
 		if event.is_action_pressed("ui_up"):
 			get_viewport().set_input_as_handled()
 			_slot_cursor = (_slot_cursor - 1 + 3) % 3
@@ -234,6 +275,11 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			_slot_panel.visible = false
 			_slot_mode = ""
+		elif event.is_action_pressed("ui_menu"):
+			get_viewport().set_input_as_handled()
+			if GameState.has_save(_slot_cursor + 1):
+				_delete_confirm = true
+				_draw_slot_picker()
 		return
 
 	# 主菜单

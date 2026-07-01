@@ -88,6 +88,11 @@ func has_save(slot: int = 0) -> bool:
 		return false
 	return FileAccess.file_exists(slot_path(slot))
 
+func delete_save(slot: int) -> void:  # YYMMDD Red 删除损坏/不需要的存档槽
+	var path = slot_path(slot)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+
 func get_slot_summary(slot: int) -> Dictionary:
 	if not has_save(slot):
 		return {"exists": false}
@@ -156,6 +161,8 @@ func load_game(slot: int = 0) -> bool:
 	items             = data.get("items", {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5})
 	player_team       = data.get("player_team", [])
 	pc_box            = data.get("pc_box", [])
+	for mon in player_team: _normalize_mon(mon)
+	for mon in pc_box: _normalize_mon(mon)
 	caught_count      = data.get("caught_count", 0)
 	linwei_reward_tier = data.get("linwei_reward_tier", 0)
 	has_running_shoes = data.get("has_running_shoes", false)
@@ -165,6 +172,19 @@ func load_game(slot: int = 0) -> bool:
 	last_scene        = data.get("last_scene", "")
 	print("[SAVE] 存档读取完成，上次场景：%s，队伍：%d 只精灵" % [last_scene, player_team.size()])
 	return true
+
+## JSON读档后数值字段会全部变成float，这里转回int避免"Lv.5.0"这类显示问题
+func _normalize_mon(mon: Dictionary) -> void:
+	for key in ["level", "exp", "current_hp", "max_hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
+		if mon.has(key): mon[key] = int(mon[key])
+	if mon.has("stages") and mon["stages"] is Dictionary:
+		var stages: Dictionary = mon["stages"]
+		for key in stages.keys(): stages[key] = int(stages[key])
+	if mon.has("moves") and mon["moves"] is Array:
+		for move in mon["moves"]:
+			if move is Dictionary:
+				for key in ["pp", "max_pp"]:
+					if move.has(key): move[key] = int(move[key])
 
 func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> void:
 	current_slot = slot
@@ -189,3 +209,14 @@ func add_mon(mon: Dictionary) -> void:
 
 func first_mon() -> Dictionary:
 	return player_team[0] if player_team.size() > 0 else {}
+
+# 全局纹理加载：优先 import 缓存，fallback 直接读原始 PNG
+static func load_tex(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path)
+	var abs = ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(abs):
+		var img = Image.new()
+		if img.load(abs) == OK:
+			return ImageTexture.create_from_image(img)
+	return null

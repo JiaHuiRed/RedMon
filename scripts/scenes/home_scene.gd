@@ -1,11 +1,12 @@
 extends Node2D
-# RedMon – 玩家的家（室内）
+# RedMon – 玩家的家（室内，二层结构：1F客厅 / 2F卧室）
 signal request_scene(scene_name: String, data: Dictionary)
 
 const VW := 960
 const VH := 640
 const TILE  := 16
 const SPEED := 100.0
+const FLOOR_MIN_Y := 300  # YYMMDD Red 墙面区域不可行走，地板从此处开始
 
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
@@ -15,147 +16,163 @@ var _dialog_panel: Control
 var _dialog_label: Label
 
 var _mom_spr: Sprite2D
-var _door_spr: ColorRect
+var _floor1: Node2D   # 1F 客厅
+var _floor2: Node2D   # 2F 卧室
+var _floor: int = 2   # 当前所在楼层，进门默认在自己卧室醒来
+
+const STAIRS1_POS := Vector2(60, 320)   # 1F 楼梯口（靠墙）
+const STAIRS2_POS := Vector2(60, 320)   # 2F 楼梯口（对应位置）
+const DOOR_CENTER := Vector2(VW / 2, VH - 18)
+const MOM_POS := Vector2(VW / 2 + 50, VH - 38)
 
 func _ready() -> void:
-	_build_interior()
-	_build_mom()
+	_build_floor1()
+	_build_floor2()
 	_build_player()
 	_build_dialog()
-	_start_mom_dialog()
+	_set_floor(2)
 
-# ── Interior ──────────────────────────────────────────────────────────────────
-func _build_interior() -> void:
-	# Floor
+func _add_collider(parent: Node2D, pos: Vector2, size: Vector2) -> void:
+	var body = StaticBody2D.new()
+	body.position = pos
+	var shape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = size
+	shape.shape = rect
+	body.add_child(shape)
+	parent.add_child(body)
+
+# ── 通用房间背景（地板+墙+窗） ────────────────────────────────────────────────
+func _build_room_shell(parent: Node2D, floor_color: Color, wall_color: Color) -> void:
 	var floor_r = ColorRect.new()
 	floor_r.size = Vector2(VW, VH)
-	floor_r.color = Color(0.88, 0.82, 0.72)   # warm wood tone
-	add_child(floor_r)
+	floor_r.color = floor_color
+	parent.add_child(floor_r)
 
-	# Wall (top half, wallpaper)
 	var wall = ColorRect.new()
 	wall.size = Vector2(VW, VH / 2 + 20)
-	wall.color = Color(0.95, 0.92, 0.85)
-	add_child(wall)
+	wall.color = wall_color
+	parent.add_child(wall)
 
 	# Window (right side)
 	var win_bg = ColorRect.new()
 	win_bg.size = Vector2(48, 40)
 	win_bg.position = Vector2(VW - 80, 40)
 	win_bg.color = Color(0.60, 0.82, 0.96)
-	add_child(win_bg)
+	parent.add_child(win_bg)
+	for wf in [
+		{"size": Vector2(48, 2), "pos": Vector2(VW - 80, 40)},
+		{"size": Vector2(48, 2), "pos": Vector2(VW - 80, 78)},
+		{"size": Vector2(2, 40), "pos": Vector2(VW - 80, 40)},
+		{"size": Vector2(2, 40), "pos": Vector2(VW - 34, 40)},
+		{"size": Vector2(2, 40), "pos": Vector2(VW - 56, 40)},
+	]:
+		var frame = ColorRect.new()
+		frame.size = wf["size"]; frame.position = wf["pos"]
+		frame.color = Color(0.40, 0.28, 0.16)
+		parent.add_child(frame)
 
-	# Window frame
-	var wf_top = ColorRect.new()
-	wf_top.size = Vector2(48, 2); wf_top.position = Vector2(VW - 80, 40)
-	wf_top.color = Color(0.40, 0.28, 0.16); add_child(wf_top)
-	var wf_bot = ColorRect.new()
-	wf_bot.size = Vector2(48, 2); wf_bot.position = Vector2(VW - 80, 78)
-	wf_bot.color = Color(0.40, 0.28, 0.16); add_child(wf_bot)
-	var wf_l = ColorRect.new()
-	wf_l.size = Vector2(2, 40); wf_l.position = Vector2(VW - 80, 40)
-	wf_l.color = Color(0.40, 0.28, 0.16); add_child(wf_l)
-	var wf_r = ColorRect.new()
-	wf_r.size = Vector2(2, 40); wf_r.position = Vector2(VW - 34, 40)
-	wf_r.color = Color(0.40, 0.28, 0.16); add_child(wf_r)
-	var wf_cross = ColorRect.new()
-	wf_cross.size = Vector2(2, 40); wf_cross.position = Vector2(VW - 56, 40)
-	wf_cross.color = Color(0.40, 0.28, 0.16); add_child(wf_cross)
+func _build_stairs(parent: Node2D, pos: Vector2, label_text: String) -> void:
+	for i in range(4):
+		var step = ColorRect.new()
+		step.size = Vector2(40 - i * 8, 6)
+		step.position = pos + Vector2(i * 4, i * 8)
+		step.color = Color(0.45, 0.32, 0.18)
+		parent.add_child(step)
+	var lbl = Label.new()
+	lbl.text = label_text
+	lbl.position = pos + Vector2(-4, -18)
+	lbl.add_theme_font_size_override("font_size", 9)
+	lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.40))
+	parent.add_child(lbl)
 
-	# Bed (left side)
-	var bed = ColorRect.new()
-	bed.size = Vector2(56, 40)
-	bed.position = Vector2(16, VH - 110)
-	bed.color = Color(0.50, 0.70, 0.90)
-	add_child(bed)
-
-	var bed_frame = ColorRect.new()
-	bed_frame.size = Vector2(56, 4)
-	bed_frame.position = Vector2(16, VH - 110)
-	bed_frame.color = Color(0.38, 0.48, 0.62)
-	add_child(bed_frame)
-
-	var pillow = ColorRect.new()
-	pillow.size = Vector2(16, 16)
-	pillow.position = Vector2(52, VH - 100)
-	pillow.color = Color(0.98, 0.96, 0.90)
-	add_child(pillow)
+# ── 1F 客厅 ───────────────────────────────────────────────────────────────────
+func _build_floor1() -> void:
+	_floor1 = Node2D.new()
+	add_child(_floor1)
+	_build_room_shell(_floor1, Color(0.88, 0.82, 0.72), Color(0.95, 0.92, 0.85))
 
 	# Rug (center)
 	var rug = ColorRect.new()
 	rug.size = Vector2(64, 40)
 	rug.position = Vector2(VW / 2 - 32, VH - 90)
 	rug.color = Color(0.65, 0.22, 0.22, 0.70)
-	add_child(rug)
+	_floor1.add_child(rug)
 
 	# Table with flower vase
 	var table = ColorRect.new()
 	table.size = Vector2(40, 20)
 	table.position = Vector2(VW / 2 - 20, VH - 50)
 	table.color = Color(0.52, 0.32, 0.14)
-	add_child(table)
+	_floor1.add_child(table)
 
-	# Flower on table
 	var flower = ColorRect.new()
 	flower.size = Vector2(8, 12)
 	flower.position = Vector2(VW / 2 - 4, VH - 62)
 	flower.color = Color(0.18, 0.65, 0.18)
-	add_child(flower)
+	_floor1.add_child(flower)
 	var flower_top = ColorRect.new()
 	flower_top.size = Vector2(12, 6)
 	flower_top.position = Vector2(VW / 2 - 6, VH - 68)
 	flower_top.color = Color(0.95, 0.30, 0.45)
-	add_child(flower_top)
+	_floor1.add_child(flower_top)
 
-	# Door frame bottom-center (visual only, collision is Area2D)
-	_door_spr = ColorRect.new()
-	_door_spr.size = Vector2(24, 40)
-	_door_spr.position = Vector2(VW / 2 - 12, VH - 40)
-	_door_spr.color = Color(0.55, 0.35, 0.18)
-	add_child(_door_spr)
+	# Sofa (fills the wall-side area, left of stairs)
+	var sofa = ColorRect.new()
+	sofa.size = Vector2(90, 34)
+	sofa.position = Vector2(180, FLOOR_MIN_Y + 6)
+	sofa.color = Color(0.55, 0.30, 0.35)
+	_floor1.add_child(sofa)
+	_add_collider(_floor1, sofa.position + sofa.size / 2, sofa.size)
 
-	# Door handle
+	# Door frame bottom-center
+	var door_spr = ColorRect.new()
+	door_spr.size = Vector2(24, 40)
+	door_spr.position = Vector2(VW / 2 - 12, VH - 40)
+	door_spr.color = Color(0.55, 0.35, 0.18)
+	_floor1.add_child(door_spr)
 	var handle = ColorRect.new()
 	handle.size = Vector2(4, 4)
 	handle.position = Vector2(VW / 2 + 6, VH - 22)
 	handle.color = Color(0.90, 0.78, 0.30)
-	add_child(handle)
-
-	# "出门" label above door
+	_floor1.add_child(handle)
 	var door_lbl = Label.new()
 	door_lbl.text = "出门"
 	door_lbl.position = Vector2(VW / 2 - 14, VH - 56)
 	door_lbl.add_theme_font_size_override("font_size", 9)
 	door_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.40))
-	add_child(door_lbl)
+	_floor1.add_child(door_lbl)
+
+	_build_stairs(_floor1, STAIRS1_POS, "上楼")
+	_build_mom()
 
 func _build_mom() -> void:
-	var tex: Texture2D
-	var sheet_path = "res://assets/sprites/npc_young_womanwalk_sheet.png"
+	var sheet_path = "res://assets/sprites/npc_young_woman_walk_sheet.png"
 	if ResourceLoader.exists(sheet_path):
-		# Use first frame (down-facing center): col=1, row=0 of 48×48 grid
 		var spr = Sprite2D.new()
 		spr.texture = load(sheet_path)
 		spr.region_enabled = true
-		spr.region_rect = Rect2(48, 0, 48, 48)  # center frame, down row
-		spr.position = Vector2(VW / 2 + 50, VH - 38)
+		spr.region_rect = Rect2(0, 0, 48, 48)
+		spr.centered = true
+		spr.position = MOM_POS
 		spr.z_index = 3
 		_mom_spr = spr
-		add_child(spr)
+		_floor1.add_child(spr)
 	else:
-		tex = _draw_mom()
 		_mom_spr = Sprite2D.new()
-		_mom_spr.texture = tex
-		_mom_spr.position = Vector2(VW / 2 + 50, VH - 38)
+		_mom_spr.texture = _draw_mom()
+		_mom_spr.position = MOM_POS
 		_mom_spr.z_index = 3
-		add_child(_mom_spr)
+		_floor1.add_child(_mom_spr)
 
 	var name_lbl = Label.new()
 	name_lbl.text = "妈妈"
-	name_lbl.position = Vector2(VW / 2 + 36, VH - 68)
+	name_lbl.position = MOM_POS + Vector2(-14, -30)
 	name_lbl.add_theme_font_size_override("font_size", 10)
 	name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
-	add_child(name_lbl)
+	_floor1.add_child(name_lbl)
+
+	_add_collider(_floor1, _mom_spr.position, Vector2(24, 24))
 
 func _draw_mom() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -164,34 +181,101 @@ func _draw_mom() -> ImageTexture:
 	var skin   = Color(0.95, 0.82, 0.70)
 	var hair   = Color(0.35, 0.22, 0.12)
 	var black  = Color(0.10, 0.10, 0.12)
-	# Hair
 	img.fill_rect(Rect2i(2, 2, 12, 8), hair)
 	img.fill_rect(Rect2i(0, 4, 16, 4), hair)
-	# Face
 	img.fill_rect(Rect2i(3, 4, 10, 6), skin)
 	img.fill_rect(Rect2i(5, 7, 2, 1), black)
 	img.fill_rect(Rect2i(9, 7, 2, 1), black)
-	# Body (apron)
 	img.fill_rect(Rect2i(1, 10, 14, 10), apron)
-	# Arms
 	img.fill_rect(Rect2i(0, 10, 2, 6), skin)
 	img.fill_rect(Rect2i(14, 10, 2, 6), skin)
-	# Skirt
 	img.fill_rect(Rect2i(2, 14, 12, 6), Color(0.50, 0.35, 0.60))
 	var tex = ImageTexture.new(); tex.set_image(img)
 	return tex
 
+# ── 2F 卧室 ───────────────────────────────────────────────────────────────────
+func _build_floor2() -> void:
+	_floor2 = Node2D.new()
+	add_child(_floor2)
+	_build_room_shell(_floor2, Color(0.80, 0.78, 0.88), Color(0.90, 0.90, 0.95))
+
+	# Bed
+	var bed = ColorRect.new()
+	bed.size = Vector2(56, 40)
+	bed.position = Vector2(VW - 100, VH - 110)
+	bed.color = Color(0.50, 0.70, 0.90)
+	_floor2.add_child(bed)
+	var bed_frame = ColorRect.new()
+	bed_frame.size = Vector2(56, 4)
+	bed_frame.position = Vector2(VW - 100, VH - 110)
+	bed_frame.color = Color(0.38, 0.48, 0.62)
+	_floor2.add_child(bed_frame)
+	var pillow = ColorRect.new()
+	pillow.size = Vector2(16, 16)
+	pillow.position = Vector2(VW - 64, VH - 100)
+	pillow.color = Color(0.98, 0.96, 0.90)
+	_floor2.add_child(pillow)
+	_add_collider(_floor2, bed.position + bed.size / 2, bed.size)
+
+	# Desk + lamp
+	var desk = ColorRect.new()
+	desk.size = Vector2(50, 24)
+	desk.position = Vector2(180, VH - 90)
+	desk.color = Color(0.52, 0.32, 0.14)
+	_floor2.add_child(desk)
+	var lamp = ColorRect.new()
+	lamp.size = Vector2(8, 12)
+	lamp.position = Vector2(200, VH - 100)
+	lamp.color = Color(0.95, 0.80, 0.30)
+	_floor2.add_child(lamp)
+	_add_collider(_floor2, desk.position + desk.size / 2, desk.size)
+
+	# Bookshelf (against wall)
+	var shelf = ColorRect.new()
+	shelf.size = Vector2(50, 60)
+	shelf.position = Vector2(300, FLOOR_MIN_Y - 30)
+	shelf.color = Color(0.45, 0.30, 0.16)
+	_floor2.add_child(shelf)
+	for i in range(3):
+		var book = ColorRect.new()
+		book.size = Vector2(44, 6)
+		book.position = shelf.position + Vector2(3, 8 + i * 16)
+		book.color = Color(0.70, 0.20 + i * 0.15, 0.20)
+		_floor2.add_child(book)
+
+	# Rug
+	var rug2 = ColorRect.new()
+	rug2.size = Vector2(60, 36)
+	rug2.position = Vector2(VW / 2 - 30, VH - 80)
+	rug2.color = Color(0.30, 0.45, 0.65, 0.70)
+	_floor2.add_child(rug2)
+
+	_build_stairs(_floor2, STAIRS2_POS, "下楼")
+
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(VW / 2, VH - 80)   # Start near bed
+	_player.position = STAIRS2_POS + Vector2(10, 40)
 	add_child(_player)
 
 	_player_spr = Sprite2D.new()
-	_player_spr.texture = _draw_player_spr()
 	_player_spr.z_index = 5
+	var sheet = "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
+	var sheet_path = "res://assets/sprites/" + sheet
+	if ResourceLoader.exists(sheet_path):
+		_player_spr.texture = load(sheet_path)
+		_player_spr.region_enabled = true
+		_player_spr.region_rect = Rect2(0, 0, 48, 48)
+		_player_spr.centered = true
+	else:
+		_player_spr.texture = _draw_player_spr()
 	_player.add_child(_player_spr)
 
-	# Camera
+	var col = CollisionShape2D.new()
+	var sh  = CircleShape2D.new(); sh.radius = 8.0
+	col.shape = sh
+	col.position = Vector2(0, 12)  # YYMMDD Red 碰撞点下移贴近脚底，避免视觉穿模
+	_player.add_child(col)
+
 	var cam = Camera2D.new()
 	cam.position_smoothing_enabled = true
 	cam.position_smoothing_speed = 8.0
@@ -199,7 +283,6 @@ func _build_player() -> void:
 	cam.call_deferred("make_current")
 
 func _draw_player_spr() -> ImageTexture:
-	# Same red-cap kid as in world scene (simplified)
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
 	var red      = Color(0.85, 0.10, 0.10)
@@ -223,6 +306,20 @@ func _draw_player_spr() -> ImageTexture:
 	img.fill_rect(Rect2i(9, 18, 6, 2), red_dark)
 	var tex = ImageTexture.new(); tex.set_image(img)
 	return tex
+
+# ── 楼层切换 ──────────────────────────────────────────────────────────────────
+func _set_floor(f: int) -> void:
+	_floor = f
+	_floor1.visible = (f == 1)
+	_floor2.visible = (f == 2)
+
+func _go_upstairs() -> void:
+	_set_floor(2)
+	_player.position = STAIRS2_POS + Vector2(10, 40)
+
+func _go_downstairs() -> void:
+	_set_floor(1)
+	_player.position = STAIRS1_POS + Vector2(10, 40)
 
 # ── Dialog ───────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
@@ -250,7 +347,7 @@ func _build_dialog() -> void:
 	_dialog_panel.add_child(_dialog_label)
 
 	var hint = Label.new()
-	hint.text = "【Z / Enter 继续】"
+	hint.text = "【▼ 继续】"
 	hint.size = Vector2(160, 14)
 	hint.position = Vector2(VW - 164, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -286,9 +383,9 @@ func _physics_process(_delta: float) -> void:
 	_player.velocity = dir * SPEED
 	_player.move_and_slide()
 
-	# Clamp inside room
+	# Clamp inside room (walls are not walkable)
 	_player.position.x = clamp(_player.position.x, 8, VW - 8)
-	_player.position.y = clamp(_player.position.y, 8, VH - 8)
+	_player.position.y = clamp(_player.position.y, FLOOR_MIN_Y, VH - 8)
 
 func _input(event: InputEvent) -> void:
 	if _dialog_active:
@@ -299,10 +396,18 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
-		var door_center = Vector2(VW / 2, VH - 18)
-		var mom_pos = Vector2(VW / 2 + 50, VH - 38)
-		if _player.position.distance_to(door_center) < 40:
-			GameState.last_scene = "home"
-			request_scene.emit("village", {})
-		elif _player.position.distance_to(mom_pos) < 30 and not _dialog_active:
-			_start_mom_dialog()
+		if _floor == 1:
+			if _player.position.distance_to(DOOR_CENTER) < 40:
+				GameState.last_scene = "home"
+				request_scene.emit("village", {"spawn": "home"})
+				return
+			elif _player.position.distance_to(MOM_POS) < 30:
+				_start_mom_dialog()
+				return
+			elif _player.position.distance_to(STAIRS1_POS + Vector2(10, 40)) < 30:
+				_go_upstairs()
+				return
+		else:
+			if _player.position.distance_to(STAIRS2_POS + Vector2(10, 40)) < 30:
+				_go_downstairs()
+				return

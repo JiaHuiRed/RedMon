@@ -79,10 +79,10 @@ var _trainer_team:    Array  = []
 var _trainer_mon_idx: int    = 0
 var _trainer_reward:  int    = 0
 
-const FIELD_H := 190
-const MSG_Y   := 190
+const FIELD_H := 510
+const MSG_Y   := 510
 const MSG_H   := 60
-const MENU_Y  := 250
+const MENU_Y  := 570
 const MENU_H  := 70
 
 func _ready() -> void:
@@ -128,7 +128,7 @@ func _build_battle_field() -> void:
 		bg.texture = tex
 		bg.position = Vector2(0, 0)
 		bg.size = Vector2(VW, FIELD_H)
-		bg.stretch_mode = TextureRect.STRETCH_SCALE
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		add_child(bg)
 	else:
 		# 回退：代码画天空
@@ -527,6 +527,7 @@ func _refresh_bag_panel() -> void:
 			btn.add_theme_color_override("font_color", Color.WHITE)
 
 func _on_use_item(item_id: String) -> void:
+	if _busy: return  # YYMMDD Red 防止连按导致动画重入卡死
 	if GameState.items.get(item_id, 0) <= 0: return
 	_bag_panel.visible = false
 	_busy = true
@@ -1700,6 +1701,8 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	var suck_tw := create_tween().set_parallel(true)
 	suck_tw.tween_property(_enemy_spr, "scale", Vector2(0.0, 0.0), 0.35)
 	suck_tw.tween_property(_enemy_spr, "modulate:a", 0.0, 0.35)
+	var suck_done := false
+	suck_tw.finished.connect(func(): suck_done = true)  # YYMMDD Red 用flag代替直接await，避免tween先于fx循环结束导致await永久挂起
 	var fx_names := ["葫芦特效_1小旋涡", "葫芦特效_2扩散", "葫芦特效_3卷入"]
 	var fx_spr   := Sprite2D.new()
 	fx_spr.position = end_pos
@@ -1710,7 +1713,8 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 		if ftex: fx_spr.texture = ftex
 		await get_tree().create_timer(0.12).timeout
 	fx_spr.queue_free()
-	await suck_tw.finished
+	while not suck_done:
+		await get_tree().process_frame
 
 	# 4. 葫芦落地
 	var land_pos := Vector2(end_pos.x, FIELD_H - 24)

@@ -41,7 +41,7 @@ func _on_attack_pressed():
 func enemy_turn():
 	var dmg = randi_range(5, 15)
 	player_health = max(0, player_health - dmg)
-		log_label.text += "\n\n绿肥虫使用了 吐丝！\n造成 %d 点伤害！" % dmg
+	log_label.text += "\n\n绿肥虫使用了 吐丝！\n造成 %d 点伤害！" % dmg
 	if player_health <= 0:
 		log_label.text += "\n\n你倒下了……"
 		actions.visible = false

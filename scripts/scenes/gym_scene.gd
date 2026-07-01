@@ -130,6 +130,16 @@ func _build_room() -> void:
 	add_child(gym_sign)
 
 # ── 杂兵 ─────────────────────────────────────────────────────────────────────
+func _add_collider(pos: Vector2, size: Vector2) -> void:
+	var body = StaticBody2D.new()
+	body.position = pos
+	var shape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = size
+	shape.shape = rect
+	body.add_child(shape)
+	add_child(body)
+
 func _build_guards() -> void:
 	for g in _guards:
 		if g["id"] in _defeated_guards: continue
@@ -141,6 +151,14 @@ func _build_guards() -> void:
 		spr.set_meta("guard_id", g["id"])
 		add_child(spr)
 		_guard_nodes[g["id"]] = spr
+
+		var body = StaticBody2D.new()
+		var shape = CollisionShape2D.new()
+		var rect = RectangleShape2D.new()
+		rect.size = Vector2(24, 24)
+		shape.shape = rect
+		body.add_child(shape)
+		spr.add_child(body)
 
 func _make_guard_sprite() -> ImageTexture:
 	var img = Image.create(24, 32, false, Image.FORMAT_RGBA8)
@@ -171,6 +189,7 @@ func _build_leader() -> void:
 	if _leader_defeated:
 		_leader_node.modulate.a = 0.5
 	add_child(_leader_node)
+	_add_collider(_leader_node.position, Vector2(24, 24))
 
 func _make_leader_sprite() -> ImageTexture:
 	var img = Image.create(24, 32, false, Image.FORMAT_RGBA8)
@@ -202,8 +221,9 @@ func _build_player() -> void:
 	_player_spr.centered = true
 	_player.add_child(_player_spr)
 	var col = CollisionShape2D.new()
-	var sh  = CircleShape2D.new(); sh.radius = 10.0
+	var sh  = CircleShape2D.new(); sh.radius = 8.0
 	col.shape = sh
+	col.position = Vector2(0, 12)  # YYMMDD Red 碰撞点下移贴近脚底，避免视觉穿模
 	_player.add_child(col)
 
 func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
@@ -243,7 +263,7 @@ func _build_dialog() -> void:
 	_dialog_label.add_theme_font_size_override("font_size", 12)
 	_dialog_panel.add_child(_dialog_label)
 	var hint = Label.new()
-	hint.text = "【Z / Enter 继续】"
+	hint.text = "【▼ 继续】"
 	hint.size = Vector2(160, 14); hint.position = Vector2(VW - 164, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
 	hint.add_theme_font_size_override("font_size", 10)

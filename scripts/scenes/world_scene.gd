@@ -62,9 +62,9 @@ var TRAINERS: Array = []  # 运行时合并后的数据
 var _pending_trainer: Dictionary = {}   # 等待确认开战的训练师
 
 # 主菜单
-const MENU_W   := 210
-const MENU_H   := 280
-const MENU_X   := 748   # 960 - 212
+const MENU_W   := 260
+const MENU_H   := 340
+const MENU_X   := 696   # 960 - 262 - 2
 const MENU_Y   := 20
 const MAIN_OPTIONS := ["精灵", "背包", "存档", "退出游戏", "关闭"]
 
@@ -277,6 +277,16 @@ func _build_signpost() -> void:
 	spr.z_index = 3
 	add_child(spr)
 
+func _add_collider(pos: Vector2, size: Vector2) -> void:
+	var body = StaticBody2D.new()
+	body.position = pos
+	var shape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = size
+	shape.shape = rect
+	body.add_child(shape)
+	add_child(body)
+
 func _build_clinic() -> void:
 	# Building occupies col 24-28, row 1-3 (top-right open area)
 	var bx: int = 24 * TILE
@@ -318,6 +328,8 @@ func _build_clinic() -> void:
 	wall_spr.position = Vector2(bx, by)
 	wall_spr.z_index = 2
 	add_child(wall_spr)
+
+	_add_collider(Vector2(bx + bw / 2.0, by + bh / 2.0), Vector2(bw, bh))
 
 	# Roof (dark red, triangle via stacked rects)
 	var roof_img = Image.create(bw + 8, 20, false, Image.FORMAT_RGBA8)
@@ -389,6 +401,8 @@ func _build_shop() -> void:
 	wall_spr.position = Vector2(bx, by)
 	wall_spr.z_index = 2; add_child(wall_spr)
 
+	_add_collider(Vector2(bx + bw / 2.0, by + bh / 2.0), Vector2(bw, bh))
+
 	# 屋顶（蓝色调）
 	var roof_img = Image.create(bw+8, 20, false, Image.FORMAT_RGBA8)
 	roof_img.fill(Color(0, 0, 0, 0))
@@ -426,6 +440,7 @@ func _build_npcs() -> void:
 		spr.set_meta("npc_data", npc)
 		add_child(spr)
 		_npc_nodes.append(spr)
+		_add_collider(spr.position, Vector2(24, 24))
 
 func _build_trainers() -> void:
 	for td in TRAINERS:
@@ -447,6 +462,7 @@ func _build_trainers() -> void:
 		spr.z_index = 5
 		spr.set_meta("trainer_data", td)
 		add_child(spr)
+		_add_collider(spr.position, Vector2(24, 24))
 
 func _draw_trainer(initial: String) -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -551,7 +567,7 @@ func _build_dialog() -> void:
 	_dialog_panel.add_child(_dialog_label)
 
 	var hint = Label.new()
-	hint.text = "【Z 继续】"
+	hint.text = "【▼ 继续】"
 	hint.size = Vector2(160, 14)
 	hint.position = Vector2(VW - 164, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -563,7 +579,11 @@ const WALK_FRAME_H := 48   # spritesheet 每帧高
 
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(TILE * 14, TILE * 2)
+	var data = get_meta("scene_data", {})
+	if data.get("spawn", "") == "village":  # YYMMDD Red 从青木村北边进入，出生在南侧缺口
+		_player.position = Vector2(TILE * 14.5, TILE * (ROWS - 2))
+	else:
+		_player.position = Vector2(TILE * 14, TILE * 2)
 	add_child(_player)
 
 	_player_sprite = Sprite2D.new()
@@ -579,6 +599,12 @@ func _build_player() -> void:
 	else:
 		_player_sprite.texture = _draw_player_fallback()
 	_player.add_child(_player_sprite)
+
+	var col = CollisionShape2D.new()
+	var sh  = CircleShape2D.new(); sh.radius = 8.0
+	col.shape = sh
+	col.position = Vector2(0, 12)  # YYMMDD Red 碰撞点下移贴近脚底，避免视觉穿模
+	_player.add_child(col)
 
 	# 脚下阴影
 	var shadow_img = Image.create(28, 6, false, Image.FORMAT_RGBA8)
@@ -842,6 +868,9 @@ func _input(event: InputEvent) -> void:
 		if tile.y <= 1 and tile.x >= 12 and tile.x <= 17:
 			GameState.last_scene = "world"  # YYMMDD Red
 			request_scene.emit("town", {})
+		elif tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:  # YYMMDD Red 南边缺口 → 青木村
+			GameState.last_scene = "world"
+			request_scene.emit("village", {"spawn": "world"})
 		elif tile == CLINIC_DOOR_TILE:
 			_open_clinic()
 		elif tile == SHOP_DOOR_TILE:
@@ -999,25 +1028,36 @@ func _menu_draw_party() -> void:
 	else:
 		for i in range(min(team.size(), 6)):
 			var mon = team[i]
-			var ry = 34 + i * 37
+			var ry = 34 + i * 48
 			var sp = MonDB.species[mon["species_id"]]
-			_menu_lbl(MonDB.display_name(mon) + " Lv." + str(mon["level"]), 12, ry, 11, Color.WHITE)
+			# 头像图标
+			var icon_path = "res://assets/sprites/%sfront.png" % mon["species_id"]
+			if ResourceLoader.exists(icon_path):
+				var icon = TextureRect.new()
+				icon.texture = load(icon_path)
+				icon.custom_minimum_size = Vector2(32, 32)
+				icon.size = Vector2(32, 32)
+				icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				icon.position = Vector2(MENU_X + 10, MENU_Y + ry - 2)
+				_menu_panel.add_child(icon)
+			var tx = 50
+			_menu_lbl(MonDB.display_name(mon) + " Lv." + str(mon["level"]), tx, ry, 11, Color.WHITE)
 			_menu_lbl("[%s]" % sp["type1"], MENU_W - 38, ry, 10,
 				MonDB.type_colors.get(sp["type1"], Color.WHITE))
 			var ratio = float(mon["current_hp"]) / float(mon["max_hp"])
-			var bw = MENU_W - 26
+			var bw = MENU_W - tx - 14
 			var bar_bg = ColorRect.new()
 			bar_bg.size = Vector2(bw, 5)
-			bar_bg.position = Vector2(MENU_X + 12, MENU_Y + ry + 16)
+			bar_bg.position = Vector2(MENU_X + tx, MENU_Y + ry + 16)
 			bar_bg.color = Color(0.22, 0.22, 0.28); _menu_panel.add_child(bar_bg)
 			var bar = ColorRect.new()
 			bar.size = Vector2(bw * ratio, 5)
-			bar.position = Vector2(MENU_X + 12, MENU_Y + ry + 16)
+			bar.position = Vector2(MENU_X + tx, MENU_Y + ry + 16)
 			bar.color = (Color(0.2, 0.85, 0.3) if ratio > 0.5 else
 						 Color(0.9, 0.75, 0.1) if ratio > 0.2 else
 						 Color(0.9, 0.2, 0.1))
 			_menu_panel.add_child(bar)
-			_menu_lbl("%d/%d" % [mon["current_hp"], mon["max_hp"]], 12, ry + 22, 9, Color(0.65, 0.65, 0.68))
+			_menu_lbl("%d/%d" % [mon["current_hp"], mon["max_hp"]], tx, ry + 22, 9, Color(0.65, 0.65, 0.68))
 	_menu_lbl("X/Esc 返回", 12, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
 
 func _menu_draw_bag() -> void:

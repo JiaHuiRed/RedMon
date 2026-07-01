@@ -103,7 +103,7 @@ func _build_dialog() -> void:
 	add_child(_dialog_lbl)
 
 	_dialog_hint = Label.new()
-	_dialog_hint.text = "Enter 继续 ▼"
+	_dialog_hint.text = "▼ 继续"
 	_dialog_hint.position = Vector2(VW - 104, VH - 88 - dialog_h + 6)
 	_dialog_hint.add_theme_color_override("font_color", Color(0.50, 0.50, 0.72))
 	_dialog_hint.add_theme_font_size_override("font_size", 10)
@@ -177,7 +177,7 @@ func _build_gender_panel() -> Control:
 	panel.add_child(f_lbl)
 
 	var hint = Label.new()
-	hint.text = "←  /  → 切换    Enter 确认"
+	hint.text = "←  /  → 切换    Z 确认"
 	hint.position = Vector2(0, 200)
 	hint.size.x = VW
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -232,7 +232,7 @@ func _build_name_panel() -> Control:
 	panel.add_child(confirm_btn)
 
 	var hint = Label.new()
-	hint.text = "（最多 8 个字，Enter 确认）"
+	hint.text = "（最多 8 个字，Z 确认）"
 	hint.position = Vector2(0, 204)
 	hint.size.x = VW
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -286,7 +286,7 @@ func _build_rival_panel() -> Control:
 	panel.add_child(confirm_btn)
 
 	var hint = Label.new()
-	hint.text = "（最多 8 个字，Enter 确认）"
+	hint.text = "（最多 8 个字，Z 确认）"
 	hint.position = Vector2(0, 204)
 	hint.size.x = VW
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -316,12 +316,12 @@ func _show_phase(phase: int) -> void:
 			var key = "name_prompt_male" if _gender == "男" else "name_prompt_female"
 			_dialog_lbl.text = MonDB.dlg("char_create", key)
 			_dialog_hint.visible = false
-			_name_input.grab_focus()
+			_name_input.call_deferred("grab_focus")
 		3:  # 劲敌取名
 			_rival_panel.visible = true
 			_dialog_lbl.text = "对了——"
 			_dialog_hint.visible = false
-			_rival_input.grab_focus()
+			_rival_input.call_deferred("grab_focus")
 
 func _refresh_gender() -> void:
 	var m_box = _gender_panel.get_node_or_null("MaleBox")
@@ -354,6 +354,14 @@ func _input(event: InputEvent) -> void:
 			elif event.is_action_pressed("ui_accept"):
 				get_viewport().set_input_as_handled()
 				_show_phase(2)
+		2:
+			if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_menu"):
+				get_viewport().set_input_as_handled()
+				_on_name_confirmed(_name_input.text)
+		3:
+			if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_menu"):
+				get_viewport().set_input_as_handled()
+				_on_rival_confirmed(_rival_input.text)
 
 func _on_name_confirmed(text: String) -> void:
 	var n = text.strip_edges()

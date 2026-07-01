@@ -245,12 +245,36 @@ func create_mon(species_id: String, level: int, ivs: Dictionary = {}) -> Diction
 		"sp_def": spd_,
 		"spd":    spe,
 		"ivs":    ivs,   # 保存个体值，升级时重算用
+		"gender": roll_gender(species_id),   # "male"/"female"/""（无性别），性别进化分支用
 		"moves":       move_list,
 		"status":      "",
 		"sleep_turns": 0,
 		# 战斗中临时能力变化阶段 (-6..+6)
 		"stages": {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0},
 	}
+
+# ── 性别 ──────────────────────────────────────────────────────────────────────
+# 依据物种 gender_ratio（"雄%/雌%"）随机生成个体性别；比例为 0/0 视为无性别
+func roll_gender(species_id: String) -> String:
+	var sp = species.get(species_id, {})
+	var parts = str(sp.get("gender_ratio", "50/50")).split("/")
+	if parts.size() != 2:
+		return "male" if randf() < 0.5 else "female"
+	var m = float(parts[0]); var f = float(parts[1])
+	if m <= 0.0 and f <= 0.0:
+		return ""
+	return "male" if randf() * 100.0 < m else "female"
+
+# 判断物种是否为单一性别限定（gender_ratio 恰为 100/0 或 0/100），返回 "male"/"female"/""
+func _gender_lock(species_id: String) -> String:
+	var sp = species.get(species_id, {})
+	var parts = str(sp.get("gender_ratio", "50/50")).split("/")
+	if parts.size() != 2:
+		return ""
+	var m = float(parts[0]); var f = float(parts[1])
+	if m <= 0.0 and f > 0.0: return "female"
+	if f <= 0.0 and m > 0.0: return "male"
+	return ""
 
 func display_name(mon: Dictionary) -> String:
 	if mon.get("nickname", "") != "":
@@ -369,9 +393,15 @@ func check_evolution(mon: Dictionary) -> String:
 func get_potential_evolutions(mon: Dictionary) -> Array:
 	var sp = species.get(mon["species_id"], {})
 	var result = []
+	var mon_gender = mon.get("gender", "")
 	for evo in sp.get("evolutions", []):
-		if mon["level"] >= evo.get("level", 0):
-			result.append(evo.duplicate())
+		if mon["level"] < evo.get("level", 0):
+			continue
+		# 性别限定分支进化（如恶魔小哈→邪恶库米/邪恶洛米）：目标物种性别锁定与当前个体性别不符则跳过
+		var req_gender = _gender_lock(evo["into"])
+		if req_gender != "" and mon_gender != "" and req_gender != mon_gender:
+			continue
+		result.append(evo.duplicate())
 	return result
 
 # 进化到指定物种（保留等级/经验/IVs/状态）

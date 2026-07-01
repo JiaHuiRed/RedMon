@@ -530,9 +530,17 @@ class App:
             self._is_maximized = False
         else:
             self._normal_geo = self.root.geometry()
-            sw = self.root.winfo_screenwidth()
-            sh = self.root.winfo_screenheight()
-            self.root.geometry(f"{sw}x{sh}+0+0")
+            try:
+                import ctypes
+                rc = (ctypes.c_long * 4)()
+                ctypes.windll.user32.SystemParametersInfoW(0x0030, 0, rc, 0)
+                sx, sy = rc[0], rc[1]
+                sw, sh = rc[2] - rc[0], rc[3] - rc[1]
+            except Exception:
+                sx, sy = 0, 0
+                sw = self.root.winfo_screenwidth()
+                sh = self.root.winfo_screenheight()
+            self.root.geometry(f"{sw}x{sh}+{sx}+{sy}")
             self._is_maximized = True
 
     # ── Status / draw helpers ───────────────────────────────────────────────
@@ -719,6 +727,8 @@ class App:
                    command=self._ls_remove).pack(side="left")
         ttk.Button(ls_btn, text="✏ 编辑等级",
                    command=self._ls_edit_level).pack(side="left", padx=(6, 0))
+        ttk.Button(ls_btn, text="⬇ 继承前置技能",
+                   command=self._ls_inherit).pack(side="left", padx=(6, 0))
 
         _ls_cols = ("level", "name", "type", "cat", "power", "acc", "pp")
         ls_tree_f = tk.Frame(ls_card, bg=BG_CARD)
@@ -899,6 +909,7 @@ class App:
         evo_scroll.pack(side="right", fill="y")
         self.evo_tree.configure(yscrollcommand=evo_scroll.set)
         self.evo_tree.pack(side="left", fill="x", expand=True)
+        self.evo_tree.bind("<Double-1>", lambda e: self._evo_edit_selected())
         evo_btn = tk.Frame(evo_f, bg=BG_MAIN)
         evo_btn.pack(side="left", padx=(4, 0))
         ttk.Button(evo_btn, text="+", width=3,
@@ -914,18 +925,27 @@ class App:
         _lbl(f, "遭遇地").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
         enc_f = tk.Frame(f, bg=BG_MAIN)
         enc_f.grid(row=row, column=1, columnspan=4, sticky="ew", padx=(0, 12), pady=2)
+        enc_tv_f = tk.Frame(enc_f, bg=BG_MAIN)
+        enc_tv_f.pack(side="left", fill="both", expand=True)
         self.enc_tree = ttk.Treeview(
-            enc_f, columns=("location", "rate"), show="headings",
+            enc_tv_f, columns=("location", "rate"), show="headings",
             height=3, selectmode="browse")
         self.enc_tree.heading("location", text="地点")
         self.enc_tree.heading("rate", text="出现率%")
         self.enc_tree.column("location", width=160, anchor="w")
         self.enc_tree.column("rate", width=60, anchor="center")
-        self.enc_tree.pack(side="left", fill="x", expand=True)
+        enc_scroll = ttk.Scrollbar(enc_tv_f, orient="vertical",
+                                   command=self.enc_tree.yview)
+        self.enc_tree.configure(yscrollcommand=enc_scroll.set)
+        enc_scroll.pack(side="right", fill="y")
+        self.enc_tree.pack(side="left", fill="both", expand=True)
+        self.enc_tree.bind("<Double-1>", lambda e: self._enc_edit())
         enc_btn = tk.Frame(enc_f, bg=BG_MAIN)
         enc_btn.pack(side="left", padx=(4, 0))
         ttk.Button(enc_btn, text="+", width=3,
                    command=self._enc_add).pack(pady=(0, 2))
+        ttk.Button(enc_btn, text="✎", width=3,
+                   command=self._enc_edit).pack(pady=(0, 2))
         ttk.Button(enc_btn, text="×", width=3,
                    command=self._enc_remove).pack()
         row += 1
@@ -1381,6 +1401,12 @@ class App:
     LOCATIONS = ["华灵草原", "翠竹镇", "翠竹馆", "炎心山道", "碧波湖畔",
                  "磐石洞穴", "厚土荒原", "冰晶雪峰", "黑风堂据点"]
 
+    def _center_dialog(self, dlg, w, h):
+        dlg.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width() - w) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - h) // 2
+        dlg.geometry(f"{w}x{h}+{x}+{y}")
+
     def _enc_add(self):
         dlg = tk.Toplevel(self.root)
         dlg.title("添加遭遇地"); dlg.resizable(False, False)
@@ -1409,6 +1435,39 @@ class App:
         sel = self.enc_tree.selection()
         if sel:
             self.enc_tree.delete(sel[0])
+
+    def _enc_edit(self):
+        sel = self.enc_tree.selection()
+        if not sel:
+            return
+        iid = sel[0]
+        vals = self.enc_tree.item(iid, "values")
+        loc  = vals[0] if vals else ""
+        rate = vals[1] if len(vals) > 1 else "10"
+        dlg = tk.Toplevel(self.root)
+        dlg.title("编辑遭遇地"); dlg.resizable(False, False)
+        dlg.transient(self.root); dlg.grab_set()
+        dw, dh = 300, 140
+        dlg.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width() - dw) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - dh) // 2
+        dlg.geometry(f"{dw}x{dh}+{x}+{y}")
+        tk.Label(dlg, text="地点:").grid(row=0, column=0, padx=12, pady=8, sticky="e")
+        loc_cb = SearchableCombo(dlg, items=list(self.LOCATIONS), width=18)
+        loc_cb.set(loc)
+        loc_cb.grid(row=0, column=1, pady=8)
+        tk.Label(dlg, text="出现率%:").grid(row=1, column=0, padx=12, pady=4, sticky="e")
+        rate_e = ttk.Entry(dlg, width=8, justify="center")
+        rate_e.grid(row=1, column=1, sticky="w", pady=4)
+        rate_e.insert(0, rate)
+        def ok(_=None):
+            new_loc = loc_cb.get().strip()
+            new_rate = rate_e.get().strip()
+            if new_loc:
+                self.enc_tree.item(iid, values=(new_loc, new_rate))
+            dlg.destroy()
+        ttk.Button(dlg, text="确定", command=ok).grid(row=2, column=0, columnspan=2, pady=10)
+        dlg.bind("<Return>", ok)
 
     def _evo_add(self):
         dlg = tk.Toplevel(self.root)
@@ -1512,22 +1571,72 @@ class App:
     def _ls_add(self):
         dlg = tk.Toplevel(self.root)
         dlg.title("添加技能")
-        dlg.geometry("360x130")
+        self._center_dialog(dlg, 380, 260)
         dlg.resizable(False, False)
         dlg.transient(self.root); dlg.grab_set()
 
         tk.Label(dlg, text="等级:").grid(
-            row=0, column=0, padx=12, pady=12, sticky="e")
+            row=0, column=0, padx=12, pady=(12, 6), sticky="e")
         lv_var = tk.StringVar(value="1")
         ttk.Spinbox(dlg, from_=0, to=100, width=7,
-                    textvariable=lv_var).grid(row=0, column=1, sticky="w", pady=12)
+                    textvariable=lv_var).grid(row=0, column=1, sticky="w", pady=(12, 6))
+
+        tk.Label(dlg, text="属性筛选:").grid(
+            row=1, column=0, padx=12, pady=6, sticky="e")
+        type_var = tk.StringVar(value="全部")
+        type_cb = ttk.Combobox(
+            dlg, textvariable=type_var, values=["全部"] + [t for t in TYPES if t],
+            width=10, state="readonly")
+        type_cb.grid(row=1, column=1, sticky="w", pady=6)
 
         tk.Label(dlg, text="技能:").grid(
-            row=1, column=0, padx=12, pady=6, sticky="e")
-        names = sorted(self.moves.keys())
+            row=2, column=0, padx=12, pady=6, sticky="e")
+
+        def filtered_names():
+            t = type_var.get()
+            if t == "全部":
+                return sorted(self.moves.keys())
+            return sorted(n for n, m in self.moves.items() if m.get("type", "") == t)
+
+        names = filtered_names()
         cb = SearchableCombo(dlg, names, width=22)
-        cb.grid(row=1, column=1, sticky="w", padx=(0, 12))
+        cb.grid(row=2, column=1, sticky="w", padx=(0, 12))
         if names: cb.set(names[0])
+
+        info_frame = tk.Frame(dlg, bg="#F0F0F5", bd=1, relief="groove")
+        info_frame.grid(row=3, column=0, columnspan=2, padx=12, pady=(8, 4), sticky="ew")
+        info_lbl = tk.Label(
+            info_frame, text="", bg="#F0F0F5", fg=TEXT_PRI,
+            font=(FONT_CJK, 8), justify="left", anchor="w",
+            wraplength=340, padx=8, pady=6)
+        info_lbl.pack(fill="x")
+
+        def update_info(*_):
+            m = self.moves.get(cb.get(), {})
+            if not m:
+                info_lbl.config(text="（未找到该技能）")
+                return
+            eff = EFFECT_LABELS.get(m.get("effect", ""), m.get("effect", ""))
+            txt = (f"属性: {m.get('type', '?')}   分类: {m.get('category', '?')}   "
+                   f"威力: {m.get('power', '-')}   命中: {m.get('accuracy', '-')}   "
+                   f"PP: {m.get('max_pp', '-')}")
+            if eff:
+                txt += f"\n效果: {eff}"
+            desc = m.get("desc", "")
+            if desc:
+                txt += f"\n{desc}"
+            info_lbl.config(text=txt)
+
+        def on_type_change(_=None):
+            new_names = filtered_names()
+            cb._all = new_names
+            if new_names and cb.get() not in new_names:
+                cb.set(new_names[0])
+            update_info()
+
+        type_cb.bind("<<ComboboxSelected>>", on_type_change)
+        cb._var.trace_add("write", update_info)
+        update_info()
 
         def ok():
             lv = lv_var.get().strip(); mv = cb.get()
@@ -1540,7 +1649,7 @@ class App:
                 messagebox.showwarning("", "请选择等级和技能", parent=dlg)
 
         bf = ttk.Frame(dlg)
-        bf.grid(row=2, column=0, columnspan=2, pady=10)
+        bf.grid(row=4, column=0, columnspan=2, pady=10)
         ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
         ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
 
@@ -1563,7 +1672,7 @@ class App:
 
         dlg = tk.Toplevel(self.root)
         dlg.title("编辑等级")
-        dlg.geometry("260x100")
+        self._center_dialog(dlg, 260, 100)
         dlg.resizable(False, False)
         dlg.transient(self.root); dlg.grab_set()
 
@@ -1586,6 +1695,72 @@ class App:
         bf.grid(row=1, column=0, columnspan=2, pady=6)
         ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
         ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
+
+    def _find_pre_evolution(self, name):
+        """查找哪只精灵进化为 name，返回 (名称, 数据) 或 (None, None)。"""
+        for sp_name, d in self.species.items():
+            evos = d.get("evolutions", [])
+            if not evos and d.get("evolves_into"):
+                evos = [{"into": d["evolves_into"]}]
+            if any(e.get("into") == name for e in evos):
+                return sp_name, d
+        return None, None
+
+    def _ls_inherit(self):
+        """从前置进化精灵继承技能池（新技能记为等级1，已有技能不重复添加）。"""
+        if not getattr(self, "_current_mon", None):
+            return
+        pre_name, pre_d = self._find_pre_evolution(self._current_mon)
+        if not pre_d:
+            messagebox.showinfo("", "未找到前置进化精灵。")
+            return
+        existing_names = {x["name"] for x in self._learnset}
+        added = []
+        for skills in pre_d.get("learnset", {}).values():
+            for s in skills:
+                if s not in existing_names:
+                    self._learnset.append({"level": 1, "name": s})
+                    existing_names.add(s)
+                    added.append(s)
+        if not added:
+            messagebox.showinfo("", f"「{pre_name}」的技能已全部包含，无需继承。")
+            return
+        self._learnset.sort(key=lambda x: (x["level"], x["name"]))
+        self._refresh_ls_table()
+        messagebox.showinfo(
+            "", f"已从「{pre_name}」继承 {len(added)} 个技能（记为等级1）：\n{', '.join(added)}\n\n"
+                f"记得点击「保存」。")
+
+    def _propagate_learnset_forward(self, name, visited=None):
+        """把当前精灵的技能池向下同步给非分支进化的后续形态（分支进化如
+        露比/绿螳螂类型可能不同，技能池需分别设计，不参与同步）。"""
+        if visited is None:
+            visited = set()
+        if name in visited:
+            return
+        visited.add(name)
+        d = self.species.get(name)
+        if not d:
+            return
+        evolutions = d.get("evolutions", [])
+        if not evolutions and d.get("evolves_into"):
+            evolutions = [{"into": d["evolves_into"]}]
+        if len(evolutions) != 1:
+            return
+        target_name = evolutions[0].get("into")
+        target = self.species.get(target_name)
+        if not target:
+            return
+        existing_names = {s for skills in target.get("learnset", {}).values() for s in skills}
+        source_names = {s for skills in d.get("learnset", {}).values() for s in skills}
+        missing = [s for s in source_names if s not in existing_names]
+        if missing:
+            ls = target.setdefault("learnset", {})
+            lv1 = ls.setdefault("1", [])
+            for s in missing:
+                if s not in lv1:
+                    lv1.append(s)
+        self._propagate_learnset_forward(target_name, visited)
 
     def _mon_save(self):
         old = self._current_mon
@@ -1649,6 +1824,7 @@ class App:
                         ev["into"] = new
 
         self.species[new] = d
+        self._propagate_learnset_forward(new)
         save_json(SPECIES_FILE, self.species)
         self._current_mon = new
         self._mon_refresh_list()
@@ -1948,9 +2124,12 @@ class App:
         self._trainer_placeholder.pack(side="right", fill="both", expand=True)
 
         self._trainer_form_frame = tk.Frame(self.trainer_tab, bg=BG_MAIN)
-        tc = tk.Canvas(self._trainer_form_frame, bg=BG_MAIN,
+        # Left: scrollable form
+        _tf_left = tk.Frame(self._trainer_form_frame, bg=BG_MAIN)
+        _tf_left.pack(side="left", fill="both", expand=True)
+        tc = tk.Canvas(_tf_left, bg=BG_MAIN,
                         borderwidth=0, highlightthickness=0)
-        ts = ttk.Scrollbar(self._trainer_form_frame, orient="vertical",
+        ts = ttk.Scrollbar(_tf_left, orient="vertical",
                             command=tc.yview)
         self._trainer_inner = tk.Frame(tc, bg=BG_MAIN)
         self._trainer_inner.bind(
@@ -1964,6 +2143,72 @@ class App:
             "<MouseWheel>",
             lambda e: c.yview_scroll(-1*(e.delta//120), "units")))
         tc.bind("<Leave>", lambda c=tc: c.unbind_all("<MouseWheel>"))
+        # Right: mon preview panel
+        tk.Frame(self._trainer_form_frame, bg=BORDER, width=1).pack(
+            side="left", fill="y")
+        self._trainer_preview = tk.Frame(
+            self._trainer_form_frame, bg=BG_SIDE, width=280)
+        self._trainer_preview.pack(side="left", fill="y")
+        self._trainer_preview.pack_propagate(False)
+        _lbl(self._trainer_preview, "选中精灵预览", bg=BG_SIDE, bold=True).pack(
+            anchor="w", padx=10, pady=(10, 4))
+        self._tp_sprite_lbl = tk.Label(
+            self._trainer_preview, bg=BG_SIDE, width=100, height=100,
+            text="—", fg=TEXT_SEC, font=(FONT_CJK, 9))
+        self._tp_sprite_lbl.pack()
+        self._tp_name_lbl = tk.Label(
+            self._trainer_preview, bg=BG_SIDE, fg=TEXT_PRI,
+            font=(FONT_CJK, 10, "bold"), text="")
+        self._tp_name_lbl.pack(pady=(2, 0))
+        self._tp_type_lbl = tk.Label(
+            self._trainer_preview, bg=BG_SIDE, fg=TEXT_SEC,
+            font=(FONT_CJK, 8), text="")
+        self._tp_type_lbl.pack()
+        # stat bars
+        self._tp_stat_frame = tk.Frame(self._trainer_preview, bg=BG_SIDE)
+        self._tp_stat_frame.pack(fill="x", padx=10, pady=(4, 0))
+        self._tp_stat_bars = {}
+        self._tp_stat_vals = {}
+        for slbl, skey in STAT_LABELS:
+            rf = tk.Frame(self._tp_stat_frame, bg=BG_SIDE)
+            rf.pack(fill="x", pady=1)
+            tk.Label(rf, text=slbl[:2], width=2, anchor="e",
+                     bg=BG_SIDE, fg=TEXT_SEC,
+                     font=(FONT_CJK, 7)).pack(side="left")
+            vl = tk.Label(rf, text="0", width=3, anchor="e",
+                          bg=BG_SIDE, fg=TEXT_PRI, font=(FONT_CJK, 7))
+            vl.pack(side="left", padx=(2, 4))
+            c = tk.Canvas(rf, width=120, height=6,
+                          bg=BG_SIDE, highlightthickness=0)
+            c.pack(side="left")
+            self._tp_stat_bars[skey] = c
+            self._tp_stat_vals[skey] = vl
+        self._tp_bst_lbl = tk.Label(
+            self._trainer_preview, bg=BG_SIDE, fg=TEXT_SEC,
+            font=(FONT_CJK, 8), text="")
+        self._tp_bst_lbl.pack(pady=(2, 4))
+        # learnset
+        tk.Frame(self._trainer_preview, bg=BORDER, height=1).pack(
+            fill="x", padx=10, pady=4)
+        _lbl(self._trainer_preview, "技能池", bg=BG_SIDE, bold=True).pack(
+            anchor="w", padx=10)
+        tp_ls_f = tk.Frame(self._trainer_preview, bg=BG_SIDE)
+        tp_ls_f.pack(fill="both", expand=True, padx=10, pady=4)
+        self._tp_ls_tree = ttk.Treeview(
+            tp_ls_f, columns=("lv", "name", "type"), show="headings",
+            selectmode="none")
+        self._tp_ls_tree.heading("lv",   text="等级")
+        self._tp_ls_tree.heading("name", text="招式")
+        self._tp_ls_tree.heading("type", text="属性")
+        self._tp_ls_tree.column("lv",   width=30, anchor="center")
+        self._tp_ls_tree.column("name", width=100, anchor="w")
+        self._tp_ls_tree.column("type", width=36, anchor="center")
+        tp_ls_sb = ttk.Scrollbar(tp_ls_f, orient="vertical",
+                                  command=self._tp_ls_tree.yview)
+        self._tp_ls_tree.configure(yscrollcommand=tp_ls_sb.set)
+        tp_ls_sb.pack(side="right", fill="y")
+        self._tp_ls_tree.pack(side="left", fill="both", expand=True)
+        self._tp_photo = None
 
         f   = self._trainer_inner
         row = 0
@@ -2022,6 +2267,8 @@ class App:
                             sticky="ew", padx=12, pady=3)
         t_sb.grid(row=row, column=2, sticky="ns", padx=(0, 12))
         row += 1
+
+        self.team_tree.bind("<<TreeviewSelect>>", self._trainer_mon_preview)
 
         tb = tk.Frame(f, bg=BG_MAIN)
         tb.grid(row=row, column=0, columnspan=3, sticky="w", padx=12, pady=4)
@@ -2149,7 +2396,7 @@ class App:
     def _team_add(self):
         dlg = tk.Toplevel(self.root)
         dlg.title("添加队伍精灵")
-        dlg.geometry("360x130")
+        self._center_dialog(dlg, 360, 130)
         dlg.resizable(False, False)
         dlg.transient(self.root); dlg.grab_set()
 
@@ -2182,6 +2429,68 @@ class App:
     def _team_remove(self):
         sel = self.team_tree.selection()
         if sel: self.team_tree.delete(sel[0])
+
+    def _trainer_mon_preview(self, _=None):
+        sel = self.team_tree.selection()
+        if not sel:
+            return
+        vals = self.team_tree.item(sel[0], "values")
+        sp_name = vals[0] if vals else ""
+        d = self.species.get(sp_name)
+        if not d:
+            self._tp_name_lbl.config(text="（未知精灵）")
+            self._tp_type_lbl.config(text="")
+            self._tp_bst_lbl.config(text="")
+            self._tp_sprite_lbl.config(image="", text="—")
+            self._tp_photo = None
+            for skey in self._tp_stat_bars:
+                self._tp_stat_bars[skey].delete("all")
+                self._tp_stat_vals[skey].config(text="0")
+            self._tp_ls_tree.delete(*self._tp_ls_tree.get_children())
+            return
+
+        t1 = d.get("type1", ""); t2 = d.get("type2", "")
+        self._tp_name_lbl.config(text=sp_name)
+        self._tp_type_lbl.config(
+            text=f"{t1}{'/' + t2 if t2 else ''}  Lv.{vals[1] if len(vals) > 1 else '?'}")
+
+        base = d.get("base", {})
+        total = 0
+        for _, skey in STAT_LABELS:
+            v = base.get(skey, 0); total += v
+            c = self._tp_stat_bars[skey]
+            c.delete("all")
+            bar_w = max(1, int(min(v, BAR_MAX) / BAR_MAX * 120))
+            c.create_rectangle(0, 0, 120, 6, fill="#E5E5EA", outline="")
+            c.create_rectangle(0, 0, bar_w, 6, fill=STAT_COLORS[skey], outline="")
+            self._tp_stat_vals[skey].config(text=str(v))
+        self._tp_bst_lbl.config(text=f"BST {total}")
+
+        # learnset
+        self._tp_ls_tree.delete(*self._tp_ls_tree.get_children())
+        ls_flat = []
+        for lv_str, skills in d.get("learnset", {}).items():
+            for s in skills:
+                ls_flat.append((int(lv_str), s))
+        ls_flat.sort()
+        for lv, mv in ls_flat:
+            mt = self.moves.get(mv, {}).get("type", "?")
+            self._tp_ls_tree.insert("", "end", values=(lv, mv, mt))
+
+        # sprite
+        self._tp_photo = None
+        self._tp_sprite_lbl.config(image="", text="无图片")
+        if HAS_PIL:
+            path = os.path.join(SPRITES_DIR, f"{sp_name}front.png")
+            if os.path.exists(path):
+                try:
+                    img = Image.open(path).convert("RGBA")
+                    img.thumbnail((100, 100), Image.LANCZOS)
+                    self._tp_photo = ImageTk.PhotoImage(img)
+                    self._tp_sprite_lbl.config(
+                        image=self._tp_photo, text="")
+                except Exception:
+                    pass
 
     # ── 剧情文本 Tab ────────────────────────────────────────────────────────────
     def _build_dialog_tab(self):
@@ -2359,7 +2668,7 @@ class App:
             return
         dlg = tk.Toplevel(self.root)
         dlg.title("新增文本条目")
-        dlg.geometry("340x180")
+        self._center_dialog(dlg, 340, 180)
         dlg.transient(self.root)
         tk.Label(dlg, text="条目 Key:", font=(FONT_CJK, 10)).pack(pady=(12, 2))
         key_e = tk.Entry(dlg, font=(FONT_CJK, 10), width=28)
@@ -2420,7 +2729,7 @@ class App:
     def _dlg_add_section(self):
         dlg = tk.Toplevel(self.root)
         dlg.title("新增场景分组")
-        dlg.geometry("300x120")
+        self._center_dialog(dlg, 300, 120)
         dlg.transient(self.root)
         tk.Label(dlg, text="分组 ID（英文）:", font=(FONT_CJK, 10)).pack(pady=(12, 4))
         entry = tk.Entry(dlg, font=(FONT_CJK, 10), width=24)

@@ -29,16 +29,28 @@ var _confirm_btn: Button
 var _dialog_lbl: Label   # 动态对话文字（前置/后置复用）
 var _dialog_hint: Label  # "Enter 继续" 提示
 var _cards_root: Node2D  # 卡片组容器，统一显隐
+var _threat_spr: Sprite2D  # 围攻教授的野生精灵
+
+const WILD_THREAT_ID := "绿肥虫"
+const WILD_THREAT_LEVEL := 3
 
 func _ready() -> void:
 	INTRO_LINES = MonDB.dlg_array("starter", "intro")
 	OUTRO_LINES = MonDB.dlg_array("starter", "outro")
 	_build_bg()
 	_build_professor()
+	_build_threat()
 	_build_dialog_box()
 	_build_cards()
 	_build_confirm()
-	_start_intro()
+
+	var data = get_meta("scene_data", {})
+	if data.get("battle_result", "") in ["win", "lose"]:
+		# 从"营救教授"战斗返回：精灵已在 _on_confirm() 中入队，直接进入后置对话
+		_threat_spr.visible = false
+		_start_outro()
+	else:
+		_start_intro()
 
 # ── Background ───────────────────────────────────────────────────────────────
 func _build_bg() -> void:
@@ -97,6 +109,29 @@ func _build_professor() -> void:
 	name_lbl.position = Vector2(10, 450)  # YYMMDD Red 移到教授头顶上方
 	name_lbl.add_theme_color_override("font_color", Color(0.2, 0.2, 0.2))
 	add_child(name_lbl)
+
+func _build_threat() -> void:
+	var tex: Texture2D = _draw_starter_sprite_by_id(WILD_THREAT_ID)
+	_threat_spr = Sprite2D.new()
+	_threat_spr.texture = tex
+	var tex_size := tex.get_size()
+	var s := 70.0 / maxf(tex_size.x, tex_size.y)
+	_threat_spr.scale = Vector2(s, s)
+	_threat_spr.position = Vector2(230, VH - 150)
+	_threat_spr.z_index = 6
+	_threat_spr.modulate = Color(1.0, 0.75, 0.75)  # 略带凶意的红色调
+	add_child(_threat_spr)
+
+	# 焦躁的抖动动画，表现"正在围攻教授"
+	var tw = create_tween().set_loops()
+	tw.tween_property(_threat_spr, "position:x", 236, 0.08)
+	tw.tween_property(_threat_spr, "position:x", 224, 0.08)
+
+func _draw_starter_sprite_by_id(species_id: String) -> Texture2D:
+	var path = "res://assets/sprites/%sfront.png" % species_id
+	if ResourceLoader.exists(path):
+		return load(path)
+	return ImageTexture.new()
 
 func _draw_professor() -> Texture2D:
 	var img = Image.create(80, 120, false, Image.FORMAT_RGBA8)
@@ -203,7 +238,7 @@ func _build_dialog_box() -> void:
 	add_child(_dialog_lbl)
 
 	_dialog_hint = Label.new()
-	_dialog_hint.text = "Enter 继续 ▼"
+	_dialog_hint.text = "▼ 继续"
 	_dialog_hint.position = Vector2(VW - 102, VH - 18)
 	_dialog_hint.add_theme_color_override("font_color", Color(0.50, 0.50, 0.72))
 	_dialog_hint.add_theme_font_size_override("font_size", 10)
@@ -318,6 +353,7 @@ func _make_card(idx: int, x: int, y: int, w: int, h: int, type_color: Color) -> 
 	name_lbl.position = Vector2(0, 100)
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.add_theme_font_size_override("font_size", 13)
+	name_lbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.15))
 	root.add_child(name_lbl)
 
 	# Type badge
@@ -387,7 +423,19 @@ func _on_confirm() -> void:
 	GameState.has_starter = true
 	print("[STARTER] 选择了 ", STARTERS[_selected])
 	GameState.save_game()
-	_start_outro()
+
+	# 真正打退围攻教授的野生精灵，而不是用文字一笔带过
+	_cards_root.visible = false
+	_confirm_btn.visible = false
+	if _desc_label: _desc_label.visible = false
+	_dialog_lbl.text = "%s挺身而出，冲向了野生精灵！" % MonDB.display_name(mon)
+	GameState.last_scene = "starter"
+	await get_tree().create_timer(1.0).timeout
+	request_scene.emit("battle", {
+		"wild_mon": MonDB.create_mon(WILD_THREAT_ID, WILD_THREAT_LEVEL),
+		"return_scene": "starter",
+		"from_scene": "starter"
+	})
 
 # ── Keyboard nav ─────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:
