@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.7.0-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.8.0-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -39,7 +39,7 @@
 
 ## 精灵图鉴
 
-游戏目前包含 **237 种精灵**（持续扩充中），覆盖 18 种属性。
+游戏目前包含 **268 种精灵**（持续扩充中），覆盖 18 种属性。
 
 > 完整数据见 `data/species.json`，可通过 `tools/mon_editor.py` 可视化浏览和编辑。
 
@@ -149,7 +149,7 @@ RPG_Demo/
 │   ├── sprites/          # 精灵素材（PNG，LFS 管理）
 │   └── backgrounds/      # 战斗/场景背景
 ├── data/
-│   ├── species.json      # 精灵种族数据（237 种）
+│   ├── species.json      # 精灵种族数据（268 种）
 │   ├── moves.json        # 技能数据（812 个）
 │   ├── items.json        # 道具数据（18 种）
 │   ├── trainers.json     # 训练师数据（队伍/对话/奖励）
