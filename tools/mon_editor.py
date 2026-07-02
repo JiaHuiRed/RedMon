@@ -944,8 +944,10 @@ class App:
         misc_evo_f = tk.Frame(f, bg=BG_MAIN)
         misc_evo_f.grid(row=row, column=0, columnspan=5, sticky="ew", padx=12, pady=2)
 
-        misc = tk.Frame(misc_evo_f, bg=BG_MAIN)
-        misc.pack(side="left", anchor="n", padx=(0, 8))
+        misc_desc_col = tk.Frame(misc_evo_f, bg=BG_MAIN)
+        misc_desc_col.pack(side="left", anchor="n", padx=(0, 8))
+        misc = tk.Frame(misc_desc_col, bg=BG_MAIN)
+        misc.pack(anchor="n")
         for r2, (lbl_txt, attr, w2) in enumerate([
             ("捕获率", "mon_catch",  6),
             ("经验值", "mon_exp",    6),
@@ -968,6 +970,15 @@ class App:
         self.mon_growth.grid(row=1, column=1, sticky="w", pady=2)
         self.mon_gender = ttk.Combobox(misc, values=GENDERS, width=12, state="normal")
         self.mon_gender.grid(row=1, column=4, sticky="w", pady=2)
+
+        # 图鉴描述（放在左侧列身高体重下方）260702 Red
+        _lbl(misc_desc_col, "图鉴描述", bg=BG_MAIN).pack(anchor="w", pady=(8, 2))
+        self.mon_desc = tk.Text(
+            misc_desc_col, width=28, height=5, wrap="word", bg=BG_CARD,
+            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
+            highlightthickness=1, highlightcolor=ACCENT,
+            highlightbackground=BORDER)
+        self.mon_desc.pack(fill="x", pady=(0, 4))
 
         # 进化分支（与捕获率并列，同行右侧）
         tk.Frame(misc_evo_f, bg=BORDER, width=1).pack(side="left", fill="y", padx=(0, 8))
@@ -1031,18 +1042,7 @@ class App:
                    command=self._enc_remove).pack()
         row += 1
 
-        # 描述
-        _sep(f, row=row, col=0); row += 1
-        _lbl(f, "图鉴描述").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
-        self.mon_desc = tk.Text(
-            f, width=28, height=4, wrap="word", bg=BG_CARD,
-            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
-            highlightthickness=1, highlightcolor=ACCENT,
-            highlightbackground=BORDER)
-        self.mon_desc.grid(
-            row=row, column=1, columnspan=4,
-            sticky="ew", pady=3, padx=(0, 12))
-        row += 1
+        # 图鉴描述已移至左侧misc列 260702 Red
 
         self._mon_refresh_list()
         self._refresh_stat_bars()
@@ -2677,7 +2677,12 @@ class App:
             "char_create": "角色创建",
             "starter": "御三家选择",
             "world": "大地图",
+            "home": "家（室内）",
+            "village": "青木村",
+            "rival": "劲敌",
             "trainers": "训练师对话",
+            "gym_cuizhu": "翠竹馆（草系道馆）",
+            "town": "碧溪镇",
         }
         for sec_id in self._dlg_data:
             label = section_labels.get(sec_id, sec_id)
@@ -2710,8 +2715,30 @@ class App:
         canvas.pack(side="left", fill="both", expand=True)
         canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(int(-e.delta / 120), "units"))
 
+        # 260702 Red 对话key中文映射
+        KEY_LABELS = {
+            "intro": "开场白", "gender_prompt": "性别选择提示",
+            "name_prompt_male": "取名提示（男）", "name_prompt_female": "取名提示（女）",
+            "selection_prompt": "选择提示", "outro": "结束语",
+            "clinic_greeting": "诊所问候", "clinic_healed": "诊所治愈",
+            "signpost": "路牌", "mom_sendoff": "妈妈送行", "mom_professor": "妈妈提教授",
+            "mom_morning": "妈妈早安", "mom_encourage": "妈妈鼓励", "mom_rival": "妈妈提劲敌",
+            "name": "地名", "npc1": "NPC1", "npc2": "NPC2",
+            "first_encounter": "初次相遇", "first_battle": "初战对白",
+            "first_win": "赢了", "first_lose": "输了", "tutorial": "教程",
+            "leader_before": "馆主战前", "leader_win": "馆主战后",
+            "leader_before_lines": "馆主战前台词", "leader_after_lines": "馆主战后台词",
+            "npc_traveler": "旅行者NPC", "npc_shopkeeper": "店主NPC",
+        }
+        # 260702 Red section中文映射
+        sec_labels = {
+            "char_create": "角色创建", "starter": "御三家选择", "world": "大地图",
+            "home": "家（室内）", "village": "青木村", "rival": "劲敌",
+            "trainers": "训练师对话", "gym_cuizhu": "翠竹馆", "town": "碧溪镇",
+        }
+        sec_label = sec_labels.get(sec_id, sec_id)
         # Title
-        tk.Label(scroll_frame, text=f"编辑: {sec_id}", bg=BG_MAIN, fg=TEXT_PRI,
+        tk.Label(scroll_frame, text=f"编辑: {sec_label}", bg=BG_MAIN, fg=TEXT_PRI,
                  font=(FONT_CJK, 14, "bold")).pack(anchor="w", padx=16, pady=(12, 6))
 
         self._dlg_editors = {}
@@ -2721,7 +2748,8 @@ class App:
             frame = tk.Frame(scroll_frame, bg=BG_CARD, bd=1, relief="solid")
             frame.pack(fill="x", padx=14, pady=4)
 
-            tk.Label(frame, text=key, bg=BG_CARD, fg=ACCENT,
+            key_label = KEY_LABELS.get(key, key)
+            tk.Label(frame, text=f"{key_label}  ({key})", bg=BG_CARD, fg=ACCENT,
                      font=(FONT_CJK, 10, "bold"), anchor="w").pack(fill="x", padx=8, pady=(6, 2))
 
             if isinstance(val, list):

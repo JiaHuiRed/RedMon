@@ -1,106 +1,115 @@
 {
   "精灵葫芦": {
     "name": "精灵葫芦",
-    "category": "ball",
-    "price": 0,
-    "desc": "素白葫芦，入门训练师常用。"
+    "category": "捕捉",
+    "price": 200,
+    "desc": "素白葫芦，入门训练师常用。",
+    "description": "标准捕捉葫芦，1x捕获率。"
   },
   "超级葫芦": {
     "name": "超级葫芦",
-    "category": "ball",
-    "price": 0,
-    "desc": "染蓝的葫芦，捕捉率提升。"
+    "category": "捕捉",
+    "price": 1200,
+    "desc": "染蓝的葫芦，捕捉率提升。",
+    "description": "精制葫芦，2x捕获率。"
   },
   "高级葫芦": {
     "name": "高级葫芦",
-    "category": "ball",
-    "price": 0,
-    "desc": "金黄葫芦，捕捉率大幅提升。"
+    "category": "捕捉",
+    "price": 600,
+    "desc": "金黄葫芦，捕捉率大幅提升。",
+    "description": "高品质葫芦，1.5x捕获率。"
   },
   "大师葫芦": {
     "name": "大师葫芦",
-    "category": "ball",
+    "category": "捕捉",
     "price": 0,
-    "desc": "稀有紫葫芦，百分百捕捉成功。"
+    "desc": "稀有紫葫芦，百分百捕捉成功。",
+    "description": "传说中的极品葫芦，必定捕获。"
   },
   "豪华葫芦": {
     "name": "豪华葫芦",
-    "category": "ball",
-    "price": 0,
-    "desc": "乌黑葫芦，夜晚才敢拿出来用。"
+    "category": "捕捉",
+    "price": 3000,
+    "desc": "乌黑葫芦，夜晚才敢拿出来用。",
+    "description": "奢华葫芦，3x捕获率。"
   },
   "铁丹": {
     "name": "铁丹",
-    "category": "heal",
-    "price": 0,
+    "category": "回复",
+    "price": 200,
     "desc": "铁制丹药，恢复50点HP，10点MP。",
     "heal_amount": 50,
-    "mp_heal_amount": 10
+    "mp_heal_amount": 10,
+    "description": "普通丹药，恢复20点HP。"
   },
   "铜丹": {
     "name": "铜丹",
-    "category": "heal",
-    "price": 0,
+    "category": "回复",
+    "price": 500,
     "desc": "铜制丹药，恢复100点HP，30点MP。",
     "heal_amount": 100,
-    "mp_heal_amount": 30
+    "mp_heal_amount": 30,
+    "description": "铜色丹药，恢复60点HP。"
   },
   "银丹": {
     "name": "银丹",
-    "category": "heal",
-    "price": 0,
+    "category": "回复",
+    "price": 1500,
     "desc": "银制丹药，恢复200点HP，50点MP。",
     "heal_amount": 200,
-    "mp_heal_amount": 50
+    "mp_heal_amount": 50,
+    "description": "银色丹药，恢复120点HP。"
   },
   "金丹": {
     "name": "金丹",
-    "category": "heal",
-    "price": 0,
+    "category": "回复",
+    "price": 5000,
     "desc": "金色仙丹，完全恢复HP与MP。",
     "full_heal": true,
-    "mp_heal_percent": 100
+    "mp_heal_percent": 100,
+    "description": "金色仙丹，完全恢复HP与所有异常状态。"
   },
   "雷霆石": {
     "name": "雷霆石",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "蕴含着奔雷之力的奇异晶石。可让露比进化为奔雷露比。"
   },
   "格斗卷轴": {
     "name": "格斗卷轴",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "记载着武学精髓的古卷。可让露比进化为骑侠露比。"
   },
   "水之晶核": {
     "name": "水之晶核",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "凝聚着水之精华的透明晶体。可让露比进化为潜游露比。"
   },
   "烈焰石": {
     "name": "烈焰石",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "燃烧着不灭之火的赤红晶石。可让露比进化为喷火露比。"
   },
   "大地之核": {
     "name": "大地之核",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "蕴藏着大地能量的厚重宝石。可让露比进化为挖洞露比。"
   },
   "翎羽枪": {
     "name": "翎羽枪",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "枪头缀有翎羽的长枪。武徒弟的专属武器。"
   },
   "玄铁棍": {
     "name": "玄铁棍",
     "category": "进化",
-    "price": 0,
+    "price": 2100,
     "desc": "由深海玄铁打造的铁棍。武徒弟的专属武器。"
   },
   "冰之晶核": {
@@ -112,7 +121,7 @@
   "技能机01": {
     "name": "技能机01",
     "category": "技能机",
-    "price": 0,
+    "price": 3000,
     "desc": "记录了招式【飞叶快刀】的技能机，可反复使用教会精灵这个招式。",
     "tm_move": "飞叶快刀"
   },
@@ -171,5 +180,75 @@
     "desc": "整只酱香烧鸡，滋补效果拔群。可自选一项属性提升2点努力值。",
     "train_stat": "",
     "train_amount": 2
+  },
+  "灵木种": {
+    "name": "灵木种",
+    "category": "进化",
+    "price": 2100,
+    "description": "蕴含木属性灵力的古老种子。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "虫鸣茧": {
+    "name": "虫鸣茧",
+    "category": "进化",
+    "price": 2100,
+    "description": "发出共鸣嗡声的神秘蚕茧。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "仙露珠": {
+    "name": "仙露珠",
+    "category": "进化",
+    "price": 2100,
+    "description": "凝结仙气的露珠，触之生辉。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "念力晶": {
+    "name": "念力晶",
+    "category": "进化",
+    "price": 2100,
+    "description": "封印着强大念力的水晶。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "龙鳞玉": {
+    "name": "龙鳞玉",
+    "category": "进化",
+    "price": 2100,
+    "description": "远古龙族遗留的鳞片化石。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "毒蛊壶": {
+    "name": "毒蛊壶",
+    "category": "进化",
+    "price": 2100,
+    "description": "封存剧毒蛊虫的小壶。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "磐岩髓": {
+    "name": "磐岩髓",
+    "category": "进化",
+    "price": 2100,
+    "description": "取自万年巨岩深处的精华。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "幽冥灯": {
+    "name": "幽冥灯",
+    "category": "进化",
+    "price": 2100,
+    "description": "幽蓝鬼火长燃不灭的灯笼。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "暗夜石": {
+    "name": "暗夜石",
+    "category": "进化",
+    "price": 2100,
+    "description": "吞噬光线的漆黑宝石。可让特定精灵进化。",
+    "training_stat": ""
+  },
+  "辉光珀": {
+    "name": "辉光珀",
+    "category": "进化",
+    "price": 2100,
+    "description": "散发永恒光辉的琥珀。可让特定精灵进化。",
+    "training_stat": ""
   }
 }

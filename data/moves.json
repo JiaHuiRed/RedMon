@@ -7,7 +7,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的幽冥之力猛烈攻击对手。"
   },
   "万圣夜": {
     "name": "万圣夜",
@@ -17,7 +17,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的辅助招式。"
   },
   "万有引力": {
     "name": "万有引力",
@@ -27,7 +27,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以草木之力攻击对手。"
   },
   "三旋擊": {
     "name": "三旋擊",
@@ -37,7 +37,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的寒冰之力攻击对手。"
   },
   "三连踢": {
     "name": "三连踢",
@@ -47,7 +47,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的格斗之力攻击对手。"
   },
   "三重攻击": {
     "name": "三重攻击",
@@ -57,7 +57,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用3种光线进行攻击。有时会让对手陷入麻痹、灼伤或冰冻的状态。"
   },
   "下盘踢": {
     "name": "下盘踢",
@@ -67,7 +67,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "临别礼物": {
     "name": "临别礼物",
@@ -77,7 +77,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "虽然会使自己陷入昏厥，但是能够大幅降低对手的攻击和特攻。"
   },
   "九彩升华齐聚顶": {
     "name": "九彩升华齐聚顶",
@@ -87,7 +87,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "乱击": {
     "name": "乱击",
@@ -97,7 +97,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用角或喙刺向对手进行攻击。连续攻击2～5次。"
   },
   "乱抓": {
     "name": "乱抓",
@@ -107,7 +107,7 @@
     "accuracy": 80,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用爪子或镰刀等抓对手进行攻击。连续攻击2～5次。"
   },
   "二连击": {
     "name": "二连击",
@@ -117,7 +117,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的普通之力攻击对手。"
   },
   "二连劈": {
     "name": "二连劈",
@@ -127,7 +127,7 @@
     "accuracy": 90,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用龙之力攻击对手。"
   },
   "二连踢": {
     "name": "二连踢",
@@ -137,7 +137,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用2只脚踢飞对手进行攻击。连续2次给予伤害。"
   },
   "亚空裂斩": {
     "name": "亚空裂斩",
@@ -147,7 +147,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用异次元的冲击波攻击对手。有时会使对手畏缩。"
   },
   "交换场地": {
     "name": "交换场地",
@@ -157,7 +157,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "交错火焰": {
     "name": "交错火焰",
@@ -167,7 +167,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放交错的美丽火焰攻击对手。有时会让对手陷入灼伤状态。"
   },
   "交错闪电": {
     "name": "交错闪电",
@@ -177,7 +177,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放交错的美丽雷电攻击对手。有时会让对手陷入麻痹状态。"
   },
   "亮亮风暴": {
     "name": "亮亮风暴",
@@ -187,7 +187,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "释放耀眼的风暴攻击对手。"
   },
   "亲密无间大乱揍": {
     "name": "亲密无间大乱揍",
@@ -197,7 +197,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的仙灵之力猛烈攻击对手。"
   },
   "仙女风": {
     "name": "仙女风",
@@ -217,7 +217,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "仿效": {
     "name": "仿效",
@@ -227,7 +227,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "伏特攻击": {
     "name": "伏特攻击",
@@ -237,7 +237,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "让电流覆盖全身猛撞向对手。自己也会受到不小的伤害。"
   },
   "伏特替换": {
     "name": "伏特替换",
@@ -247,7 +247,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "传递礼物": {
     "name": "传递礼物",
@@ -257,7 +257,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "佯攻": {
     "name": "佯攻",
@@ -267,7 +267,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的普通之力攻击对手。"
   },
   "保护色": {
     "name": "保护色",
@@ -277,7 +277,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "信号光束": {
     "name": "信号光束",
@@ -287,7 +287,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "发射神奇的光线进行攻击。有时会使对手混乱。"
   },
   "修长之角": {
     "name": "修长之角",
@@ -297,7 +297,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用钢铁之力攻击对手。"
   },
   "借力摔": {
     "name": "借力摔",
@@ -307,7 +307,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "会在对手之后进行攻击。但是自己的攻击必定会命中。"
   },
   "借助": {
     "name": "借助",
@@ -317,7 +317,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "假哭": {
     "name": "假哭",
@@ -327,7 +327,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "装哭流泪。使对手不知所措，从而大幅降低对手的特防。"
   },
   "假跪真撞": {
     "name": "假跪真撞",
@@ -337,7 +337,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "健美": {
     "name": "健美",
@@ -347,7 +347,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使出全身力气绷紧肌肉，从而提高自己的攻击和防御。"
   },
   "偷懒": {
     "name": "偷懒",
@@ -357,7 +357,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "偷懒休息。回复自己最大HP的一半。"
   },
   "催眠术": {
     "name": "催眠术",
@@ -377,7 +377,7 @@
     "accuracy": 75,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "撒出催眠粉，从而让对手陷入睡眠状态。"
   },
   "充电": {
     "name": "充电",
@@ -387,7 +387,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "充电光束": {
     "name": "充电光束",
@@ -397,7 +397,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "光合作用": {
     "name": "光合作用",
@@ -407,7 +407,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "回复自己的HP。根据天气的不同，回复量也会有所变化。"
   },
   "光墙": {
     "name": "光墙",
@@ -417,7 +417,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "利用神奇的墙壁，在5回合内减弱对手的特殊攻击的伤害。"
   },
   "光子喷涌": {
     "name": "光子喷涌",
@@ -427,7 +427,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以光芒之力攻击对手。"
   },
   "全力无双激烈拳": {
     "name": "全力无双激烈拳",
@@ -437,7 +437,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的招式。"
   },
   "再来一次": {
     "name": "再来一次",
@@ -447,7 +447,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "让对手接受再来一次，连续3次使出最后使用的招式。"
   },
   "写生": {
     "name": "写生",
@@ -457,7 +457,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "冥想": {
     "name": "冥想",
@@ -467,7 +467,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "静心凝神，从而提高自己的特攻和特防。"
   },
   "冰冰霜冻": {
     "name": "冰冰霜冻",
@@ -477,7 +477,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以寒冰之力攻击对手。"
   },
   "冰冻之风": {
     "name": "冰冻之风",
@@ -487,7 +487,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手吹出冰冷的寒风进行攻击。会降低对手的速度。"
   },
   "冰冻伏特": {
     "name": "冰冻伏特",
@@ -497,7 +497,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的寒冰之力猛烈攻击对手。"
   },
   "冰冻光束": {
     "name": "冰冻光束",
@@ -507,7 +507,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手发射冰冻光束进行攻击。有时会让对手陷入冰冻状态。"
   },
   "冰冻光线": {
     "name": "冰冻光线",
@@ -528,7 +528,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用充满寒气的拳头攻击对手。有时会让对手陷入冰冻状态。"
   },
   "冰冻牙": {
     "name": "冰冻牙",
@@ -538,7 +538,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "冰封世界": {
     "name": "冰封世界",
@@ -548,7 +548,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "冰息": {
     "name": "冰息",
@@ -558,7 +558,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "冰柱坠击": {
     "name": "冰柱坠击",
@@ -568,7 +568,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以寒冰之力攻击对手。"
   },
   "冰球": {
     "name": "冰球",
@@ -578,7 +578,7 @@
     "accuracy": 90,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的寒冰之力攻击对手。"
   },
   "冰砾": {
     "name": "冰砾",
@@ -588,7 +588,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "冰锤": {
     "name": "冰锤",
@@ -598,7 +598,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以寒冰之力攻击对手。"
   },
   "冰锥": {
     "name": "冰锥",
@@ -608,7 +608,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "向对手发射锋利的冰柱进行攻击。连续攻击2～5次。"
   },
   "冰雹": {
     "name": "冰雹",
@@ -618,7 +618,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在5回合内一直降冰雹，除冰属性精灵以外，给予全体精灵伤害。"
   },
   "冲天拳": {
     "name": "冲天拳",
@@ -628,7 +628,7 @@
     "accuracy": 90,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用冲向天空般高高的上勾拳顶起对手进行攻击。"
   },
   "冲岩": {
     "name": "冲岩",
@@ -638,7 +638,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用岩石之力攻击对手。"
   },
   "冲浪": {
     "name": "冲浪",
@@ -648,7 +648,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "利用大浪攻击对手。"
   },
   "冷冻干燥": {
     "name": "冷冻干燥",
@@ -658,7 +658,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "净化": {
     "name": "净化",
@@ -668,7 +668,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "出奇一击": {
     "name": "出奇一击",
@@ -678,7 +678,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "击掌奇袭": {
     "name": "击掌奇袭",
@@ -688,7 +688,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "进行先制攻击，使对手畏缩。要在出场后立刻使出才能成功。"
   },
   "击落": {
     "name": "击落",
@@ -698,7 +698,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用岩石之力攻击对手。"
   },
   "分担痛楚": {
     "name": "分担痛楚",
@@ -708,7 +708,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "将自己的HP和对手的HP相加，然后平分。"
   },
   "制裁光砾": {
     "name": "制裁光砾",
@@ -718,7 +718,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放无数光之弹幕攻击对手。"
   },
   "刺耳声": {
     "name": "刺耳声",
@@ -728,7 +728,7 @@
     "accuracy": 85,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "发出不由自主想要捂起耳朵的刺耳声，从而大幅降低对手的防御。"
   },
   "剑舞": {
     "name": "剑舞",
@@ -738,7 +738,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "激烈地跳起战舞提高气势。大幅提高自己的攻击。"
   },
   "剧毒": {
     "name": "剧毒",
@@ -748,7 +748,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "让对手陷入剧毒状态。随着回合的推进，中毒伤害会增加。"
   },
   "剧毒牙": {
     "name": "剧毒牙",
@@ -758,7 +758,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用有毒的牙齿咬住对手进行攻击。有时会使对手中剧毒。"
   },
   "劈开": {
     "name": "劈开",
@@ -768,7 +768,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用爪子或镰刀等劈开对手进行攻击。容易击中要害。"
   },
   "劈瓦": {
     "name": "劈瓦",
@@ -778,7 +778,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "将手刀猛烈地挥下攻击对手。还可以破坏光墙和反射壁等。"
   },
   "力量互换": {
     "name": "力量互换",
@@ -788,7 +788,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "力量宝石": {
     "name": "力量宝石",
@@ -798,7 +798,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发射岩石之力攻击对手。"
   },
   "力量平分": {
     "name": "力量平分",
@@ -808,7 +808,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "力量戏法": {
     "name": "力量戏法",
@@ -818,7 +818,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "加农光炮": {
     "name": "加农光炮",
@@ -828,7 +828,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手发射聚集的光之力量进行攻击。有时会降低对手的特防。"
   },
   "加农水炮": {
     "name": "加农水炮",
@@ -838,7 +838,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "向对手喷射水炮进行攻击。下一回合自己将无法动弹。"
   },
   "勇鸟猛攻": {
     "name": "勇鸟猛攻",
@@ -848,7 +848,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "收拢翅膀，通过低空飞行突击对手。自己也会受到不小的伤害。"
   },
   "十万伏特": {
     "name": "十万伏特",
@@ -858,7 +858,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手发出强力电击进行攻击。有时会让对手陷入麻痹状态。"
   },
   "十万马力": {
     "name": "十万马力",
@@ -868,7 +868,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以大地之力攻击对手。"
   },
   "十字剪": {
     "name": "十字剪",
@@ -878,7 +878,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以虫之力攻击对手。"
   },
   "十字劈": {
     "name": "十字劈",
@@ -888,7 +888,7 @@
     "accuracy": 80,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用两手呈十字劈打对手进行攻击。容易击中要害。"
   },
   "十字毒刃": {
     "name": "十字毒刃",
@@ -898,7 +898,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用毒之刃劈开对手进行攻击。有时会让对手陷入中毒状态。容易击中要害。"
   },
   "千万伏特": {
     "name": "千万伏特",
@@ -908,7 +908,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的雷电之力猛烈攻击对手。"
   },
   "千波激荡": {
     "name": "千波激荡",
@@ -918,7 +918,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以大地之力攻击对手。"
   },
   "千箭齐发": {
     "name": "千箭齐发",
@@ -928,7 +928,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以大地之力攻击对手。"
   },
   "单纯光束": {
     "name": "单纯光束",
@@ -938,7 +938,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "原始之力": {
     "name": "原始之力",
@@ -948,7 +948,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用原始之力进行攻击。有时会提高自己所有的能力。"
   },
   "双倍奉还": {
     "name": "双倍奉还",
@@ -958,7 +958,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "从对手那里受到物理攻击的伤害将以2倍返还给对手。"
   },
   "双刃头锤": {
     "name": "双刃头锤",
@@ -968,7 +968,7 @@
     "accuracy": 80,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的岩石之力猛烈攻击对手。"
   },
   "双针": {
     "name": "双针",
@@ -978,7 +978,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "将2根针刺入对手，连续2次给予伤害。有时会让对手陷入中毒状态。"
   },
   "反射壁": {
     "name": "反射壁",
@@ -988,7 +988,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "利用神奇的墙壁，在5回合内减弱对手的物理攻击的伤害。"
   },
   "发劲": {
     "name": "发劲",
@@ -998,7 +998,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "变圆": {
     "name": "变圆",
@@ -1008,7 +1008,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "将身体蜷曲变圆，从而提高自己的防御。"
   },
   "变小": {
     "name": "变小",
@@ -1018,7 +1018,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "蜷缩身体显得很小，从而大幅提高自己的闪避率。"
   },
   "变硬": {
     "name": "变硬",
@@ -1028,7 +1028,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "全身使劲，让身体变硬，从而提高自己的防御。"
   },
   "变身": {
     "name": "变身",
@@ -1038,7 +1038,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "变身成对手的样子，能够使用和对手完全相同的招式。"
   },
   "叢林治療": {
     "name": "叢林治療",
@@ -1048,7 +1048,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "古老之歌": {
     "name": "古老之歌",
@@ -1058,7 +1058,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "叫声": {
     "name": "叫声",
@@ -1068,7 +1068,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "让对手听可爱的叫声，引开注意力使其疏忽，从而降低对手的攻击。"
   },
   "可怕面孔": {
     "name": "可怕面孔",
@@ -1078,7 +1078,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "可爱星星飞天撞": {
     "name": "可爱星星飞天撞",
@@ -1088,7 +1088,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的招式。"
   },
   "叶刃": {
     "name": "叶刃",
@@ -1098,7 +1098,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "像用剑一般操纵叶片切斩对手进行攻击。容易击中要害。"
   },
   "号令": {
     "name": "号令",
@@ -1108,7 +1108,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "同命": {
     "name": "同命",
@@ -1118,7 +1118,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的辅助招式。"
   },
   "同步干扰": {
     "name": "同步干扰",
@@ -1128,7 +1128,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的念力之力猛烈攻击对手。"
   },
   "吐丝": {
     "name": "吐丝",
@@ -1148,7 +1148,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "吵闹": {
     "name": "吵闹",
@@ -1158,7 +1158,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在3回合内大吵大闹攻击对手。在此期间谁都不能入眠。"
   },
   "吸取": {
     "name": "吸取",
@@ -1168,7 +1168,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "吸取对手的养分进行攻击。可以回复给予对手伤害的一半HP。"
   },
   "吸取之吻": {
     "name": "吸取之吻",
@@ -1178,7 +1178,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用仙灵之力攻击对手。"
   },
   "吸取力量": {
     "name": "吸取力量",
@@ -1188,7 +1188,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "吸取拳": {
     "name": "吸取拳",
@@ -1198,7 +1198,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "吹捧": {
     "name": "吹捧",
@@ -1208,7 +1208,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "吹飞": {
     "name": "吹飞",
@@ -1218,7 +1218,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "吹飞对手，强制拉后备精灵上场。如果对手为野生精灵，战斗将直接结束。"
   },
   "吼叫": {
     "name": "吼叫",
@@ -1238,7 +1238,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "咬住": {
     "name": "咬住",
@@ -1248,7 +1248,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用尖锐的牙咬住对手进行攻击。有时会使对手畏缩。"
   },
   "咬碎": {
     "name": "咬碎",
@@ -1258,7 +1258,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用利牙咬碎对手进行攻击。有时会降低对手的防御。"
   },
   "哈欠": {
     "name": "哈欠",
@@ -1268,7 +1268,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "打个大哈欠引起睡意。在下一回合让对手陷入睡眠状态。"
   },
   "哗哗气场": {
     "name": "哗哗气场",
@@ -1278,7 +1278,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以念力之力攻击对手。"
   },
   "唤醒巴掌": {
     "name": "唤醒巴掌",
@@ -1288,7 +1288,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "唱歌": {
     "name": "唱歌",
@@ -1298,7 +1298,7 @@
     "accuracy": 55,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "让对手听舒适、美妙的歌声，从而陷入睡眠状态。"
   },
   "啃咬": {
     "name": "啃咬",
@@ -1318,7 +1318,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "用尖锐的喙或角刺向对手进行攻击。"
   },
   "啄钻": {
     "name": "啄钻",
@@ -1328,7 +1328,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "一边旋转，一边将尖喙刺入对手进行攻击。"
   },
   "啄食": {
     "name": "啄食",
@@ -1338,7 +1338,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用风之力攻击对手。"
   },
   "喋喋不休": {
     "name": "喋喋不休",
@@ -1348,7 +1348,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用风之力攻击对手。"
   },
   "喝牛奶": {
     "name": "喝牛奶",
@@ -1358,7 +1358,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "喷出": {
     "name": "喷出",
@@ -1368,7 +1368,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "喷射火焰": {
     "name": "喷射火焰",
@@ -1378,7 +1378,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手发射烈焰进行攻击。有时会让对手陷入灼伤状态。"
   },
   "喷水": {
     "name": "喷水",
@@ -1388,7 +1388,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "掀起潮水进行攻击。自己的HP越少，招式的威力越小。"
   },
   "喷火": {
     "name": "喷火",
@@ -1398,7 +1398,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "爆发怒火攻击对手。自己的HP越少，招式的威力越小。"
   },
   "喷烟": {
     "name": "喷烟",
@@ -1408,7 +1408,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "嚣张": {
     "name": "嚣张",
@@ -1418,7 +1418,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的暗黑之力攻击对手。"
   },
   "回声": {
     "name": "回声",
@@ -1428,7 +1428,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "回复封锁": {
     "name": "回复封锁",
@@ -1438,7 +1438,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "回复指令": {
     "name": "回复指令",
@@ -1448,7 +1448,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "回收利用": {
     "name": "回收利用",
@@ -1458,7 +1458,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "回旋踢": {
     "name": "回旋踢",
@@ -1468,7 +1468,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "一边使身体快速旋转，一边踢飞对手进行攻击。有时会使对手畏缩。"
   },
   "围攻": {
     "name": "围攻",
@@ -1478,7 +1478,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的招式。"
   },
   "圆瞳": {
     "name": "圆瞳",
@@ -1488,7 +1488,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "圣剑": {
     "name": "圣剑",
@@ -1498,7 +1498,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以格斗之力攻击对手。"
   },
   "地狱翻滚": {
     "name": "地狱翻滚",
@@ -1508,7 +1508,7 @@
     "accuracy": 80,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "以格斗之力攻击对手。"
   },
   "地球上投": {
     "name": "地球上投",
@@ -1518,7 +1518,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "利用引力将对手甩飞出去。给予对手和自己等级相同的伤害。"
   },
   "地裂": {
     "name": "地裂",
@@ -1528,7 +1528,7 @@
     "accuracy": 30,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "让对手掉落于地裂的裂缝中进行攻击。只要命中就会一击昏厥。"
   },
   "地隆啸天大终结": {
     "name": "地隆啸天大终结",
@@ -1538,7 +1538,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的招式。"
   },
   "地震": {
     "name": "地震",
@@ -1548,7 +1548,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "利用地震的冲击，攻击周围所有的精灵。"
   },
   "坏坏领域": {
     "name": "坏坏领域",
@@ -1558,7 +1558,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "垃圾射击": {
     "name": "垃圾射击",
@@ -1568,7 +1568,7 @@
     "accuracy": 80,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的毒素之力猛烈攻击对手。"
   },
   "增强拳": {
     "name": "增强拳",
@@ -1578,7 +1578,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "多属性攻击": {
     "name": "多属性攻击",
@@ -1588,7 +1588,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "大地之力": {
     "name": "大地之力",
@@ -1598,7 +1598,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手脚下释放大地之力。有时会降低对手的特防。"
   },
   "大地掌控": {
     "name": "大地掌控",
@@ -1608,7 +1608,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "大地波動": {
     "name": "大地波動",
@@ -1618,7 +1618,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "大地神力": {
     "name": "大地神力",
@@ -1628,7 +1628,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以大地之力攻击对手。"
   },
   "大声咆哮": {
     "name": "大声咆哮",
@@ -1638,7 +1638,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "大字爆炎": {
     "name": "大字爆炎",
@@ -1648,7 +1648,7 @@
     "accuracy": 85,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用大字形状的火焰烧尽对手。有时会让对手陷入灼伤状态。"
   },
   "大快朵颐": {
     "name": "大快朵颐",
@@ -1658,7 +1658,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "大晴天": {
     "name": "大晴天",
@@ -1668,7 +1668,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "在5回合内让日照变得强烈，从而提高火属性的招式威力。"
   },
   "大爆炸": {
     "name": "大爆炸",
@@ -1678,7 +1678,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "引发大爆炸，攻击周围所有的精灵。使用后自己会陷入昏厥。"
   },
   "大蛇瞪眼": {
     "name": "大蛇瞪眼",
@@ -1688,7 +1688,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用腹部的花纹使对手害怕，从而让其陷入麻痹状态。"
   },
   "大闹一番": {
     "name": "大闹一番",
@@ -1698,7 +1698,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在2～3回合内，乱打一气地攻击对手。大闹一番后自己会陷入混乱。"
   },
   "天使之吻": {
     "name": "天使之吻",
@@ -1708,7 +1708,7 @@
     "accuracy": 75,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "头锤": {
     "name": "头锤",
@@ -1718,7 +1718,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "将头伸出，笔直地扑向对手进行攻击。有时会使对手畏缩。"
   },
   "夹住": {
     "name": "夹住",
@@ -1728,7 +1728,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "将对手从两侧夹住，给予伤害。"
   },
   "奇妙空间": {
     "name": "奇妙空间",
@@ -1738,7 +1738,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "奇异之光": {
     "name": "奇异之光",
@@ -1748,7 +1748,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "显示奇怪的光，扰乱对手。使对手混乱。"
   },
   "奇异之风": {
     "name": "奇异之风",
@@ -1758,7 +1758,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用幽冥之力攻击对手。"
   },
   "奇迹之眼": {
     "name": "奇迹之眼",
@@ -1768,7 +1768,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "妒火": {
     "name": "妒火",
@@ -1778,7 +1778,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "妖精之锁": {
     "name": "妖精之锁",
@@ -1788,7 +1788,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "妖精之风": {
     "name": "妖精之风",
@@ -1798,7 +1798,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用仙灵之力攻击对手。"
   },
   "嬉闹": {
     "name": "嬉闹",
@@ -1808,7 +1808,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "与对手嬉闹玩耍进行攻击。有时会降低对手的攻击。"
   },
   "子弹拳": {
     "name": "子弹拳",
@@ -1818,7 +1818,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "以迅雷不及掩耳之势出拳攻击对手。必定能够先制攻击。"
   },
   "宇宙力量": {
     "name": "宇宙力量",
@@ -1828,7 +1828,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "汲取宇宙中神秘的力量，从而提高自己的防御和特防。"
   },
   "守住": {
     "name": "守住",
@@ -1838,7 +1838,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "定身法": {
     "name": "定身法",
@@ -1848,7 +1848,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "阻碍对手行动，之前使出的招式将在4回合内无法使用。"
   },
   "寄生种子": {
     "name": "寄生种子",
@@ -1858,7 +1858,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "植入寄生种子后，将在每回合吸取对手的HP用来回复自己。"
   },
   "密语": {
     "name": "密语",
@@ -1868,7 +1868,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "封印": {
     "name": "封印",
@@ -1878,7 +1878,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "如果对手有和自己相同的招式，那么只有对手无法使用该招式。"
   },
   "小偷": {
     "name": "小偷",
@@ -1888,7 +1888,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "尖刺加农炮": {
     "name": "尖刺加农炮",
@@ -1898,7 +1898,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手发射锐针进行攻击。连续攻击2～5次。"
   },
   "尖刺臂": {
     "name": "尖刺臂",
@@ -1908,7 +1908,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用带刺的手臂猛烈地挥舞进行攻击。有时会使对手畏缩。"
   },
   "尖刺防守": {
     "name": "尖刺防守",
@@ -1918,7 +1918,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "尖石攻击": {
     "name": "尖石攻击",
@@ -1928,7 +1928,7 @@
     "accuracy": 80,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以岩石之力攻击对手。"
   },
   "居合斩": {
     "name": "居合斩",
@@ -1938,7 +1938,7 @@
     "accuracy": 95,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "屏障": {
     "name": "屏障",
@@ -1948,7 +1948,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "制造坚固的壁障，从而大幅提高自己的防御。"
   },
   "山岚摔": {
     "name": "山岚摔",
@@ -1958,7 +1958,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "岩崩": {
     "name": "岩崩",
@@ -1968,7 +1968,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "将大岩石猛烈地撞向对手进行攻击。有时会使对手畏缩。"
   },
   "岩石封锁": {
     "name": "岩石封锁",
@@ -1978,7 +1978,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "投掷岩石进行攻击。封住对手的行动，从而降低速度。"
   },
   "岩石打磨": {
     "name": "岩石打磨",
@@ -1988,7 +1988,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用岩石之力的辅助招式。"
   },
   "岩石炮": {
     "name": "岩石炮",
@@ -1998,7 +1998,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的岩石之力猛烈攻击对手。"
   },
   "岩石爆击": {
     "name": "岩石爆击",
@@ -2008,7 +2008,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手发射坚硬的岩石进行攻击。连续攻击2～5次。"
   },
   "巨人卫士・阿罗拉": {
     "name": "巨人卫士・阿罗拉",
@@ -2018,7 +2018,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的招式。"
   },
   "巨兽斩": {
     "name": "巨兽斩",
@@ -2028,7 +2028,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以钢铁之力攻击对手。"
   },
   "巨声": {
     "name": "巨声",
@@ -2038,7 +2038,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "给予对手又吵又响的巨大震动进行攻击。"
   },
   "巴投": {
     "name": "巴投",
@@ -2048,7 +2048,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "帮助": {
     "name": "帮助",
@@ -2058,7 +2058,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "帮助伙伴。被帮助的精灵，其招式威力变得比平时大。"
   },
   "幸运咒语": {
     "name": "幸运咒语",
@@ -2068,7 +2068,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "幻象光线": {
     "name": "幻象光线",
@@ -2078,7 +2078,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手发射神奇的光线进行攻击。有时会使对手混乱。"
   },
   "广域破坏": {
     "name": "广域破坏",
@@ -2088,7 +2088,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用龙之力攻击对手。"
   },
   "广域防守": {
     "name": "广域防守",
@@ -2098,7 +2098,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用岩石之力的辅助招式。"
   },
   "庆祝": {
     "name": "庆祝",
@@ -2108,7 +2108,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "廣域戰力": {
     "name": "廣域戰力",
@@ -2118,7 +2118,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以念力之力攻击对手。"
   },
   "延后": {
     "name": "延后",
@@ -2128,7 +2128,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "异次元洞": {
     "name": "异次元洞",
@@ -2138,7 +2138,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以念力之力攻击对手。"
   },
   "异次元猛攻": {
     "name": "异次元猛攻",
@@ -2148,7 +2148,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "弹跳": {
     "name": "弹跳",
@@ -2158,7 +2158,7 @@
     "accuracy": 85,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "弹跳到高高的空中，第2回合攻击对手。有时会让对手陷入麻痹状态。"
   },
   "强力鞭打": {
     "name": "强力鞭打",
@@ -2168,7 +2168,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的草木之力猛烈攻击对手。"
   },
   "强酸剧毒灭绝雨": {
     "name": "强酸剧毒灭绝雨",
@@ -2178,7 +2178,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的招式。"
   },
   "归天之翼": {
     "name": "归天之翼",
@@ -2188,7 +2188,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以风之力攻击对手。"
   },
   "彗星拳": {
     "name": "彗星拳",
@@ -2198,7 +2198,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使出彗星般的拳头攻击对手。有时会提高自己的攻击。"
   },
   "影子偷袭": {
     "name": "影子偷袭",
@@ -2208,7 +2208,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用幽冥之力攻击对手。"
   },
   "影子分身": {
     "name": "影子分身",
@@ -2218,7 +2218,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "通过快速移动来制造分身，扰乱对手，从而提高闪避率。"
   },
   "微笑": {
     "name": "微笑",
@@ -2238,7 +2238,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "心灵互换": {
     "name": "心灵互换",
@@ -2248,7 +2248,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "必杀门牙": {
     "name": "必杀门牙",
@@ -2258,7 +2258,7 @@
     "accuracy": 90,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以普通之力攻击对手。"
   },
   "忍耐": {
     "name": "忍耐",
@@ -2268,7 +2268,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在2回合内忍受攻击，受到的伤害会2倍返还给对手。"
   },
   "快速折返": {
     "name": "快速折返",
@@ -2278,7 +2278,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用水流之力攻击对手。"
   },
   "快速防守": {
     "name": "快速防守",
@@ -2288,7 +2288,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的辅助招式。"
   },
   "念力": {
     "name": "念力",
@@ -2298,7 +2298,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "向对手发送微弱的念力进行攻击。有时会使对手混乱。"
   },
   "急速折返": {
     "name": "急速折返",
@@ -2308,7 +2308,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用虫之力攻击对手。"
   },
   "怨念": {
     "name": "怨念",
@@ -2318,7 +2318,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的辅助招式。"
   },
   "怨恨": {
     "name": "怨恨",
@@ -2328,7 +2328,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的辅助招式。"
   },
   "怪力": {
     "name": "怪力",
@@ -2338,7 +2338,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使出浑身力气殴打对手进行攻击。"
   },
   "怪异电波": {
     "name": "怪异电波",
@@ -2348,7 +2348,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "恶之波动": {
     "name": "恶之波动",
@@ -2358,7 +2358,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "从体内发出充满恶意的气场。有时会使对手畏缩。"
   },
   "恶意追击": {
     "name": "恶意追击",
@@ -2368,7 +2368,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "恶梦": {
     "name": "恶梦",
@@ -2378,7 +2378,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的辅助招式。"
   },
   "恶魔之吻": {
     "name": "恶魔之吻",
@@ -2388,7 +2388,7 @@
     "accuracy": 75,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用恐怖的脸强吻对手。让对手陷入睡眠状态。"
   },
   "您先请": {
     "name": "您先请",
@@ -2398,7 +2398,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "惊吓": {
     "name": "惊吓",
@@ -2408,7 +2408,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用尖叫声等突然惊吓对手进行攻击。有时会使对手畏缩。"
   },
   "惊爆大头": {
     "name": "惊爆大头",
@@ -2418,7 +2418,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的火焰之力猛烈攻击对手。"
   },
   "惩罚": {
     "name": "惩罚",
@@ -2428,7 +2428,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的招式。"
   },
   "意念头锤": {
     "name": "意念头锤",
@@ -2438,7 +2438,7 @@
     "accuracy": 90,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "集中精神力量用头撞击对手。有时会使对手畏缩。"
   },
   "意念移物": {
     "name": "意念移物",
@@ -2448,7 +2448,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "愤怒": {
     "name": "愤怒",
@@ -2458,7 +2458,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的普通之力攻击对手。"
   },
   "愤怒粉": {
     "name": "愤怒粉",
@@ -2468,7 +2468,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "愤怒门牙": {
     "name": "愤怒门牙",
@@ -2478,7 +2478,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用锋利的门牙猛烈地咬住对手进行攻击。对手的HP减半。"
   },
   "戏法": {
     "name": "戏法",
@@ -2488,7 +2488,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "抓住对手的空隙，交换自己和对手的持有物。"
   },
   "戏法空间": {
     "name": "戏法空间",
@@ -2498,7 +2498,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "戏法防守": {
     "name": "戏法防守",
@@ -2508,7 +2508,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "成长": {
     "name": "成长",
@@ -2528,7 +2528,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "手下留情": {
     "name": "手下留情",
@@ -2538,7 +2538,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "扎根": {
     "name": "扎根",
@@ -2548,7 +2548,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "在大地上扎根，每回合回复自己的HP。因为扎根了，所以不能替换。"
   },
   "扑击": {
     "name": "扑击",
@@ -2558,7 +2558,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以格斗之力攻击对手。"
   },
   "打嗝": {
     "name": "打嗝",
@@ -2568,7 +2568,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的毒素之力猛烈攻击对手。"
   },
   "打草结": {
     "name": "打草结",
@@ -2578,7 +2578,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的招式。"
   },
   "打雷": {
     "name": "打雷",
@@ -2588,7 +2588,7 @@
     "accuracy": 70,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手劈下暴雷进行攻击。有时会让对手陷入麻痹状态。"
   },
   "打鼾": {
     "name": "打鼾",
@@ -2598,7 +2598,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "扫尾拍打": {
     "name": "扫尾拍打",
@@ -2608,7 +2608,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的普通之力攻击对手。"
   },
   "扮演": {
     "name": "扮演",
@@ -2618,7 +2618,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "找伙伴": {
     "name": "找伙伴",
@@ -2628,7 +2628,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "抓": {
     "name": "抓",
@@ -2638,7 +2638,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "用坚硬且无比锋利的爪子抓对手进行攻击。"
   },
   "抓狂": {
     "name": "抓狂",
@@ -2648,7 +2648,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "投掷": {
     "name": "投掷",
@@ -2658,7 +2658,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的招式。"
   },
   "投球": {
     "name": "投球",
@@ -2668,7 +2668,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的普通之力攻击对手。"
   },
   "折弯汤匙": {
     "name": "折弯汤匙",
@@ -2678,7 +2678,7 @@
     "accuracy": 80,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "折弯汤匙引开注意，从而降低对手的命中率。"
   },
   "抛下狠话": {
     "name": "抛下狠话",
@@ -2688,7 +2688,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "抛物面充电": {
     "name": "抛物面充电",
@@ -2698,7 +2698,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "抢先一步": {
     "name": "抢先一步",
@@ -2708,7 +2708,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "抢夺": {
     "name": "抢夺",
@@ -2718,7 +2718,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "报仇": {
     "name": "报仇",
@@ -2728,7 +2728,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "报复": {
     "name": "报复",
@@ -2738,7 +2738,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "如果受到对手的招式攻击，就能给予对手2倍的伤害。"
   },
   "报恩": {
     "name": "报恩",
@@ -2748,7 +2748,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "全力攻击对手。亲密度越高，威力越大。"
   },
   "拍击": {
     "name": "拍击",
@@ -2758,7 +2758,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "使用长长的尾巴或手等拍打对手进行攻击。"
   },
   "拍落": {
     "name": "拍落",
@@ -2768,7 +2768,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "拍落对手的持有物，直到战斗结束都不能使用。"
   },
   "拦堵": {
     "name": "拦堵",
@@ -2778,7 +2778,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "指導": {
     "name": "指導",
@@ -2788,7 +2788,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的辅助招式。"
   },
   "挑衅": {
     "name": "挑衅",
@@ -2798,7 +2798,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使对手愤怒。在3回合内让对手只能使出给予伤害的招式。"
   },
   "挖洞": {
     "name": "挖洞",
@@ -2808,7 +2808,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "第1回合钻入地底，第2回合攻击对手。"
   },
   "挠痒": {
     "name": "挠痒",
@@ -2818,7 +2818,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "给对手挠痒，使其发笑，从而降低对手的攻击和防御。"
   },
   "挡路": {
     "name": "挡路",
@@ -2828,7 +2828,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "张开双手进行阻挡，封住对手的退路，使其不能逃走。"
   },
   "挣扎": {
     "name": "挣扎",
@@ -2838,7 +2838,7 @@
     "accuracy": 100,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "当自己的PP耗尽时，努力挣扎攻击对手。自己也会受到少许伤害。"
   },
   "挥指": {
     "name": "挥指",
@@ -2848,7 +2848,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "挥动手指刺激自己的大脑，从许多的招式中随机使出1个。"
   },
   "挺住": {
     "name": "挺住",
@@ -2858,7 +2858,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "即使受到攻击，也至少会留下1HP。连续使出则容易失败。"
   },
   "捏碎": {
     "name": "捏碎",
@@ -2868,7 +2868,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "捕兽夹": {
     "name": "捕兽夹",
@@ -2878,7 +2878,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的草木之力攻击对手。"
   },
   "换场": {
     "name": "换场",
@@ -2888,7 +2888,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "换挡": {
     "name": "换挡",
@@ -2898,7 +2898,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的辅助招式。"
   },
   "掀榻榻米": {
     "name": "掀榻榻米",
@@ -2908,7 +2908,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的辅助招式。"
   },
   "掉包": {
     "name": "掉包",
@@ -2918,7 +2918,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "接棒": {
     "name": "接棒",
@@ -2928,7 +2928,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "和后备精灵进行替换。换上的精灵能直接继承其能力的变化。"
   },
   "掷泥": {
     "name": "掷泥",
@@ -2938,7 +2938,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的大地之力攻击对手。"
   },
   "掷锚": {
     "name": "掷锚",
@@ -2948,7 +2948,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "以钢铁之力攻击对手。"
   },
   "搏命": {
     "name": "搏命",
@@ -2958,7 +2958,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的招式。"
   },
   "摇尾巴": {
     "name": "摇尾巴",
@@ -2968,7 +2968,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "可爱地左右摇晃尾巴，诱使对手疏忽大意。会降低对手的防御。"
   },
   "摇晃舞": {
     "name": "摇晃舞",
@@ -2978,7 +2978,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "摇摇晃晃地跳起舞蹈，让周围的精灵陷入混乱状态。"
   },
   "摔打": {
     "name": "摔打",
@@ -2988,7 +2988,7 @@
     "accuracy": 75,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用长长的尾巴或藤蔓等摔打对手进行攻击。"
   },
   "撒娇": {
     "name": "撒娇",
@@ -2998,7 +2998,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "可爱地凝视，诱使对手疏忽大意，从而大幅降低对手的攻击。"
   },
   "撒菱": {
     "name": "撒菱",
@@ -3008,7 +3008,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的辅助招式。"
   },
   "撕咬": {
     "name": "撕咬",
@@ -3028,7 +3028,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用坚硬的锐爪劈开对手进行攻击。有时会降低对手的防御。"
   },
   "撞击": {
     "name": "撞击",
@@ -3048,7 +3048,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "以普通之力攻击对手。"
   },
   "攀瀑": {
     "name": "攀瀑",
@@ -3058,7 +3058,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以惊人的气势扑向对手。有时会使对手畏缩。"
   },
   "攻击指令": {
     "name": "攻击指令",
@@ -3068,7 +3068,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以虫之力攻击对手。"
   },
   "放电": {
     "name": "放电",
@@ -3078,7 +3078,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "释放耀眼的电击攻击周围所有精灵。有时会让对手陷入麻痹状态。"
   },
   "断头钳": {
     "name": "断头钳",
@@ -3088,7 +3088,7 @@
     "accuracy": 30,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "断崖之剑": {
     "name": "断崖之剑",
@@ -3098,7 +3098,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的大地之力猛烈攻击对手。"
   },
   "新月舞": {
     "name": "新月舞",
@@ -3108,7 +3108,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "旋风刀": {
     "name": "旋风刀",
@@ -3118,7 +3118,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "制造风之刃，于第2回合攻击对手。容易击中要害。"
   },
   "无尽暗夜之诱惑": {
     "name": "无尽暗夜之诱惑",
@@ -3128,7 +3128,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的招式。"
   },
   "无极光束": {
     "name": "无极光束",
@@ -3138,7 +3138,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的龙之力猛烈攻击对手。"
   },
   "无理取闹": {
     "name": "无理取闹",
@@ -3148,7 +3148,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手无理取闹，令其不能连续2次使出相同招式。"
   },
   "日光刃": {
     "name": "日光刃",
@@ -3158,7 +3158,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的草木之力猛烈攻击对手。"
   },
   "日光回旋下苍穹": {
     "name": "日光回旋下苍穹",
@@ -3168,7 +3168,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的钢铁之力猛烈攻击对手。"
   },
   "日光束": {
     "name": "日光束",
@@ -3178,7 +3178,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "第1回合收集日光，第2回合发射光束进行攻击。"
   },
   "时光咆哮": {
     "name": "时光咆哮",
@@ -3188,7 +3188,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放扭曲时空的力量攻击对手。下一回合自己将无法动弹。"
   },
   "晨光": {
     "name": "晨光",
@@ -3198,7 +3198,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "回复自己的HP。根据天气的不同，回复量也会有所变化。"
   },
   "暗冥強擊": {
     "name": "暗冥強擊",
@@ -3208,7 +3208,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "暗影之光": {
     "name": "暗影之光",
@@ -3218,7 +3218,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以幽冥之力攻击对手。"
   },
   "暗影之骨": {
     "name": "暗影之骨",
@@ -3228,7 +3228,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以幽冥之力攻击对手。"
   },
   "暗影偷盗": {
     "name": "暗影偷盗",
@@ -3238,7 +3238,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以幽冥之力攻击对手。"
   },
   "暗影拳": {
     "name": "暗影拳",
@@ -3248,7 +3248,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使出混影之拳。攻击必定会命中。"
   },
   "暗影潜袭": {
     "name": "暗影潜袭",
@@ -3258,7 +3258,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的幽冥之力猛烈攻击对手。"
   },
   "暗影爪": {
     "name": "暗影爪",
@@ -3268,7 +3268,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用影子制成的锐爪劈开对手进行攻击。容易击中要害。"
   },
   "暗影球": {
     "name": "暗影球",
@@ -3278,7 +3278,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "投掷一团黑影进行攻击。有时会降低对手的特防。"
   },
   "暗袭要害": {
     "name": "暗袭要害",
@@ -3288,7 +3288,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "瞬间从暗处接近对手进行攻击。容易击中要害。"
   },
   "暗黑洞": {
     "name": "暗黑洞",
@@ -3298,7 +3298,7 @@
     "accuracy": 50,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "将对手拖入黑暗的世界，让对手陷入睡眠状态。"
   },
   "暗黑爆破": {
     "name": "暗黑爆破",
@@ -3308,7 +3308,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "暴风": {
     "name": "暴风",
@@ -3318,7 +3318,7 @@
     "accuracy": 70,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以风之力攻击对手。"
   },
   "暴风雪": {
     "name": "暴风雪",
@@ -3328,7 +3328,7 @@
     "accuracy": 70,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "将猛烈的暴风雪刮向对手进行攻击。有时会让对手陷入冰冻状态。"
   },
   "替身": {
     "name": "替身",
@@ -3338,7 +3338,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "削减少许自己的HP，制造分身。分身将成为自己的替身。"
   },
   "月亮之力": {
     "name": "月亮之力",
@@ -3348,7 +3348,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "借助月亮的力量攻击对手。有时会降低对手的特攻。"
   },
   "月光": {
     "name": "月光",
@@ -3358,7 +3358,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "回复自己的HP。根据天气的不同，回复量也会有所变化。"
   },
   "月华飞溅落灵霄": {
     "name": "月华飞溅落灵霄",
@@ -3368,7 +3368,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的幽冥之力猛烈攻击对手。"
   },
   "木枝突刺": {
     "name": "木枝突刺",
@@ -3378,7 +3378,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "用草木之力攻击对手。"
   },
   "木槌": {
     "name": "木槌",
@@ -3388,7 +3388,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "释放强大的草木之力猛烈攻击对手。"
   },
   "木角": {
     "name": "木角",
@@ -3398,7 +3398,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用草木之力攻击对手。"
   },
   "杂技": {
     "name": "杂技",
@@ -3408,7 +3408,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用风之力攻击对手。"
   },
   "极光幕": {
     "name": "极光幕",
@@ -3418,7 +3418,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用寒冰之力的辅助招式。"
   },
   "极光束": {
     "name": "极光束",
@@ -3428,7 +3428,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手发射虹色光束进行攻击。有时会降低对手的攻击。"
   },
   "极寒冷焰": {
     "name": "极寒冷焰",
@@ -3438,7 +3438,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的寒冰之力猛烈攻击对手。"
   },
   "极巨大地": {
     "name": "极巨大地",
@@ -3448,7 +3448,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的招式。"
   },
   "极巨妖精": {
     "name": "极巨妖精",
@@ -3458,7 +3458,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的招式。"
   },
   "极巨寒冰": {
     "name": "极巨寒冰",
@@ -3468,7 +3468,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用寒冰之力的招式。"
   },
   "极巨岩石": {
     "name": "极巨岩石",
@@ -3478,7 +3478,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用岩石之力的招式。"
   },
   "极巨幽魂": {
     "name": "极巨幽魂",
@@ -3488,7 +3488,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的招式。"
   },
   "极巨恶霸": {
     "name": "极巨恶霸",
@@ -3498,7 +3498,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的招式。"
   },
   "极巨拳斗": {
     "name": "极巨拳斗",
@@ -3508,7 +3508,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的招式。"
   },
   "极巨攻击": {
     "name": "极巨攻击",
@@ -3518,7 +3518,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "极巨水流": {
     "name": "极巨水流",
@@ -3528,7 +3528,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用水流之力的招式。"
   },
   "极巨火爆": {
     "name": "极巨火爆",
@@ -3538,7 +3538,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用火焰之力的招式。"
   },
   "极巨炮": {
     "name": "极巨炮",
@@ -3548,7 +3548,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以龙之力攻击对手。"
   },
   "极巨草原": {
     "name": "极巨草原",
@@ -3558,7 +3558,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的招式。"
   },
   "极巨虫蛊": {
     "name": "极巨虫蛊",
@@ -3568,7 +3568,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的招式。"
   },
   "极巨超能": {
     "name": "极巨超能",
@@ -3578,7 +3578,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的招式。"
   },
   "极巨酸毒": {
     "name": "极巨酸毒",
@@ -3588,7 +3588,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的招式。"
   },
   "极巨钢铁": {
     "name": "极巨钢铁",
@@ -3598,7 +3598,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的招式。"
   },
   "极巨闪电": {
     "name": "极巨闪电",
@@ -3608,7 +3608,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的招式。"
   },
   "极巨防壁": {
     "name": "极巨防壁",
@@ -3618,7 +3618,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "极巨飞冲": {
     "name": "极巨飞冲",
@@ -3628,7 +3628,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用风之力的招式。"
   },
   "极巨龙骑": {
     "name": "极巨龙骑",
@@ -3638,7 +3638,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用龙之力的招式。"
   },
   "极恶飞跃粉碎击": {
     "name": "极恶飞跃粉碎击",
@@ -3648,7 +3648,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的暗黑之力猛烈攻击对手。"
   },
   "极速俯冲轰烈撞": {
     "name": "极速俯冲轰烈撞",
@@ -3658,7 +3658,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用风之力的招式。"
   },
   "查封": {
     "name": "查封",
@@ -3668,7 +3668,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "树叶": {
     "name": "树叶",
@@ -3678,7 +3678,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "用草木之力攻击对手。"
   },
   "核心惩罚者": {
     "name": "核心惩罚者",
@@ -3688,7 +3688,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以龙之力攻击对手。"
   },
   "根源波动": {
     "name": "根源波动",
@@ -3698,7 +3698,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "梦话": {
     "name": "梦话",
@@ -3708,7 +3708,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "从自己已学会的招式中任意使出1个。只能在自己睡觉时使用。"
   },
   "棉孢子": {
     "name": "棉孢子",
@@ -3718,7 +3718,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "棉花防守": {
     "name": "棉花防守",
@@ -3728,7 +3728,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "森林咒术": {
     "name": "森林咒术",
@@ -3738,7 +3738,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "棱角化": {
     "name": "棱角化",
@@ -3748,7 +3748,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "增加身体的角，变得棱棱角角，从而提高自己的攻击。"
   },
   "棱镜镭射": {
     "name": "棱镜镭射",
@@ -3758,7 +3758,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的念力之力猛烈攻击对手。"
   },
   "模仿": {
     "name": "模仿",
@@ -3768,7 +3768,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "可以将对手最后使用的招式，在战斗内变成自己的招式。"
   },
   "欢乐时光": {
     "name": "欢乐时光",
@@ -3778,7 +3778,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "欺诈": {
     "name": "欺诈",
@@ -3788,7 +3788,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "毁天灭地巨岩坠": {
     "name": "毁天灭地巨岩坠",
@@ -3798,7 +3798,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用岩石之力的招式。"
   },
   "毒丝": {
     "name": "毒丝",
@@ -3808,7 +3808,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "毒击": {
     "name": "毒击",
@@ -3818,7 +3818,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用浸满毒素的触手或手臂攻击对手。有时会让对手陷入中毒状态。"
   },
   "毒尾": {
     "name": "毒尾",
@@ -3828,7 +3828,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用尾巴拍打。有时会让对手陷入中毒状态，也容易击中要害。"
   },
   "毒液冲击": {
     "name": "毒液冲击",
@@ -3838,7 +3838,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用毒素之力攻击对手。"
   },
   "毒液陷阱": {
     "name": "毒液陷阱",
@@ -3848,7 +3848,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "毒瓦斯": {
     "name": "毒瓦斯",
@@ -3858,7 +3858,7 @@
     "accuracy": 90,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "将毒瓦斯吹到对手的脸上，从而让对手陷入中毒状态。"
   },
   "毒粉": {
     "name": "毒粉",
@@ -3878,7 +3878,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "毒针": {
     "name": "毒针",
@@ -3888,7 +3888,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "将有毒的针刺入对手进行攻击。有时会让对手陷入中毒状态。"
   },
   "气味侦测": {
     "name": "气味侦测",
@@ -3898,7 +3898,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "气场轮": {
     "name": "气场轮",
@@ -3908,7 +3908,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以钢铁之力攻击对手。"
   },
   "气旋攻击": {
     "name": "气旋攻击",
@@ -3918,7 +3918,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以风之力攻击对手。"
   },
   "气象球": {
     "name": "气象球",
@@ -3928,7 +3928,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "根据使用时的天气，招式属性和威力会改变。"
   },
   "水之波动": {
     "name": "水之波动",
@@ -3938,7 +3938,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用水的震动攻击对手。有时会使对手混乱。"
   },
   "水之誓约": {
     "name": "水之誓约",
@@ -3948,7 +3948,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "水枪": {
     "name": "水枪",
@@ -3968,7 +3968,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "以迅雷不及掩耳之势扑向对手。必定能够先制攻击。"
   },
   "水流尾": {
     "name": "水流尾",
@@ -3978,7 +3978,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "水流环": {
     "name": "水流环",
@@ -3988,7 +3988,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用水流之力的辅助招式。"
   },
   "水流裂破": {
     "name": "水流裂破",
@@ -3998,7 +3998,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "水流連打": {
     "name": "水流連打",
@@ -4008,7 +4008,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的水流之力攻击对手。"
   },
   "水炮": {
     "name": "水炮",
@@ -4018,7 +4018,7 @@
     "accuracy": 80,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "向对手猛烈地喷射大量水流进行攻击。"
   },
   "求雨": {
     "name": "求雨",
@@ -4028,7 +4028,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "在5回合内一直降雨，从而提高水属性的招式威力。"
   },
   "污泥攻击": {
     "name": "污泥攻击",
@@ -4038,7 +4038,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用污泥投掷对手进行攻击。有时会让对手陷入中毒状态。"
   },
   "污泥波": {
     "name": "污泥波",
@@ -4048,7 +4048,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以毒素之力攻击对手。"
   },
   "污泥炸弹": {
     "name": "污泥炸弹",
@@ -4058,7 +4058,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用污泥炸弹攻击对手。有时会让对手陷入中毒状态。"
   },
   "汲取": {
     "name": "汲取",
@@ -4068,7 +4068,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "吸取血液攻击对手。可以回复给予对手伤害的一半HP。"
   },
   "沙暴": {
     "name": "沙暴",
@@ -4078,7 +4078,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在5回合内扬起沙暴，除岩石、地面和钢属性以外的精灵都会受到伤害。"
   },
   "沥青射击": {
     "name": "沥青射击",
@@ -4088,7 +4088,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用岩石之力的辅助招式。"
   },
   "治愈之愿": {
     "name": "治愈之愿",
@@ -4098,7 +4098,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "治愈波动": {
     "name": "治愈波动",
@@ -4108,7 +4108,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "治愈铃声": {
     "name": "治愈铃声",
@@ -4118,7 +4118,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "让同伴听舒适的铃音，从而治愈我方全员的异常状态。"
   },
   "泡影的咏叹调": {
     "name": "泡影的咏叹调",
@@ -4128,7 +4128,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "泡沫": {
     "name": "泡沫",
@@ -4138,7 +4138,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "向对手用力吹起无数泡泡进行攻击。有时会降低对手的速度。"
   },
   "泡沫光线": {
     "name": "泡沫光线",
@@ -4148,7 +4148,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手猛烈地喷射泡沫进行攻击。有时会降低对手的速度。"
   },
   "波导弹": {
     "name": "波导弹",
@@ -4158,7 +4158,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "从体内产生波导之力攻击对手。攻击必定会命中。"
   },
   "泥巴射击": {
     "name": "泥巴射击",
@@ -4168,7 +4168,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手投掷泥块进行攻击。同时降低对手的速度。"
   },
   "泥巴炸弹": {
     "name": "泥巴炸弹",
@@ -4178,7 +4178,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用大地之力攻击对手。"
   },
   "泪眼汪汪": {
     "name": "泪眼汪汪",
@@ -4188,7 +4188,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "泰山压顶": {
     "name": "泰山压顶",
@@ -4198,7 +4198,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用整个身体压住对手进行攻击。有时会让对手陷入麻痹状态。"
   },
   "泼沙": {
     "name": "泼沙",
@@ -4208,7 +4208,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手脸上泼沙子，从而降低命中率。"
   },
   "洁净光芒": {
     "name": "洁净光芒",
@@ -4218,7 +4218,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放耀眼的光芒进行攻击。有时会降低对手的特防。"
   },
   "洩憤": {
     "name": "洩憤",
@@ -4228,7 +4228,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "活活气泡": {
     "name": "活活气泡",
@@ -4238,7 +4238,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "流星光束": {
     "name": "流星光束",
@@ -4248,7 +4248,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的岩石之力猛烈攻击对手。"
   },
   "流星突击": {
     "name": "流星突击",
@@ -4258,7 +4258,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的格斗之力猛烈攻击对手。"
   },
   "流星群": {
     "name": "流星群",
@@ -4268,7 +4268,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "从天空降下陨石攻击对手。使用后自己的特攻会大幅降低。"
   },
   "流星闪冲": {
     "name": "流星闪冲",
@@ -4278,7 +4278,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以钢铁之力攻击对手。"
   },
   "流沙地狱": {
     "name": "流沙地狱",
@@ -4288,7 +4288,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的大地之力攻击对手。"
   },
   "浊流": {
     "name": "浊流",
@@ -4298,7 +4298,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手喷射浑浊的水进行攻击。有时会降低对手的命中率。"
   },
   "浊雾": {
     "name": "浊雾",
@@ -4308,7 +4308,7 @@
     "accuracy": 70,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "将肮脏的浓雾吹向对手进行攻击。有时会让对手陷入中毒状态。"
   },
   "海神庄严交响乐": {
     "name": "海神庄严交响乐",
@@ -4318,7 +4318,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的水流之力猛烈攻击对手。"
   },
   "浸水": {
     "name": "浸水",
@@ -4328,7 +4328,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用水流之力的辅助招式。"
   },
   "深渊突刺": {
     "name": "深渊突刺",
@@ -4338,7 +4338,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "清醒": {
     "name": "清醒",
@@ -4348,7 +4348,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "对于麻痹状态下的对手，威力会变成2倍。但对手的麻痹也会被治愈。"
   },
   "清除之烟": {
     "name": "清除之烟",
@@ -4358,7 +4358,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用毒素之力攻击对手。"
   },
   "清除浓雾": {
     "name": "清除浓雾",
@@ -4368,7 +4368,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用风之力的辅助招式。"
   },
   "渴望": {
     "name": "渴望",
@@ -4378,7 +4378,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "溶化": {
     "name": "溶化",
@@ -4388,7 +4388,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "通过细胞的变化进行液化，从而大幅提高自己的防御。"
   },
   "溶解液": {
     "name": "溶解液",
@@ -4398,7 +4398,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "将强酸泼向对手进行攻击。有时会降低对手的特防。"
   },
   "滔滔冲浪": {
     "name": "滔滔冲浪",
@@ -4408,7 +4408,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "滚动": {
     "name": "滚动",
@@ -4418,7 +4418,7 @@
     "accuracy": 90,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "在5回合内连续滚动攻击对手。招式每次击中，威力就会提高。"
   },
   "潜水": {
     "name": "潜水",
@@ -4428,7 +4428,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "第1回合潜入水中，第2回合浮上来进行攻击。"
   },
   "潜灵奇袭": {
     "name": "潜灵奇袭",
@@ -4438,7 +4438,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以幽冥之力攻击对手。"
   },
   "潮旋": {
     "name": "潮旋",
@@ -4448,7 +4448,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "将对手困在水流旋涡中，在4～5回合内进行攻击。"
   },
   "激狂大地万里冰": {
     "name": "激狂大地万里冰",
@@ -4458,7 +4458,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用寒冰之力的招式。"
   },
   "火之舞": {
     "name": "火之舞",
@@ -4468,7 +4468,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "火之誓约": {
     "name": "火之誓约",
@@ -4478,7 +4478,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "火焰弹": {
     "name": "火焰弹",
@@ -4488,7 +4488,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "火焰拳": {
     "name": "火焰拳",
@@ -4498,7 +4498,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用充满火焰的拳头攻击对手。有时会让对手陷入灼伤状态。"
   },
   "火焰旋涡": {
     "name": "火焰旋涡",
@@ -4508,7 +4508,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "将对手困在激烈的火焰旋涡中，在4～5回合内进行攻击。"
   },
   "火焰牙": {
     "name": "火焰牙",
@@ -4518,7 +4518,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "火焰球": {
     "name": "火焰球",
@@ -4528,7 +4528,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的火焰之力猛烈攻击对手。"
   },
   "火焰踢": {
     "name": "火焰踢",
@@ -4538,7 +4538,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "攻击对手后，有时会使其陷入灼伤状态。也容易击中要害。"
   },
   "火焰轮": {
     "name": "火焰轮",
@@ -4548,7 +4548,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "火焰鞭": {
     "name": "火焰鞭",
@@ -4558,7 +4558,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "火箭头锤": {
     "name": "火箭头锤",
@@ -4568,7 +4568,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "火花": {
     "name": "火花",
@@ -4588,7 +4588,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "灵能冲击": {
     "name": "灵能冲击",
@@ -4608,7 +4608,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用仙灵之力攻击对手。"
   },
   "炸蛋": {
     "name": "炸蛋",
@@ -4618,7 +4618,7 @@
     "accuracy": 75,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以普通之力攻击对手。"
   },
   "点到为止": {
     "name": "点到为止",
@@ -4628,7 +4628,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "对手的HP至少会留下1HP，如此般手下留情地攻击。"
   },
   "点穴": {
     "name": "点穴",
@@ -4638,7 +4638,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "炼狱": {
     "name": "炼狱",
@@ -4648,7 +4648,7 @@
     "accuracy": 50,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "炽魂热舞烈音爆": {
     "name": "炽魂热舞烈音爆",
@@ -4658,7 +4658,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的龙之力猛烈攻击对手。"
   },
   "烈焰溅射": {
     "name": "烈焰溅射",
@@ -4668,7 +4668,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "烟幕": {
     "name": "烟幕",
@@ -4678,7 +4678,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手喷出烟或墨汁等，从而降低对手的命中率。"
   },
   "烟雾弹": {
     "name": "烟雾弹",
@@ -4698,7 +4698,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "烧尽": {
     "name": "烧尽",
@@ -4708,7 +4708,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "热带踢": {
     "name": "热带踢",
@@ -4718,7 +4718,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用草木之力攻击对手。"
   },
   "热水": {
     "name": "热水",
@@ -4728,7 +4728,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "热风": {
     "name": "热风",
@@ -4738,7 +4738,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "将炎热的气息吹向对手进行攻击。有时会让对手陷入灼伤状态。"
   },
   "焕然一新": {
     "name": "焕然一新",
@@ -4748,7 +4748,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "让身体休息，治愈自己身上所中的毒、麻痹、灼伤的异常状态。"
   },
   "焚天灭世炽光爆": {
     "name": "焚天灭世炽光爆",
@@ -4758,7 +4758,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的念力之力猛烈攻击对手。"
   },
   "焰喷": {
     "name": "焰喷",
@@ -4779,7 +4779,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "熔岩风暴": {
     "name": "熔岩风暴",
@@ -4789,7 +4789,7 @@
     "accuracy": 75,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以火焰之力攻击对手。"
   },
   "熱沙大地": {
     "name": "熱沙大地",
@@ -4799,7 +4799,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用大地之力攻击对手。"
   },
   "燃尽": {
     "name": "燃尽",
@@ -4809,7 +4809,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的火焰之力猛烈攻击对手。"
   },
   "燕返": {
     "name": "燕返",
@@ -4819,7 +4819,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "以敏捷的动作戏弄对手后进行切斩。攻击必定会命中。"
   },
   "爆炸头突击": {
     "name": "爆炸头突击",
@@ -4829,7 +4829,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "爆炸烈焰": {
     "name": "爆炸烈焰",
@@ -4839,7 +4839,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用爆炸的火焰烧尽对手进行攻击。下一回合自己将无法动弹。"
   },
   "爆裂拳": {
     "name": "爆裂拳",
@@ -4849,7 +4849,7 @@
     "accuracy": 50,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使出浑身力气出拳进行攻击。必定会使对手混乱。"
   },
   "爆音波": {
     "name": "爆音波",
@@ -4859,7 +4859,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "爬擊": {
     "name": "爬擊",
@@ -4869,7 +4869,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用虫之力攻击对手。"
   },
   "爱心印章": {
     "name": "爱心印章",
@@ -4879,7 +4879,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用念力之力攻击对手。"
   },
   "牵手": {
     "name": "牵手",
@@ -4889,7 +4889,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "特性互换": {
     "name": "特性互换",
@@ -4899,7 +4899,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "狂舞挥打": {
     "name": "狂舞挥打",
@@ -4909,7 +4909,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "狙击": {
     "name": "狙击",
@@ -4919,7 +4919,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "狼啸石牙飓风暴": {
     "name": "狼啸石牙飓风暴",
@@ -4929,7 +4929,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的岩石之力猛烈攻击对手。"
   },
   "猛扑": {
     "name": "猛扑",
@@ -4939,7 +4939,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以虫之力攻击对手。"
   },
   "猛推": {
     "name": "猛推",
@@ -4949,7 +4949,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用张开着的双手猛推对手进行攻击。连续攻击2～5次。"
   },
   "猛撞": {
     "name": "猛撞",
@@ -4959,7 +4959,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "以惊人的气势撞向对手进行攻击。自己也会受到少许伤害。"
   },
   "玉石俱碎": {
     "name": "玉石俱碎",
@@ -4969,7 +4969,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "引发爆炸，攻击周围所有的精灵。使用后陷入昏厥。"
   },
   "王牌": {
     "name": "王牌",
@@ -4979,7 +4979,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "王者盾牌": {
     "name": "王者盾牌",
@@ -4989,7 +4989,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的辅助招式。"
   },
   "玩水": {
     "name": "玩水",
@@ -4999,7 +4999,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用水流之力的辅助招式。"
   },
   "玩泥巴": {
     "name": "玩泥巴",
@@ -5009,7 +5009,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的辅助招式。"
   },
   "珍藏": {
     "name": "珍藏",
@@ -5019,7 +5019,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "瑜伽姿势": {
     "name": "瑜伽姿势",
@@ -5029,7 +5029,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "唤醒身体深处沉睡的力量，从而提高自己的攻击。"
   },
   "甜甜香气": {
     "name": "甜甜香气",
@@ -5039,7 +5039,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用香气大幅降低对手的闪避率。"
   },
   "生命水滴": {
     "name": "生命水滴",
@@ -5049,7 +5049,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用水流之力的辅助招式。"
   },
   "生蛋": {
     "name": "生蛋",
@@ -5059,7 +5059,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "回复自己最大HP的一半。"
   },
   "生长": {
     "name": "生长",
@@ -5069,7 +5069,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "电光": {
     "name": "电光",
@@ -5079,7 +5079,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "让电流覆盖全身，猛撞向对手进行攻击。有时会让对手陷入麻痹状态。"
   },
   "电光一闪": {
     "name": "电光一闪",
@@ -5089,7 +5089,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "以迅雷不及掩耳之势扑向对手。必定能够先制攻击。"
   },
   "电击": {
     "name": "电击",
@@ -5109,7 +5109,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手快速发出电击。攻击必定会命中。"
   },
   "电喙": {
     "name": "电喙",
@@ -5119,7 +5119,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以雷电之力攻击对手。"
   },
   "电气场地": {
     "name": "电气场地",
@@ -5129,7 +5129,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "电球": {
     "name": "电球",
@@ -5139,7 +5139,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的招式。"
   },
   "电电加速": {
     "name": "电电加速",
@@ -5149,7 +5149,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "电磁波": {
     "name": "电磁波",
@@ -5169,7 +5169,7 @@
     "accuracy": 50,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "发出电磁炮攻击对手。让对手陷入麻痹状态。"
   },
   "电磁飘浮": {
     "name": "电磁飘浮",
@@ -5179,7 +5179,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "电网": {
     "name": "电网",
@@ -5189,7 +5189,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "画龙点睛": {
     "name": "画龙点睛",
@@ -5199,7 +5199,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的风之力猛烈攻击对手。"
   },
   "疯狂伏特": {
     "name": "疯狂伏特",
@@ -5209,7 +5209,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以雷电之力攻击对手。"
   },
   "疯狂植物": {
     "name": "疯狂植物",
@@ -5219,7 +5219,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用大树摔打对手进行攻击。下一回合自己将无法动弹。"
   },
   "疯狂滚压": {
     "name": "疯狂滚压",
@@ -5229,7 +5229,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用虫之力攻击对手。"
   },
   "疾风击": {
     "name": "疾风击",
@@ -5249,7 +5249,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用白雾覆盖身体。在5回合内不会让对手降低自己的能力。"
   },
   "百万吨重拳": {
     "name": "百万吨重拳",
@@ -5259,7 +5259,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用充满力量的拳头攻击对手。"
   },
   "百万吨重踢": {
     "name": "百万吨重踢",
@@ -5269,7 +5269,7 @@
     "accuracy": 75,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使出力大无穷的重踢踢飞对手进行攻击。"
   },
   "皮卡皮卡必杀击": {
     "name": "皮卡皮卡必杀击",
@@ -5279,7 +5279,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的雷电之力猛烈攻击对手。"
   },
   "盐水": {
     "name": "盐水",
@@ -5289,7 +5289,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用水流之力攻击对手。"
   },
   "盘蜷": {
     "name": "盘蜷",
@@ -5299,7 +5299,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "直冲钻": {
     "name": "直冲钻",
@@ -5309,7 +5309,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以大地之力攻击对手。"
   },
   "看我嘛": {
     "name": "看我嘛",
@@ -5319,7 +5319,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "看穿": {
     "name": "看穿",
@@ -5329,7 +5329,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的辅助招式。"
   },
   "真气弹": {
     "name": "真气弹",
@@ -5339,7 +5339,7 @@
     "accuracy": 70,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的格斗之力猛烈攻击对手。"
   },
   "真气拳": {
     "name": "真气拳",
@@ -5349,7 +5349,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "集中精神出拳。在招式使出前若受到攻击则会失败。"
   },
   "真空波": {
     "name": "真空波",
@@ -5359,7 +5359,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "睡觉": {
     "name": "睡觉",
@@ -5369,7 +5369,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "连续睡上2回合。回复自己的全部HP以及治愈所有异常状态。"
   },
   "瞪眼": {
     "name": "瞪眼",
@@ -5379,7 +5379,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用犀利的眼神使其害怕，从而降低对手的防御。"
   },
   "瞬间失忆": {
     "name": "瞬间失忆",
@@ -5389,7 +5389,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "将头脑清空，瞬间忘记某事，从而大幅提高自己的特防。"
   },
   "瞬间移动": {
     "name": "瞬间移动",
@@ -5399,7 +5399,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "和后备精灵进行替换。"
   },
   "石击": {
     "name": "石击",
@@ -5419,7 +5419,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "破坏光线": {
     "name": "破坏光线",
@@ -5429,7 +5429,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "向对手发射强烈的光线进行攻击。下一回合自己将无法动弹。"
   },
   "破壳": {
     "name": "破壳",
@@ -5439,7 +5439,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "破灭之光": {
     "name": "破灭之光",
@@ -5449,7 +5449,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强力的光线攻击对手。有时会降低对手的特攻。"
   },
   "破灭之愿": {
     "name": "破灭之愿",
@@ -5459,7 +5459,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用招式2回合后，会用无数道光束攻击对手。"
   },
   "破音": {
     "name": "破音",
@@ -5469,7 +5469,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以雷电之力攻击对手。"
   },
   "硬撑": {
     "name": "硬撑",
@@ -5479,7 +5479,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "当自己处于中毒、麻痹、灼伤状态时，威力会变成2倍。"
   },
   "碉堡": {
     "name": "碉堡",
@@ -5489,7 +5489,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "碎岩": {
     "name": "碎岩",
@@ -5499,7 +5499,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用拳头进行攻击。有时会降低对手的防御。"
   },
   "磁场操控": {
     "name": "磁场操控",
@@ -5509,7 +5509,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "磁铁炸弹": {
     "name": "磁铁炸弹",
@@ -5519,7 +5519,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用钢铁之力攻击对手。"
   },
   "磨爪": {
     "name": "磨爪",
@@ -5529,7 +5529,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "磨砺": {
     "name": "磨砺",
@@ -5539,7 +5539,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "磷火": {
     "name": "磷火",
@@ -5549,7 +5549,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "放出怪异的火焰，从而让对手陷入灼伤状态。"
   },
   "礼物": {
     "name": "礼物",
@@ -5559,7 +5559,7 @@
     "accuracy": 90,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "祈愿": {
     "name": "祈愿",
@@ -5569,7 +5569,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在下一回合回复自己或替换出场的精灵最大HP的一半。"
   },
   "神圣之火": {
     "name": "神圣之火",
@@ -5579,7 +5579,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用神秘的火焰烧尽对手进行攻击。有时会让对手陷入灼伤状态。"
   },
   "神奇蒸汽": {
     "name": "神奇蒸汽",
@@ -5589,7 +5589,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以仙灵之力攻击对手。"
   },
   "神秘之剑": {
     "name": "神秘之剑",
@@ -5599,7 +5599,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以格斗之力攻击对手。"
   },
   "神秘守护": {
     "name": "神秘守护",
@@ -5609,7 +5609,7 @@
     "accuracy": 0,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "在5回合内被神奇的力量守护，从而不会陷入异常状态。"
   },
   "神通力": {
     "name": "神通力",
@@ -5619,7 +5619,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出看不见的神奇力量进行攻击。有时会使对手畏缩。"
   },
   "神速": {
     "name": "神速",
@@ -5629,7 +5629,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以迅雷不及掩耳之势猛撞向对手进行攻击。必定能够先制攻击。"
   },
   "神鸟猛击": {
     "name": "神鸟猛击",
@@ -5639,7 +5639,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "第2回合攻击对手。偶尔使对手畏缩。也容易击中要害。"
   },
   "祸不单行": {
     "name": "祸不单行",
@@ -5649,7 +5649,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用幽冥之力攻击对手。"
   },
   "种子机关枪": {
     "name": "种子机关枪",
@@ -5659,7 +5659,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "向对手猛烈地发射种子进行攻击。连续攻击2～5次。"
   },
   "种子炸弹": {
     "name": "种子炸弹",
@@ -5669,7 +5669,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用坚硬的外壳炸弹攻击对手。"
   },
   "种子闪光": {
     "name": "种子闪光",
@@ -5679,7 +5679,7 @@
     "accuracy": 85,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的草木之力猛烈攻击对手。"
   },
   "秘密之力": {
     "name": "秘密之力",
@@ -5689,7 +5689,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "究极巨龙震天地": {
     "name": "究极巨龙震天地",
@@ -5699,7 +5699,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用龙之力的招式。"
   },
   "究极无敌大冲撞": {
     "name": "究极无敌大冲撞",
@@ -5709,7 +5709,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "空手劈": {
     "name": "空手劈",
@@ -5719,7 +5719,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用锋利的手刀劈向对手进行攻击。容易击中要害。"
   },
   "空气利刃": {
     "name": "空气利刃",
@@ -5729,7 +5729,7 @@
     "accuracy": 95,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用锐利的风切斩对手进行攻击。容易击中要害。"
   },
   "空气斩": {
     "name": "空气斩",
@@ -5739,7 +5739,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用风之力攻击对手。"
   },
   "突袭": {
     "name": "突袭",
@@ -5749,7 +5749,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用暗黑之力攻击对手。"
   },
   "章鱼桶炮": {
     "name": "章鱼桶炮",
@@ -5759,7 +5759,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用水流之力攻击对手。"
   },
   "等离子浴": {
     "name": "等离子浴",
@@ -5769,7 +5769,7 @@
     "accuracy": 0,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "等离子闪电拳": {
     "name": "等离子闪电拳",
@@ -5779,7 +5779,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以雷电之力攻击对手。"
   },
   "粉尘": {
     "name": "粉尘",
@@ -5789,7 +5789,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "精神之牙": {
     "name": "精神之牙",
@@ -5799,7 +5799,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以念力之力攻击对手。"
   },
   "精神冲击": {
     "name": "精神冲击",
@@ -5809,7 +5809,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以念力之力攻击对手。"
   },
   "精神击破": {
     "name": "精神击破",
@@ -5819,7 +5819,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以念力之力攻击对手。"
   },
   "精神利刃": {
     "name": "精神利刃",
@@ -5829,7 +5829,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用念力之力攻击对手。"
   },
   "精神场地": {
     "name": "精神场地",
@@ -5839,7 +5839,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "精神强念": {
     "name": "精神强念",
@@ -5849,7 +5849,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手发送强大的念力进行攻击。有时会降低对手的特防。"
   },
   "精神波": {
     "name": "精神波",
@@ -5859,7 +5859,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "向对手发射神奇的念波进行攻击。每次使用，伤害都会改变。"
   },
   "精神突进": {
     "name": "精神突进",
@@ -5869,7 +5869,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使出全部力量攻击对手。使用后自己的特攻大幅降低。"
   },
   "精神转移": {
     "name": "精神转移",
@@ -5879,7 +5879,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "紧咬不放": {
     "name": "紧咬不放",
@@ -5889,7 +5889,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "紧束": {
     "name": "紧束",
@@ -5899,7 +5899,7 @@
     "accuracy": 90,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用长长的身体或藤蔓等，在4～5回合内紧束对手进行攻击。"
   },
   "纠缠不休": {
     "name": "纠缠不休",
@@ -5909,7 +5909,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的虫之力攻击对手。"
   },
   "纹理": {
     "name": "纹理",
@@ -5919,7 +5919,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "纹理２": {
     "name": "纹理２",
@@ -5929,7 +5929,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "细雪": {
     "name": "细雪",
@@ -5939,7 +5939,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "终极伏特狂雷闪": {
     "name": "终极伏特狂雷闪",
@@ -5949,7 +5949,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的招式。"
   },
   "终极冲击": {
     "name": "终极冲击",
@@ -5959,7 +5959,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "终极吸取": {
     "name": "终极吸取",
@@ -5969,7 +5969,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "吸取对手的养分进行攻击。可以回复给予对手伤害的一半HP。"
   },
   "绑紧": {
     "name": "绑紧",
@@ -5979,7 +5979,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用长长的身体或藤蔓等，在4～5回合内绑紧对手进行攻击。"
   },
   "绚烂缤纷花怒放": {
     "name": "绚烂缤纷花怒放",
@@ -5989,7 +5989,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的招式。"
   },
   "绝处逢生": {
     "name": "绝处逢生",
@@ -5999,7 +5999,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的招式。"
   },
   "绝对捕食回旋斩": {
     "name": "绝对捕食回旋斩",
@@ -6009,7 +6009,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的招式。"
   },
   "绝对零度": {
     "name": "绝对零度",
@@ -6019,7 +6019,7 @@
     "accuracy": 30,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "给对手一击昏厥。如果是冰属性以外的精灵使用，就会难以打中。"
   },
   "绞紧": {
     "name": "绞紧",
@@ -6029,7 +6029,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "缝影": {
     "name": "缝影",
@@ -6039,7 +6039,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以幽冥之力攻击对手。"
   },
   "缠绕": {
     "name": "缠绕",
@@ -6049,7 +6049,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "用触手或青藤等缠绕进行攻击。有时会降低对手的速度。"
   },
   "缩入壳中": {
     "name": "缩入壳中",
@@ -6059,7 +6059,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "缩入壳里保护身体，从而提高自己的防御。"
   },
   "羽栖": {
     "name": "羽栖",
@@ -6069,7 +6069,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "回复自己最大HP的一半。飞行属性会暂时消失。"
   },
   "羽毛舞": {
     "name": "羽毛舞",
@@ -6079,7 +6079,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "撒出羽毛，笼罩在对手的周围。大幅降低对手的攻击。"
   },
   "翅膀攻击": {
     "name": "翅膀攻击",
@@ -6089,7 +6089,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "大大地展开美丽的翅膀，将其撞向对手进行攻击。"
   },
   "耕地": {
     "name": "耕地",
@@ -6099,7 +6099,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的辅助招式。"
   },
   "聚光灯": {
     "name": "聚光灯",
@@ -6109,7 +6109,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "聚宝功": {
     "name": "聚宝功",
@@ -6119,7 +6119,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手的身体投掷小金币进行攻击。战斗后可以拿到钱。"
   },
   "聚气": {
     "name": "聚气",
@@ -6129,7 +6129,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "深深地吸口气，集中精神。自己的攻击会变得容易击中要害。"
   },
   "胃液": {
     "name": "胃液",
@@ -6139,7 +6139,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "背水一战": {
     "name": "背水一战",
@@ -6149,7 +6149,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的辅助招式。"
   },
   "能量球": {
     "name": "能量球",
@@ -6159,7 +6159,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发射从自然收集的生命力量。有时会降低对手的特防。"
   },
   "腐蝕氣體": {
     "name": "腐蝕氣體",
@@ -6169,7 +6169,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用毒素之力的辅助招式。"
   },
   "腹鼓": {
     "name": "腹鼓",
@@ -6179,7 +6179,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "臂貝武器": {
     "name": "臂貝武器",
@@ -6189,7 +6189,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以毒素之力攻击对手。"
   },
   "臂锤": {
     "name": "臂锤",
@@ -6199,7 +6199,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "挥舞强力沉重的拳头攻击对手。自己的速度会降低。"
   },
   "自我再生": {
     "name": "自我再生",
@@ -6209,7 +6209,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "让细胞再生，从而回复自己最大HP的一半。"
   },
   "自我暗示": {
     "name": "自我暗示",
@@ -6219,7 +6219,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "自我激励": {
     "name": "自我激励",
@@ -6229,7 +6229,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "自然之力": {
     "name": "自然之力",
@@ -6239,7 +6239,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "自然之怒": {
     "name": "自然之怒",
@@ -6249,7 +6249,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的招式。"
   },
   "自然之恩": {
     "name": "自然之恩",
@@ -6259,7 +6259,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的招式。"
   },
   "自由落体": {
     "name": "自由落体",
@@ -6269,7 +6269,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用风之力攻击对手。"
   },
   "至高精神破坏波": {
     "name": "至高精神破坏波",
@@ -6279,7 +6279,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的招式。"
   },
   "致命针刺": {
     "name": "致命针刺",
@@ -6289,7 +6289,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用虫之力攻击对手。"
   },
   "舌舔": {
     "name": "舌舔",
@@ -6299,7 +6299,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用长长的舌头，舔遍对手进行攻击。有时会让对手陷入麻痹状态。"
   },
   "舍身冲撞": {
     "name": "舍身冲撞",
@@ -6309,7 +6309,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "拼命地猛撞向对手进行攻击。自己也会受到不小的伤害。"
   },
   "花朵加农炮": {
     "name": "花朵加农炮",
@@ -6319,7 +6319,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的仙灵之力猛烈攻击对手。"
   },
   "花瓣舞": {
     "name": "花瓣舞",
@@ -6329,7 +6329,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在2～3回合内，散落花瓣攻击对手。之后自己会陷入混乱。"
   },
   "花疗": {
     "name": "花疗",
@@ -6339,7 +6339,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "花粉团": {
     "name": "花粉团",
@@ -6349,7 +6349,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以虫之力攻击对手。"
   },
   "芳香治疗": {
     "name": "芳香治疗",
@@ -6359,7 +6359,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "芳香薄雾": {
     "name": "芳香薄雾",
@@ -6369,7 +6369,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "苹果酸": {
     "name": "苹果酸",
@@ -6379,7 +6379,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以草木之力攻击对手。"
   },
   "茁茁炸弹": {
     "name": "茁茁炸弹",
@@ -6389,7 +6389,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以草木之力攻击对手。"
   },
   "茶会": {
     "name": "茶会",
@@ -6399,7 +6399,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "草之誓约": {
     "name": "草之誓约",
@@ -6409,7 +6409,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以草木之力攻击对手。"
   },
   "草笛": {
     "name": "草笛",
@@ -6419,7 +6419,7 @@
     "accuracy": 55,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "让对手听舒适的笛声，从而陷入睡眠状态。"
   },
   "萤火": {
     "name": "萤火",
@@ -6429,7 +6429,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "凝视闪烁的光芒，集中自己的精神，从而巨幅提高特攻。"
   },
   "落石": {
     "name": "落石",
@@ -6439,7 +6439,7 @@
     "accuracy": 90,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "拿起小岩石，投掷对手进行攻击。"
   },
   "落英缤纷": {
     "name": "落英缤纷",
@@ -6449,7 +6449,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以草木之力攻击对手。"
   },
   "蒸汽爆炸": {
     "name": "蒸汽爆炸",
@@ -6459,7 +6459,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "蓄力": {
     "name": "蓄力",
@@ -6469,7 +6469,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "积蓄力量，提高自己的防御和特防。"
   },
   "蓄能焰袭": {
     "name": "蓄能焰袭",
@@ -6479,7 +6479,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "薄雾场地": {
     "name": "薄雾场地",
@@ -6489,7 +6489,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "薄雾球": {
     "name": "薄雾球",
@@ -6499,7 +6499,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用念力之力攻击对手。"
   },
   "薄霧炸裂": {
     "name": "薄霧炸裂",
@@ -6509,7 +6509,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以仙灵之力攻击对手。"
   },
   "藤鞭": {
     "name": "藤鞭",
@@ -6529,7 +6529,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "撒满具有催眠效果的孢子，从而让对手陷入睡眠状态。"
   },
   "虚张声势": {
     "name": "虚张声势",
@@ -6539,7 +6539,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "激怒对手，使其混乱。因为愤怒，对手的攻击会大幅提高。"
   },
   "虫之抵抗": {
     "name": "虫之抵抗",
@@ -6549,7 +6549,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "抵抗并反击对手。能在对手降低自己能力时使出。"
   },
   "虫咬": {
     "name": "虫咬",
@@ -6559,7 +6559,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用虫之力攻击对手。"
   },
   "虫鸣": {
     "name": "虫鸣",
@@ -6569,7 +6569,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "振动翅膀发出音波攻击对手。有时会降低对手的特防。"
   },
   "蛛网": {
     "name": "蛛网",
@@ -6579,7 +6579,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "蛮力": {
     "name": "蛮力",
@@ -6589,7 +6589,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "发挥惊人的力量攻击对手。自己的攻击和防御会降低。"
   },
   "蛮干": {
     "name": "蛮干",
@@ -6599,7 +6599,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "给予伤害，使对手的HP变得和自己的HP一样。"
   },
   "蛸固": {
     "name": "蛸固",
@@ -6609,7 +6609,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用格斗之力的辅助招式。"
   },
   "蝶舞": {
     "name": "蝶舞",
@@ -6619,7 +6619,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "蟹钳锤": {
     "name": "蟹钳锤",
@@ -6629,7 +6629,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用大钳子敲打对手进行攻击。容易击中要害。"
   },
   "装饰": {
     "name": "装饰",
@@ -6639,7 +6639,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "觉醒之舞": {
     "name": "觉醒之舞",
@@ -6649,7 +6649,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以普通之力攻击对手。"
   },
   "觉醒力量": {
     "name": "觉醒力量",
@@ -6659,7 +6659,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "角撞": {
     "name": "角撞",
@@ -6669,7 +6669,7 @@
     "accuracy": 100,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用尖锐的角攻击对手。"
   },
   "角钻": {
     "name": "角钻",
@@ -6679,7 +6679,7 @@
     "accuracy": 30,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用旋转的角刺入对手进行攻击。只要命中就会一击昏厥。"
   },
   "认真起来大爆击": {
     "name": "认真起来大爆击",
@@ -6689,7 +6689,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的普通之力猛烈攻击对手。"
   },
   "诅咒": {
     "name": "诅咒",
@@ -6699,7 +6699,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用幽冥之力的辅助招式。"
   },
   "识破": {
     "name": "识破",
@@ -6709,7 +6709,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "诡计": {
     "name": "诡计",
@@ -6719,7 +6719,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "诱惑": {
     "name": "诱惑",
@@ -6729,7 +6729,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "贝壳刃": {
     "name": "贝壳刃",
@@ -6739,7 +6739,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用水流之力攻击对手。"
   },
   "贝壳夹击": {
     "name": "贝壳夹击",
@@ -6749,7 +6749,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用坚固且厚实的贝壳，在4～5回合内夹住对手进行攻击。"
   },
   "起源超新星大爆炸": {
     "name": "起源超新星大爆炸",
@@ -6759,7 +6759,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的念力之力猛烈攻击对手。"
   },
   "起风": {
     "name": "起风",
@@ -6769,7 +6769,7 @@
     "accuracy": 100,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "用翅膀将刮起的狂风袭向对手进行攻击。"
   },
   "超强极限爆焰弹": {
     "name": "超强极限爆焰弹",
@@ -6779,7 +6779,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用火焰之力的招式。"
   },
   "超级吸取": {
     "name": "超级吸取",
@@ -6789,7 +6789,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "吸取对手的养分进行攻击。可以回复给予对手伤害的一半HP。"
   },
   "超级水流大漩涡": {
     "name": "超级水流大漩涡",
@@ -6799,7 +6799,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用水流之力的招式。"
   },
   "超级角击": {
     "name": "超级角击",
@@ -6809,7 +6809,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用坚硬且华丽的角狠狠地刺入对手进行攻击。"
   },
   "超绝螺旋连击": {
     "name": "超绝螺旋连击",
@@ -6819,7 +6819,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的招式。"
   },
   "超音波": {
     "name": "超音波",
@@ -6829,7 +6829,7 @@
     "accuracy": 55,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "从身体发出特殊的音波，从而使对手混乱。"
   },
   "跃起": {
     "name": "跃起",
@@ -6839,7 +6839,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "跺脚": {
     "name": "跺脚",
@@ -6849,7 +6849,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用大地之力攻击对手。"
   },
   "踢倒": {
     "name": "踢倒",
@@ -6859,7 +6859,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用力踢对手的脚，使其摔倒进行攻击。对手越重，威力越大。"
   },
   "踩踏": {
     "name": "踩踏",
@@ -6869,7 +6869,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用大脚踩踏对手进行攻击。有时会使对手畏缩。"
   },
   "蹭蹭脸颊": {
     "name": "蹭蹭脸颊",
@@ -6879,7 +6879,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的雷电之力攻击对手。"
   },
   "身体轻量化": {
     "name": "身体轻量化",
@@ -6889,7 +6889,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的辅助招式。"
   },
   "轮唱": {
     "name": "轮唱",
@@ -6899,7 +6899,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "辅助力量": {
     "name": "辅助力量",
@@ -6909,7 +6909,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的念力之力攻击对手。"
   },
   "辅助齿轮": {
     "name": "辅助齿轮",
@@ -6919,7 +6919,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的辅助招式。"
   },
   "输电": {
     "name": "输电",
@@ -6929,7 +6929,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的辅助招式。"
   },
   "迁怒": {
     "name": "迁怒",
@@ -6939,7 +6939,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "为了发泄不满而全力攻击对手。亲密度越低，威力越大。"
   },
   "过热": {
     "name": "过热",
@@ -6949,7 +6949,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使出全部力量攻击对手。使用后自己的特攻大幅降低。"
   },
   "迎头一击": {
     "name": "迎头一击",
@@ -6959,7 +6959,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以虫之力攻击对手。"
   },
   "近身战": {
     "name": "近身战",
@@ -6969,7 +6969,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "舍弃防守全力攻击对手。自己的防御和特防会降低。"
   },
   "连斩": {
     "name": "连斩",
@@ -6979,7 +6979,7 @@
     "accuracy": 95,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用镰刀或爪子等切斩对手进行攻击。连续击中，威力就会提高。"
   },
   "连环巴掌": {
     "name": "连环巴掌",
@@ -6989,7 +6989,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用连环巴掌拍打对手进行攻击。连续攻击2～5次。"
   },
   "连续拳": {
     "name": "连续拳",
@@ -6999,7 +6999,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用拳头怒涛般的殴打对手进行攻击。连续攻击2～5次。"
   },
   "迷人": {
     "name": "迷人",
@@ -7009,7 +7009,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "让对手着迷。对手将很难使出招式。"
   },
   "迷昏拳": {
     "name": "迷昏拳",
@@ -7019,7 +7019,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "有节奏地出拳攻击对手。有时会使对手混乱。"
   },
   "追打": {
     "name": "追打",
@@ -7029,7 +7029,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "当对手替换精灵上场时使出此招式的话，能够以2倍的威力进行攻击。"
   },
   "逆鳞": {
     "name": "逆鳞",
@@ -7039,7 +7039,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "在2～3回合内，乱打一气地进行攻击。大闹一番后自己会陷入混乱。"
   },
   "逐步击破": {
     "name": "逐步击破",
@@ -7049,7 +7049,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用普通之力攻击对手。"
   },
   "速度互换": {
     "name": "速度互换",
@@ -7059,7 +7059,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "遮天蔽日暗影箭": {
     "name": "遮天蔽日暗影箭",
@@ -7069,7 +7069,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的幽冥之力猛烈攻击对手。"
   },
   "酸液炸弹": {
     "name": "酸液炸弹",
@@ -7079,7 +7079,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用毒素之力攻击对手。"
   },
   "重力": {
     "name": "重力",
@@ -7089,7 +7089,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "重磅冲撞": {
     "name": "重磅冲撞",
@@ -7099,7 +7099,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的招式。"
   },
   "重踏": {
     "name": "重踏",
@@ -7109,7 +7109,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用大地之力攻击对手。"
   },
   "金属爆炸": {
     "name": "金属爆炸",
@@ -7119,7 +7119,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的招式。"
   },
   "金属爪": {
     "name": "金属爪",
@@ -7129,7 +7129,7 @@
     "accuracy": 95,
     "max_pp": 35,
     "effect": "",
-    "description": ""
+    "description": "用钢铁之爪劈开对手进行攻击。有时会提高自己的攻击。"
   },
   "金属音": {
     "name": "金属音",
@@ -7139,7 +7139,7 @@
     "accuracy": 85,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "让对手听摩擦金属般讨厌的声音。大幅降低对手的特防。"
   },
   "鐵滾輪": {
     "name": "鐵滾輪",
@@ -7149,7 +7149,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的钢铁之力猛烈攻击对手。"
   },
   "钢拳双击": {
     "name": "钢拳双击",
@@ -7159,7 +7159,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用钢铁之力攻击对手。"
   },
   "钢翼": {
     "name": "钢翼",
@@ -7169,7 +7169,7 @@
     "accuracy": 90,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "用坚硬的翅膀敲打对手进行攻击。有时会提高自己的防御。"
   },
   "钻石风暴": {
     "name": "钻石风暴",
@@ -7179,7 +7179,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以岩石之力攻击对手。"
   },
   "铁壁": {
     "name": "铁壁",
@@ -7189,7 +7189,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "将皮肤变得坚硬如铁，从而大幅提高自己的防御。"
   },
   "铁头": {
     "name": "铁头",
@@ -7199,7 +7199,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用钢铁般坚硬的头撞击对手。有时会使对手畏缩。"
   },
   "铁尾": {
     "name": "铁尾",
@@ -7209,7 +7209,7 @@
     "accuracy": 75,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用坚硬的尾巴摔打对手进行攻击。有时会降低对手的防御。"
   },
   "铁蹄光线": {
     "name": "铁蹄光线",
@@ -7219,7 +7219,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用钢铁之蹄释放光线攻击对手。"
   },
   "银色旋风": {
     "name": "银色旋风",
@@ -7229,7 +7229,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "在风中掺入鳞粉攻击对手。有时会提高自己的全部能力。"
   },
   "锁定": {
     "name": "锁定",
@@ -7239,7 +7239,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "镜光射击": {
     "name": "镜光射击",
@@ -7249,7 +7249,7 @@
     "accuracy": 85,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放汇聚的光束射击对手。有时会降低对手的特防。"
   },
   "镜面反射": {
     "name": "镜面反射",
@@ -7259,7 +7259,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "从对手那里受到特殊攻击的伤害将以2倍返还给对手。"
   },
   "镜面属性": {
     "name": "镜面属性",
@@ -7269,7 +7269,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用普通之力的辅助招式。"
   },
   "长嚎": {
     "name": "长嚎",
@@ -7279,7 +7279,7 @@
     "accuracy": 0,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "大声吼叫提高气势，从而提高自己和同伴的攻击。"
   },
   "闪光": {
     "name": "闪光",
@@ -7289,7 +7289,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使出光芒，从而降低对手的命中率。"
   },
   "闪焰冲锋": {
     "name": "闪焰冲锋",
@@ -7299,7 +7299,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "让火焰覆盖全身猛烈冲撞对手。自己也会受到相当大的伤害。有时会让对手陷入灼伤状态。"
   },
   "闪闪雷光": {
     "name": "闪闪雷光",
@@ -7309,7 +7309,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用雷电之力的招式。"
   },
   "防守互换": {
     "name": "防守互换",
@@ -7319,7 +7319,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "防守平分": {
     "name": "防守平分",
@@ -7329,7 +7329,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "防御卷缩": {
     "name": "防御卷缩",
@@ -7349,7 +7349,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "陀螺球": {
     "name": "陀螺球",
@@ -7359,7 +7359,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用钢铁之力的招式。"
   },
   "陷阱甲壳": {
     "name": "陷阱甲壳",
@@ -7369,7 +7369,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的火焰之力猛烈攻击对手。"
   },
   "隐形岩": {
     "name": "隐形岩",
@@ -7379,7 +7379,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用岩石之力的辅助招式。"
   },
   "集沙": {
     "name": "集沙",
@@ -7389,7 +7389,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的辅助招式。"
   },
   "雙翼": {
     "name": "雙翼",
@@ -7399,7 +7399,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用风之力攻击对手。"
   },
   "雪崩": {
     "name": "雪崩",
@@ -7409,7 +7409,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用寒冰之力攻击对手。"
   },
   "雷击": {
     "name": "雷击",
@@ -7419,7 +7419,7 @@
     "accuracy": 85,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放蓝色的闪电攻击对手。有时会让对手陷入麻痹状态。"
   },
   "雷电拳": {
     "name": "雷电拳",
@@ -7429,7 +7429,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用充满电流的拳头攻击对手。有时会让对手陷入麻痹状态。"
   },
   "雷电牙": {
     "name": "雷电牙",
@@ -7439,7 +7439,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "電力上升": {
     "name": "電力上升",
@@ -7449,7 +7449,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用雷电之力攻击对手。"
   },
   "震级": {
     "name": "震级",
@@ -7459,7 +7459,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "使用大地之力的招式。"
   },
   "靈騷": {
     "name": "靈騷",
@@ -7469,7 +7469,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以幽冥之力攻击对手。"
   },
   "青焰": {
     "name": "青焰",
@@ -7479,7 +7479,7 @@
     "accuracy": 85,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的火焰之力猛烈攻击对手。"
   },
   "青草场地": {
     "name": "青草场地",
@@ -7489,7 +7489,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用草木之力的辅助招式。"
   },
   "青草搅拌器": {
     "name": "青草搅拌器",
@@ -7499,7 +7499,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用草木之力攻击对手。"
   },
   "青草滑梯": {
     "name": "青草滑梯",
@@ -7509,7 +7509,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用草木之力攻击对手。"
   },
   "音爆": {
     "name": "音爆",
@@ -7519,7 +7519,7 @@
     "accuracy": 90,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "将冲击波撞向对手进行攻击。必定会给予20的伤害。"
   },
   "音速拳": {
     "name": "音速拳",
@@ -7529,7 +7529,7 @@
     "accuracy": 100,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "用格斗之力攻击对手。"
   },
   "顺风": {
     "name": "顺风",
@@ -7549,7 +7549,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "释放强大的念力之力猛烈攻击对手。"
   },
   "颠倒": {
     "name": "颠倒",
@@ -7559,7 +7559,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的辅助招式。"
   },
   "飓风": {
     "name": "飓风",
@@ -7579,7 +7579,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以风之力攻击对手。"
   },
   "飞叶快刀": {
     "name": "飞叶快刀",
@@ -7589,7 +7589,7 @@
     "accuracy": 95,
     "max_pp": 25,
     "effect": "",
-    "description": ""
+    "description": "飞出叶片，切斩对手进行攻击。容易击中要害。"
   },
   "飞叶风暴": {
     "name": "飞叶风暴",
@@ -7599,7 +7599,7 @@
     "accuracy": 90,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的草木之力猛烈攻击对手。"
   },
   "飞弹针": {
     "name": "飞弹针",
@@ -7609,7 +7609,7 @@
     "accuracy": 95,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "向对手发射锐针进行攻击。连续攻击2～5次。"
   },
   "飞水手里剑": {
     "name": "飞水手里剑",
@@ -7619,7 +7619,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的水流之力攻击对手。"
   },
   "飞翔": {
     "name": "飞翔",
@@ -7629,7 +7629,7 @@
     "accuracy": 95,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "第1回合飞上天空，第2回合攻击对手。"
   },
   "飞膝踢": {
     "name": "飞膝踢",
@@ -7639,7 +7639,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "跳起后用膝盖撞对手进行攻击。如果撞偏则自己会受到伤害。"
   },
   "飞踢": {
     "name": "飞踢",
@@ -7649,7 +7649,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使出高高的腾空踢攻击对手。如果踢偏则自己会受到伤害。"
   },
   "飞身重压": {
     "name": "飞身重压",
@@ -7659,7 +7659,7 @@
     "accuracy": 95,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以格斗之力攻击对手。"
   },
   "食梦": {
     "name": "食梦",
@@ -7669,7 +7669,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "吃掉正在睡觉的对手的梦进行攻击。回复对手所受到伤害的一半HP。"
   },
   "驾雷驭电戏冲浪": {
     "name": "驾雷驭电戏冲浪",
@@ -7679,7 +7679,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "释放强大的雷电之力猛烈攻击对手。"
   },
   "骨头回力镖": {
     "name": "骨头回力镖",
@@ -7689,7 +7689,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用手中的骨头投掷对手，来回连续2次给予伤害。"
   },
   "骨棒": {
     "name": "骨棒",
@@ -7699,7 +7699,7 @@
     "accuracy": 85,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "用手中的骨头殴打对手进行攻击。有时会使对手畏缩。"
   },
   "骨棒乱打": {
     "name": "骨棒乱打",
@@ -7709,7 +7709,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的大地之力攻击对手。"
   },
   "高温重压": {
     "name": "高温重压",
@@ -7719,7 +7719,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用火焰之力的招式。"
   },
   "高科技光炮": {
     "name": "高科技光炮",
@@ -7729,7 +7729,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "向对手发射特殊的光弹进行攻击。"
   },
   "高速旋转": {
     "name": "高速旋转",
@@ -7739,7 +7739,7 @@
     "accuracy": 100,
     "max_pp": 40,
     "effect": "",
-    "description": ""
+    "description": "通过旋转来攻击对手。可以摆脱束缚类招式。还能提高自己的速度。"
   },
   "高速星星": {
     "name": "高速星星",
@@ -7749,7 +7749,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发射星形的光攻击对手。攻击必定会命中。"
   },
   "高速移动": {
     "name": "高速移动",
@@ -7759,7 +7759,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "让身体放松变得轻盈，以便高速移动。大幅提高自己的速度。"
   },
   "魂舞烈音爆": {
     "name": "魂舞烈音爆",
@@ -7769,7 +7769,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "使用龙之力的辅助招式。"
   },
   "魅惑之声": {
     "name": "魅惑之声",
@@ -7779,7 +7779,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用仙灵之力攻击对手。"
   },
   "魔法反射": {
     "name": "魔法反射",
@@ -7789,7 +7789,7 @@
     "accuracy": 0,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "魔法叶": {
     "name": "魔法叶",
@@ -7809,7 +7809,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用火焰之力攻击对手。"
   },
   "魔法空间": {
     "name": "魔法空间",
@@ -7819,7 +7819,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "魔法粉": {
     "name": "魔法粉",
@@ -7829,7 +7829,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用念力之力的辅助招式。"
   },
   "魔法闪耀": {
     "name": "魔法闪耀",
@@ -7839,7 +7839,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "向对手发射强力的光芒进行攻击。有时会降低对手的特攻。"
   },
   "鱗射": {
     "name": "鱗射",
@@ -7849,7 +7849,7 @@
     "accuracy": 90,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "发出微弱的龙之力攻击对手。"
   },
   "鲜花防守": {
     "name": "鲜花防守",
@@ -7859,7 +7859,7 @@
     "accuracy": 0,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "使用仙灵之力的辅助招式。"
   },
   "鳃咬": {
     "name": "鳃咬",
@@ -7869,7 +7869,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以水流之力攻击对手。"
   },
   "鳞片噪音": {
     "name": "鳞片噪音",
@@ -7879,7 +7879,7 @@
     "accuracy": 100,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "以龙之力攻击对手。"
   },
   "鸟嘴加农炮": {
     "name": "鸟嘴加农炮",
@@ -7889,7 +7889,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以风之力攻击对手。"
   },
   "鹦鹉学舌": {
     "name": "鹦鹉学舌",
@@ -7899,7 +7899,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "模仿对手使用的招式，自己也使用相同招式。"
   },
   "麻痹粉": {
     "name": "麻痹粉",
@@ -7909,7 +7909,7 @@
     "accuracy": 75,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "撒出麻痹粉，从而让对手陷入麻痹状态。"
   },
   "麻麻刺刺": {
     "name": "麻麻刺刺",
@@ -7919,7 +7919,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以雷电之力攻击对手。"
   },
   "麻麻电击": {
     "name": "麻麻电击",
@@ -7929,7 +7929,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以雷电之力攻击对手。"
   },
   "黏黏网": {
     "name": "黏黏网",
@@ -7939,7 +7939,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "使用虫之力的辅助招式。"
   },
   "黑夜魔影": {
     "name": "黑夜魔影",
@@ -7949,7 +7949,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "显示恐怖幻影，只给予对手和自己等级相同的伤害。"
   },
   "黑洞吞噬万物灭": {
     "name": "黑洞吞噬万物灭",
@@ -7959,7 +7959,7 @@
     "accuracy": 0,
     "max_pp": 1,
     "effect": "",
-    "description": ""
+    "description": "使用暗黑之力的招式。"
   },
   "黑色目光": {
     "name": "黑色目光",
@@ -7969,7 +7969,7 @@
     "accuracy": 0,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "用黑色目光一动不动地凝视对手，使其不能从战斗中逃走。"
   },
   "黑雾": {
     "name": "黑雾",
@@ -7979,7 +7979,7 @@
     "accuracy": 0,
     "max_pp": 30,
     "effect": "",
-    "description": ""
+    "description": "升起黑雾，将场上全体精灵的能力变回原点。"
   },
   "鼓击": {
     "name": "鼓击",
@@ -7989,7 +7989,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以草木之力攻击对手。"
   },
   "齿轮飞盘": {
     "name": "齿轮飞盘",
@@ -7999,7 +7999,7 @@
     "accuracy": 85,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用钢铁之力攻击对手。"
   },
   "龙之俯冲": {
     "name": "龙之俯冲",
@@ -8009,7 +8009,7 @@
     "accuracy": 75,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以龙之力攻击对手。"
   },
   "龙之怒": {
     "name": "龙之怒",
@@ -8019,7 +8019,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "将愤怒的冲击波撞向对手进行攻击。必定会给予40的伤害。"
   },
   "龙之波动": {
     "name": "龙之波动",
@@ -8029,7 +8029,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以龙之力攻击对手。"
   },
   "龙之舞": {
     "name": "龙之舞",
@@ -8039,7 +8039,7 @@
     "accuracy": 0,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "激烈地跳起神秘且强有力的舞蹈。从而提高自己的攻击和速度。"
   },
   "龙卷风": {
     "name": "龙卷风",
@@ -8049,7 +8049,7 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "",
-    "description": ""
+    "description": "兴起龙卷风，将对手卷入进行攻击。有时会使对手畏缩。"
   },
   "龙尾": {
     "name": "龙尾",
@@ -8059,7 +8059,7 @@
     "accuracy": 90,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用龙之力攻击对手。"
   },
   "龙息": {
     "name": "龙息",
@@ -8079,7 +8079,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "用尖锐的巨爪劈开对手进行攻击。"
   },
   "龙箭": {
     "name": "龙箭",
@@ -8089,7 +8089,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "用龙之力攻击对手。"
   },
   "龙锤": {
     "name": "龙锤",
@@ -8099,7 +8099,7 @@
     "accuracy": 100,
     "max_pp": 15,
     "effect": "",
-    "description": ""
+    "description": "以龙之力攻击对手。"
   },
   "ＤＤ金勾臂": {
     "name": "ＤＤ金勾臂",
@@ -8109,7 +8109,7 @@
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
-    "description": ""
+    "description": "以暗黑之力攻击对手。"
   },
   "Ｖ热焰": {
     "name": "Ｖ热焰",
@@ -8119,7 +8119,7 @@
     "accuracy": 95,
     "max_pp": 5,
     "effect": "",
-    "description": ""
+    "description": "释放强大的火焰之力猛烈攻击对手。"
   },
   "光弹": {
     "name": "光弹",
