@@ -411,7 +411,7 @@
   },
   "光墙": {
     "name": "光墙",
-    "type": "灵",
+    "type": "光",
     "category": "变化",
     "power": 0,
     "accuracy": 0,
@@ -421,7 +421,7 @@
   },
   "光子喷涌": {
     "name": "光子喷涌",
-    "type": "灵",
+    "type": "光",
     "category": "特殊",
     "power": 100,
     "accuracy": 100,
@@ -3192,7 +3192,7 @@
   },
   "晨光": {
     "name": "晨光",
-    "type": "空",
+    "type": "光",
     "category": "变化",
     "power": 0,
     "accuracy": 0,
@@ -4212,7 +4212,7 @@
   },
   "洁净光芒": {
     "name": "洁净光芒",
-    "type": "灵",
+    "type": "光",
     "category": "特殊",
     "power": 70,
     "accuracy": 100,
@@ -7283,7 +7283,7 @@
   },
   "闪光": {
     "name": "闪光",
-    "type": "空",
+    "type": "光",
     "category": "变化",
     "power": 0,
     "accuracy": 100,
@@ -8120,5 +8120,255 @@
     "max_pp": 5,
     "effect": "",
     "description": ""
+  },
+  "光弹": {
+    "name": "光弹",
+    "type": "光",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": "发射一团凝聚的光球攻击对方。"
+  },
+  "圣光斩": {
+    "name": "圣光斩",
+    "type": "光",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 95,
+    "max_pp": 20,
+    "effect": "",
+    "description": "以凝聚圣光的利刃劈砍对方。"
+  },
+  "棱光射线": {
+    "name": "棱光射线",
+    "type": "光",
+    "category": "特殊",
+    "power": 65,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "释放折射后的七彩棱光射线。"
+  },
+  "曙光冲击": {
+    "name": "曙光冲击",
+    "type": "光",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": "化为黎明曙光全力冲撞对方。"
+  },
+  "净化之光": {
+    "name": "净化之光",
+    "type": "光",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "释放纯净光芒净化并伤害对方。"
+  },
+  "辉耀": {
+    "name": "辉耀",
+    "type": "光",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "全身迸发耀眼光辉轰击对方。"
+  },
+  "日轮击": {
+    "name": "日轮击",
+    "type": "光",
+    "category": "物理",
+    "power": 100,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "将日轮之力凝于拳掌重击对方。"
+  },
+  "极光爆裂": {
+    "name": "极光爆裂",
+    "type": "光",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": "引爆极光能量造成毁灭性伤害。"
+  },
+  "天照": {
+    "name": "天照",
+    "type": "光",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "召唤天照之力降下灼目神光。"
+  },
+  "光之审判": {
+    "name": "光之审判",
+    "type": "光",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": "以至高光芒审判一切黑暗。"
+  },
+  "微光": {
+    "name": "微光",
+    "type": "光",
+    "category": "特殊",
+    "power": 20,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": "释放微弱的光芒攻击对方。"
+  },
+  "光芒突袭": {
+    "name": "光芒突袭",
+    "type": "光",
+    "category": "物理",
+    "power": 30,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "priority",
+    "description": "化作光线瞬间突袭对方。先制技能。"
+  },
+  "荧光拍击": {
+    "name": "荧光拍击",
+    "type": "光",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 25,
+    "effect": "",
+    "description": "用发出荧光的身体拍击对方。"
+  },
+  "虹彩冲击": {
+    "name": "虹彩冲击",
+    "type": "光",
+    "category": "物理",
+    "power": 65,
+    "accuracy": 95,
+    "max_pp": 20,
+    "effect": "",
+    "description": "以七彩光芒包裹身躯冲撞对方。"
+  },
+  "光刃斩": {
+    "name": "光刃斩",
+    "type": "光",
+    "category": "物理",
+    "power": 85,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "high_crit",
+    "description": "凝聚光刃一刀斩下，容易击中要害。"
+  },
+  "日冕拳": {
+    "name": "日冕拳",
+    "type": "光",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "burn_10",
+    "description": "以日冕般灼热的光拳重击对方，有10%概率灼伤。"
+  },
+  "裁光神击": {
+    "name": "裁光神击",
+    "type": "光",
+    "category": "物理",
+    "power": 140,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "recoil_33",
+    "description": "倾注全部光之力量的致命一击，自身也承受反伤。"
+  },
+  "日冕射线": {
+    "name": "日冕射线",
+    "type": "光",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "burn_10",
+    "description": "发射日冕级灼热光线，有10%概率灼伤对方。"
+  },
+  "折光术": {
+    "name": "折光术",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "acc_down_1",
+    "description": "折射光线令对方目眩，降低命中率一级。"
+  },
+  "光盾": {
+    "name": "光盾",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "sp_def_up_2",
+    "description": "展开光之护盾，大幅提升特防。"
+  },
+  "晨曦祝福": {
+    "name": "晨曦祝福",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 5,
+    "effect": "heal_50",
+    "description": "沐浴晨曦的祝福，回复自身一半最大HP。"
+  },
+  "棱镜强化": {
+    "name": "棱镜强化",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "sp_atk_up_1",
+    "description": "以棱镜聚焦光能，提升特攻一级。"
+  },
+  "光速移动": {
+    "name": "光速移动",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 15,
+    "effect": "spd_up_2",
+    "description": "以光速移动，大幅提升速度。"
+  },
+  "圣光结界": {
+    "name": "圣光结界",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 0,
+    "max_pp": 10,
+    "effect": "def_sp_def_up_1",
+    "description": "展开圣光结界，同时提升防御和特防各一级。"
+  },
+  "致盲闪光": {
+    "name": "致盲闪光",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "acc_down_2",
+    "description": "释放刺目强光，大幅降低对方命中率。"
   }
 }
