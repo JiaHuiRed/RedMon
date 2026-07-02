@@ -8278,8 +8278,9 @@
     "power": 120,
     "accuracy": 85,
     "max_pp": 5,
-    "effect": "burn_10",
-    "description": "以日冕般灼热的光拳重击对方，有10%概率灼伤。"
+    "effect": "inflict_burn",
+    "description": "以日冕般灼热的光拳重击对方，有10%概率灼伤。",
+    "effect_chance": 10
   },
   "裁光神击": {
     "name": "裁光神击",
@@ -8288,8 +8289,9 @@
     "power": 140,
     "accuracy": 80,
     "max_pp": 5,
-    "effect": "recoil_33",
-    "description": "倾注全部光之力量的致命一击，自身也承受反伤。"
+    "effect": "recoil",
+    "description": "倾注全部光之力量的致命一击，自身也承受反伤。",
+    "effect_value": 33
   },
   "日冕射线": {
     "name": "日冕射线",
@@ -8298,8 +8300,9 @@
     "power": 100,
     "accuracy": 90,
     "max_pp": 5,
-    "effect": "burn_10",
-    "description": "发射日冕级灼热光线，有10%概率灼伤对方。"
+    "effect": "inflict_burn",
+    "description": "发射日冕级灼热光线，有10%概率灼伤对方。",
+    "effect_chance": 10
   },
   "折光术": {
     "name": "折光术",
@@ -8308,7 +8311,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "acc_down_1",
+    "effect": "lower_acc",
     "description": "折射光线令对方目眩，降低命中率一级。"
   },
   "光盾": {
@@ -8318,7 +8321,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 15,
-    "effect": "sp_def_up_2",
+    "effect": "raise_sp_def",
     "description": "展开光之护盾，大幅提升特防。"
   },
   "晨曦祝福": {
@@ -8328,8 +8331,9 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 5,
-    "effect": "heal_50",
-    "description": "沐浴晨曦的祝福，回复自身一半最大HP。"
+    "effect": "heal_self",
+    "description": "沐浴晨曦的祝福，回复自身一半最大HP。",
+    "effect_value": 50
   },
   "棱镜强化": {
     "name": "棱镜强化",
@@ -8338,7 +8342,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 15,
-    "effect": "sp_atk_up_1",
+    "effect": "raise_sp_atk",
     "description": "以棱镜聚焦光能，提升特攻一级。"
   },
   "光速移动": {
@@ -8348,7 +8352,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 15,
-    "effect": "spd_up_2",
+    "effect": "raise_spd",
     "description": "以光速移动，大幅提升速度。"
   },
   "圣光结界": {
@@ -8358,7 +8362,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 10,
-    "effect": "def_sp_def_up_1",
+    "effect": "raise_def",
     "description": "展开圣光结界，同时提升防御和特防各一级。"
   },
   "致盲闪光": {
@@ -8368,7 +8372,7 @@
     "power": 0,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "acc_down_2",
+    "effect": "lower_acc",
     "description": "释放刺目强光，大幅降低对方命中率。"
   }
 }

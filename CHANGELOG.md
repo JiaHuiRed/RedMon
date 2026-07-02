@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.10.5] - 2026-07-02
+
+> 编辑器技能效果结构化：效果类型下拉 + 概率% + 数值% 参数输入，支持异常/能力变化/反伤/吸血/回复/先制/暴击/畏缩。
+
+#### Added
+- 编辑器技能效果系统重构：效果从纯文本改为结构化UI（效果类型下拉框 + 概率%输入 + 数值%输入），参数按效果类型自动显隐
+- 新增效果类型：反伤(recoil)、吸血(drain)、先制(priority)、高暴击(high_crit)、畏缩(flinch)
+- `effect_chance`(概率) + `effect_value`(数值) 字段写入moves.json，战斗代码已原生支持effect_chance
+
+#### Fixed
+- 12个光系技能旧占位effect（如burn_10/recoil_33）转为标准结构化格式
+
 ### [0.10.4] - 2026-07-02
 
 > 新增光属性完整技能体系(30个技能)，补全光系克制表，moves.json总量837。

@@ -48,22 +48,44 @@ CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
 TRAINER_GENDERS = ["男", "女", "未知"]
 TRAINER_CLASSES = ["普通训练师", "精英训练师", "道馆主", "四天王", "冠军", "路人", "商人", "研究员"]
-EFFECTS_RAW = ["", "lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd",
-               "lower_acc", "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def",
-               "raise_spd", "raise_acc", "inflict_burn", "inflict_poison",
-               "inflict_paralysis", "inflict_sleep", "inflict_freeze", "heal_self"]
+# 260702 Red 技能效果系统 ─ 结构化：效果类型 + 概率% + 数值参数
+# 存储: effect(str key), effect_chance(int 0-100, 0=必触发), effect_value(int, 反伤%/吸血%等)
+EFFECTS_RAW = [
+    "",
+    # ── 异常状态 ──
+    "inflict_burn", "inflict_poison", "inflict_paralysis", "inflict_sleep", "inflict_freeze",
+    # ── 降能力 ──
+    "lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
+    # ── 升能力 ──
+    "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def", "raise_spd", "raise_acc",
+    # ── 回复/吸血/反伤 ──
+    "heal_self", "drain", "recoil",
+    # ── 战斗机制 ──
+    "priority", "high_crit", "flinch",
+]
 EFFECT_LABELS = {
-    "": "", "lower_atk": "降攻击", "lower_def": "降防御",
-    "lower_sp_atk": "降特攻", "lower_sp_def": "降特防", "lower_spd": "降速度",
-    "lower_acc": "降命中", "raise_atk": "升攻击", "raise_def": "升防御",
-    "raise_sp_atk": "升特攻", "raise_sp_def": "升特防", "raise_spd": "升速度",
-    "raise_acc": "升命中", "inflict_burn": "灼伤", "inflict_poison": "中毒",
+    "": "（无效果）",
+    "inflict_burn": "灼伤", "inflict_poison": "中毒",
     "inflict_paralysis": "麻痹", "inflict_sleep": "催眠", "inflict_freeze": "冰冻",
-    "heal_self": "自我回复",
+    "lower_atk": "降攻击", "lower_def": "降防御",
+    "lower_sp_atk": "降特攻", "lower_sp_def": "降特防",
+    "lower_spd": "降速度", "lower_acc": "降命中",
+    "raise_atk": "升攻击", "raise_def": "升防御",
+    "raise_sp_atk": "升特攻", "raise_sp_def": "升特防",
+    "raise_spd": "升速度", "raise_acc": "升命中",
+    "heal_self": "自我回复（%HP）", "drain": "吸血（%伤害）", "recoil": "反伤（%伤害）",
+    "priority": "先制攻击", "high_crit": "高暴击率", "flinch": "畏缩",
 }
 EFFECTS = [EFFECT_LABELS.get(e, e) for e in EFFECTS_RAW]
-# Reverse lookup: Chinese label → raw key
 EFFECT_TO_RAW = {v: k for k, v in EFFECT_LABELS.items()}
+# 哪些效果需要概率参数（0=必触发时隐藏）
+EFFECT_NEEDS_CHANCE = {"inflict_burn", "inflict_poison", "inflict_paralysis",
+                       "inflict_sleep", "inflict_freeze", "lower_atk", "lower_def",
+                       "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
+                       "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def",
+                       "raise_spd", "raise_acc", "flinch"}
+# 哪些效果需要数值参数（百分比）
+EFFECT_NEEDS_VALUE = {"heal_self", "drain", "recoil"}
 
 # Type matchup chart (attack_type → {defense_type: multiplier})
 TYPE_CHART = {
@@ -2020,9 +2042,24 @@ class App:
         _sep(f, row=row, col=0); row += 1
         _lbl(f, "效果").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
         self.move_effect = ttk.Combobox(
-            f, values=EFFECTS, width=24, state="readonly")
-        self.move_effect.grid(row=row, column=1, columnspan=3,
-                              sticky="w", pady=3)
+            f, values=EFFECTS, width=18, state="readonly")
+        self.move_effect.grid(row=row, column=1, sticky="w", pady=3)
+        self.move_effect.bind("<<ComboboxSelected>>", self._move_effect_changed)
+        row += 1
+
+        # 260702 Red 效果参数行：概率% + 数值%
+        ef_row = tk.Frame(f, bg=BG_MAIN)
+        ef_row.grid(row=row, column=0, columnspan=4, sticky="ew",
+                    padx=12, pady=3)
+        self._ef_chance_lbl = _lbl(ef_row, "概率%", bg=BG_MAIN)
+        self._ef_chance_lbl.pack(side="left", padx=(0, 4))
+        self.move_effect_chance = ttk.Entry(ef_row, width=5, justify="center")
+        self.move_effect_chance.pack(side="left", padx=(0, 16))
+        self._ef_value_lbl = _lbl(ef_row, "数值%", bg=BG_MAIN)
+        self._ef_value_lbl.pack(side="left", padx=(0, 4))
+        self.move_effect_value = ttk.Entry(ef_row, width=5, justify="center")
+        self.move_effect_value.pack(side="left")
+        self._ef_param_row = ef_row
         row += 1
 
         _sep(f, row=row, col=0); row += 1
@@ -2037,6 +2074,21 @@ class App:
         row += 1
 
         self._move_refresh_list()
+
+    def _move_effect_changed(self, _=None):
+        """根据选中的效果类型，显隐概率/数值参数输入框"""
+        raw = EFFECT_TO_RAW.get(self.move_effect.get(), "")
+        show_chance = raw in EFFECT_NEEDS_CHANCE
+        show_value  = raw in EFFECT_NEEDS_VALUE
+        for w in (self._ef_chance_lbl, self.move_effect_chance):
+            w.pack_forget() if not show_chance else w.pack(side="left", padx=(0, 4) if w == self._ef_chance_lbl else (0, 16))
+        for w in (self._ef_value_lbl, self.move_effect_value):
+            w.pack_forget() if not show_value else w.pack(side="left", padx=(0, 4) if w == self._ef_value_lbl else (0, 0))
+        # 无参数时隐藏整行
+        if not show_chance and not show_value:
+            self._ef_param_row.grid_remove()
+        else:
+            self._ef_param_row.grid()
 
     def _move_show_form(self):
         self._move_placeholder.pack_forget()
@@ -2068,7 +2120,13 @@ class App:
         self.move_acc.insert(0, str(d.get("accuracy", 0)))
         self.move_pp.delete(0, "end")
         self.move_pp.insert(0, str(d.get("max_pp", 0)))
-        self.move_effect.set(EFFECT_LABELS.get(d.get("effect", ""), d.get("effect", "")))
+        eff_raw = d.get("effect", "")
+        self.move_effect.set(EFFECT_LABELS.get(eff_raw, eff_raw))
+        self.move_effect_chance.delete(0, "end")
+        self.move_effect_chance.insert(0, str(d.get("effect_chance", 0)))
+        self.move_effect_value.delete(0, "end")
+        self.move_effect_value.insert(0, str(d.get("effect_value", 0)))
+        self._move_effect_changed()
         self.move_desc.delete("1.0", "end")
         self.move_desc.insert("1.0", d.get("description", ""))
 
@@ -2078,6 +2136,9 @@ class App:
         if not new:
             messagebox.showerror("错误", "名称不能为空"); return
 
+        eff_raw = EFFECT_TO_RAW.get(self.move_effect.get(), self.move_effect.get())
+        eff_chance = _int(self.move_effect_chance.get())
+        eff_value  = _int(self.move_effect_value.get())
         d = {
             "name":        new,
             "type":        self.move_type.get(),
@@ -2085,9 +2146,13 @@ class App:
             "power":       _int(self.move_power.get()),
             "accuracy":    _int(self.move_acc.get()),
             "max_pp":      _int(self.move_pp.get()),
-            "effect":      EFFECT_TO_RAW.get(self.move_effect.get(), self.move_effect.get()),
+            "effect":      eff_raw,
             "description": self.move_desc.get("1.0", "end-1c").strip(),
         }
+        if eff_chance > 0:
+            d["effect_chance"] = eff_chance
+        if eff_value > 0:
+            d["effect_value"] = eff_value
 
         if old and old != new:
             del self.moves[old]
