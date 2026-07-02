@@ -6,6 +6,8 @@ var species: Dictionary = {}
 var items:   Dictionary = {}
 var dialogs: Dictionary = {}
 var trainers: Dictionary = {}  # 260630 Red 所有训练师数据
+var natures: Dictionary = {}  # 260702 Red 性格表（上升属性/下降属性各5%，中性性格up/down为空）
+var abilities: Dictionary = {}  # 260702 Red 特性表：{名: {desc, effect}}
 
 # ── 属性克制表 ────────────────────────────────────────────────────────────────
 # 18属性完整版（对应宝可梦第六世代起）
@@ -122,6 +124,8 @@ func _ready() -> void:
 	_load_json("res://data/items.json",   items)
 	_load_json("res://data/dialogs.json", dialogs)
 	_load_json("res://data/trainers.json", trainers)  # 260630 Red
+	_load_json("res://data/natures.json", natures)  # 260702 Red
+	_load_json("res://data/abilities.json", abilities)  # 260702 Red
 	_load_species_json()
 
 func _load_json(path: String, target: Dictionary) -> void:
@@ -190,9 +194,10 @@ func get_effectiveness(atk_type: String, def_type1: String, def_type2: String = 
 
 # 创建精灵实例
 # ivs 可选传入（升级时复用），不传则随机生成
-func create_mon(species_id: String, level: int, ivs: Dictionary = {}) -> Dictionary:
+# nature 可选传入（复用/指定性格），不传则随机生成
+# ability 可选传入（复用/指定特性），不传则从species特性池随机
+func create_mon(species_id: String, level: int, ivs: Dictionary = {}, nature: String = "", ability: String = "") -> Dictionary:
 	var sp = species[species_id]
-	var b  = sp["base"]
 
 	# ── 个体值（0~31，宝可梦标准）─────────────────────────────────────────────
 	if ivs.is_empty():
@@ -205,15 +210,13 @@ func create_mon(species_id: String, level: int, ivs: Dictionary = {}) -> Diction
 			"spd":    randi() % 32,
 		}
 
-	# ── 种族值公式（3倍种族值，数值更饱满）──────────────────────────────────
-	# HP  = floor((3×base + iv) × Lv / 100) + Lv + 10
-	# 其他 = floor((3×base + iv) × Lv / 100) + 5
-	var hp    = int((3.0 * b["hp"]     + ivs["hp"])     * level / 100.0) + level + 10
-	var atk   = int((3.0 * b["atk"]   + ivs["atk"])    * level / 100.0) + 5
-	var def_  = int((3.0 * b["def"]   + ivs["def"])    * level / 100.0) + 5
-	var spa   = int((3.0 * b["sp_atk"]+ ivs["sp_atk"]) * level / 100.0) + 5
-	var spd_  = int((3.0 * b["sp_def"]+ ivs["sp_def"]) * level / 100.0) + 5
-	var spe   = int((3.0 * b["spd"]   + ivs["spd"])    * level / 100.0) + 5
+	# ── 性格（260702 Red）：非HP属性 ±5% ─────────────────────────────────────
+	if nature == "" or not natures.has(nature):
+		nature = roll_nature()
+
+	# ── 特性（260702 Red）：从species的abilities池随机 ────────────────────────
+	if ability == "" or not sp.get("abilities", []).has(ability):
+		ability = roll_ability(species_id)
 
 	# ── 技能列表（学习等级 ≤ 当前等级，最多保留后 4 个）─────────────────────
 	var learned: Array = []
@@ -233,18 +236,16 @@ func create_mon(species_id: String, level: int, ivs: Dictionary = {}) -> Diction
 
 	var gr = sp.get("growth_rate", "中速")
 
-	return {
+	var mon = {
 		"species_id": species_id,
 		"nickname":   "",
 		"level":      level,
 		"exp":        exp_for_level(gr, level),
-		"current_hp": hp, "max_hp": hp,
-		"atk":    atk,
-		"def":    def_,
-		"sp_atk": spa,
-		"sp_def": spd_,
-		"spd":    spe,
 		"ivs":    ivs,   # 保存个体值，升级时重算用
+		"nature": nature,  # 260702 Red 性格，升级时重算用
+		"ability": ability,  # 260702 Red 特性
+		# 260702 Red 食疗式努力值：单项上限126，总和上限256，每2点换算1点内部数值
+		"training": {"hp": 0, "atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0},
 		"gender": roll_gender(species_id),   # "male"/"female"/""（无性别），性别进化分支用
 		"moves":       move_list,
 		"status":      "",
@@ -252,6 +253,34 @@ func create_mon(species_id: String, level: int, ivs: Dictionary = {}) -> Diction
 		# 战斗中临时能力变化阶段 (-6..+6)
 		"stages": {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0},
 	}
+	recalc_stats(mon)
+	mon["current_hp"] = mon["max_hp"]
+	return mon
+
+# ── 属性重算（260702 Red）─────────────────────────────────────────────────────
+# 由 ivs + training + nature + level 重算 max_hp/atk/def/sp_atk/sp_def/spd
+# 升级、使用滋补道具都调用此函数，避免重复公式代码
+func recalc_stats(mon: Dictionary) -> void:
+	var sp = species[mon["species_id"]]
+	var b  = sp["base"]
+	var ivs = mon["ivs"]
+	var training = mon.get("training", {})
+	var lv = mon["level"]
+	var nature = mon.get("nature", "")
+
+	var t_hp     = int(training.get("hp", 0)     / 2.0)
+	var t_atk    = int(training.get("atk", 0)    / 2.0)
+	var t_def    = int(training.get("def", 0)    / 2.0)
+	var t_spatk  = int(training.get("sp_atk", 0) / 2.0)
+	var t_spdef  = int(training.get("sp_def", 0) / 2.0)
+	var t_spd    = int(training.get("spd", 0)    / 2.0)
+
+	mon["max_hp"] = int((3.0 * b["hp"]     + ivs["hp"]     + t_hp)    * lv / 100.0) + lv + 10
+	mon["atk"]    = int((int((3.0 * b["atk"]    + ivs["atk"]    + t_atk)   * lv / 100.0) + 5) * nature_multiplier(nature, "atk"))
+	mon["def"]    = int((int((3.0 * b["def"]    + ivs["def"]    + t_def)   * lv / 100.0) + 5) * nature_multiplier(nature, "def"))
+	mon["sp_atk"] = int((int((3.0 * b["sp_atk"] + ivs["sp_atk"] + t_spatk) * lv / 100.0) + 5) * nature_multiplier(nature, "sp_atk"))
+	mon["sp_def"] = int((int((3.0 * b["sp_def"] + ivs["sp_def"] + t_spdef) * lv / 100.0) + 5) * nature_multiplier(nature, "sp_def"))
+	mon["spd"]    = int((int((3.0 * b["spd"]    + ivs["spd"]    + t_spd)   * lv / 100.0) + 5) * nature_multiplier(nature, "spd"))
 
 # ── 性别 ──────────────────────────────────────────────────────────────────────
 # 依据物种 gender_ratio（"雄%/雌%"）随机生成个体性别；比例为 0/0 视为无性别
@@ -264,6 +293,32 @@ func roll_gender(species_id: String) -> String:
 	if m <= 0.0 and f <= 0.0:
 		return ""
 	return "male" if randf() * 100.0 < m else "female"
+
+# ── 性格 ──────────────────────────────────────────────────────────────────────
+# 260702 Red 性格系统：25种性格，非中性性格对应属性+5%，另一属性-5%（HP不受影响）
+func roll_nature() -> String:
+	var keys = natures.keys()
+	return keys[randi() % keys.size()]
+
+func nature_multiplier(nature: String, stat: String) -> float:
+	var n = natures.get(nature, {})
+	if n.get("up", "") == stat:
+		return 1.05
+	if n.get("down", "") == stat:
+		return 0.95
+	return 1.0
+
+# ── 特性 ──────────────────────────────────────────────────────────────────────
+# 260702 Red 特性系统：从species的abilities池中随机选1个（空字符串槽位会被过滤）
+func roll_ability(species_id: String) -> String:
+	var sp = species.get(species_id, {})
+	var pool: Array = []
+	for a in sp.get("abilities", []):
+		if a != "":
+			pool.append(a)
+	if pool.is_empty():
+		return ""
+	return pool[randi() % pool.size()]
 
 # 判断物种是否为单一性别限定（gender_ratio 恰为 100/0 或 0/100），返回 "male"/"female"/""
 func _gender_lock(species_id: String) -> String:
@@ -338,16 +393,9 @@ func level_up(mon: Dictionary) -> Array:
 	mon["level"] += 1
 	var lv = mon["level"]
 	var sp = species[mon["species_id"]]
-	var b  = sp["base"]
-	var ivs = mon["ivs"]
 
 	var old_max_hp = mon["max_hp"]
-	mon["max_hp"] = int((3.0 * b["hp"]     + ivs["hp"])     * lv / 100.0) + lv + 10
-	mon["atk"]    = int((3.0 * b["atk"]    + ivs["atk"])    * lv / 100.0) + 5
-	mon["def"]    = int((3.0 * b["def"]    + ivs["def"])    * lv / 100.0) + 5
-	mon["sp_atk"] = int((3.0 * b["sp_atk"] + ivs["sp_atk"]) * lv / 100.0) + 5
-	mon["sp_def"] = int((3.0 * b["sp_def"] + ivs["sp_def"]) * lv / 100.0) + 5
-	mon["spd"]    = int((3.0 * b["spd"]    + ivs["spd"])    * lv / 100.0) + 5
+	recalc_stats(mon)
 	# 当前HP随最大HP成长（不满血升级也只涨差值）
 	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max_hp), mon["max_hp"])
 

@@ -115,5 +115,61 @@
     "price": 0,
     "desc": "记录了招式【飞叶快刀】的技能机，可反复使用教会精灵这个招式。",
     "tm_move": "飞叶快刀"
+  },
+  "包子": {
+    "name": "包子",
+    "category": "滋补",
+    "price": 200,
+    "desc": "热腾腾的大肉包，管饱抗饿。可提升1点HP努力值。",
+    "train_stat": "hp",
+    "train_amount": 1
+  },
+  "鸡肉卷": {
+    "name": "鸡肉卷",
+    "category": "滋补",
+    "price": 250,
+    "desc": "裹满酱料的鸡肉卷，蛋白质满满。可提升1点攻击努力值。",
+    "train_stat": "atk",
+    "train_amount": 1
+  },
+  "苹果": {
+    "name": "苹果",
+    "category": "滋补",
+    "price": 200,
+    "desc": "脆生生的红苹果，皮厚耐嚼。可提升1点防御努力值。",
+    "train_stat": "def",
+    "train_amount": 1
+  },
+  "奶茶": {
+    "name": "奶茶",
+    "category": "滋补",
+    "price": 250,
+    "desc": "香浓奶茶配珍珠，补钙提神。可提升1点特攻努力值。",
+    "train_stat": "sp_atk",
+    "train_amount": 1
+  },
+  "西瓜": {
+    "name": "西瓜",
+    "category": "滋补",
+    "price": 200,
+    "desc": "清凉多汁的大西瓜，清热解暑。可提升1点特防努力值。",
+    "train_stat": "sp_def",
+    "train_amount": 1
+  },
+  "可乐": {
+    "name": "可乐",
+    "category": "滋补",
+    "price": 250,
+    "desc": "冰镇气泡可乐，一口下肚精神百倍。可提升1点速度努力值。",
+    "train_stat": "spd",
+    "train_amount": 1
+  },
+  "大烧鸡": {
+    "name": "大烧鸡",
+    "category": "滋补",
+    "price": 900,
+    "desc": "整只酱香烧鸡，滋补效果拔群。可自选一项属性提升2点努力值。",
+    "train_stat": "",
+    "train_amount": 2
   }
 }

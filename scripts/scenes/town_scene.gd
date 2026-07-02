@@ -21,7 +21,7 @@ var _dialog_phase: int = 0
 var _dialog_panel: Control
 var _dialog_label: Label
 
-# 杂货铺
+# 杂货铺（260702 Red 只卖精灵葫芦+回复类丹药；滋补类特殊道具留到后续城市的百货大楼卖）
 const SHOP_DOOR_TILE := Vector2i(23, 5)
 var SHOP_ITEMS := ["精灵葫芦", "铜丹", "银丹", "金丹", "铁丹"]
 var _shop_active: bool = false

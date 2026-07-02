@@ -23,6 +23,10 @@ var _target_cursor: int = 0
 var _detail_idx: int = 0
 var _bag_keys: Array = []
 var _swap_pick_idx: int = -1
+# 260702 Red 食疗式努力值：滋补道具属性选择（如大烧鸡需自选加成属性）
+var _stat_cursor: int = 0
+const _STAT_KEYS   := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
+const _STAT_LABELS := ["HP", "攻击", "防御", "特攻", "特防", "速度"]
 const _PW   := 220
 const _PH   := 300
 const _PX   := 30
@@ -105,10 +109,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				_swap_pick_idx = -1; _draw_pause()
 				return
 			match _pause_sub:
-				"party_detail": _pause_sub = "party"; _draw_pause()
-				"bag_target":   _pause_sub = "bag"; _draw_pause()
-				"":             _close_pause()
-				_:              _pause_sub = ""; _pause_cursor = 0; _draw_pause()
+				"party_detail":    _pause_sub = "party"; _draw_pause()
+				"bag_target":      _pause_sub = "bag"; _draw_pause()
+				"bag_stat_select": _pause_sub = "bag_target"; _draw_pause()
+				"":                _close_pause()
+				_:                 _pause_sub = ""; _pause_cursor = 0; _draw_pause()
 		return
 
 	if not _pause_active:
@@ -133,6 +138,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			"bag_target":
 				var n2 = GameState.player_team.size()
 				if n2 > 0: _target_cursor = (_target_cursor - 1 + n2) % n2
+			"bag_stat_select":
+				_stat_cursor = (_stat_cursor - 1 + _STAT_KEYS.size()) % _STAT_KEYS.size()
 		_draw_pause()
 	elif event.is_action_pressed("ui_down"):
 		get_viewport().set_input_as_handled()
@@ -147,6 +154,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			"bag_target":
 				var n2 = GameState.player_team.size()
 				if n2 > 0: _target_cursor = (_target_cursor + 1) % n2
+			"bag_stat_select":
+				_stat_cursor = (_stat_cursor + 1) % _STAT_KEYS.size()
 		_draw_pause()
 	elif event.is_action_pressed("run") and _pause_sub == "party":
 		get_viewport().set_input_as_handled()
@@ -176,12 +185,26 @@ func _unhandled_input(event: InputEvent) -> void:
 				if _bag_keys.size() > 0:
 					var item_id = _bag_keys[_bag_cursor]
 					var item_data = MonDB.items.get(item_id, {})
-					if item_data.get("category", "") == "heal" and GameState.items.get(item_id, 0) > 0 and not GameState.player_team.is_empty():
+					var usable = item_data.get("category", "") in ["heal", "滋补"]
+					if usable and GameState.items.get(item_id, 0) > 0 and not GameState.player_team.is_empty():
 						_target_cursor = 0
 						_pause_sub = "bag_target"; _draw_pause()
 			"bag_target":
 				var item_id2 = _bag_keys[_bag_cursor]
-				_apply_heal_to_mon(item_id2, _target_cursor)
+				var item_data2 = MonDB.items.get(item_id2, {})
+				if item_data2.get("category", "") == "滋补":
+					if item_data2.get("train_stat", "") == "":
+						_stat_cursor = 0
+						_pause_sub = "bag_stat_select"; _draw_pause()
+					else:
+						_apply_training_to_mon(item_id2, _target_cursor, item_data2.get("train_stat", ""))
+						_pause_sub = "bag"; _draw_pause()
+				else:
+					_apply_heal_to_mon(item_id2, _target_cursor)
+					_pause_sub = "bag"; _draw_pause()
+			"bag_stat_select":
+				var item_id3 = _bag_keys[_bag_cursor]
+				_apply_training_to_mon(item_id3, _target_cursor, _STAT_KEYS[_stat_cursor])
 				_pause_sub = "bag"; _draw_pause()
 
 func _build_pause() -> void:
@@ -229,6 +252,7 @@ func _draw_pause() -> void:
 		"party_detail": _draw_pause_party_detail()
 		"bag":          _draw_pause_bag()
 		"bag_target":   _draw_pause_bag_target()
+		"bag_stat_select": _draw_pause_bag_stat_select()
 		"saved":        _draw_pause_saved()
 
 func _pause_lbl(text: String, x: int, y: int, sz: int = 12, col: Color = Color.WHITE) -> void:
@@ -319,8 +343,14 @@ func _draw_pause_party_detail() -> void:
 	var sp = MonDB.species[mon["species_id"]]
 	_pause_lbl("■ %s Lv.%d" % [MonDB.display_name(mon), mon["level"]], 8, 8, 13, Color(1.0, 0.85, 0.2))
 	_pause_lbl("[%s]" % sp["type1"], _PW - 36, 10, 10, MonDB.type_colors.get(sp["type1"], Color.WHITE))
-	_pause_div(26)
-	_pause_lbl("HP  %d/%d  (个体 %d)" % [mon["current_hp"], mon["max_hp"], mon.get("ivs", {}).get("hp", 0)], 10, 32, 10, Color(0.85, 0.95, 0.85))
+	# 260702 Red 性别+性格行
+	var gender = mon.get("gender", "")
+	var gender_txt = {"male": "♂", "female": "♀"}.get(gender, "–")
+	var gender_col = {"male": Color(0.45, 0.65, 0.95), "female": Color(0.95, 0.5, 0.7)}.get(gender, Color(0.60, 0.60, 0.68))
+	_pause_lbl("性别 %s   性格 %s" % [gender_txt, mon.get("nature", "—")], 10, 22, 10, gender_col)
+	var top = 38
+	_pause_div(top)
+	_pause_lbl("HP  %d/%d  (个体 %d)" % [mon["current_hp"], mon["max_hp"], mon.get("ivs", {}).get("hp", 0)], 10, top + 6, 10, Color(0.85, 0.95, 0.85))
 	var ivs = mon.get("ivs", {})
 	var stat_lines = [
 		"攻击 %d  (个体 %d)" % [mon["atk"], ivs.get("atk", 0)],
@@ -329,11 +359,12 @@ func _draw_pause_party_detail() -> void:
 		"特防 %d  (个体 %d)" % [mon["sp_def"], ivs.get("sp_def", 0)],
 		"速度 %d  (个体 %d)" % [mon["spd"], ivs.get("spd", 0)]
 	]
+	var stats_y = top + 24
 	for i in range(stat_lines.size()):
-		_pause_lbl(stat_lines[i], 10, 50 + i * 16, 10, Color(0.85, 0.85, 0.90))
+		_pause_lbl(stat_lines[i], 10, stats_y + i * 16, 10, Color(0.85, 0.85, 0.90))
 	var status = mon.get("status", "")
-	_pause_lbl("状态: %s" % (status if status != "" else "健康"), 10, 50 + stat_lines.size() * 16 + 4, 10, Color(0.70, 0.70, 0.78))
-	var moves_y = 50 + stat_lines.size() * 16 + 24
+	_pause_lbl("状态: %s" % (status if status != "" else "健康"), 10, stats_y + stat_lines.size() * 16 + 4, 10, Color(0.70, 0.70, 0.78))
+	var moves_y = stats_y + stat_lines.size() * 16 + 24
 	_pause_lbl("技能:", 10, moves_y, 10, Color(0.70, 0.70, 0.78))
 	var moves = mon.get("moves", [])
 	for i in range(min(moves.size(), 4)):
@@ -368,7 +399,7 @@ func _draw_pause_bag() -> void:
 	var hint = "↑↓选择  X/Esc返回"
 	if not _bag_keys.is_empty():
 		var cur_item = MonDB.items.get(_bag_keys[_bag_cursor], {})
-		if cur_item.get("category", "") == "heal" and GameState.items[_bag_keys[_bag_cursor]] > 0:
+		if cur_item.get("category", "") in ["heal", "滋补"] and GameState.items[_bag_keys[_bag_cursor]] > 0:
 			hint = "↑↓选择  Z使用  X/Esc返回"
 	_pause_lbl(hint, 6, _PH - 20, 9, Color(0.52, 0.52, 0.66))
 
@@ -400,6 +431,38 @@ func _apply_heal_to_mon(item_id: String, target_idx: int) -> void:
 		mon["current_hp"] = mon["max_hp"]
 	else:
 		mon["current_hp"] = mini(mon["max_hp"], mon["current_hp"] + int(item_data.get("heal_amount", 20)))
+
+# 260702 Red 食疗式努力值：滋补道具属性选择界面（train_stat为空的道具，如大烧鸡，需玩家自选属性）
+func _draw_pause_bag_stat_select() -> void:
+	_draw_pause_bg_panel()
+	var item_id = _bag_keys[_bag_cursor] if _bag_cursor < _bag_keys.size() else ""
+	_pause_lbl("■ 【%s】要强化哪项属性？" % item_id, 8, 8, 12, Color(1.0, 0.85, 0.2))
+	_pause_div(26)
+	for i in range(_STAT_KEYS.size()):
+		var sel = i == _stat_cursor
+		_pause_lbl(("▶ " if sel else "  ") + _STAT_LABELS[i], 10, 36 + i * 26, 11,
+			Color.WHITE if sel else Color(0.80, 0.80, 0.86))
+	_pause_lbl("↑↓选择  Z确定  X/Esc返回", 6, _PH - 20, 9, Color(0.52, 0.52, 0.66))
+
+# 260702 Red 食疗式努力值：使用滋补道具，单项上限126，总和上限256
+func _apply_training_to_mon(item_id: String, target_idx: int, stat: String) -> void:
+	var team = GameState.player_team
+	if target_idx < 0 or target_idx >= team.size(): return
+	if GameState.items.get(item_id, 0) <= 0: return
+	var item_data = MonDB.items.get(item_id, {})
+	var mon = team[target_idx]
+	var training = mon.get("training", {"hp": 0, "atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0})
+	var amount = int(item_data.get("train_amount", 1))
+	var total: int = 0
+	for k in training: total += training[k]
+	var room_total = 256 - total
+	var room_stat = 126 - training.get(stat, 0)
+	amount = clampi(amount, 0, min(room_total, room_stat))
+	if amount <= 0: return
+	GameState.items[item_id] -= 1
+	training[stat] = training.get(stat, 0) + amount
+	mon["training"] = training
+	MonDB.recalc_stats(mon)
 
 func _draw_pause_saved() -> void:
 	_pause_lbl("■ 存档", 8, 8, 14, Color(1.0, 0.85, 0.2))

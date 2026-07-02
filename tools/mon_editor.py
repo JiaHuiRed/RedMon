@@ -24,6 +24,7 @@ MOVES_FILE    = os.path.join(ROOT, "data", "moves.json")
 TRAINERS_FILE = os.path.join(ROOT, "data", "trainers.json")
 DIALOGS_FILE  = os.path.join(ROOT, "data", "dialogs.json")
 ITEMS_FILE    = os.path.join(ROOT, "data", "items.json")
+ABILITIES_FILE = os.path.join(ROOT, "data", "abilities.json")  # 260702 Red 特性库
 SPRITES_DIR   = os.path.join(ROOT, "assets", "sprites")
 
 TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢"]
@@ -278,6 +279,7 @@ class App:
         self.moves    = load_json(MOVES_FILE)
         self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
         self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
+        self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}  # 260702 Red
 
         # 隐藏根窗口用于保留任务栏图标，实际 UI 在 Toplevel 上
         self._ghost = tk.Tk()
@@ -326,15 +328,18 @@ class App:
         self.trainer_tab = ttk.Frame(self.notebook)
         self.dialog_tab  = ttk.Frame(self.notebook)
         self.item_tab    = ttk.Frame(self.notebook)
+        self.ability_tab = ttk.Frame(self.notebook)  # 260702 Red
         self.notebook.add(self.mon_tab,     text="  精灵图鉴  ")
         self.notebook.add(self.move_tab,    text="  技能库  ")
         self.notebook.add(self.item_tab,    text="  道具编辑  ")
+        self.notebook.add(self.ability_tab, text="  特性库  ")
         self.notebook.add(self.trainer_tab, text="  角色编辑  ")
         self.notebook.add(self.dialog_tab,  text="  剧情文本  ")
 
         self._build_mon_tab()
         self._build_move_tab()
         self._build_item_tab()
+        self._build_ability_tab()
         self._build_trainer_tab()
         self._build_dialog_tab()
 
@@ -427,10 +432,13 @@ class App:
             self.moves    = load_json(MOVES_FILE)
             self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
             self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
+            self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}
             self._mon_refresh_list()
             self._move_refresh_list()
             self._trainer_refresh_list()
             self._item_refresh_list()
+            self._ability_refresh_list()
+            self._mon_refresh_ability_choices()
             self._refresh_dlg_tree()
             messagebox.showinfo("", "数据已重新加载")
         except Exception as e:
@@ -950,6 +958,19 @@ class App:
                    command=self._enc_remove).pack()
         row += 1
 
+        # 特性 260702 Red
+        _sep(f, row=row, col=0); row += 1
+        _lbl(f, "特性").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
+        ab_f = tk.Frame(f, bg=BG_MAIN)
+        ab_f.grid(row=row, column=1, columnspan=4, sticky="w", pady=3)
+        _lbl(ab_f, "主特性", bg=BG_MAIN).pack(side="left")
+        self.mon_ability1 = ttk.Combobox(ab_f, width=10, state="readonly")
+        self.mon_ability1.pack(side="left", padx=(4, 16))
+        _lbl(ab_f, "隐藏特性", bg=BG_MAIN).pack(side="left")
+        self.mon_ability2 = ttk.Combobox(ab_f, width=10, state="readonly")
+        self.mon_ability2.pack(side="left", padx=(4, 0))
+        row += 1
+
         # 描述
         _sep(f, row=row, col=0); row += 1
         _lbl(f, "图鉴描述").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
@@ -965,6 +986,7 @@ class App:
 
         self._mon_refresh_list()
         self._refresh_stat_bars()
+        self._mon_refresh_ability_choices()
 
     # ── Mon tab helpers ─────────────────────────────────────────────────────
 
@@ -1057,6 +1079,15 @@ class App:
             mid = d.get("id", 0) or 0
             self.mon_list.insert("end", f"{mid:03d} {n}")
 
+    def _mon_refresh_ability_choices(self):
+        # 260702 Red 特性库变化后，刷新精灵图鉴的特性下拉框选项
+        choices = [""] + sorted(self.abilities.keys())
+        cur1, cur2 = self.mon_ability1.get(), self.mon_ability2.get()
+        self.mon_ability1["values"] = choices
+        self.mon_ability2["values"] = choices
+        self.mon_ability1.set(cur1 if cur1 in choices else "")
+        self.mon_ability2.set(cur2 if cur2 in choices else "")
+
     def _mon_select(self, _=None):
         sel = self.mon_list.curselection()
         if not sel: return
@@ -1105,6 +1136,11 @@ class App:
         self.enc_tree.delete(*self.enc_tree.get_children())
         for enc in d.get("encounters", []):
             self.enc_tree.insert("", "end", values=(enc.get("location", ""), enc.get("rate", 0)))
+
+        # 特性 260702 Red
+        abilities = d.get("abilities", ["", ""])
+        self.mon_ability1.set(abilities[0] if len(abilities) > 0 else "")
+        self.mon_ability2.set(abilities[1] if len(abilities) > 1 else "")
 
         # evolutions
         self.evo_tree.delete(*self.evo_tree.get_children())
@@ -1784,6 +1820,7 @@ class App:
             "gender_ratio": self.mon_gender.get(),
             "height":      self.mon_height.get().strip(),
             "weight":      self.mon_weight.get().strip(),
+            "abilities":   [self.mon_ability1.get(), self.mon_ability2.get()],
         }
 
         # 遭遇地 260630 Red
@@ -1852,6 +1889,7 @@ class App:
             "catch_rate": 45, "exp_yield": 64, "growth_rate": "中速",
             "desc": "", "gender_ratio": "50/50",
             "height": "0.5", "weight": "5.0", "learnset": {},
+            "abilities": ["", ""],
         }
         self._mon_refresh_list()
         for i in range(self.mon_list.size()):
@@ -2815,12 +2853,25 @@ class App:
         r = 0
         _lbl(self._item_row, "分类").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
         self.item_category = ttk.Combobox(
-            self._item_row, values=["捕捉", "回复", "状态", "进化", "关键"],
+            self._item_row, values=["捕捉", "回复", "状态", "进化", "关键", "滋补"],
             width=10, state="readonly")
         self.item_category.grid(row=r, column=1, sticky="w", pady=3)
         _lbl(self._item_row, "价格").grid(row=r, column=2, padx=(16, 4))
         self.item_price = ttk.Entry(self._item_row, width=8, justify="center")
         self.item_price.grid(row=r, column=3, sticky="w", pady=3)
+        r += 1
+
+        # 260702 Red 滋补类专属字段：对应属性 + 每次使用增加的努力值
+        _lbl(self._item_row, "滋补属性").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.item_train_stat = ttk.Combobox(
+            self._item_row, values=["", "hp", "atk", "def", "sp_atk", "sp_def", "spd"],
+            width=10, state="readonly")
+        self.item_train_stat.grid(row=r, column=1, sticky="w", pady=3)
+        _lbl(self._item_row, "（留空=使用时自选）").grid(row=r, column=2, columnspan=2, sticky="w", padx=(8, 0))
+        r += 1
+        _lbl(self._item_row, "努力值增量").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.item_train_amount = ttk.Entry(self._item_row, width=8, justify="center")
+        self.item_train_amount.grid(row=r, column=1, sticky="w", pady=3)
         r += 1
 
         _lbl(self._item_row, "描述").grid(row=r, column=0, sticky="ne", padx=PAD, pady=3)
@@ -2857,6 +2908,9 @@ class App:
         self.item_category.set(d.get("category", ""))
         self.item_price.delete(0, "end")
         self.item_price.insert(0, str(d.get("price", 0)))
+        self.item_train_stat.set(d.get("train_stat", ""))
+        self.item_train_amount.delete(0, "end")
+        self.item_train_amount.insert(0, str(d.get("train_amount", 0)))
         self.item_desc.delete("1.0", "end")
         self.item_desc.insert("1.0", d.get("desc", ""))
 
@@ -2865,12 +2919,19 @@ class App:
         new = self.item_name.get().strip()
         if not new:
             messagebox.showerror("错误", "名称不能为空"); return
-        d = {
+        d = dict(self.items.get(old, {}))  # 保留原有其他字段（heal_amount/tm_move等）
+        d.update({
             "name":     new,
             "category": self.item_category.get(),
             "price":    _int(self.item_price.get()),
             "desc":     self.item_desc.get("1.0", "end-1c").strip(),
-        }
+        })
+        if self.item_category.get() == "滋补":
+            d["train_stat"]   = self.item_train_stat.get()
+            d["train_amount"] = _int(self.item_train_amount.get())
+        else:
+            d.pop("train_stat", None)
+            d.pop("train_amount", None)
         if old and old != new:
             del self.items[old]
         self.items[new] = d
@@ -2905,6 +2966,154 @@ class App:
             self._current_item = None
             self._item_form.pack_forget()
             self._item_placeholder.pack(fill="both", expand=True)
+            self._update_status()
+
+    # ══════════════════════════════════════════════════════════════════════════
+    #  特性库 TAB（260702 Red）
+    # ══════════════════════════════════════════════════════════════════════════
+
+    def _build_ability_tab(self):
+        left = tk.Frame(self.ability_tab, bg=BG_SIDE, width=200)
+        left.pack(side="left", fill="y")
+        left.pack_propagate(False)
+
+        _lbl(left, "特性列表", bg=BG_SIDE, bold=True).pack(
+            anchor="w", padx=12, pady=(12, 2))
+        self.ability_search = ttk.Entry(left)
+        self.ability_search.pack(fill="x", padx=10)
+        self.ability_search.bind("<KeyRelease>",
+                                 lambda _: self._ability_refresh_list())
+
+        lf = tk.Frame(left, bg=BG_SIDE)
+        lf.pack(fill="both", expand=True, padx=10, pady=(6, 4))
+        sb = ttk.Scrollbar(lf, orient="vertical")
+        self.ability_list = tk.Listbox(
+            lf, yscrollcommand=sb.set, font=(FONT_CJK, 10),
+            bg=BG_CARD, fg=TEXT_PRI,
+            selectbackground=ACCENT, selectforeground="white",
+            borderwidth=0, highlightthickness=0, relief="flat",
+            activestyle="none")
+        sb.config(command=self.ability_list.yview)
+        sb.pack(side="right", fill="y")
+        self.ability_list.pack(side="left", fill="both", expand=True)
+        self.ability_list.bind("<<ListboxSelect>>", self._ability_select)
+
+        bf = tk.Frame(left, bg=BG_SIDE)
+        bf.pack(fill="x", padx=10, pady=(0, 12))
+        ttk.Button(bf, text="+ 新增",
+                   command=self._ability_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="× 删除",
+                   command=self._ability_del).pack(side="left")
+
+        self._ability_placeholder = tk.Label(
+            self.ability_tab, text="← 选择一个特性开始编辑",
+            bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
+        self._ability_placeholder.pack(side="right", fill="both", expand=True)
+
+        self._ability_form = tk.Frame(self.ability_tab, bg=BG_MAIN)
+        f = self._ability_form
+        PAD = (10, 4)
+
+        hf = tk.Frame(f, bg=BG_MAIN)
+        hf.pack(fill="x", padx=12, pady=(14, 4))
+        _lbl(hf, "名称", bg=BG_MAIN).pack(side="left")
+        self.ability_name = ttk.Entry(hf, width=18)
+        self.ability_name.pack(side="left", padx=(4, 16))
+        ttk.Button(hf, text="💾 保存",
+                   command=self._ability_save).pack(side="left")
+
+        self._ability_row = tk.Frame(f, bg=BG_MAIN)
+        self._ability_row.pack(fill="x", padx=12, pady=8)
+
+        r = 0
+        _lbl(self._ability_row, "效果标识").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.ability_effect = ttk.Entry(self._ability_row, width=20)
+        self.ability_effect.grid(row=r, column=1, sticky="w", pady=3)
+        _lbl(self._ability_row, "（对应战斗逻辑effect_key，留空=纯文字特性）").grid(
+            row=r, column=2, columnspan=2, sticky="w", padx=(8, 0), pady=3)
+        r += 1
+
+        _lbl(self._ability_row, "描述").grid(row=r, column=0, sticky="ne", padx=PAD, pady=3)
+        self.ability_desc = tk.Text(
+            self._ability_row, width=46, height=4, wrap="word", bg=BG_CARD,
+            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
+            highlightthickness=1, highlightcolor=ACCENT,
+            highlightbackground=BORDER)
+        self.ability_desc.grid(row=r, column=1, columnspan=3, sticky="ew", pady=3)
+
+        self._ability_refresh_list()
+
+    def _ability_show_form(self):
+        self._ability_placeholder.pack_forget()
+        self._ability_form.pack(side="right", fill="both", expand=True, padx=6, pady=6)
+
+    def _ability_refresh_list(self):
+        q = self.ability_search.get().lower()
+        self.ability_list.delete(0, "end")
+        for n in sorted(self.abilities.keys()):
+            if not q or q in n.lower():
+                self.ability_list.insert("end", n)
+
+    def _ability_select(self, _=None):
+        sel = self.ability_list.curselection()
+        if not sel: return
+        self._ability_load(self.ability_list.get(sel[0]))
+
+    def _ability_load(self, name):
+        self._ability_show_form()
+        d = self.abilities[name]
+        self._current_ability = name
+        self.ability_name.delete(0, "end"); self.ability_name.insert(0, name)
+        self.ability_effect.delete(0, "end"); self.ability_effect.insert(0, d.get("effect", ""))
+        self.ability_desc.delete("1.0", "end")
+        self.ability_desc.insert("1.0", d.get("desc", ""))
+
+    def _ability_save(self):
+        old = self._current_ability
+        new = self.ability_name.get().strip()
+        if not new:
+            messagebox.showerror("错误", "名称不能为空"); return
+        d = {
+            "desc":   self.ability_desc.get("1.0", "end-1c").strip(),
+            "effect": self.ability_effect.get().strip(),
+        }
+        if old and old != new:
+            del self.abilities[old]
+        self.abilities[new] = d
+        save_json(ABILITIES_FILE, self.abilities)
+        self._current_ability = new
+        self._ability_refresh_list()
+        self._mon_refresh_ability_choices()
+        self._update_status()
+
+    def _ability_add(self):
+        n = "新特性"
+        while n in self.abilities:
+            n += "_"
+        self.abilities[n] = {"desc": "", "effect": ""}
+        save_json(ABILITIES_FILE, self.abilities)
+        self._ability_refresh_list()
+        for i in range(self.ability_list.size()):
+            if self.ability_list.get(i) == n:
+                self.ability_list.selection_set(i)
+                self.ability_list.see(i)
+                break
+        self._ability_load(n)
+        self._mon_refresh_ability_choices()
+        self.ability_name.focus_set()
+
+    def _ability_del(self):
+        sel = self.ability_list.curselection()
+        if not sel: return
+        name = self.ability_list.get(sel[0])
+        if messagebox.askyesno("删除", f"确定删除 '{name}'？", parent=self.root):
+            self.abilities.pop(name, None)
+            save_json(ABILITIES_FILE, self.abilities)
+            self._ability_refresh_list()
+            self._current_ability = None
+            self._ability_form.pack_forget()
+            self._ability_placeholder.pack(fill="both", expand=True)
+            self._mon_refresh_ability_choices()
             self._update_status()
 
     def run(self):

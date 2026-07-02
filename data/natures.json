@@ -1,0 +1,32 @@
+{
+  "勤奋": { "up": "", "down": "" },
+  "坦率": { "up": "", "down": "" },
+  "认真": { "up": "", "down": "" },
+  "害羞": { "up": "", "down": "" },
+  "浮夸": { "up": "", "down": "" },
+
+  "怕寂寞": { "up": "atk", "down": "def" },
+  "固执": { "up": "atk", "down": "sp_atk" },
+  "顽皮": { "up": "atk", "down": "sp_def" },
+  "勇敢": { "up": "atk", "down": "spd" },
+
+  "大胆": { "up": "def", "down": "atk" },
+  "淘气": { "up": "def", "down": "sp_atk" },
+  "乐天": { "up": "def", "down": "sp_def" },
+  "悠闲": { "up": "def", "down": "spd" },
+
+  "内敛": { "up": "sp_atk", "down": "atk" },
+  "温和": { "up": "sp_atk", "down": "def" },
+  "马虎": { "up": "sp_atk", "down": "sp_def" },
+  "冷静": { "up": "sp_atk", "down": "spd" },
+
+  "温顺": { "up": "sp_def", "down": "atk" },
+  "温柔": { "up": "sp_def", "down": "def" },
+  "慎重": { "up": "sp_def", "down": "sp_atk" },
+  "浮躁": { "up": "sp_def", "down": "spd" },
+
+  "胆小": { "up": "spd", "down": "atk" },
+  "急躁": { "up": "spd", "down": "def" },
+  "爽朗": { "up": "spd", "down": "sp_atk" },
+  "天真": { "up": "spd", "down": "sp_def" }
+}
