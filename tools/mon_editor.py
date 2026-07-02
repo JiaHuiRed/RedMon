@@ -54,38 +54,65 @@ EFFECTS_RAW = [
     "",
     # ── 异常状态 ──
     "inflict_burn", "inflict_poison", "inflict_paralysis", "inflict_sleep", "inflict_freeze",
+    "inflict_confusion", "inflict_toxic",
     # ── 降能力 ──
     "lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
     # ── 升能力 ──
     "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def", "raise_spd", "raise_acc",
     # ── 回复/吸血/反伤 ──
     "heal_self", "drain", "recoil",
-    # ── 战斗机制 ──
-    "priority", "high_crit", "flinch",
+    # ── 攻击附加 ──
+    "priority", "high_crit", "flinch", "multi_hit", "bind",
+    # ── 蓄力/休息/自爆 ──
+    "charge", "recharge", "self_destruct",
+    # ── 场控 ──
+    "force_switch", "protect", "substitute", "leech_seed",
+    "weather_sun", "weather_rain", "weather_sandstorm", "weather_hail",
+    "screen_physical", "screen_special",
+    "taunt", "encore", "clear_stats", "entry_hazard",
 ]
 EFFECT_LABELS = {
     "": "（无效果）",
+    # 异常状态
     "inflict_burn": "灼伤", "inflict_poison": "中毒",
     "inflict_paralysis": "麻痹", "inflict_sleep": "催眠", "inflict_freeze": "冰冻",
+    "inflict_confusion": "混乱", "inflict_toxic": "剧毒（递增）",
+    # 降能力
     "lower_atk": "降攻击", "lower_def": "降防御",
     "lower_sp_atk": "降特攻", "lower_sp_def": "降特防",
     "lower_spd": "降速度", "lower_acc": "降命中",
+    # 升能力
     "raise_atk": "升攻击", "raise_def": "升防御",
     "raise_sp_atk": "升特攻", "raise_sp_def": "升特防",
     "raise_spd": "升速度", "raise_acc": "升命中",
+    # 回复/吸血/反伤
     "heal_self": "自我回复（%HP）", "drain": "吸血（%伤害）", "recoil": "反伤（%伤害）",
+    # 攻击附加
     "priority": "先制攻击", "high_crit": "高暴击率", "flinch": "畏缩",
+    "multi_hit": "连续攻击（2-5次）", "bind": "束缚（持续伤害）",
+    # 蓄力/休息/自爆
+    "charge": "蓄力（下回合攻击）", "recharge": "休息（下回合无法行动）",
+    "self_destruct": "自爆（自身倒下）",
+    # 场控
+    "force_switch": "强制交换", "protect": "守住（本回合防御）",
+    "substitute": "替身（%HP）", "leech_seed": "寄生种子",
+    "weather_sun": "天气·晴天", "weather_rain": "天气·雨天",
+    "weather_sandstorm": "天气·沙暴", "weather_hail": "天气·冰雹",
+    "screen_physical": "屏障·物理减伤", "screen_special": "屏障·特殊减伤",
+    "taunt": "挑拨（禁变化技）", "encore": "再来一次（锁招）",
+    "clear_stats": "黑雾（清能力变化）", "entry_hazard": "场地钉（入场伤害）",
 }
 EFFECTS = [EFFECT_LABELS.get(e, e) for e in EFFECTS_RAW]
 EFFECT_TO_RAW = {v: k for k, v in EFFECT_LABELS.items()}
-# 哪些效果需要概率参数（0=必触发时隐藏）
+# 哪些效果需要概率参数
 EFFECT_NEEDS_CHANCE = {"inflict_burn", "inflict_poison", "inflict_paralysis",
-                       "inflict_sleep", "inflict_freeze", "lower_atk", "lower_def",
+                       "inflict_sleep", "inflict_freeze", "inflict_confusion",
+                       "inflict_toxic", "lower_atk", "lower_def",
                        "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
                        "raise_atk", "raise_def", "raise_sp_atk", "raise_sp_def",
                        "raise_spd", "raise_acc", "flinch"}
 # 哪些效果需要数值参数（百分比）
-EFFECT_NEEDS_VALUE = {"heal_self", "drain", "recoil"}
+EFFECT_NEEDS_VALUE = {"heal_self", "drain", "recoil", "substitute"}
 
 # Type matchup chart (attack_type → {defense_type: multiplier})
 TYPE_CHART = {
