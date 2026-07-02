@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.10.7] - 2026-07-02
+
+> design_guide.md 补充代码/数据规范章节(8-10)，供多agent协作时对齐风格。
+
+#### Added
+- `design_guide.md` 新增3个章节：§8 代码与数据规范（JSON读写/脚本约定/sprite命名/注释格式/场景约定）、§9 数据架构规范（species/moves/abilities/trainers字段说明+effect完整表+learnset继承规则）、§10 属性体系（19种属性+光系克制表）
+
 ### [0.10.6] - 2026-07-02
 
 > 技能效果类型扩展至38种，全面覆盖宝可梦战斗机制占位。

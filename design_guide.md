@@ -206,3 +206,168 @@ No characters in the scene.
 - **同一场景多张图**（同一栋建筑的不同楼层/房间）写在同一条 prompt 里，末尾加一句"两张图使用相同色彩基调与像素颗粒度"，靠这句话约束批量出图（豆包等支持一次出多图的模型）风格统一
 - **新建筑要接现有色板**：生成村庄/小镇内的新建筑时，在 prompt 里注明"参考已有建筑的木质屋顶/暖色调"（对照 `assets/backgrounds/buildings/` 里已有素材的配色），避免新建筑颜色体系跳脱
 - 尺寸统一按具体用途指定（背景贴图通常 960×640 或按场景 viewport 裁切目标）
+
+---
+
+## 8. 代码与数据规范
+
+### 文件读写（Python 工具脚本）
+
+所有 JSON 读写必须使用以下模式，保持 CRLF 换行和 UTF-8 编码：
+
+```python
+# 读
+with open(path, 'rb') as f:
+    data = json.loads(f.read().decode('utf-8'))
+
+# 写
+with open(path, 'wb') as f:
+    text = json.dumps(data, ensure_ascii=False, indent=2)
+    f.write(text.replace('\n', '\r\n').encode('utf-8'))
+```
+
+Windows 控制台中文会乱码，**不要用 `print()` 输出中文再重定向**，改为直接写文件：
+```python
+with open('tools/_tmp.txt', 'w', encoding='utf-8') as f:
+    f.write(result)
+```
+
+### 一次性脚本约定
+
+临时脚本放 `tools/` 目录，命名以 `_` 开头（如 `tools/_fill_learnsets.py`），执行完毕验证后**立即删除**。
+
+### Sprite 命名
+
+```
+{名字}front.png    # 正面立绘
+{名字}back.png     # 背面立绘
+{名字}walk_sheet.png  # 行走帧
+{名字}throw.png    # 投掷帧
+```
+
+名字和后缀之间**无下划线**。代码路径：`"res://assets/sprites/%sfront.png" % species_id`
+
+所有立绘统一 **512×512 PNG**，非正方形原图需**等比缩放后填充背景色补方**（不拉伸）。
+
+### 注释格式
+
+GDScript/Python 内的标记注释统一格式：`// YYMMDD Red xxx`（如 `// 260702 Red 光系克制`）。
+
+### GDScript 场景约定
+
+- 每个场景 `extends Node2D`，声明 `signal request_scene`
+- 入口数据通过 `get_meta("scene_data", {})` 读取
+- 场景切换由 `main.gd` 的 `switch_to(scene_name, data)` 统一管理
+- Autoload：`GameState`（玩家数据/存档/输入映射）、`MonDB`（精灵/技能/道具/对话/训练师数据库）
+
+---
+
+## 9. 数据架构规范
+
+### species.json 字段说明
+
+```json
+{
+  "id": 1,                           // 图鉴编号
+  "name": "炎喵",                    // 显示名
+  "type1": "火", "type2": "",        // 主/副属性（19种：空/火/水/木/虫/土/风/仙/灵/龙/格/雷/冰/毒/岩/鬼/暗/钢/光）
+  "base": {"hp":45, "atk":52, ...},  // 种族值
+  "growth_rate": "中速",              // 经验曲线
+  "exp_yield": 64,                   // 击败给予经验基础值
+  "catch_rate": 45,                  // 捕获率 (1-255)
+  "gender_ratio": 87.5,              // 雄性比例 (0=全雌, 100=全雄, -1=无性别)
+  "abilities": ["猛火", "烈焰体"],   // [主特性, 隐藏特性]，需存在于 abilities.json
+  "learnset": {"1": ["撞击"], "4": ["火花"], ...},  // 等级学习树
+  "evolve_level": 16,                // 进化等级（无则不填）
+  "evolves_into": "烈火猫",          // 进化目标（简单进化）
+  "evolutions": [...],               // 分支进化列表
+  "encounters": [...],               // 遭遇地点
+  "design_origin": "...",            // 设计来源
+  "desc": "...",                     // 图鉴描述
+  "tier": "凡",                      // 档次
+  "role": "物攻手"                   // 定位
+}
+```
+
+### moves.json 字段说明
+
+```json
+{
+  "name": "火花",
+  "type": "火",                      // 19种属性之一
+  "category": "特殊",                // 物理/特殊/变化
+  "power": 40,                       // 威力（变化技能为0）
+  "accuracy": 100,                   // 命中率（0=必中）
+  "max_pp": 25,                      // 最大PP
+  "effect": "inflict_burn",          // 效果key（见下表）
+  "effect_chance": 10,               // 效果触发概率%（0=必触发）
+  "effect_value": 0,                 // 效果数值参数（反伤%/吸血%/回复%等）
+  "description": "..."               // 技能描述
+}
+```
+
+### 技能效果 effect 可选值
+
+| 分类 | effect key | 中文标签 | 需要chance | 需要value |
+|------|-----------|---------|-----------|-----------|
+| 异常 | inflict_burn / inflict_poison / inflict_paralysis / inflict_sleep / inflict_freeze | 灼伤/中毒/麻痹/催眠/冰冻 | ✓ | |
+| 异常 | inflict_confusion / inflict_toxic | 混乱/剧毒（递增） | ✓ | |
+| 降能力 | lower_atk / lower_def / lower_sp_atk / lower_sp_def / lower_spd / lower_acc | 降X | ✓ | |
+| 升能力 | raise_atk / raise_def / raise_sp_atk / raise_sp_def / raise_spd / raise_acc | 升X | ✓ | |
+| 回复 | heal_self | 自我回复 | | ✓(%HP) |
+| 吸血 | drain | 吸血 | | ✓(%伤害) |
+| 反伤 | recoil | 反伤 | | ✓(%伤害) |
+| 替身 | substitute | 替身 | | ✓(%HP) |
+| 攻击 | priority / high_crit / flinch / multi_hit / bind | 先制/暴击/畏缩/连击/束缚 | 畏缩✓ | |
+| 节奏 | charge / recharge / self_destruct | 蓄力/休息/自爆 | | |
+| 场控 | force_switch / protect / leech_seed / taunt / encore / clear_stats / entry_hazard | 各种 | | |
+| 天气 | weather_sun / weather_rain / weather_sandstorm / weather_hail | 天气 | | |
+| 屏障 | screen_physical / screen_special | 物理/特殊减伤 | | |
+
+> 注：目前战斗代码 `_apply_effect()` 仅实现了 `lower_atk/lower_acc/lower_spd/raise_def/raise_sp_atk` 和五种异常状态，其余均为占位，待逐步接入。
+
+### 学习树(learnset)设计规则
+
+进化链的学习树遵循以下继承规则：
+- **Lv4 和 Lv7 技能全链共享**（所有进化阶段完全相同）
+- **进化后 Lv1**：继承前一阶段的 Lv1 + 所有非4/7级的技能（折叠进Lv1）
+- **每个阶段新增3个技能**，按等级间距分配：
+  - 最终形态：`进化等级 + 5 / +13 / +20`
+  - 中间形态：`进化等级 + gap×0.15 / ×0.45 / ×0.75`（gap = 下次进化等级 - 本次进化等级）
+- 技能威力应随等级递增（低级学弱技能，高级学强技能）
+- 优先选用与精灵 type1/type2 匹配的技能
+
+### abilities.json 格式
+
+```json
+{
+  "猛火": {
+    "name": "猛火",
+    "desc": "HP低于1/3时，火属性技能威力提升50%。",
+    "effect": "stat_boost_low_hp"    // 效果标识（英文key，编辑器显示中文）
+  }
+}
+```
+
+### trainers.json 格式
+
+训练师的地图布局（位置/朝向/视野）在各 scene `.gd` 文件中以 const 定义，
+游戏数据（名字/队伍/奖金/对话）在 `data/trainers.json` 中，运行时通过 trainer id 关联。
+
+---
+
+## 10. 属性体系
+
+### 19种属性
+
+空、火、水、木、虫、土、风、仙、灵、龙、格、雷、冰、毒、岩、鬼、暗、钢、光
+
+### 属性克制表（攻→防，1.5x为克制，0.6x为抵抗，0.0为免疫）
+
+完整克制表定义在 `scripts/autoload/mon_db.gd` 的 `_type_chart` 和 `tools/mon_editor.py` 的 `TYPE_CHART` 中，两处必须同步。
+
+光系关键：
+- 光克(1.5x)：鬼、虫、冰、木、暗
+- 光被克(1.5x)：土、钢、暗
+- 光打不好使(0.6x)：火、钢、光、水
+- 光↔暗互爆（双向1.5x）
