@@ -28,6 +28,21 @@ ABILITIES_FILE = os.path.join(ROOT, "data", "abilities.json")  # 260702 Red 特�
 SPRITES_DIR   = os.path.join(ROOT, "assets", "sprites")
 
 TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢"]
+ABILITY_EFFECTS = [  # 260702 Red 效果标识：中文显示，底层存英文key
+    ("", "（无战斗效果，纯文字特性）"),
+    ("immune_status", "免疫异常状态"),
+    ("immune_type", "免疫特定属性"),
+    ("weather", "天气效果"),
+    ("on_switch_in", "出场时触发"),
+    ("stat_boost_passive", "被动数值加成"),
+    ("stat_boost_low_hp", "低血量强化"),
+    ("damage_reduce", "伤害减免"),
+    ("damage_boost", "伤害加成"),
+    ("contact_punish", "接触反伤"),
+    ("other", "其他效果"),
+]
+ABILITY_EFFECT_KEY2LABEL = dict(ABILITY_EFFECTS)
+ABILITY_EFFECT_LABEL2KEY = {v: k for k, v in ABILITY_EFFECTS}
 GROWTH     = ["快速", "中速", "缓慢"]
 CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
@@ -813,6 +828,13 @@ class App:
         self.mon_t2.pack(side="left", padx=(6, 0))
         self.mon_t1.bind("<<ComboboxSelected>>", lambda _: self._refresh_badges())
         self.mon_t2.bind("<<ComboboxSelected>>", lambda _: self._refresh_badges())
+        tk.Frame(tf, bg=BORDER, width=1, height=20).pack(side="left", fill="y", padx=(14, 8))
+        _lbl(tf, "主特性", bg=BG_MAIN).pack(side="left")
+        self.mon_ability1 = ttk.Combobox(tf, width=10, state="readonly")
+        self.mon_ability1.pack(side="left", padx=(4, 12))
+        _lbl(tf, "隐藏特性", bg=BG_MAIN).pack(side="left")
+        self.mon_ability2 = ttk.Combobox(tf, width=10, state="readonly")
+        self.mon_ability2.pack(side="left", padx=(4, 0))
         row += 1
 
         # 种族值
@@ -956,19 +978,6 @@ class App:
                    command=self._enc_edit).pack(pady=(0, 2))
         ttk.Button(enc_btn, text="×", width=3,
                    command=self._enc_remove).pack()
-        row += 1
-
-        # 特性 260702 Red
-        _sep(f, row=row, col=0); row += 1
-        _lbl(f, "特性").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
-        ab_f = tk.Frame(f, bg=BG_MAIN)
-        ab_f.grid(row=row, column=1, columnspan=4, sticky="w", pady=3)
-        _lbl(ab_f, "主特性", bg=BG_MAIN).pack(side="left")
-        self.mon_ability1 = ttk.Combobox(ab_f, width=10, state="readonly")
-        self.mon_ability1.pack(side="left", padx=(4, 16))
-        _lbl(ab_f, "隐藏特性", bg=BG_MAIN).pack(side="left")
-        self.mon_ability2 = ttk.Combobox(ab_f, width=10, state="readonly")
-        self.mon_ability2.pack(side="left", padx=(4, 0))
         row += 1
 
         # 描述
@@ -1174,8 +1183,13 @@ class App:
         self._photo_back  = None
         for suffix, lbl in [("front", self._sprite_front_lbl),
                              ("back",  self._sprite_back_lbl)]:
-            path = os.path.join(SPRITES_DIR, f"{name}{suffix}.png")
-            if os.path.exists(path):
+            path = None
+            for ext in (".png", ".jpg", ".jpeg"):
+                p = os.path.join(SPRITES_DIR, f"{name}{suffix}{ext}")
+                if os.path.exists(p):
+                    path = p
+                    break
+            if path:
                 try:
                     img   = Image.open(path).convert("RGBA")
                     img.thumbnail((110, 110), Image.LANCZOS)
@@ -3027,9 +3041,11 @@ class App:
 
         r = 0
         _lbl(self._ability_row, "效果标识").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
-        self.ability_effect = ttk.Entry(self._ability_row, width=20)
+        self.ability_effect = ttk.Combobox(
+            self._ability_row, width=18, state="readonly",
+            values=[lbl for _, lbl in ABILITY_EFFECTS])
         self.ability_effect.grid(row=r, column=1, sticky="w", pady=3)
-        _lbl(self._ability_row, "（对应战斗逻辑effect_key，留空=纯文字特性）").grid(
+        _lbl(self._ability_row, "（对应战斗逻辑effect_key）").grid(
             row=r, column=2, columnspan=2, sticky="w", padx=(8, 0), pady=3)
         r += 1
 
@@ -3064,7 +3080,7 @@ class App:
         d = self.abilities[name]
         self._current_ability = name
         self.ability_name.delete(0, "end"); self.ability_name.insert(0, name)
-        self.ability_effect.delete(0, "end"); self.ability_effect.insert(0, d.get("effect", ""))
+        self.ability_effect.set(ABILITY_EFFECT_KEY2LABEL.get(d.get("effect", ""), d.get("effect", "")))
         self.ability_desc.delete("1.0", "end")
         self.ability_desc.insert("1.0", d.get("desc", ""))
 
@@ -3075,7 +3091,7 @@ class App:
             messagebox.showerror("错误", "名称不能为空"); return
         d = {
             "desc":   self.ability_desc.get("1.0", "end-1c").strip(),
-            "effect": self.ability_effect.get().strip(),
+            "effect": ABILITY_EFFECT_LABEL2KEY.get(self.ability_effect.get(), ""),
         }
         if old and old != new:
             del self.abilities[old]
