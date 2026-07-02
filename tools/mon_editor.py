@@ -881,11 +881,13 @@ class App:
         self.mon_t2.bind("<<ComboboxSelected>>", lambda _: self._refresh_badges())
         tk.Frame(tf, bg=BORDER, width=1, height=20).pack(side="left", fill="y", padx=(14, 8))
         _lbl(tf, "主特性", bg=BG_MAIN).pack(side="left")
-        self.mon_ability1 = ttk.Combobox(tf, width=10, state="readonly")
+        self.mon_ability1 = ttk.Combobox(tf, width=10)
         self.mon_ability1.pack(side="left", padx=(4, 12))
+        self.mon_ability1.bind("<KeyRelease>", lambda e: self._ability_autocomplete(e, self.mon_ability1))
         _lbl(tf, "隐藏特性", bg=BG_MAIN).pack(side="left")
-        self.mon_ability2 = ttk.Combobox(tf, width=10, state="readonly")
+        self.mon_ability2 = ttk.Combobox(tf, width=10)
         self.mon_ability2.pack(side="left", padx=(4, 0))
+        self.mon_ability2.bind("<KeyRelease>", lambda e: self._ability_autocomplete(e, self.mon_ability2))
         row += 1
 
         # 种族值
@@ -1147,6 +1149,20 @@ class App:
         self.mon_ability2["values"] = choices
         self.mon_ability1.set(cur1 if cur1 in choices else "")
         self.mon_ability2.set(cur2 if cur2 in choices else "")
+
+    def _ability_autocomplete(self, event, combo):
+        # 260702 Red 特性搜索：输入时过滤下拉列表
+        if event.keysym in ("Return", "Tab", "Escape", "Up", "Down", "Left", "Right",
+                            "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R"):
+            return
+        typed = combo.get().strip()
+        all_choices = [""] + sorted(self.abilities.keys())
+        if not typed:
+            combo["values"] = all_choices
+            return
+        filtered = [""] + [a for a in sorted(self.abilities.keys()) if typed.lower() in a.lower()]
+        combo["values"] = filtered
+        combo.event_generate("<Down>")  # 自动展开下拉
 
     def _mon_select(self, _=None):
         sel = self.mon_list.curselection()
