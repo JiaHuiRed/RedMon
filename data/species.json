@@ -1521,8 +1521,20 @@
     "tier": "玄",
     "role": "混攻手",
     "gender_ratio": "0/100",
-    "height": "5.0",
-    "weight": "320.0",
+    "height": "1.8",
+    "weight": "45.0",
+    "abilities": [
+      "有色眼镜",
+      "我行我素"
+    ],
+    "evolutions": [
+      {
+        "into": "小圆",
+        "level": 42
+      }
+    ],
+    "evolves_into": "小圆",
+    "evolve_level": 42,
     "learnset": {
       "1": [
         "二连劈"
@@ -1548,19 +1560,7 @@
       "40": [
         "棱镜镭射"
       ]
-    },
-    "evolutions": [
-      {
-        "into": "小圆",
-        "level": 42
-      }
-    ],
-    "evolves_into": "小圆",
-    "evolve_level": 42,
-    "abilities": [
-      "有色眼镜",
-      "我行我素"
-    ]
+    }
   },
   "智敏": {
     "id": 27,
@@ -1582,8 +1582,20 @@
     "tier": "玄",
     "role": "高速特攻手",
     "gender_ratio": "0/100",
-    "height": "1.4",
+    "height": "1.7",
     "weight": "52.0",
+    "abilities": [
+      "魔法防守",
+      "不屈之心"
+    ],
+    "evolutions": [
+      {
+        "into": "卡琳娜",
+        "level": 42
+      }
+    ],
+    "evolves_into": "卡琳娜",
+    "evolve_level": 42,
     "learnset": {
       "1": [
         "念力"
@@ -1609,19 +1621,7 @@
       "40": [
         "棱镜镭射"
       ]
-    },
-    "evolutions": [
-      {
-        "into": "卡琳娜",
-        "level": 42
-      }
-    ],
-    "evolves_into": "卡琳娜",
-    "evolve_level": 42,
-    "abilities": [
-      "魔法防守",
-      "不屈之心"
-    ]
+    }
   },
   "粉粉丘": {
     "id": 28,
@@ -20015,6 +20015,62 @@
     "desc": "",
     "tier": "神",
     "role": "高速物攻手",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "星基拉": {
+    "id": 386,
+    "name": "星基拉",
+    "type1": "光",
+    "type2": "仙",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "role": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "基拉祈": {
+    "id": 387,
+    "name": "基拉祈",
+    "type1": "光",
+    "type2": "仙",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "role": "",
     "gender_ratio": "50/50",
     "height": "0.5",
     "weight": "5.0",

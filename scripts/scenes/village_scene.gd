@@ -30,10 +30,11 @@ var _dialog_panel: Control
 var _dialog_label: Label
 var _battling: bool = false
 var _starter_alert_shown: bool = false
-var _linwei_spr: Sprite2D
-const LINWEI_TILE := Vector2i(24, 6)
-const LAB_DOOR_TILE := Vector2i(21, 4)
-const HOME_DOOR_TILE := Vector2i(6, 8)
+var _lab_open: bool = false
+var _lab_panel: Control
+const LINWEI_TILE := Vector2i(22, 6)
+const LAB_DOOR_TILE := Vector2i(21, 6)
+const HOME_DOOR_TILE := Vector2i(6, 7)
 
 # ── 环境过场精灵（丰富画面，全程慢速游走，不参与战斗） ──────────────────────
 var _ambient_mons: Array = []  # [{node: Sprite2D, target: Vector2}]
@@ -102,8 +103,10 @@ func _build_ground() -> void:
 		tm.set_cell(0, Vector2i(14, y), 0, Vector2i(6, 7))
 		tm.set_cell(0, Vector2i(15, y), 0, Vector2i(6, 7))
 
-	# Decorative bushes around village
-	for spot in [[3, 14], [8, 11], [18, 14], [25, 10], [12, 15]]:
+	# 260703 Red 丰富装饰：更多草丛
+	for spot in [[3, 14], [8, 11], [18, 14], [25, 10], [12, 15],
+				 [2, 10], [5, 15], [20, 12], [26, 14], [10, 18],
+				 [22, 16], [4, 18], [27, 8], [16, 12], [7, 17]]:
 		tm.set_cell(0, Vector2i(spot[0], spot[1]), 0, Vector2i(0, 4))  # bush
 
 # ── Collision helper ────────────────────────────────────────────────────────────
@@ -126,7 +129,8 @@ func _build_buildings() -> void:
 		home.position = Vector2(4 * TILE + 66, 3 * TILE + 62)
 		home.z_index = 2
 		add_child(home)
-		_add_collider(home.position + Vector2(0, 20), Vector2(120, 90))
+		# 260703 Red 碰撞体上半部分，门口留空让玩家可以走到门前
+		_add_collider(home.position + Vector2(0, 0), Vector2(120, 60))
 
 	# 研究所 (professor's lab, top-right) — 274×384, 原始大小，去白底
 	var center = Sprite2D.new()
@@ -146,7 +150,31 @@ func _build_buildings() -> void:
 		center.position = Vector2(21 * TILE, 2 * TILE + 60)
 		center.z_index = 2
 		add_child(center)
-		_add_collider(center.position + Vector2(0, 100), Vector2(240, 280))
+		# 260703 Red 碰撞体只覆盖建筑上部，门前可通行
+		_add_collider(center.position + Vector2(0, 30), Vector2(200, 160))
+
+	# 260703 Red 劲敌家 (右下区域)
+	var rival_home = Sprite2D.new()
+	rival_home.texture = _load_tex("res://assets/backgrounds/buildings/普通小屋.png")
+	if rival_home.texture:
+		rival_home.position = Vector2(22 * TILE + 66, 12 * TILE + 62)
+		rival_home.z_index = 2
+		add_child(rival_home)
+		_add_collider(rival_home.position + Vector2(0, 0), Vector2(120, 60))
+	# 劲敌家告示牌
+	var rh_sign_bg = ColorRect.new()
+	rh_sign_bg.size = Vector2(80, 18)
+	rh_sign_bg.position = Vector2(22 * TILE + 46, 12 * TILE + 62 + 68)
+	rh_sign_bg.color = Color(0.55, 0.38, 0.18)
+	rh_sign_bg.z_index = 7
+	add_child(rh_sign_bg)
+	var rh_lbl = Label.new()
+	rh_lbl.text = "%s的家" % GameState.rival_name
+	rh_lbl.position = rh_sign_bg.position + Vector2(4, 0)
+	rh_lbl.add_theme_font_size_override("font_size", 10)
+	rh_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 0.9))
+	rh_lbl.z_index = 8
+	add_child(rh_lbl)
 
 func _load_tex(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
@@ -191,42 +219,7 @@ func _build_npcs() -> void:
 	add_child(npc2)
 	_add_collider(npc2.position, Vector2(36, 36))
 
-	# 博士 — at lab door (研究所 entrance)
-	var prof = Sprite2D.new()
-	var prof_path = "res://assets/npc/博士walk_sheet.png"
-	if ResourceLoader.exists(prof_path):
-		prof.texture = load(prof_path)
-		prof.region_enabled = true
-		prof.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		prof.centered = true
-		prof.scale = Vector2(NPC_SCALE, NPC_SCALE)
-		prof.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2 - 4)
-		prof.z_index = 6
-		add_child(prof)
-		_add_collider(prof.position, Vector2(36, 36))
-	else:
-		var fallback = Sprite2D.new()
-		fallback.texture = _draw_npc_fallback(Color(0.85, 0.85, 0.90), Color(0.60, 0.60, 0.62))
-		fallback.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2)
-		fallback.z_index = 6
-		add_child(fallback)
-		_add_collider(fallback.position, Vector2(36, 36))
-
-	# 林薇
-	_linwei_spr = Sprite2D.new()
-	var lw_path = "res://assets/npc/林薇walk_sheet.png"
-	if ResourceLoader.exists(lw_path):
-		_linwei_spr.texture = load(lw_path)
-		_linwei_spr.region_enabled = true
-		_linwei_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		_linwei_spr.centered = true
-		_linwei_spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
-	else:
-		_linwei_spr.texture = _draw_npc_fallback(Color(0.90, 0.45, 0.55), Color(0.15, 0.10, 0.08))
-	_linwei_spr.position = Vector2(LINWEI_TILE.x * TILE + TILE/2, LINWEI_TILE.y * TILE + TILE/2 - 4)
-	_linwei_spr.z_index = 6
-	add_child(_linwei_spr)
-	_add_collider(_linwei_spr.position, Vector2(36, 36))
+	# 260703 Red 陈教授和林薇移到研究所内部，外面不再显示
 
 	# Well decoration
 	var well = ColorRect.new()
@@ -295,12 +288,18 @@ func _draw_npc_fallback(shirt: Color, hair: Color) -> ImageTexture:
 
 # ── Labels (name signs) ───────────────────────────────────────────────────────
 func _build_labels() -> void:
-	# 普通小屋 label
+	# 260703 Red 告示牌样式：xx的家
+	var sign_bg = ColorRect.new()
+	sign_bg.size = Vector2(72, 18)
+	sign_bg.position = Vector2(HOME_DOOR_TILE.x * TILE - 20, HOME_DOOR_TILE.y * TILE + TILE + 4)
+	sign_bg.color = Color(0.55, 0.38, 0.18)
+	sign_bg.z_index = 7
+	add_child(sign_bg)
 	var lbl1 = Label.new()
-	lbl1.text = "我家"
-	lbl1.position = Vector2(4 * TILE + TILE, 5 * TILE - 6)
+	lbl1.text = "%s的家" % GameState.player_name
+	lbl1.position = sign_bg.position + Vector2(4, 0)
 	lbl1.add_theme_font_size_override("font_size", 10)
-	lbl1.add_theme_color_override("font_color", Color(0.20, 0.20, 0.30))
+	lbl1.add_theme_color_override("font_color", Color(1.0, 1.0, 0.9))
 	lbl1.z_index = 8
 	add_child(lbl1)
 
@@ -313,23 +312,7 @@ func _build_labels() -> void:
 	lbl3.z_index = 8
 	add_child(lbl3)
 
-	# 博士 name label
-	var plbl = Label.new()
-	plbl.text = "陈教授"
-	plbl.position = Vector2(LAB_DOOR_TILE.x * TILE + 4, LAB_DOOR_TILE.y * TILE - 22)
-	plbl.add_theme_font_size_override("font_size", 9)
-	plbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.60))
-	plbl.z_index = 8
-	add_child(plbl)
-
-	# 林薇 name label
-	var lw_lbl = Label.new()
-	lw_lbl.text = "林薇"
-	lw_lbl.position = Vector2(LINWEI_TILE.x * TILE + 14, LINWEI_TILE.y * TILE - 22)
-	lw_lbl.add_theme_font_size_override("font_size", 9)
-	lw_lbl.add_theme_color_override("font_color", Color(0.85, 0.30, 0.45))
-	lw_lbl.z_index = 8
-	add_child(lw_lbl)
+	# 260703 Red 教授/林薇标签移到研究所内
 
 	# Village name sign
 	var sign = Label.new()
@@ -343,7 +326,7 @@ func _build_labels() -> void:
 	# North exit sign
 	var north = Label.new()
 	north.text = "↑ 华灵草原"
-	north.position = Vector2(10 * TILE, 7 * TILE - 22)
+	north.position = Vector2(10 * TILE, 1 * TILE - 6)
 	north.add_theme_font_size_override("font_size", 10)
 	north.add_theme_color_override("font_color", Color(0.15, 0.35, 0.15))
 	north.z_index = 3
@@ -578,21 +561,25 @@ func _physics_process(delta: float) -> void:
 	_player.position.x = clamp(_player.position.x, TILE, TILE * (COLS - 1))
 	_player.position.y = clamp(_player.position.y, TILE, TILE * (ROWS - 1))
 
-	# North exit → 有精灵后可自由前往华灵草原；否则触发剧情提示
+	# 260703 Red North exit → 地图北边缘(第1行)才跳转华灵草原
 	var col = int(_player.position.x / TILE)
-	if _player.position.y <= TILE * 7 and col >= 12 and col <= 17:
+	if _player.position.y <= TILE * 2:
 		if GameState.has_starter:
 			GameState.last_scene = "village"
 			request_scene.emit("world", {"spawn": "village"})
 			return
-		_player.position.y = TILE * 7
+		_player.position.y = TILE * 2
 		if not _starter_alert_shown:
 			_starter_alert_shown = true
 			_show_dialog("北边似乎传来了打斗的声音……\n是陈教授的声音！他好像被什么围住了！", 2)
-	elif _player.position.y <= TILE * 7 and col >= 10 and col <= 21:
-		_player.position.y = TILE * 7
 
 func _input(event: InputEvent) -> void:
+	# 260703 Red 研究所室内：X/Esc关闭
+	if _lab_open:
+		if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			_close_lab()
+		return
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
@@ -613,15 +600,18 @@ func _input(event: InputEvent) -> void:
 				GameState.last_scene = "village"
 				request_scene.emit("town", {})
 		# Enter home
-		if tile.distance_to(HOME_DOOR_TILE) < 2:
+		if tile.distance_to(HOME_DOOR_TILE) <= 3:
 			GameState.last_scene = "village"
 			request_scene.emit("home", {})
-		# Talk to professor at lab door
-		elif tile.distance_to(LAB_DOOR_TILE) <= 2:
+		# 260703 Red 研究所门口交互 → 进入室内
+		elif tile.distance_to(LAB_DOOR_TILE) <= 3:
 			_open_lab()
-		# Talk to 林薇
-		elif tile.distance_to(Vector2i(LINWEI_TILE.x, LINWEI_TILE.y)) < 3:
-			_talk_linwei()
+		# 260703 Red Talk to rival
+		elif not _rival_done and tile.distance_to(Vector2i(15, 18)) < 3:
+			if not GameState.has_starter:
+				_show_dialog("???：嘿，你也是新来的训练师？\n等教授回来我们比试比试！", -1)
+			else:
+				_start_rival_battle()
 		# Talk to NPC 1 (near well)
 		elif tile.distance_to(Vector2i(8, 12)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc1"), -1)
@@ -690,12 +680,82 @@ func _get_rival_counter() -> String:
 func _open_lab() -> void:
 	if not GameState.has_starter:
 		_show_dialog("陈教授似乎不在研究所……\n也许他去草原那边考察了？", -1)
-	elif not GameState.items.has("精灵葫芦") or GameState.items.get("精灵葫芦", 0) == 0:
+		return
+	# 260703 Red 进入研究所室内
+	_lab_open = true
+	_dialog_active = true
+	_lab_panel = Control.new()
+	var cl = CanvasLayer.new()
+	cl.layer = 20
+	cl.add_child(_lab_panel)
+	add_child(cl)
+	# 室内背景
+	var bg_tex = _load_tex("res://assets/backgrounds/buildings/研究所内.png")
+	if bg_tex:
+		var bg = TextureRect.new()
+		bg.texture = bg_tex
+		bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		bg.custom_minimum_size = Vector2(VW, VH)
+		bg.size = Vector2(VW, VH)
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		_lab_panel.add_child(bg)
+	else:
+		var bg = ColorRect.new()
+		bg.size = Vector2(VW, VH)
+		bg.color = Color(0.15, 0.15, 0.22)
+		_lab_panel.add_child(bg)
+	# 教授 sprite
+	var prof_tex = _load_tex("res://assets/npc/博士front.png")
+	if prof_tex:
+		var prof_spr = TextureRect.new()
+		prof_spr.texture = prof_tex
+		prof_spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		prof_spr.custom_minimum_size = Vector2(80, 80)
+		prof_spr.size = Vector2(80, 80)
+		prof_spr.position = Vector2(VW / 2 - 120, VH / 2 - 100)
+		_lab_panel.add_child(prof_spr)
+	# 林薇 sprite
+	var lw_tex = _load_tex("res://assets/npc/林薇front.png")
+	if lw_tex:
+		var lw_spr = TextureRect.new()
+		lw_spr.texture = lw_tex
+		lw_spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		lw_spr.custom_minimum_size = Vector2(64, 64)
+		lw_spr.size = Vector2(64, 64)
+		lw_spr.position = Vector2(VW / 2 + 60, VH / 2 - 80)
+		_lab_panel.add_child(lw_spr)
+	# 对话
+	var dlg_bg = ColorRect.new()
+	dlg_bg.size = Vector2(VW, 70)
+	dlg_bg.position = Vector2(0, VH - 70)
+	dlg_bg.color = Color(0.05, 0.05, 0.12, 0.92)
+	_lab_panel.add_child(dlg_bg)
+	var dlg_lbl = Label.new()
+	dlg_lbl.size = Vector2(VW - 24, 60)
+	dlg_lbl.position = Vector2(12, VH - 66)
+	dlg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	dlg_lbl.add_theme_color_override("font_color", Color.WHITE)
+	dlg_lbl.add_theme_font_size_override("font_size", 12)
+	_lab_panel.add_child(dlg_lbl)
+	# 根据进度显示对话
+	if not GameState.items.has("精灵葫芦") or GameState.items.get("精灵葫芦", 0) == 0:
 		GameState.items["精灵葫芦"] = GameState.items.get("精灵葫芦", 0) + 3
 		GameState.save_game()
-		_show_dialog("陈教授：%s，你回来了！感谢你之前的帮忙。\n这是三个精灵葫芦，出门探险必备，拿去用吧！" % GameState.player_name, -1)
+		dlg_lbl.text = "陈教授：%s，你回来了！感谢你之前的帮忙。\n这是三个精灵葫芦，出门探险必备，拿去用吧！" % GameState.player_name
 	else:
-		_show_dialog("陈教授：去吧！华灵大陆上有无数精灵等着你去发现。\n遇到强大的训练师就勇敢挑战！", -1)
+		dlg_lbl.text = "陈教授：去吧！华灵大陆上有无数精灵等着你去发现。\n遇到强大的训练师就勇敢挑战！"
+	# 林薇对话检查
+	if not GameState.has_running_shoes:
+		GameState.has_running_shoes = true
+		GameState.save_game()
+		dlg_lbl.text = "林薇：%s，恭喜你拿到了第一只精灵！\n教授让我把这双跑步鞋给你——穿上会走得更快哦！\n\n获得了【跑步鞋】！" % GameState.player_name
+	# 提示
+	var hint = Label.new()
+	hint.text = "【X/Esc 离开研究所】"
+	hint.position = Vector2(VW - 170, VH - 18)
+	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	hint.add_theme_font_size_override("font_size", 10)
+	_lab_panel.add_child(hint)
 
 func _on_rival_battle_done() -> void:
 	_battling = false
@@ -708,6 +768,13 @@ func _on_rival_battle_done() -> void:
 	_show_dialog(MonDB.dlg("rival", "tutorial"), -1)
 
 # ── 林薇 ──────────────────────────────────────────────────────────────────────
+func _close_lab() -> void:
+	_lab_open = false
+	_dialog_active = false
+	if _lab_panel:
+		_lab_panel.get_parent().queue_free()  # remove CanvasLayer
+		_lab_panel = null
+
 func _talk_linwei() -> void:
 	if not GameState.has_starter:
 		_show_dialog("林薇：你好呀！我是陈教授的助手林薇。\n教授好像去北边的草原了，你可以去找找他。", -1)

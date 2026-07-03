@@ -64,6 +64,7 @@ var _menu_active: bool = false
 var _menu_cursor: int  = 0
 var _menu_sub:   String = ""   # "" | "party" | "bag" | "saved"
 var _menu_panel: Control
+var _bag_cursor: int = 0  # 260703 Red 背包选中项
 
 # 遭遇表从 species.json encounters 字段动态生成
 var ENCOUNTER_TABLE: Array = []
@@ -574,7 +575,11 @@ const WALK_FRAME_H := 48   # spritesheet 每帧高
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
 	var data = get_meta("scene_data", {})
-	if data.get("spawn", "") == "village":  # YYMMDD Red 从青木村北边进入，出生在南侧缺口
+	var saved_pos = data.get("player_pos", [])
+	if saved_pos.size() == 2:
+		# 260703 Red 战斗结束后恢复到战前位置
+		_player.position = Vector2(saved_pos[0], saved_pos[1])
+	elif data.get("spawn", "") == "village":
 		_player.position = Vector2(TILE * 14.5, TILE * (ROWS - 2))
 	else:
 		_player.position = Vector2(TILE * 14, TILE * 2)
@@ -906,7 +911,8 @@ func _advance_dialog() -> void:
 		100:  # 训练师挑战确认 → 开战
 			_dialog_active = false; _dialog_panel.visible = false
 			_battling = true
-			request_scene.emit("battle", {"trainer": _pending_trainer, "from_scene": "world"})
+			var tpx = _player.position.x; var tpy = _player.position.y
+			request_scene.emit("battle", {"trainer": _pending_trainer, "from_scene": "world", "player_pos": [tpx, tpy]})
 		101:  # 训练师战后对话结束
 			_dialog_active = false; _dialog_panel.visible = false
 			_pending_trainer = {}
@@ -1030,6 +1036,7 @@ func _menu_draw_party() -> void:
 			if ResourceLoader.exists(icon_path):
 				var icon = TextureRect.new()
 				icon.texture = load(icon_path)
+				icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 				icon.custom_minimum_size = Vector2(32, 32)
 				icon.size = Vector2(32, 32)
 				icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -1059,14 +1066,19 @@ func _menu_draw_bag() -> void:
 	_menu_lbl("■ 背包", 12, 10, 12, Color(1.0, 0.85, 0.2))
 	_menu_lbl("持有: %dG" % GameState.money, MENU_W - 72, 12, 10, Color(1.0, 0.85, 0.2))
 	_menu_div(28)
-	var row = 0
-	for item_name in GameState.items:
-		var qty  = GameState.items[item_name]
-		var col  = Color(0.90, 0.90, 0.90) if qty > 0 else Color(0.42, 0.42, 0.50)
-		_menu_lbl(item_name, 14, 38 + row * 28, 11, col)
-		_menu_lbl("×%d" % qty, MENU_W - 36, 38 + row * 28, 11, col)
-		row += 1
-	_menu_lbl("X/Esc 返回", 12, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
+	var keys = GameState.items.keys()
+	if keys.is_empty():
+		_menu_lbl("空空如也…", 14, 50, 11, Color(0.55, 0.55, 0.60))
+	else:
+		_bag_cursor = clampi(_bag_cursor, 0, keys.size() - 1)
+		for i in range(keys.size()):
+			var item_name = keys[i]
+			var qty = GameState.items[item_name]
+			var is_sel = (i == _bag_cursor)
+			var col = Color.WHITE if is_sel else (Color(0.90, 0.90, 0.90) if qty > 0 else Color(0.42, 0.42, 0.50))
+			_menu_lbl(("▶ " if is_sel else "  ") + item_name, 14, 38 + i * 28, 11, col)
+			_menu_lbl("×%d" % qty, MENU_W - 36, 38 + i * 28, 11, col)
+	_menu_lbl("↑↓选择  Z使用  X/Esc返回", 10, MENU_H - 20, 9, Color(0.52, 0.52, 0.66))
 
 func _menu_draw_saved() -> void:
 	_menu_lbl("■ 存档", 12, 10, 12, Color(1.0, 0.85, 0.2))
@@ -1074,12 +1086,74 @@ func _menu_draw_saved() -> void:
 	_menu_lbl("✦ 游戏已保存！✦", 18, 108, 13, Color(0.28, 0.98, 0.52))
 	_menu_lbl("Z 返回菜单", 36, 144, 10, Color(0.52, 0.52, 0.66))
 
+# 260703 Red 地图上使用道具
+func _use_field_item(item_name: String) -> void:
+	var qty = GameState.items.get(item_name, 0)
+	if qty <= 0: return
+	var item = MonDB.items.get(item_name, {})
+	var cat = item.get("category", "")
+	if cat == "回复":
+		# 给首发精灵回复HP
+		var mon = GameState.first_mon()
+		if mon.is_empty(): return
+		if mon["current_hp"] >= mon["max_hp"]:
+			_menu_sub = "saved"
+			for c in _menu_panel.get_children(): c.queue_free()
+			_menu_draw_bg()
+			_menu_lbl("■ 背包", 12, 10, 12, Color(1.0, 0.85, 0.2))
+			_menu_div(28)
+			_menu_lbl("%s 的 HP 已经是满的了！" % MonDB.display_name(mon), 14, 80, 11, Color(0.9, 0.9, 0.4))
+			_menu_lbl("Z 返回", 36, 144, 10, Color(0.52, 0.52, 0.66))
+			return
+		var heal = item.get("heal", 9999)
+		if item_name == "金丹":
+			mon["current_hp"] = mon["max_hp"]
+		else:
+			var actual = mini(heal, mon["max_hp"] - mon["current_hp"])
+			mon["current_hp"] += actual
+		GameState.items[item_name] -= 1
+		if GameState.items[item_name] <= 0:
+			GameState.items.erase(item_name)
+		GameState.save_game()
+		_menu_sub = "saved"
+		for c in _menu_panel.get_children(): c.queue_free()
+		_menu_draw_bg()
+		_menu_lbl("■ 背包", 12, 10, 12, Color(1.0, 0.85, 0.2))
+		_menu_div(28)
+		_menu_lbl("使用了 %s！\n%s 回复了HP！" % [item_name, MonDB.display_name(mon)], 14, 70, 11, Color(0.28, 0.98, 0.52))
+		_menu_lbl("HP: %d/%d" % [mon["current_hp"], mon["max_hp"]], 14, 120, 11, Color.WHITE)
+		_menu_lbl("Z 返回", 36, 160, 10, Color(0.52, 0.52, 0.66))
+	else:
+		_menu_sub = "saved"
+		for c in _menu_panel.get_children(): c.queue_free()
+		_menu_draw_bg()
+		_menu_lbl("■ 背包", 12, 10, 12, Color(1.0, 0.85, 0.2))
+		_menu_div(28)
+		_menu_lbl("这个道具现在无法使用。", 14, 80, 11, Color(0.9, 0.6, 0.4))
+		_menu_lbl("Z 返回", 36, 144, 10, Color(0.52, 0.52, 0.66))
+
 # ── Input handling ────────────────────────────────────────────────────────────
 func _handle_menu_nav(event: InputEvent) -> void:
 	if _menu_sub == "saved":
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
 			_menu_sub = ""; _menu_cursor = 0; _refresh_menu()
+		return
+	# 260703 Red 背包子菜单导航
+	if _menu_sub == "bag":
+		var keys = GameState.items.keys()
+		if keys.is_empty(): return
+		if event.is_action_pressed("ui_up"):
+			get_viewport().set_input_as_handled()
+			_bag_cursor = (_bag_cursor - 1 + keys.size()) % keys.size()
+			_refresh_menu()
+		elif event.is_action_pressed("ui_down"):
+			get_viewport().set_input_as_handled()
+			_bag_cursor = (_bag_cursor + 1) % keys.size()
+			_refresh_menu()
+		elif event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			_use_field_item(keys[_bag_cursor])
 		return
 	if event.is_action_pressed("ui_up") and _menu_sub == "":
 		get_viewport().set_input_as_handled()
@@ -1145,4 +1219,7 @@ func _trigger_encounter() -> void:
 	var wild_mon = MonDB.create_mon(chosen_species, wild_lv)
 
 	print("[WORLD] 野生 %s Lv.%d 出现！" % [chosen_species, wild_lv])
-	request_scene.emit("battle", {"wild_mon": wild_mon, "from_scene": "world"})
+	# 260703 Red 记录战前位置，战斗结束后恢复
+	var px = _player.position.x
+	var py = _player.position.y
+	request_scene.emit("battle", {"wild_mon": wild_mon, "from_scene": "world", "player_pos": [px, py]})

@@ -17,6 +17,7 @@ var _enemy_mon:  Dictionary = {}
 var _player_turn: bool = true
 var _busy: bool = false          # Blocks input while animations/await run
 var _return_scene: String = "world"   # Which scene to return to after battle
+var _return_pos:   Array  = []       # 260703 Red 战前玩家坐标 [x, y]
 
 # ── UI references ─────────────────────────────────────────────────────────────
 var _msg_label:        Label
@@ -66,11 +67,15 @@ var _mon_cursor:        int    = 0
 var _action_hl:         Panel  = null
 var _move_hl:           Panel  = null
 var _bag_hl:            Panel  = null
+var _move_info_lbl:     Label  = null   # 260703 Red 技能效果说明
 
 # YYMMDD Red 战斗结束统一返回，记录 last_scene
 func _end_battle(result: String) -> void:
 	GameState.last_scene = _return_scene
-	request_scene.emit(_return_scene, {"battle_result": result})
+	var ret_data := {"battle_result": result}
+	if _return_pos.size() == 2:
+		ret_data["player_pos"] = _return_pos
+	request_scene.emit(_return_scene, ret_data)
 
 # 训练师对战
 var _is_trainer:      bool   = false
@@ -91,6 +96,7 @@ func _ready() -> void:
 	_player_mon     = GameState.first_mon()
 	_player_mon_idx = 0
 	_return_scene   = data.get("return_scene", "world")
+	_return_pos     = data.get("player_pos", [])
 	_bg_path        = data.get("bg", "res://assets/backgrounds/战斗背景_草原.png")
 
 	var trainer_data = data.get("trainer", {})
@@ -159,7 +165,7 @@ func _build_battle_field() -> void:
 		add_child(ground_light)
 
 	# Enemy platform (top-right)
-	var ep = _make_platform(Vector2(VW - 160, FIELD_H - 90), 100, 20, Color(0.45, 0.68, 0.32))
+	var ep = _make_platform(Vector2(VW - 160, FIELD_H - 140), 100, 20, Color(0.45, 0.68, 0.32))
 	add_child(ep)
 
 	# Player platform (bottom-left)
@@ -169,7 +175,7 @@ func _build_battle_field() -> void:
 	# Enemy sprite (front-facing, right side of screen)
 	_enemy_spr = Sprite2D.new()
 	_enemy_spr.texture = _draw_enemy_sprite(_enemy_mon["species_id"])
-	_enemy_spr.position = Vector2(VW - 110, FIELD_H - 110)
+	_enemy_spr.position = Vector2(VW - 110, FIELD_H - 170)
 	_enemy_spr.scale = Vector2(0.2, 0.2)
 	add_child(_enemy_spr)
 
@@ -451,11 +457,20 @@ func _build_move_panel() -> void:
 	back.pressed.connect(func(): _show_action_panel())
 	_move_panel.add_child(back)
 
-	# 键盘提示（右侧信息栏内）
+	# 260703 Red 技能效果说明（右侧信息栏）
+	_move_info_lbl = Label.new()
+	_move_info_lbl.position = Vector2(296, 4)
+	_move_info_lbl.size = Vector2(VW - 306, MENU_H - 8)
+	_move_info_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_move_info_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92))
+	_move_info_lbl.add_theme_font_size_override("font_size", 10)
+	_move_panel.add_child(_move_info_lbl)
+
+	# 键盘提示（右侧信息栏底部）
 	var mv_hint = Label.new()
-	mv_hint.text = "↑↓←→ 选择\nZ 使用  X 返回"
-	mv_hint.position = Vector2(292, 46)
-	mv_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
+	mv_hint.text = "↑↓←→ 选择  Z 使用  X 返回"
+	mv_hint.position = Vector2(296, MENU_H - 16)
+	mv_hint.add_theme_color_override("font_color", Color(0.45, 0.48, 0.58))
 	mv_hint.add_theme_font_size_override("font_size", 9)
 	_move_panel.add_child(mv_hint)
 
@@ -1368,6 +1383,7 @@ func _handle_defeat() -> void:
 	else:
 		# 强制换场
 		_force_switch = true
+		_busy = false  # 260703 Red 必须解除busy，否则键盘输入被屏蔽
 		_mon_cursor = 0
 		_refresh_mon_panel()
 		_action_panel.visible = false
@@ -1513,6 +1529,27 @@ func _refresh_move_cursor() -> void:
 	var row := _move_cursor / 2
 	_move_hl.position = Vector2(8 + col * (btn_w + 8) - 2, 6 + row * (btn_h + 6) - 2)
 	_move_hl.size     = Vector2(btn_w + 4, btn_h + 4)
+	_refresh_move_info()
+
+func _refresh_move_info() -> void:
+	if not _move_info_lbl: return
+	var moves = _player_mon.get("moves", [])
+	if _move_cursor >= moves.size():
+		_move_info_lbl.text = ""
+		return
+	var mv_id = moves[_move_cursor]["id"]
+	var mv = MonDB.moves.get(mv_id, {})
+	var cat_name = {"physical": "物理", "special": "特殊", "status": "变化"}.get(mv.get("category", ""), "—")
+	var pwr = mv.get("power", 0)
+	var acc = mv.get("accuracy", 0)
+	var info = "[%s]  分类:%s  威力:%s  命中:%s" % [
+		mv.get("type", "?"), cat_name,
+		str(pwr) if pwr > 0 else "—",
+		str(acc) if acc > 0 else "—"]
+	var desc = mv.get("description", "")
+	if desc != "":
+		info += "\n" + desc
+	_move_info_lbl.text = info
 
 func _refresh_bag_cursor() -> void:
 	if not _bag_hl or _bag_item_keys.is_empty(): return
@@ -1801,8 +1838,8 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	var gourd_spr := Sprite2D.new()
 	gourd_spr.texture = gourd_tex
 	gourd_spr.scale   = Vector2(2.0, 2.0)
-	var start_pos := Vector2(160, FIELD_H - 160)
-	var end_pos   := Vector2(VW - 160, FIELD_H - 220)
+	var start_pos := Vector2(160, FIELD_H - 200)
+	var end_pos   := Vector2(VW - 160, FIELD_H - 280)
 	gourd_spr.position = start_pos
 	add_child(gourd_spr)
 
@@ -1834,7 +1871,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	await get_tree().create_timer(0.1).timeout  # 确保吸入完成
 
 	# 4. 葫芦落地
-	var land_pos := Vector2(end_pos.x, FIELD_H - 24)
+	var land_pos := Vector2(end_pos.x, FIELD_H - 80)
 	var land_tw := create_tween()
 	land_tw.tween_property(gourd_spr, "position", land_pos, 0.18)
 	await get_tree().create_timer(0.22).timeout
