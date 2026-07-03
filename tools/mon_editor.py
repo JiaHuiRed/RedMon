@@ -5,7 +5,7 @@ RedMon 数据编辑器 — 精灵 & 技能 & 角色
 用法: python -X utf8 tools/mon_editor.py
 """
 
-import json, os, re, sys, statistics, tkinter as tk
+import json, os, re, sys, tkinter as tk
 from tkinter import ttk, messagebox
 
 try:
@@ -863,21 +863,13 @@ class App:
         self.mon_name = ttk.Entry(hf, width=14)
         self.mon_name.pack(side="left", padx=(4, 18))
         ttk.Button(hf, text="💾 保存", command=self._mon_save).pack(side="left")
-        ttk.Button(hf, text="⚡ 推荐", command=self._suggest_tier_role).pack(side="left", padx=(8, 0))
+        ttk.Button(hf, text="⚡ 品阶", command=self._suggest_tier_role).pack(side="left", padx=(8, 0))
         tk.Frame(hf, bg=BORDER, width=1, height=20).pack(side="left", fill="y", padx=(12, 8))
         _lbl(hf, "品阶", bg=BG_MAIN).pack(side="left")
         self.mon_tier = ttk.Combobox(
             hf, values=["", "凡", "灵", "玄", "地", "神", "天"],
             width=4, state="readonly")
         self.mon_tier.pack(side="left", padx=(4, 10))
-        _lbl(hf, "定位", bg=BG_MAIN).pack(side="left")
-        self.mon_role = ttk.Combobox(
-            hf, values=["", "均衡", "物攻手", "特攻手", "混攻手", "快攻手",
-                        "肉盾", "高速均衡", "高速物攻手", "高速特攻手",
-                        "高速混攻手", "高速肉盾", "肉盾均衡",
-                        "肉盾物攻手", "肉盾特攻手"],
-            width=8, state="readonly")
-        self.mon_role.pack(side="left", padx=(4, 0))
         row += 1
 
         # 属性
@@ -1065,20 +1057,12 @@ class App:
     # ── Mon tab helpers ─────────────────────────────────────────────────────
 
     def _suggest_tier_role(self):
-        """根据当前种族值自动推荐品阶和定位（六维偏离度 + 复合标签）"""
-        v = {}
+        """根据种族值BST自动推荐品阶"""
+        total = 0
         for _, key in STAT_LABELS:
-            try:    v[key] = int(self.mon_stat_entries[key].get())
-            except: v[key] = 0
-        hp     = v.get("hp",     0)
-        atk    = v.get("atk",    0)
-        def_   = v.get("def",    0)
-        sp_atk = v.get("sp_atk", 0)
-        sp_def = v.get("sp_def", 0)
-        spd    = v.get("spd",    0)
-        total  = hp + atk + def_ + sp_atk + sp_def + spd
+            try:    total += int(self.mon_stat_entries[key].get())
+            except: pass
 
-        # 品阶（按BST阈值）
         if   total >= 670: tier = "天"
         elif total >= 600: tier = "神"
         elif total >= 535: tier = "地"
@@ -1086,48 +1070,7 @@ class App:
         elif total >= 360: tier = "灵"
         else:              tier = "凡"
 
-        # z-score 组内标准化定位算法
-        vals = {"hp": hp, "atk": atk, "def": def_, "sp_atk": sp_atk, "sp_def": sp_def, "spd": spd}
-        nums = list(vals.values())
-        avg  = statistics.mean(nums)
-        sd   = statistics.stdev(nums) or 1
-        z    = {k: (v - avg) / sd for k, v in vals.items()}
-        high = {k for k, v in z.items() if v > 1.0}
-        top2 = {k for k, v in sorted(vals.items(), key=lambda x: -x[1])[:2]}
-        # 只有6项数据时z-score > 1.0阈值太严，加top2兜底
-        if not high:
-            high = top2
-
-        # 核心类型（z-score > 1.0 = 显著偏离）
-        if "spd" in high and ("atk" in high or "sp_atk" in high
-                              or ("spd" in top2 and ("atk" in top2 or "sp_atk" in top2))):
-            role = "快攻手"
-        elif "def" in high and "sp_def" in high and "atk" not in high and "sp_atk" not in high:
-            role = "肉盾"
-        elif "atk" in high and "sp_atk" not in high:
-            role = "物攻手"
-        elif "sp_atk" in high and "atk" not in high:
-            role = "特攻手"
-        elif "atk" in high and "sp_atk" in high:
-            role = "混攻手"
-        elif (def_ + sp_def) >= (atk + sp_atk) * 1.5:
-            role = "肉盾"  # 明显偏肉无突出攻击
-        else:
-            role = "均衡"
-
-        # 复合前缀（二选一，不叠加；肉盾权重大于高速）
-        sorted_vals = sorted([hp, atk, def_, sp_atk, sp_def, spd], reverse=True)
-        spd_ok = spd >= 80 and spd >= sorted_vals[2] and role != "快攻手" and "高速" not in role
-        def_ok = (def_ + sp_def) >= (atk + sp_atk) * 1.15 and role != "肉盾" and "肉盾" not in role
-        if spd_ok and def_ok:
-            role = "肉盾" + role
-        elif spd_ok:
-            role = "高速" + role
-        elif def_ok:
-            role = "肉盾" + role
-
         self.mon_tier.set(tier)
-        self.mon_role.set(role)
 
     def _mon_show_form(self):
         self._mon_placeholder.pack_forget()
@@ -1245,7 +1188,6 @@ class App:
         self.mon_desc.delete("1.0", "end")
         self.mon_desc.insert("1.0", d.get("desc", ""))
         self.mon_tier.set(d.get("tier", ""))
-        self.mon_role.set(d.get("role", ""))
 
         # learnset
         self._learnset = []
@@ -1912,7 +1854,7 @@ class App:
             "growth_rate": self.mon_growth.get(),
             "desc":        self.mon_desc.get("1.0", "end-1c").strip(),
             "tier":        self.mon_tier.get(),
-            "role":        self.mon_role.get(),
+
             "gender_ratio": self.mon_gender.get(),
             "height":      self.mon_height.get().strip(),
             "weight":      self.mon_weight.get().strip(),

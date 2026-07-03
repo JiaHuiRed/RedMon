@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.12.3] - 2026-07-03
+
+> Godot MCP 接入 + 编辑器定位系统删除 + 重复目录清理 + 进程清理
+
+#### Changed
+- **Godot MCP 配置**：`redcode.jsonc` 新增 `godot-mcp`（type:remote, url:http://localhost:9080/mcp, timeout:30000）
+- **编辑器删除定位系统**：z-score 六维偏离度定位算法不准（冥渊鲵等误判为均衡），已完全删除 UI 定位下拉框和 `_suggest_tier_role` 定位逻辑，仅保留品阶
+
+#### Fixed
+- **重复目录**：`addons/addons/` 嵌套目录（Godot MCP 插件重复拷贝）已删除
+- **进程泄漏**：MCP 插件热重载残留 39 个孤儿 bun 进程，杀死后释放约 4GB 内存
+
 ### [0.12.2] - 2026-07-03
 
 > 告示牌交互化 + 家场景楼层修复 + 全局相机限制 + 编辑器光→木免疫
