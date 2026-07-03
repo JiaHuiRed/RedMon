@@ -548,6 +548,10 @@ func _build_player() -> void:
 	var cam = Camera2D.new()
 	cam.position_smoothing_enabled = true
 	cam.position_smoothing_speed = 8.0
+	cam.limit_left = 0
+	cam.limit_top = 0
+	cam.limit_right = COLS * TILE
+	cam.limit_bottom = ROWS * TILE
 	_player.add_child(cam)
 	cam.call_deferred("make_current")
 

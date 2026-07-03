@@ -161,20 +161,13 @@ func _build_buildings() -> void:
 		rival_home.z_index = 2
 		add_child(rival_home)
 		_add_collider(rival_home.position + Vector2(0, 0), Vector2(120, 60))
-	# 劲敌家告示牌
-	var rh_sign_bg = ColorRect.new()
-	rh_sign_bg.size = Vector2(80, 18)
-	rh_sign_bg.position = Vector2(22 * TILE + 46, 12 * TILE + 62 + 68)
-	rh_sign_bg.color = Color(0.55, 0.38, 0.18)
-	rh_sign_bg.z_index = 7
-	add_child(rh_sign_bg)
-	var rh_lbl = Label.new()
-	rh_lbl.text = "%s的家" % GameState.rival_name
-	rh_lbl.position = rh_sign_bg.position + Vector2(4, 0)
-	rh_lbl.add_theme_font_size_override("font_size", 10)
-	rh_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 0.9))
-	rh_lbl.z_index = 8
-	add_child(rh_lbl)
+	# 劲敌家告示牌（小木牌）
+	var sign2 = ColorRect.new()
+	sign2.size = Vector2(14, 16)
+	sign2.position = Vector2(22 * TILE + 90, 12 * TILE + 62 + 60)
+	sign2.color = Color(0.55, 0.38, 0.18)
+	sign2.z_index = 7
+	add_child(sign2)
 
 func _load_tex(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
@@ -288,20 +281,13 @@ func _draw_npc_fallback(shirt: Color, hair: Color) -> ImageTexture:
 
 # ── Labels (name signs) ───────────────────────────────────────────────────────
 func _build_labels() -> void:
-	# 260703 Red 告示牌样式：xx的家
-	var sign_bg = ColorRect.new()
-	sign_bg.size = Vector2(72, 18)
-	sign_bg.position = Vector2(HOME_DOOR_TILE.x * TILE - 20, HOME_DOOR_TILE.y * TILE + TILE + 4)
-	sign_bg.color = Color(0.55, 0.38, 0.18)
-	sign_bg.z_index = 7
-	add_child(sign_bg)
-	var lbl1 = Label.new()
-	lbl1.text = "%s的家" % GameState.player_name
-	lbl1.position = sign_bg.position + Vector2(4, 0)
-	lbl1.add_theme_font_size_override("font_size", 10)
-	lbl1.add_theme_color_override("font_color", Color(1.0, 1.0, 0.9))
-	lbl1.z_index = 8
-	add_child(lbl1)
+	# 260703 Red 告示牌（小木牌图标，交互后弹出对话）
+	var sign1 = ColorRect.new()
+	sign1.size = Vector2(14, 16)
+	sign1.position = Vector2(HOME_DOOR_TILE.x * TILE + 24, HOME_DOOR_TILE.y * TILE + 20)
+	sign1.color = Color(0.55, 0.38, 0.18)
+	sign1.z_index = 7
+	add_child(sign1)
 
 	# 研究所 label
 	var lbl3 = Label.new()
@@ -439,6 +425,11 @@ func _build_player() -> void:
 	var cam = Camera2D.new()
 	cam.position_smoothing_enabled = true
 	cam.position_smoothing_speed = 8.0
+	# 260703 Red 相机限制在地图范围内
+	cam.limit_left = 0
+	cam.limit_top = 0
+	cam.limit_right = VW
+	cam.limit_bottom = VH
 	_player.add_child(cam)
 	cam.call_deferred("make_current")
 
@@ -612,6 +603,11 @@ func _input(event: InputEvent) -> void:
 				_show_dialog("???：嘿，你也是新来的训练师？\n等教授回来我们比试比试！", -1)
 			else:
 				_start_rival_battle()
+		# 260703 Red 告示牌交互
+		elif tile.distance_to(Vector2i(HOME_DOOR_TILE.x + 1, HOME_DOOR_TILE.y + 1)) < 2:
+			_show_dialog("【%s的家】" % GameState.player_name, -1)
+		elif tile.distance_to(Vector2i(24, 16)) < 2:
+			_show_dialog("【%s的家】" % GameState.rival_name, -1)
 		# Talk to NPC 1 (near well)
 		elif tile.distance_to(Vector2i(8, 12)) < 3:
 			_show_dialog(MonDB.dlg("village", "npc1"), -1)

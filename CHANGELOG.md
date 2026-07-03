@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.12.2] - 2026-07-03
+
+> 告示牌交互化 + 家场景楼层修复 + 全局相机限制 + 编辑器光→木免疫
+
+#### Fixed
+- **家场景进门到卧室**：默认楼层从2F改为1F客厅，玩家出生在门口
+- **相机超出地图边界**：village/world/town/home 全部添加 camera limits
+- **室内人物太小**：home_scene NPC_SCALE 从 1.5 → 3.0
+- **编辑器光→木克制未同步**：编辑器 TYPE_CHART 中光→木从 1.5 改为 0.0（免疫）
+
+#### Changed
+- **告示牌**：从常驻文字改为小木牌图标，按Z交互显示"xx的家"
+
 ### [0.12.1] - 2026-07-03
 
 > 青木村场景修复 + 研究所室内 + 背包使用 + 战斗换精灵键盘修复
