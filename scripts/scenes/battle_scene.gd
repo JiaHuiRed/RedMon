@@ -23,6 +23,7 @@ var _msg_label:        Label
 var _action_panel:     Control   # 战斗 / 背包 / 精灵 / 逃跑
 var _move_panel:       Control   # 四技能格
 var _move_btns:        Array = []
+var _pending_callback: Callable  # 260703 Red 防止 _show_message 回调丢失
 
 var _enemy_name_lbl:   Label
 var _enemy_lv_lbl:     Label
@@ -113,9 +114,9 @@ func _ready() -> void:
 	_build_mon_panel()
 
 	if _is_trainer:
-		_show_message("训练师%s\n想要对战！" % _trainer_name, func(): _show_action_panel())
+		await _show_message("训练师%s\n想要对战！" % _trainer_name, func(): _show_action_panel())
 	else:
-		_show_message("野生的 %s 出现了！" % MonDB.display_name(_enemy_mon), func(): _show_action_panel())
+		await _show_message("野生的 %s 出现了！" % MonDB.display_name(_enemy_mon), func(): _show_action_panel())
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Battle field
@@ -527,65 +528,71 @@ func _refresh_bag_panel() -> void:
 			btn.add_theme_color_override("font_color", Color.WHITE)
 
 func _on_use_item(item_id: String) -> void:
-	if _busy: return  # YYMMDD Red 防止连按导致动画重入卡死
+	if _busy: return
 	if GameState.items.get(item_id, 0) <= 0: return
 	_bag_panel.visible = false
 	_busy = true
 	GameState.items[item_id] -= 1
 
 	var item = MonDB.items.get(item_id, {})
-	match item.get("category", ""):
-		"捕捉":
-			if _is_trainer:
-				await _show_message_async("训练师的精灵不能捕捉！")
+	var category = item.get("category", "")
+
+	# ── 捕捉 ──────────────────────────────────────────────────────────────
+	if category == "捕捉":
+		if _is_trainer:
+			await _show_message_async("训练师的精灵不能捕捉！")
+			GameState.items[item_id] += 1
+			_busy = false
+			_refresh_bag_panel()
+			_bag_panel.visible = true
+			return
+		var catch_mult = item.get("catch_mult", 1.0)
+		var success = await _anim_throw_gourd(item_id, catch_mult)
+		if success:
+			GameState.caught_count += 1
+			if GameState.player_team.size() < 6:
+				GameState.player_team.append(_enemy_mon)
+				await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
+			else:
+				GameState.pc_box.append(_enemy_mon)
+				await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
+			_busy = false
+			GameState.save_game()
+			_end_battle("caught")
+			return
+		await _show_message_async("%s 挣脱了！" % MonDB.display_name(_enemy_mon))
+
+	# ── 回复 ──────────────────────────────────────────────────────────────
+	elif category == "回复":
+		var item_data = MonDB.items.get(item_id, {})
+		if item_data.get("full_heal", false):
+			_player_mon["current_hp"] = _player_mon["max_hp"]
+			_refresh_info(true)
+			await _show_message_async("%s 的 HP 完全恢复了！" % MonDB.display_name(_player_mon))
+		else:
+			var heal = item_data.get("heal_amount", 20)
+			if _player_mon["current_hp"] >= _player_mon["max_hp"]:
+				await _show_message_async("HP已满，无法使用！")
 				GameState.items[item_id] += 1
 				_busy = false
 				_refresh_bag_panel()
 				_bag_panel.visible = true
 				return
-			var catch_mult = item.get("catch_mult", 1.0)
-			var success = await _anim_throw_gourd(item_id, catch_mult)
+			var actual = min(heal, _player_mon["max_hp"] - _player_mon["current_hp"])
+			_player_mon["current_hp"] += actual
+			_refresh_info(true)
+			await _show_message_async("%s 回复了 %d HP！" % [MonDB.display_name(_player_mon), actual])
+		var mp_heal = item_data.get("mp_heal_amount", 0)
+		if mp_heal > 0:
+			await _show_message_async("MP 恢复了 %d 点！" % mp_heal)
+		var mp_pct = item_data.get("mp_heal_percent", 0)
+		if mp_pct > 0:
+			await _show_message_async("MP 恢复了 %d%%！" % mp_pct)
 
-			if success:
-				GameState.caught_count += 1  # 260630 Red
-				if GameState.player_team.size() < 6:
-					GameState.player_team.append(_enemy_mon)
-					await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
-				else:
-					GameState.pc_box.append(_enemy_mon)
-					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
-				_busy = false
-				GameState.save_game()
-				_end_battle("caught")
-				return
-			# 捕捉失败 → 继续敌方回合
-		"回复":
-			var item_data = MonDB.items.get(item_id, {})
-			if item_data.get("full_heal", false):
-				_player_mon["current_hp"] = _player_mon["max_hp"]
-				_refresh_info(true)
-				await _show_message_async("%s 的 HP 完全恢复了！" % MonDB.display_name(_player_mon))
-			else:
-				var heal = item_data.get("heal_amount", 20)
-				if _player_mon["current_hp"] >= _player_mon["max_hp"]:
-					await _show_message_async("HP已满，无法使用！")
-					GameState.items[item_id] += 1
-					_busy = false
-					_refresh_bag_panel()
-					_bag_panel.visible = true
-					return
-				var actual = min(heal, _player_mon["max_hp"] - _player_mon["current_hp"])
-				_player_mon["current_hp"] += actual
-				_refresh_info(true)
-				await _show_message_async("%s 回复了 %d HP！" % [MonDB.display_name(_player_mon), actual])
-			var mp_heal = item_data.get("mp_heal_amount", 0)
-			if mp_heal > 0:
-				await _show_message_async("MP 恢复了 %d 点！" % mp_heal)
-			var mp_pct = item_data.get("mp_heal_percent", 0)
-			if mp_pct > 0:
-				await _show_message_async("MP 恢复了 %d%%！" % mp_pct)
+	# ── 使用道具后 → 敌方行动 ─────────────────────────────────────────────
+	await _do_enemy_turn_after_item()
 
-	# 使用道具 → 敌方行动
+func _do_enemy_turn_after_item() -> void:
 	var e_blocked = await _check_status_block(_enemy_mon, true)
 	if not e_blocked:
 		await _execute_move(_enemy_mon, _player_mon, _pick_enemy_move(), true)
@@ -602,7 +609,7 @@ func _on_use_item(item_id: String) -> void:
 		await _handle_victory(); return
 	_player_turn = true
 	_busy = false
-	_show_message("该怎么做？", func(): _show_action_panel())
+	_show_action_panel()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Mon panel (队伍选择覆盖层)
@@ -718,7 +725,7 @@ func _on_switch_mon(idx: int) -> void:
 
 	_player_turn = true
 	_busy = false
-	_show_message("该怎么做？", func(): _show_action_panel())
+	_show_action_panel()
 
 func _refresh_move_panel() -> void:
 	var moves = _player_mon.get("moves", [])
@@ -925,9 +932,11 @@ func _show_message(text: String, callback: Callable = Callable()) -> void:
 	_move_panel.visible   = false
 	_active_panel = "none"
 	_msg_label.text = text
+	_pending_callback = callback  # 260703 Red 保存回调以防 timer 失效
 	if callback.is_valid():
 		await get_tree().create_timer(1.6).timeout
 		if is_inside_tree():
+			_pending_callback = Callable()
 			callback.call()
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1039,7 +1048,7 @@ func _on_move_pressed(idx: int) -> void:
 
 	_player_turn = true
 	_busy = false
-	_show_message("该怎么做？", func(): _show_action_panel())
+	_show_action_panel()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Battle execution
@@ -1392,6 +1401,14 @@ func _spawn_damage_number(dmg: int, pos: Vector2) -> void:
 # ══════════════════════════════════════════════════════════════════════════════
 func _input(event: InputEvent) -> void:
 	if _busy: return
+	# 260703 Red 安全机制：如果卡在 none 面板且有待执行回调，按确认键恢复
+	if _active_panel == "none" and event.is_action_pressed("ui_accept"):
+		if _pending_callback.is_valid():
+			get_viewport().set_input_as_handled()
+			var cb := _pending_callback
+			_pending_callback = Callable()
+			cb.call()
+			return
 	match _active_panel:
 		"action":
 			if event.is_action_pressed("ui_up") or event.is_action_pressed("ui_down"):
@@ -1775,6 +1792,8 @@ func _draw_zhuling_back() -> Texture2D:
 
 # ── 葫芦投掷捕捉动画（纯视觉，返回成功/失败） ────────────────────────────
 func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
+	# 260703 Red 全面重写：用 timer 代替 await tween.finished，避免协程卡死
+
 	# 1. 加载葫芦贴图
 	var gourd_tex := load("res://assets/ui/items/" + item_id + ".png") as Texture2D
 	if not gourd_tex:
@@ -1782,12 +1801,12 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	var gourd_spr := Sprite2D.new()
 	gourd_spr.texture = gourd_tex
 	gourd_spr.scale   = Vector2(2.0, 2.0)
-	var start_pos := Vector2(160, FIELD_H - 40)
-	var end_pos   := Vector2(VW - 160, FIELD_H - 80)
+	var start_pos := Vector2(160, FIELD_H - 160)
+	var end_pos   := Vector2(VW - 160, FIELD_H - 220)
 	gourd_spr.position = start_pos
 	add_child(gourd_spr)
 
-	# 2. 葫芦飞行弧线
+	# 2. 葫芦飞行弧线（0.5秒）
 	var fly_tw := create_tween()
 	fly_tw.tween_method(func(t: float):
 		var p := start_pos.lerp(end_pos, t)
@@ -1795,15 +1814,13 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 		gourd_spr.position = p
 		gourd_spr.rotation = t * TAU * 1.5
 	, 0.0, 1.0, 0.5)
-	await fly_tw.finished
+	await get_tree().create_timer(0.55).timeout
 	gourd_spr.rotation = 0.0
 
 	# 3. 敌方精灵吸入 + 特效
 	var suck_tw := create_tween().set_parallel(true)
-	suck_tw.tween_property(_enemy_spr, "scale", Vector2(0.0, 0.0), 0.35)
-	suck_tw.tween_property(_enemy_spr, "modulate:a", 0.0, 0.35)
-	var suck_done := false
-	suck_tw.finished.connect(func(): suck_done = true)  # YYMMDD Red 用flag代替直接await，避免tween先于fx循环结束导致await永久挂起
+	suck_tw.tween_property(_enemy_spr, "scale", Vector2(0.0, 0.0), 0.4)
+	suck_tw.tween_property(_enemy_spr, "modulate:a", 0.0, 0.4)
 	var fx_names := ["葫芦特效_1小旋涡", "葫芦特效_2扩散", "葫芦特效_3卷入"]
 	var fx_spr   := Sprite2D.new()
 	fx_spr.position = end_pos
@@ -1812,18 +1829,17 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	for fx in fx_names:
 		var ftex := load("res://assets/ui/items/" + fx + ".png") as Texture2D
 		if ftex: fx_spr.texture = ftex
-		await get_tree().create_timer(0.12).timeout
+		await get_tree().create_timer(0.15).timeout
 	fx_spr.queue_free()
-	while not suck_done:
-		await get_tree().process_frame
+	await get_tree().create_timer(0.1).timeout  # 确保吸入完成
 
 	# 4. 葫芦落地
 	var land_pos := Vector2(end_pos.x, FIELD_H - 24)
-	var land_tw  := create_tween()
+	var land_tw := create_tween()
 	land_tw.tween_property(gourd_spr, "position", land_pos, 0.18)
-	await land_tw.finished
+	await get_tree().create_timer(0.22).timeout
 
-	# 5. 摇晃判定（纯动画，不处理游戏逻辑）
+	# 5. 摇晃判定
 	var success := MonDB.calc_catch(_enemy_mon, ball_bonus)
 	var shakes  := 3 if success else randi_range(1, 2)
 	for _i in range(shakes):
@@ -1831,8 +1847,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 		stw.tween_property(gourd_spr, "rotation_degrees", 25.0, 0.10)
 		stw.tween_property(gourd_spr, "rotation_degrees", -25.0, 0.10)
 		stw.tween_property(gourd_spr, "rotation_degrees", 0.0, 0.10)
-		await stw.finished
-		await get_tree().create_timer(0.28).timeout
+		await get_tree().create_timer(0.35).timeout
 
 	if success:
 		# 成功：消散特效
@@ -1849,7 +1864,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	else:
 		# 失败：葫芦消失，精灵复出
 		gourd_spr.queue_free()
-		_enemy_spr.scale     = Vector2(0.2, 0.2)
+		_enemy_spr.scale      = Vector2(0.2, 0.2)
 		_enemy_spr.modulate.a = 1.0
 
 	return success

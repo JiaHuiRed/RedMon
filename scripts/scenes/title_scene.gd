@@ -108,10 +108,11 @@ func _build_options() -> void:
 	_refresh()
 
 func _route_load_scene() -> String:
-	if not GameState.has_starter:
-		return "char_create"
+	# 优先用存档记录的场景
 	if not GameState.last_scene.is_empty():
 		return GameState.last_scene
+	if not GameState.has_starter:
+		return "char_create"
 	return "world"
 
 func _refresh() -> void:

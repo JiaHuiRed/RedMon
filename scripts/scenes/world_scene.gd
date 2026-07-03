@@ -39,15 +39,7 @@ var _shop_panel:  Control
 var _shop_result_label: Label
 
 # 静态NPC（不战斗，按Z对话）
-const STATIC_NPCS := [
-	{
-		"name":   "博士",
-		"sprite": "博士",
-		"tile":   Vector2i(14, 8),
-		"dir":    0,
-		"dialog": ["欢迎来到华灵大陆！我是陈教授。", "精灵与人类共存千年，每段旅途都是一段传奇。"],
-	},
-]
+const STATIC_NPCS := []  # 260703 Red 移除占位NPC，草原上不放教授
 var _npc_nodes: Array = []
 var _npc_dialog_lines: Array = []
 var _npc_dialog_idx: int = 0
@@ -427,7 +419,7 @@ func _build_shop() -> void:
 func _build_npcs() -> void:
 	for npc in STATIC_NPCS:
 		var spr = Sprite2D.new()
-		var path = "res://assets/sprites/%swalk_sheet.png" % npc["sprite"]
+		var path = "res://assets/npc/%swalk_sheet.png" % npc["sprite"]
 		if ResourceLoader.exists(path):
 			spr.texture = load(path)
 			spr.region_enabled = true
@@ -435,12 +427,13 @@ func _build_npcs() -> void:
 		else:
 			spr.texture = _draw_trainer(npc["name"][0])
 		spr.centered = true
+		spr.scale = Vector2(1.5, 1.5)
 		spr.z_index = 5
 		spr.position = Vector2(npc["tile"].x * TILE + TILE / 2.0, npc["tile"].y * TILE + TILE / 2.0)
 		spr.set_meta("npc_data", npc)
 		add_child(spr)
 		_npc_nodes.append(spr)
-		_add_collider(spr.position, Vector2(24, 24))
+		_add_collider(spr.position, Vector2(36, 36))
 
 func _build_trainers() -> void:
 	for td in TRAINERS:
@@ -448,12 +441,13 @@ func _build_trainers() -> void:
 			continue
 		var spr = Sprite2D.new()
 		if td.has("sprite"):
-			var path = "res://assets/sprites/%swalk_sheet.png" % td["sprite"]
+			var path = "res://assets/npc/%swalk_sheet.png" % td["sprite"]
 			if ResourceLoader.exists(path):
 				spr.texture = load(path)
 				spr.region_enabled = true
 				spr.region_rect = Rect2(0, td.get("dir_row", 0) * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 				spr.centered = true
+				spr.scale = Vector2(1.5, 1.5)
 			else:
 				spr.texture = _draw_trainer(td["name"][0])
 		else:
@@ -590,12 +584,13 @@ func _build_player() -> void:
 	_player_sprite.z_index = 5
 	# 根据性别选择 spritesheet
 	var sheet_name := "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
-	var sheet_tex = load("res://assets/sprites/" + sheet_name)
+	var sheet_tex = load("res://assets/npc/" + sheet_name)
 	if sheet_tex:
 		_player_sprite.texture = sheet_tex
 		_player_sprite.region_enabled = true
 		_player_sprite.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		_player_sprite.centered = true
+		_player_sprite.scale = Vector2(1.5, 1.5)
 	else:
 		_player_sprite.texture = _draw_player_fallback()
 	_player.add_child(_player_sprite)
@@ -626,23 +621,23 @@ func _build_player() -> void:
 func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 	if not _player_sprite.region_enabled:
 		return
-	# 更新方向
+	# 260703 Red 行走图行顺序：下0/上1/左2/右3，3帧动画
 	if moving:
-		if   dir.y > 0: _walk_dir = 0
-		elif dir.y < 0: _walk_dir = 1
-		elif dir.x < 0: _walk_dir = 2
-		elif dir.x > 0: _walk_dir = 3
-		# 推进动画帧
+		if   dir.y > 0: _walk_dir = 0  # 下
+		elif dir.y < 0: _walk_dir = 1  # 上
+		elif dir.x < 0: _walk_dir = 2  # 左
+		elif dir.x > 0: _walk_dir = 3  # 右
+		# 帧动画: 0→1→0→2 循环
 		_walk_anim_t += delta
 		if _walk_anim_t >= WALK_FRAME_SEC:
-			_walk_anim_t = 0.0
-			_walk_frame = (_walk_frame + 1) % 3
+			_walk_anim_t -= WALK_FRAME_SEC
+			_walk_frame = (_walk_frame + 1) % 4
 	else:
-		_walk_frame  = 0
+		_walk_frame = 0
 		_walk_anim_t = 0.0
+	var col: int = [0, 1, 0, 2][_walk_frame]  # 站立/左脚/站立/右脚
 	_player_sprite.region_rect = Rect2(
-		_walk_frame * WALK_FRAME_W,
-		_walk_dir   * WALK_FRAME_H,
+		col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H,
 		WALK_FRAME_W, WALK_FRAME_H)
 
 func _draw_player_fallback() -> ImageTexture:
@@ -880,7 +875,7 @@ func _input(event: InputEvent) -> void:
 
 func _try_talk_npc() -> void:
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
-	const OFFSETS := [Vector2i(0, 1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0)]
+	const OFFSETS := [Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0)]  # 下上右左
 	var face_tile = tile + OFFSETS[_walk_dir]
 	for spr in _npc_nodes:
 		if not spr.has_meta("npc_data"): continue

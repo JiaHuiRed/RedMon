@@ -13,6 +13,7 @@ const SPEED := 96.0
 const WALK_FRAME_W := 48
 const WALK_FRAME_H := 48
 const WALK_FRAME_SEC := 0.15
+const NPC_SCALE := 1.5
 
 const BADGE_ID := "翠竹徽"
 const TM_REWARD := "技能机01"
@@ -176,11 +177,12 @@ func _make_guard_sprite() -> ImageTexture:
 # ── 馆主 ─────────────────────────────────────────────────────────────────────
 func _build_leader() -> void:
 	_leader_node = Sprite2D.new()
-	var sheet_path = "res://assets/sprites/林青松walk_sheet.png"
+	var sheet_path = "res://assets/npc/林青松walk_sheet.png"
 	if ResourceLoader.exists(sheet_path):
 		_leader_node.texture = load(sheet_path)
 		_leader_node.region_enabled = true
 		_leader_node.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		_leader_node.scale = Vector2(NPC_SCALE, NPC_SCALE)
 	else:
 		_leader_node.texture = _make_leader_sprite()
 	_leader_node.centered  = true
@@ -213,11 +215,12 @@ func _build_player() -> void:
 	_player_spr = Sprite2D.new()
 	_player_spr.z_index = 6
 	var sheet = "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
-	var tex = load("res://assets/sprites/" + sheet)
+	var tex = load("res://assets/npc/" + sheet)
 	if tex:
 		_player_spr.texture = tex
 		_player_spr.region_enabled = true
 		_player_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		_player_spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
 	_player_spr.centered = true
 	_player.add_child(_player_spr)
 	var col = CollisionShape2D.new()
@@ -228,19 +231,21 @@ func _build_player() -> void:
 
 func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 	if not _player_spr.region_enabled: return
+	# 260703 Red 行走动画：下0/上1/左2/右3，3帧循环
 	if moving:
-		if   dir.y > 0: _walk_dir = 0
-		elif dir.y < 0: _walk_dir = 1
-		elif dir.x < 0: _walk_dir = 2
-		elif dir.x > 0: _walk_dir = 3
+		if   dir.y > 0: _walk_dir = 0  # 下
+		elif dir.y < 0: _walk_dir = 1  # 上
+		elif dir.x < 0: _walk_dir = 2  # 左
+		elif dir.x > 0: _walk_dir = 3  # 右
 		_walk_anim_t += delta
 		if _walk_anim_t >= WALK_FRAME_SEC:
-			_walk_anim_t = 0.0
-			_walk_frame = (_walk_frame + 1) % 3
+			_walk_anim_t -= WALK_FRAME_SEC
+			_walk_frame = (_walk_frame + 1) % 4
 	else:
-		_walk_frame  = 0
+		_walk_frame = 0
 		_walk_anim_t = 0.0
-	_player_spr.region_rect = Rect2(_walk_frame * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
+	var col: int = [0, 1, 0, 2][_walk_frame]
+	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 
 # ── 对话框 ────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:

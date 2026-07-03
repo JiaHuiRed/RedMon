@@ -11,10 +11,15 @@ const ROWS  := 20
 const SPEED := 100.0
 const WALK_FRAME_W := 48
 const WALK_FRAME_H := 48
-const BUILD_SCALE := 0.35
+const WALK_FRAME_SEC := 0.15
+const BUILD_SCALE := 1.0
+const NPC_SCALE := 1.5
 
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
+var _walk_dir: int = 0
+var _walk_frame: int = 0
+var _walk_anim_t: float = 0.0
 var _rival_spr: Sprite2D
 var _rival_collider: StaticBody2D
 var _rival_node: Node2D
@@ -87,15 +92,15 @@ func _build_ground() -> void:
 		for y in ROWS:
 			tm.set_cell(0, Vector2i(x, y), 0, Vector2i(0, 0))
 
-	# Horizontal dirt path at rows 7-8 (tile_1_5 and tile_3_5)
+	# Horizontal dirt path at rows 7-8 (纯沙地 tile_7_6)
 	for x in COLS:
-		tm.set_cell(0, Vector2i(x, 7), 0, Vector2i(5, 1))
-		tm.set_cell(0, Vector2i(x, 8), 0, Vector2i(5, 3))
+		tm.set_cell(0, Vector2i(x, 7), 0, Vector2i(6, 7))
+		tm.set_cell(0, Vector2i(x, 8), 0, Vector2i(6, 7))
 
 	# Vertical dirt path at cols 14-15 (rows 7-19)
 	for y in range(7, ROWS):
-		tm.set_cell(0, Vector2i(14, y), 0, Vector2i(5, 1))
-		tm.set_cell(0, Vector2i(15, y), 0, Vector2i(5, 3))
+		tm.set_cell(0, Vector2i(14, y), 0, Vector2i(6, 7))
+		tm.set_cell(0, Vector2i(15, y), 0, Vector2i(6, 7))
 
 	# Decorative bushes around village
 	for spot in [[3, 14], [8, 11], [18, 14], [25, 10], [12, 15]]:
@@ -114,25 +119,34 @@ func _add_collider(pos: Vector2, size: Vector2) -> void:
 
 # ── Buildings ─────────────────────────────────────────────────────────────────
 func _build_buildings() -> void:
-	# 普通小屋 (player's home, top-left)
+	# 普通小屋 (player's home, top-left) — 132×125, 原始大小
 	var home = Sprite2D.new()
 	home.texture = _load_tex("res://assets/backgrounds/buildings/普通小屋.png")
 	if home.texture:
-		home.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
-		home.position = Vector2(4 * TILE + 60, 3 * TILE + 30)
+		home.position = Vector2(4 * TILE + 66, 3 * TILE + 62)
 		home.z_index = 2
 		add_child(home)
-		_add_collider(home.position + Vector2(0, 100), Vector2(110, 80))
+		_add_collider(home.position + Vector2(0, 20), Vector2(120, 90))
 
-	# 精灵堂 (healing center / lab, top-right)
+	# 研究所 (professor's lab, top-right) — 274×384, 原始大小，去白底
 	var center = Sprite2D.new()
-	center.texture = _load_tex("res://assets/backgrounds/buildings/精灵堂.png")
-	if center.texture:
-		center.scale = Vector2(BUILD_SCALE, BUILD_SCALE)
-		center.position = Vector2(20 * TILE + 100, 2 * TILE + 60)
+	var lab_tex = _load_tex("res://assets/backgrounds/buildings/研究所.png")
+	if lab_tex:
+		# 去掉白色背景，转为透明
+		var img = lab_tex.get_image()
+		if img:
+			for y2 in img.get_height():
+				for x2 in img.get_width():
+					var c = img.get_pixel(x2, y2)
+					if c.r > 0.95 and c.g > 0.95 and c.b > 0.95:
+						img.set_pixel(x2, y2, Color(0, 0, 0, 0))
+			center.texture = ImageTexture.create_from_image(img)
+		else:
+			center.texture = lab_tex
+		center.position = Vector2(21 * TILE, 2 * TILE + 60)
 		center.z_index = 2
 		add_child(center)
-		_add_collider(center.position + Vector2(0, 90), Vector2(140, 90))  # YYMMDD Red 碰撞上移，让出教授门前站位
+		_add_collider(center.position + Vector2(0, 100), Vector2(240, 280))
 
 func _load_tex(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
@@ -149,66 +163,70 @@ func _load_tex(path: String) -> Texture2D:
 func _build_npcs() -> void:
 	# NPC 1 — 老奶奶 near well
 	var npc1 = Sprite2D.new()
-	npc1.texture = _load_tex("res://assets/sprites/老奶奶.png")
+	npc1.texture = _load_tex("res://assets/npc/老奶奶.png")
 	if npc1.texture:
 		npc1.region_enabled = true
 		npc1.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		npc1.centered = true
 	else:
 		npc1.texture = _draw_npc_fallback(Color(0.15, 0.35, 0.85), Color(0.70, 0.68, 0.66))
+	npc1.scale = Vector2(NPC_SCALE, NPC_SCALE)
 	npc1.position = Vector2(8 * TILE + TILE/2, 12 * TILE + TILE/2)
 	npc1.z_index = 5
 	add_child(npc1)
-	_add_collider(npc1.position, Vector2(24, 24))
+	_add_collider(npc1.position, Vector2(36, 36))
 
 	# NPC 2 — 青年 near well
 	var npc2 = Sprite2D.new()
-	npc2.texture = _load_tex("res://assets/sprites/青年.png")
+	npc2.texture = _load_tex("res://assets/npc/青年.png")
 	if npc2.texture:
 		npc2.region_enabled = true
 		npc2.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		npc2.centered = true
 	else:
 		npc2.texture = _draw_npc_fallback(Color(0.40, 0.30, 0.50), Color(0.70, 0.68, 0.66))
+	npc2.scale = Vector2(NPC_SCALE, NPC_SCALE)
 	npc2.position = Vector2(9 * TILE + TILE/2, 15 * TILE + TILE/2)
 	npc2.z_index = 5
 	add_child(npc2)
-	_add_collider(npc2.position, Vector2(24, 24))
+	_add_collider(npc2.position, Vector2(36, 36))
 
-	# 博士 — at lab door (精灵堂 entrance)
+	# 博士 — at lab door (研究所 entrance)
 	var prof = Sprite2D.new()
-	var prof_path = "res://assets/sprites/博士walk_sheet.png"
+	var prof_path = "res://assets/npc/博士walk_sheet.png"
 	if ResourceLoader.exists(prof_path):
 		prof.texture = load(prof_path)
 		prof.region_enabled = true
 		prof.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		prof.centered = true
+		prof.scale = Vector2(NPC_SCALE, NPC_SCALE)
 		prof.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2 - 4)
 		prof.z_index = 6
 		add_child(prof)
-		_add_collider(prof.position, Vector2(24, 24))
+		_add_collider(prof.position, Vector2(36, 36))
 	else:
 		var fallback = Sprite2D.new()
 		fallback.texture = _draw_npc_fallback(Color(0.85, 0.85, 0.90), Color(0.60, 0.60, 0.62))
 		fallback.position = Vector2(LAB_DOOR_TILE.x * TILE + TILE/2, LAB_DOOR_TILE.y * TILE + TILE/2)
 		fallback.z_index = 6
 		add_child(fallback)
-		_add_collider(fallback.position, Vector2(24, 24))
+		_add_collider(fallback.position, Vector2(36, 36))
 
 	# 林薇
 	_linwei_spr = Sprite2D.new()
-	var lw_path = "res://assets/sprites/林薇walk_sheet.png"
+	var lw_path = "res://assets/npc/林薇walk_sheet.png"
 	if ResourceLoader.exists(lw_path):
 		_linwei_spr.texture = load(lw_path)
 		_linwei_spr.region_enabled = true
 		_linwei_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		_linwei_spr.centered = true
+		_linwei_spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
 	else:
 		_linwei_spr.texture = _draw_npc_fallback(Color(0.90, 0.45, 0.55), Color(0.15, 0.10, 0.08))
 	_linwei_spr.position = Vector2(LINWEI_TILE.x * TILE + TILE/2, LINWEI_TILE.y * TILE + TILE/2 - 4)
 	_linwei_spr.z_index = 6
 	add_child(_linwei_spr)
-	_add_collider(_linwei_spr.position, Vector2(24, 24))
+	_add_collider(_linwei_spr.position, Vector2(36, 36))
 
 	# Well decoration
 	var well = ColorRect.new()
@@ -286,9 +304,9 @@ func _build_labels() -> void:
 	lbl1.z_index = 8
 	add_child(lbl1)
 
-	# 精灵堂 label
+	# 研究所 label
 	var lbl3 = Label.new()
-	lbl3.text = "精灵中心"
+	lbl3.text = "研究所"
 	lbl3.position = Vector2(19 * TILE + TILE, 4 * TILE - 6)
 	lbl3.add_theme_font_size_override("font_size", 10)
 	lbl3.add_theme_color_override("font_color", Color(0.10, 0.20, 0.72))
@@ -336,13 +354,16 @@ func _build_rival() -> void:
 	_rival_node = Node2D.new()
 	add_child(_rival_node)
 
-	var tex: Texture2D = _load_tex("res://assets/sprites/劲敌front.png")
-	if not tex:
-		tex = _draw_rival_fallback()
 	var spr = Sprite2D.new()
-	spr.texture = tex
-	var s = 36.0 / maxf(tex.get_size().x, tex.get_size().y)
-	spr.scale = Vector2(s, s)
+	var rival_sheet = _load_tex("res://assets/npc/劲敌walk_sheet.png")
+	if rival_sheet:
+		spr.texture = rival_sheet
+		spr.region_enabled = true
+		spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		spr.centered = true
+		spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
+	else:
+		spr.texture = _draw_rival_fallback()
 	spr.position = Vector2(15 * TILE + TILE/2, 18 * TILE + TILE/2)
 	spr.z_index = 5
 	_rival_node.add_child(spr)
@@ -415,12 +436,13 @@ func _build_player() -> void:
 	_player_spr = Sprite2D.new()
 	_player_spr.z_index = 5
 	var sheet = "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
-	var tex = _load_tex("res://assets/sprites/" + sheet)
+	var tex = _load_tex("res://assets/npc/" + sheet)
 	if tex:
 		_player_spr.texture = tex
 		_player_spr.region_enabled = true
 		_player_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		_player_spr.centered = true
+		_player_spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
 	else:
 		_player_spr.texture = _draw_player_fallback()
 	_player.add_child(_player_spr)
@@ -518,7 +540,7 @@ func _show_dialog(text: String, phase: int) -> void:
 	_dialog_label.text = text
 
 # ── Movement & input ─────────────────────────────────────────────────────────
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if _dialog_active or _battling:
 		return
 	var dir = Vector2.ZERO
@@ -526,11 +548,31 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
 	if Input.is_action_pressed("ui_down"):  dir.y += 1
 	if Input.is_action_pressed("ui_up"):    dir.y -= 1
+	var moving = dir.length() > 0.01
 	if dir.length() > 1.0:
 		dir = dir.normalized()
 	var speed = SPEED * (2.0 if Input.is_action_pressed("run") else 1.0)
 	_player.velocity = dir * speed
 	_player.move_and_slide()
+
+	# 260703 Red 行走动画：下0/上1/左2/右3，3帧循环
+	if _player_spr.region_enabled:
+		if moving:
+			if   dir.y > 0: _walk_dir = 0  # 下
+			elif dir.y < 0: _walk_dir = 1  # 上
+			elif dir.x < 0: _walk_dir = 2  # 左
+			elif dir.x > 0: _walk_dir = 3  # 右
+			_walk_anim_t += delta
+			if _walk_anim_t >= WALK_FRAME_SEC:
+				_walk_anim_t -= WALK_FRAME_SEC
+				_walk_frame = (_walk_frame + 1) % 4
+		else:
+			_walk_frame = 0
+			_walk_anim_t = 0.0
+		var col: int = [0, 1, 0, 2][_walk_frame]
+		_player_spr.region_rect = Rect2(
+			col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H,
+			WALK_FRAME_W, WALK_FRAME_H)
 
 	# Clamp inside map (1 tile border)
 	_player.position.x = clamp(_player.position.x, TILE, TILE * (COLS - 1))

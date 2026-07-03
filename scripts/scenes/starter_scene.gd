@@ -85,7 +85,7 @@ func _build_bg() -> void:
 
 # ── Professor sprite (procedural) ────────────────────────────────────────────
 const PROFESSOR_NAME := "陈教授"
-const PROFESSOR_SPRITE := "res://assets/sprites/博士front.png"
+const PROFESSOR_SPRITE := "res://assets/npc/博士front.png"
 
 func _build_professor() -> void:
 	var tex: Texture2D

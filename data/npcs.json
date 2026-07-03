@@ -25,12 +25,20 @@
     "id": "shenhe",
     "name": "申鹤",
     "title": null,
-    "role": "rival",
-    "sprite_walk": "申鹤walk_sheet.png",
+    "role": "trainer",
+    "gender": "女",
+    "desc": "钢系四天王，看似柔弱实为强敌",
+    "sprite_walk": null,
     "sprite_front": "申鹤front.png",
     "sprite_back": "申鹤back.png",
-    "desc": "第二位劲敌，持有第三只御三家",
-    "gender": "女"
+    "trainer": {
+      "trainer_id": "shenhe",
+      "class": "四天王",
+      "reward": 8000,
+      "dialog_before": "前面的！站住！",
+      "dialog_win": "你……你真厉害！",
+      "team": []
+    }
   },
   "linwei": {
     "id": "linwei",
@@ -162,21 +170,37 @@
     "name": "神子",
     "title": "铁壁天王",
     "role": "elite_four",
+    "gender": "女",
+    "desc": "钢系四天王，看似柔弱实为强敌",
     "sprite_walk": "神子walk_sheet.png",
     "sprite_front": "神子front.png",
     "sprite_back": "神子back.png",
-    "desc": "钢系四天王，看似柔弱实为强敌",
-    "gender": "女"
+    "trainer": {
+      "trainer_id": "shen_zi",
+      "class": "四天王",
+      "reward": 8000,
+      "dialog_before": "前面的！站住！",
+      "dialog_win": "你……你真厉害！",
+      "team": []
+    }
   },
   "meimei": {
     "id": "meimei",
     "name": "美美",
     "title": null,
     "role": "villain",
+    "gender": "女",
+    "desc": "黑风堂堂主·伪装形态，前期支线结识的朋友",
     "sprite_walk": "美美walk_sheet.png",
     "sprite_front": "美美front.png",
-    "desc": "黑风堂堂主·伪装形态，前期支线结识的朋友",
-    "gender": "女"
+    "trainer": {
+      "trainer_id": "meimei",
+      "class": "普通训练师",
+      "reward": 8000,
+      "dialog_before": "前面的！站住！",
+      "dialog_win": "你……你真厉害！",
+      "team": []
+    }
   },
   "wujunmei": {
     "id": "wujunmei",
@@ -219,10 +243,12 @@
     "id": "gan_yu",
     "name": "甘雨",
     "title": null,
-    "role": "npc",
-    "sprite_static": "甘雨.png",
-    "desc": "",
-    "gender": "女"
+    "role": "elite_four",
+    "gender": "女",
+    "sprite_walk": null,
+    "sprite_front": "甘雨.png",
+    "sprite_back": null,
+    "desc": "灵系四天王"
   },
   "xie_mingdu": {
     "id": "xie_mingdu",

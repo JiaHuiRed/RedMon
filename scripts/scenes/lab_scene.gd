@@ -62,7 +62,7 @@ func _build_bg() -> void:
 func _build_npcs() -> void:
 	# 陈教授（中央）
 	var prof = Sprite2D.new()
-	var prof_path = "res://assets/sprites/npc/博士walk_sheet.png"
+	var prof_path = "res://assets/npc/博士walk_sheet.png"
 	if ResourceLoader.exists(prof_path):
 		prof.texture = load(prof_path)
 		prof.region_enabled = true
@@ -75,7 +75,7 @@ func _build_npcs() -> void:
 
 	# 林薇（左侧书架旁）
 	var lw = Sprite2D.new()
-	var lw_path = "res://assets/sprites/npc/林薇walk_sheet.png"
+	var lw_path = "res://assets/npc/林薇walk_sheet.png"
 	if ResourceLoader.exists(lw_path):
 		lw.texture = load(lw_path)
 		lw.region_enabled = true
@@ -88,7 +88,7 @@ func _build_npcs() -> void:
 
 	# 助手（右侧实验台旁）
 	var asst = Sprite2D.new()
-	var asst_path = "res://assets/sprites/npc/青年.png"
+	var asst_path = "res://assets/npc/青年.png"
 	if ResourceLoader.exists(asst_path):
 		asst.texture = load(asst_path)
 		asst.region_enabled = true
@@ -108,12 +108,13 @@ func _build_player() -> void:
 	_player_spr = Sprite2D.new()
 	_player_spr.z_index = 5
 	var sheet = "男主walk_sheet.png" if GameState.player_gender == "男" else "女主walk_sheet.png"
-	var sheet_path = "res://assets/sprites/" + sheet
+	var sheet_path = "res://assets/npc/" + sheet
 	if ResourceLoader.exists(sheet_path):
 		_player_spr.texture = load(sheet_path)
 		_player_spr.region_enabled = true
 		_player_spr.region_rect = Rect2(0, 0, 48, 48)
 		_player_spr.centered = true
+		_player_spr.scale = Vector2(1.5, 1.5)
 	else:
 		_player_spr.texture = _draw_player_spr()
 	_player.add_child(_player_spr)

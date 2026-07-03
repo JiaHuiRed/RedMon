@@ -48,7 +48,13 @@ GROWTH     = ["快速", "中速", "缓慢"]
 CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
 TRAINER_GENDERS = ["男", "女", "未知"]
-TRAINER_CLASSES = ["普通训练师", "精英训练师", "道馆主", "四天王", "冠军", "路人", "商人", "研究员"]
+TRAINER_CLASSES = [
+    "普通训练师", "精英训练师", "道馆学徒",
+    "道馆主", "四天王", "冠军",
+    "反派干部", "反派首领",
+    "劲敌",
+    "路人", "商人", "研究员", "武者", "渔夫", "虫师",
+]
 # 260702 Red 技能效果系统 ─ 结构化：效果类型 + 概率% + 数值参数
 # 存储: effect(str key), effect_chance(int 0-100, 0=必触发), effect_value(int, 反伤%/吸血%等)
 EFFECTS_RAW = [
@@ -193,12 +199,13 @@ def _int(s):
 class SearchableCombo(tk.Frame):
     """Replaces readonly Combobox: type to filter, arrow/click to select."""
 
-    def __init__(self, parent, items: list, width=20, **kw):
+    def __init__(self, parent, items: list, width=20, command=None, **kw):
         super().__init__(parent, bg=BG_MAIN, **kw)
         self._all   = items
         self._var   = tk.StringVar()
         self._popup = None
         self._lb    = None
+        self._command = command
 
         self._entry = ttk.Entry(self, textvariable=self._var, width=width)
         self._entry.pack(side="left", fill="x", expand=True)
@@ -272,6 +279,8 @@ class SearchableCombo(tk.Frame):
             if sel:
                 self._var.set(self._lb.get(sel[0]))
         self._close()
+        if self._command:
+            self._command()
 
     def _focus_list(self, _=None):
         if self._popup and self._popup.winfo_exists():
@@ -346,8 +355,7 @@ class App:
         self.moves    = load_json(MOVES_FILE)
         self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
         self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}  # 260702 Red
-        self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}  # 260702 NPC
-        self._rebuild_trainers()  # 260703 Red 从 npcs 构建训练师视图
+        self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}  # NPC+角色合并
 
         # 隐藏根窗口用于保留任务栏图标，实际 UI 在 Toplevel 上
         self._ghost = tk.Tk()
@@ -393,17 +401,15 @@ class App:
 
         self.mon_tab     = ttk.Frame(self.notebook)
         self.move_tab    = ttk.Frame(self.notebook)
-        self.trainer_tab = ttk.Frame(self.notebook)
         self.dialog_tab  = ttk.Frame(self.notebook)
         self.item_tab    = ttk.Frame(self.notebook)
         self.ability_tab = ttk.Frame(self.notebook)  # 260702 Red
-        self.npc_tab = ttk.Frame(self.notebook)  # 260702 NPC
+        self.npc_tab = ttk.Frame(self.notebook)  # NPC+角色合并
         self.notebook.add(self.mon_tab,     text="  精灵图鉴  ")
         self.notebook.add(self.move_tab,    text="  技能库  ")
         self.notebook.add(self.item_tab,    text="  道具编辑  ")
         self.notebook.add(self.ability_tab, text="  特性库  ")
-        self.notebook.add(self.npc_tab,     text="  NPC编辑  ")
-        self.notebook.add(self.trainer_tab, text="  角色编辑  ")
+        self.notebook.add(self.npc_tab,     text="  角色编辑  ")
         self.notebook.add(self.dialog_tab,  text="  剧情文本  ")
 
         self._build_mon_tab()
@@ -411,7 +417,6 @@ class App:
         self._build_item_tab()
         self._build_ability_tab()
         self._build_npc_tab()
-        self._build_trainer_tab()
         self._build_dialog_tab()
 
         self.status = tk.Label(self.root, anchor="w", bg=BG_SIDE, fg=TEXT_SEC,
@@ -505,10 +510,8 @@ class App:
             self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
             self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}
             self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}
-            self._rebuild_trainers()
             self._mon_refresh_list()
             self._move_refresh_list()
-            self._trainer_refresh_list()
             self._npc_refresh_list()
             self._item_refresh_list()
             self._ability_refresh_list()
@@ -625,21 +628,6 @@ class App:
             self.root.geometry(f"{sw}x{sh}+{sx}+{sy}")
             self._is_maximized = True
 
-    # ── 从 npcs 构建训练师视图 ──────────────────────────────────────────────
-    def _rebuild_trainers(self):
-        """从 npcs.json 中有 trainer 子对象的条目构建 self.trainers 平铺视图"""
-        self.trainers = {}
-        self._trainer_npc_map = {}  # trainer_id -> npc_id
-        for nid, npc in self.npcs.items():
-            if "trainer" in npc:
-                t = npc["trainer"].copy()
-                t["name"] = npc.get("name", "")
-                t["gender"] = npc.get("gender", "")
-                tid = t.get("trainer_id", nid)
-                t["id"] = tid
-                self.trainers[tid] = t
-                self._trainer_npc_map[tid] = nid
-
     # ── Status / draw helpers ───────────────────────────────────────────────
 
     def _update_status(self, msg=None):
@@ -649,9 +637,9 @@ class App:
             n_sp = len(self.species)
             n_mv = len(self.moves)
             n_np = len(self.npcs)
-            n_tr = len(self.trainers)
+            n_tr = sum(1 for v in self.npcs.values() if "trainer" in v)
             self.status.config(
-                text=f"  精灵 {n_sp} 种  ·  技能 {n_mv} 个  ·  NPC {n_np} 个（含训练师 {n_tr}）")
+                text=f"  精灵 {n_sp} 种  ·  技能 {n_mv} 个  ·  角色 {n_np} 个（含训练师 {n_tr}）")
 
     def _draw_bar(self, canvas, value, color):
         canvas.delete("all")
@@ -2271,95 +2259,299 @@ class App:
         self._move_placeholder.pack(side="right", fill="both", expand=True)
 
     # ══════════════════════════════════════════════════════════════════════════
-    #  角色编辑 TAB
+    #  角色编辑 TAB（NPC + 训练师合并）
     # ══════════════════════════════════════════════════════════════════════════
 
-    def _build_trainer_tab(self):
-        left = tk.Frame(self.trainer_tab, bg=BG_SIDE, width=230)
+    NPC_ROLE_MAP = {
+        "": "",
+        "professor": "教授",
+        "rival": "劲敌",
+        "npc": "普通NPC",
+        "family": "家人",
+        "villager": "村民",
+        "gym_leader": "道馆主",
+        "elite_four": "四天王",
+        "villain": "反派",
+        "trainer": "训练师",
+    }
+    NPC_ROLE_LABELS = list(NPC_ROLE_MAP.values())
+    NPC_ROLE_KEY2LABEL = NPC_ROLE_MAP
+    NPC_ROLE_LABEL2KEY = {v: k for k, v in NPC_ROLE_MAP.items()}
+
+    def _build_npc_tab(self):
+        self._npc_sprite_dir = os.path.join(ROOT, "assets", "npc")
+        self._current_npc = None
+
+        # ── Left sidebar ──────────────────────────────────────────────────
+        left = tk.Frame(self.npc_tab, bg=BG_SIDE, width=230)
         left.pack(side="left", fill="y")
         left.pack_propagate(False)
 
         _lbl(left, "角色列表", bg=BG_SIDE, bold=True).pack(
             anchor="w", padx=12, pady=(12, 2))
-        self.trainer_search = ttk.Entry(left)
-        self.trainer_search.pack(fill="x", padx=10)
-        self.trainer_search.bind("<KeyRelease>",
-                                 lambda _: self._trainer_refresh_list())
+        self.npc_search = ttk.Entry(left)
+        self.npc_search.pack(fill="x", padx=10)
+        self.npc_search.bind("<KeyRelease>",
+                             lambda _: self._npc_refresh_list())
+
+        # Filter by role
+        flt_f = tk.Frame(left, bg=BG_SIDE)
+        flt_f.pack(fill="x", padx=10, pady=(4, 4))
+        tk.Label(flt_f, text="筛选", bg=BG_SIDE, fg=TEXT_SEC,
+                 font=(FONT_CJK, 9)).pack(anchor="w")
+        self.npc_filter_role = ttk.Combobox(flt_f, width=18, state="readonly")
+        self.npc_filter_role["values"] = ["全部", "训练师", "非训练师"] + self.NPC_ROLE_LABELS[1:]
+        self.npc_filter_role.set("全部")
+        self.npc_filter_role.pack(fill="x")
+        self.npc_filter_role.bind("<<ComboboxSelected>>",
+                                   lambda _: self._npc_refresh_list())
 
         lf = tk.Frame(left, bg=BG_SIDE)
-        lf.pack(fill="both", expand=True, padx=10, pady=(6, 4))
+        lf.pack(fill="both", expand=True, padx=10, pady=(4, 4))
         sb = ttk.Scrollbar(lf, orient="vertical")
-        self.trainer_list = tk.Listbox(
+        self.npc_list = tk.Listbox(
             lf, yscrollcommand=sb.set, font=(FONT_CJK, 10),
             bg=BG_CARD, fg=TEXT_PRI,
             selectbackground=ACCENT, selectforeground="white",
             borderwidth=0, highlightthickness=0, relief="flat",
             activestyle="none")
-        sb.config(command=self.trainer_list.yview)
+        sb.config(command=self.npc_list.yview)
         sb.pack(side="right", fill="y")
-        self.trainer_list.pack(side="left", fill="both", expand=True)
-        self.trainer_list.bind("<<ListboxSelect>>", self._trainer_select)
+        self.npc_list.pack(side="left", fill="both", expand=True)
+        self.npc_list.bind("<<ListboxSelect>>", self._npc_select)
 
         bf = tk.Frame(left, bg=BG_SIDE)
         bf.pack(fill="x", padx=10, pady=(0, 12))
-        ttk.Button(bf, text="+ 新增",
-                   command=self._trainer_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="+ 新增NPC",
+                   command=self._npc_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="+ 新增训练师",
+                   command=self._npc_add_trainer).pack(side="left", padx=(0, 4))
         ttk.Button(bf, text="× 删除",
-                   command=self._trainer_delete).pack(side="left")
+                   command=self._npc_delete).pack(side="left")
 
-        self._trainer_placeholder = tk.Label(
-            self.trainer_tab, text="← 选择一个角色开始编辑",
+        # ── Placeholder ───────────────────────────────────────────────────
+        self._npc_placeholder = tk.Label(
+            self.npc_tab, text="← 选择一个角色开始编辑",
             bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
-        self._trainer_placeholder.pack(side="right", fill="both", expand=True)
+        self._npc_placeholder.pack(side="right", fill="both", expand=True)
 
-        self._trainer_form_frame = tk.Frame(self.trainer_tab, bg=BG_MAIN)
-        # Left: scrollable form
-        _tf_left = tk.Frame(self._trainer_form_frame, bg=BG_MAIN)
-        _tf_left.pack(side="left", fill="both", expand=True)
-        tc = tk.Canvas(_tf_left, bg=BG_MAIN,
-                        borderwidth=0, highlightthickness=0)
-        ts = ttk.Scrollbar(_tf_left, orient="vertical",
-                            command=tc.yview)
-        self._trainer_inner = tk.Frame(tc, bg=BG_MAIN)
-        self._trainer_inner.bind(
+        # ── Right container ───────────────────────────────────────────────
+        self._npc_right = tk.Frame(self.npc_tab, bg=BG_MAIN)
+
+        split = tk.Frame(self._npc_right, bg=BG_MAIN)
+        split.pack(side="top", fill="both", expand=True)
+
+        # ── Center: scrollable form ───────────────────────────────────────
+        form_wrap = tk.Frame(split, bg=BG_MAIN)
+        form_wrap.pack(side="left", fill="both", expand=True)
+
+        self._npc_canvas = tk.Canvas(
+            form_wrap, bg=BG_MAIN, borderwidth=0, highlightthickness=0)
+        _npc_vbar = ttk.Scrollbar(
+            form_wrap, orient="vertical", command=self._npc_canvas.yview)
+        self._npc_inner = tk.Frame(self._npc_canvas, bg=BG_MAIN)
+        self._npc_inner.bind(
             "<Configure>",
-            lambda _: tc.configure(scrollregion=tc.bbox("all")))
-        tc.create_window((0, 0), window=self._trainer_inner, anchor="nw")
-        tc.configure(yscrollcommand=ts.set)
-        tc.pack(side="left", fill="both", expand=True)
-        ts.pack(side="right", fill="y")
-        tc.bind("<Enter>", lambda c=tc: c.bind_all(
-            "<MouseWheel>",
-            lambda e: c.yview_scroll(-1*(e.delta//120), "units")))
-        tc.bind("<Leave>", lambda c=tc: c.unbind_all("<MouseWheel>"))
-        # Right: mon preview panel
-        tk.Frame(self._trainer_form_frame, bg=BORDER, width=1).pack(
-            side="left", fill="y")
-        self._trainer_preview = tk.Frame(
-            self._trainer_form_frame, bg=BG_SIDE, width=280)
-        self._trainer_preview.pack(side="left", fill="y")
-        self._trainer_preview.pack_propagate(False)
-        _lbl(self._trainer_preview, "选中精灵预览", bg=BG_SIDE, bold=True).pack(
-            anchor="w", padx=10, pady=(10, 4))
-        self._tp_sprite_lbl = tk.Label(
-            self._trainer_preview, bg=BG_SIDE, width=100, height=100,
+            lambda _: self._npc_canvas.configure(
+                scrollregion=self._npc_canvas.bbox("all")))
+        self._npc_canvas.create_window((0, 0), window=self._npc_inner, anchor="nw")
+        self._npc_canvas.configure(yscrollcommand=_npc_vbar.set)
+        self._npc_canvas.pack(side="left", fill="both", expand=True)
+        _npc_vbar.pack(side="right", fill="y")
+        self._npc_canvas.bind(
+            "<Enter>",
+            lambda _: self._npc_canvas.bind_all(
+                "<MouseWheel>",
+                lambda e: self._npc_canvas.yview_scroll(-1*(e.delta//120), "units")))
+        self._npc_canvas.bind(
+            "<Leave>",
+            lambda _: self._npc_canvas.unbind_all("<MouseWheel>"))
+
+        f = self._npc_inner
+        PAD = (10, 4)
+        row = 0
+
+        # ── 基本信息 ──────────────────────────────────────────────────────
+        hf = tk.Frame(f, bg=BG_MAIN)
+        hf.grid(row=row, column=0, columnspan=3, sticky="ew",
+                padx=12, pady=(14, 4))
+        _lbl(hf, "ID", bg=BG_MAIN).pack(side="left")
+        self.npc_id_entry = ttk.Entry(hf, width=20)
+        self.npc_id_entry.pack(side="left", padx=(4, 16))
+        ttk.Button(hf, text="💾 保存",
+                   command=self._npc_save).pack(side="left")
+        row += 1
+
+        _sep(f, row=row, col=0, cols=3); row += 1
+        for lbl_txt, attr in [("名字", "npc_name_entry"),
+                               ("称号", "npc_title_entry")]:
+            _lbl(f, lbl_txt).grid(row=row, column=0, sticky="e",
+                                   padx=PAD, pady=3)
+            e = ttk.Entry(f, width=32)
+            e.grid(row=row, column=1, columnspan=2, sticky="ew",
+                   pady=3, padx=(0, 12))
+            setattr(self, attr, e)
+            row += 1
+
+        _lbl(f, "角色").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
+        self.npc_role = ttk.Combobox(
+            f, values=self.NPC_ROLE_LABELS, width=12, state="readonly")
+        self.npc_role.grid(row=row, column=1, sticky="w", pady=3)
+        row += 1
+
+        _lbl(f, "性别").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
+        self.npc_gender = ttk.Combobox(
+            f, values=["", "男", "女", "未知"], width=8, state="readonly")
+        self.npc_gender.grid(row=row, column=1, sticky="w", pady=3)
+        row += 1
+
+        # ── 描述 ──────────────────────────────────────────────────────────
+        _sep(f, row=row, col=0, cols=3); row += 1
+        _lbl(f, "描述").grid(row=row, column=0, sticky="ne", padx=PAD, pady=3)
+        self.npc_desc = tk.Text(
+            f, width=38, height=3, wrap="word", bg=BG_CARD,
+            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
+            highlightthickness=1, highlightcolor=ACCENT,
+            highlightbackground=BORDER)
+        self.npc_desc.grid(row=row, column=1, columnspan=2, sticky="ew",
+                           pady=3, padx=(0, 12))
+        row += 1
+
+        # ── 训练师区域（可折叠） ──────────────────────────────────────────
+        _sep(f, row=row, col=0, cols=3); row += 1
+
+        self._npc_is_trainer_var = tk.BooleanVar(value=False)
+        trainer_chk = tk.Checkbutton(
+            f, text="  此角色为训练师（可对战）", variable=self._npc_is_trainer_var,
+            bg=BG_MAIN, fg=TEXT_PRI, font=(FONT_CJK, 10, "bold"),
+            activebackground=BG_MAIN, selectcolor=BG_CARD,
+            command=self._npc_toggle_trainer)
+        trainer_chk.grid(row=row, column=0, columnspan=3, sticky="w",
+                         padx=12, pady=(4, 2))
+        row += 1
+
+        self._trainer_frame = tk.Frame(f, bg=BG_MAIN)
+        self._trainer_frame.grid(row=row, column=0, columnspan=3,
+                                  sticky="ew", padx=12)
+        self._trainer_frame_row = row
+        row += 1
+
+        # Build trainer sub-fields inside _trainer_frame
+        tf = self._trainer_frame
+        tr = 0
+        for lbl_txt, attr in [("训练师身份", "npc_trainer_class"),
+                               ("击败赏金",  "npc_trainer_reward"),
+                               ("挑战台词",  "npc_trainer_dialog_before"),
+                               ("败北台词",  "npc_trainer_dialog_win")]:
+            _lbl(tf, lbl_txt).grid(row=tr, column=0, sticky="e",
+                                    padx=PAD, pady=3)
+            if lbl_txt == "训练师身份":
+                e = ttk.Combobox(tf, values=TRAINER_CLASSES, width=16, state="readonly")
+            else:
+                e = ttk.Entry(tf, width=32)
+            e.grid(row=tr, column=1, columnspan=2, sticky="ew", pady=3, padx=(0, 4))
+            setattr(self, attr, e)
+            tr += 1
+
+        _lbl(tf, "队伍精灵", bold=True, size=9).grid(
+            row=tr, column=0, columnspan=3, sticky="w", pady=(6, 2))
+        tr += 1
+
+        self.npc_team_tree = ttk.Treeview(
+            tf, columns=("species", "level"), show="headings",
+            height=6, selectmode="browse")
+        self.npc_team_tree.heading("species", text="精灵")
+        self.npc_team_tree.heading("level",   text="等级")
+        self.npc_team_tree.column("species", width=180, anchor="w")
+        self.npc_team_tree.column("level",   width=60,  anchor="center")
+        t_sb = ttk.Scrollbar(tf, orient="vertical", command=self.npc_team_tree.yview)
+        self.npc_team_tree.configure(yscrollcommand=t_sb.set)
+        self.npc_team_tree.grid(row=tr, column=0, columnspan=2,
+                                sticky="ew", pady=3)
+        t_sb.grid(row=tr, column=2, sticky="ns", padx=(0, 4))
+        tr += 1
+
+        self.npc_team_tree.bind("<<TreeviewSelect>>", self._npc_mon_preview)
+
+        tb = tk.Frame(tf, bg=BG_MAIN)
+        tb.grid(row=tr, column=0, columnspan=3, sticky="w", pady=4)
+        ttk.Button(tb, text="+ 添加精灵",
+                   command=self._npc_team_add).pack(side="left", padx=(0, 6))
+        ttk.Button(tb, text="× 移除",
+                   command=self._npc_team_remove).pack(side="left")
+
+        # Initially hide trainer frame
+        self._trainer_frame.grid_remove()
+
+        # ── Right panel: sprite preview + mon preview ─────────────────────
+        tk.Frame(split, bg=BORDER, width=1).pack(side="left", fill="y")
+        rp = tk.Frame(split, bg=BG_SIDE, width=320)
+        rp.pack(side="right", fill="both")
+        rp.pack_propagate(False)
+
+        # -- NPC sprite preview (auto-detect by name) --
+        sp_card = tk.Frame(rp, bg=BG_CARD)
+        sp_card.pack(fill="x", padx=8, pady=(8, 4))
+
+        _lbl(sp_card, "人物预览", bg=BG_CARD, bold=True).pack(
+            anchor="w", padx=10, pady=(8, 4))
+
+        sp_imgs = tk.Frame(sp_card, bg=BG_CARD)
+        sp_imgs.pack(fill="x", padx=10, pady=(0, 8))
+
+        front_col = tk.Frame(sp_imgs, bg=BG_CARD)
+        front_col.pack(side="left", expand=True)
+        self._npc_front_lbl = tk.Label(
+            front_col, bg=BG_CARD, width=120, height=120,
+            text="暂无", fg=TEXT_SEC, font=(FONT_CJK, 8))
+        self._npc_front_lbl.pack()
+        _lbl(front_col, "正面", bg=BG_CARD, fg=TEXT_SEC).pack()
+
+        back_col = tk.Frame(sp_imgs, bg=BG_CARD)
+        back_col.pack(side="left", expand=True)
+        self._npc_back_lbl = tk.Label(
+            back_col, bg=BG_CARD, width=120, height=120,
+            text="暂无", fg=TEXT_SEC, font=(FONT_CJK, 8))
+        self._npc_back_lbl.pack()
+        _lbl(back_col, "背面", bg=BG_CARD, fg=TEXT_SEC).pack()
+
+        self._npc_preview_name = tk.Label(
+            sp_card, bg=BG_CARD, text="", fg=TEXT_PRI,
+            font=(FONT_CJK, 11, "bold"), wraplength=280)
+        self._npc_preview_name.pack(padx=10)
+        self._npc_preview_title = tk.Label(
+            sp_card, bg=BG_CARD, text="", fg=TEXT_SEC,
+            font=(FONT_CJK, 9), wraplength=280)
+        self._npc_preview_title.pack(padx=10, pady=(0, 8))
+
+        self._npc_photo_front = None
+        self._npc_photo_back  = None
+
+        # -- Mon preview (when trainer team member selected) --
+        tk.Frame(rp, bg=BORDER, height=1).pack(fill="x", padx=8, pady=2)
+        _lbl(rp, "选中精灵预览", bg=BG_SIDE, bold=True).pack(
+            anchor="w", padx=14, pady=(6, 2))
+
+        self._np_sprite_lbl = tk.Label(
+            rp, bg=BG_SIDE, width=80, height=80,
             text="—", fg=TEXT_SEC, font=(FONT_CJK, 9))
-        self._tp_sprite_lbl.pack()
-        self._tp_name_lbl = tk.Label(
-            self._trainer_preview, bg=BG_SIDE, fg=TEXT_PRI,
+        self._np_sprite_lbl.pack()
+        self._np_name_lbl = tk.Label(
+            rp, bg=BG_SIDE, fg=TEXT_PRI,
             font=(FONT_CJK, 10, "bold"), text="")
-        self._tp_name_lbl.pack(pady=(2, 0))
-        self._tp_type_lbl = tk.Label(
-            self._trainer_preview, bg=BG_SIDE, fg=TEXT_SEC,
+        self._np_name_lbl.pack(pady=(2, 0))
+        self._np_type_lbl = tk.Label(
+            rp, bg=BG_SIDE, fg=TEXT_SEC,
             font=(FONT_CJK, 8), text="")
-        self._tp_type_lbl.pack()
+        self._np_type_lbl.pack()
+
         # stat bars
-        self._tp_stat_frame = tk.Frame(self._trainer_preview, bg=BG_SIDE)
-        self._tp_stat_frame.pack(fill="x", padx=10, pady=(4, 0))
-        self._tp_stat_bars = {}
-        self._tp_stat_vals = {}
+        self._np_stat_frame = tk.Frame(rp, bg=BG_SIDE)
+        self._np_stat_frame.pack(fill="x", padx=14, pady=(4, 0))
+        self._np_stat_bars = {}
+        self._np_stat_vals = {}
         for slbl, skey in STAT_LABELS:
-            rf = tk.Frame(self._tp_stat_frame, bg=BG_SIDE)
+            rf = tk.Frame(self._np_stat_frame, bg=BG_SIDE)
             rf.pack(fill="x", pady=1)
             tk.Label(rf, text=slbl[:2], width=2, anchor="e",
                      bg=BG_SIDE, fg=TEXT_SEC,
@@ -2370,235 +2562,326 @@ class App:
             c = tk.Canvas(rf, width=120, height=6,
                           bg=BG_SIDE, highlightthickness=0)
             c.pack(side="left")
-            self._tp_stat_bars[skey] = c
-            self._tp_stat_vals[skey] = vl
-        self._tp_bst_lbl = tk.Label(
-            self._trainer_preview, bg=BG_SIDE, fg=TEXT_SEC,
+            self._np_stat_bars[skey] = c
+            self._np_stat_vals[skey] = vl
+        self._np_bst_lbl = tk.Label(
+            rp, bg=BG_SIDE, fg=TEXT_SEC,
             font=(FONT_CJK, 8), text="")
-        self._tp_bst_lbl.pack(pady=(2, 4))
-        # learnset
-        tk.Frame(self._trainer_preview, bg=BORDER, height=1).pack(
-            fill="x", padx=10, pady=4)
-        _lbl(self._trainer_preview, "技能池", bg=BG_SIDE, bold=True).pack(
-            anchor="w", padx=10)
-        tp_ls_f = tk.Frame(self._trainer_preview, bg=BG_SIDE)
-        tp_ls_f.pack(fill="both", expand=True, padx=10, pady=4)
-        self._tp_ls_tree = ttk.Treeview(
-            tp_ls_f, columns=("lv", "name", "type"), show="headings",
-            selectmode="none")
-        self._tp_ls_tree.heading("lv",   text="等级")
-        self._tp_ls_tree.heading("name", text="招式")
-        self._tp_ls_tree.heading("type", text="属性")
-        self._tp_ls_tree.column("lv",   width=30, anchor="center")
-        self._tp_ls_tree.column("name", width=100, anchor="w")
-        self._tp_ls_tree.column("type", width=36, anchor="center")
-        tp_ls_sb = ttk.Scrollbar(tp_ls_f, orient="vertical",
-                                  command=self._tp_ls_tree.yview)
-        self._tp_ls_tree.configure(yscrollcommand=tp_ls_sb.set)
-        tp_ls_sb.pack(side="right", fill="y")
-        self._tp_ls_tree.pack(side="left", fill="both", expand=True)
-        self._tp_photo = None
+        self._np_bst_lbl.pack(pady=(2, 4))
+        self._np_photo = None
 
-        f   = self._trainer_inner
-        row = 0
-        PAD = (10, 4)
+        self._npc_refresh_list()
 
-        hf = tk.Frame(f, bg=BG_MAIN)
-        hf.grid(row=row, column=0, columnspan=3, sticky="ew",
-                padx=12, pady=(14, 4))
-        _lbl(hf, "ID", bg=BG_MAIN).pack(side="left")
-        self.trainer_id_entry = ttk.Entry(hf, width=20)
-        self.trainer_id_entry.pack(side="left", padx=(4, 16))
-        ttk.Button(hf, text="💾 保存",
-                   command=self._trainer_save).pack(side="left")
-        row += 1
+    # ── NPC helpers ───────────────────────────────────────────────────────
 
-        _sep(f, row=row, col=0, cols=3); row += 1
-        for lbl_txt, attr in [("名字",    "trainer_name_entry"),
-                               ("击败赏金", "trainer_reward"),
-                               ("挑战台词", "trainer_dialog_before"),
-                               ("败北台词", "trainer_dialog_win")]:
-            _lbl(f, lbl_txt).grid(row=row, column=0, sticky="e",
-                                   padx=PAD, pady=3)
-            e = ttk.Entry(f, width=32)
-            e.grid(row=row, column=1, columnspan=2, sticky="ew",
-                   pady=3, padx=(0, 12))
-            setattr(self, attr, e)
-            row += 1
+    def _npc_toggle_trainer(self):
+        if self._npc_is_trainer_var.get():
+            self._trainer_frame.grid()
+        else:
+            self._trainer_frame.grid_remove()
 
-        _lbl(f, "性别").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
-        self.trainer_gender = ttk.Combobox(
-            f, values=TRAINER_GENDERS, width=8, state="readonly")
-        self.trainer_gender.grid(row=row, column=1, sticky="w", pady=3)
-        row += 1
+    def _npc_show_form(self):
+        self._npc_placeholder.pack_forget()
+        self._npc_right.pack(side="right", fill="both", expand=True)
 
-        _lbl(f, "身份").grid(row=row, column=0, sticky="e", padx=PAD, pady=3)
-        self.trainer_class = ttk.Combobox(
-            f, values=TRAINER_CLASSES, width=16, state="readonly")
-        self.trainer_class.grid(row=row, column=1, sticky="w", pady=3)
-        row += 1
-
-        _sep(f, row=row, col=0, cols=3); row += 1
-        _lbl(f, "队伍精灵", bold=True, size=9).grid(
-            row=row, column=0, columnspan=3, sticky="w", padx=12, pady=(0, 4))
-        row += 1
-
-        self.team_tree = ttk.Treeview(
-            f, columns=("species", "level"), show="headings",
-            height=6, selectmode="browse")
-        self.team_tree.heading("species", text="精灵")
-        self.team_tree.heading("level",   text="等级")
-        self.team_tree.column("species", width=180, anchor="w")
-        self.team_tree.column("level",   width=60,  anchor="center")
-        t_sb = ttk.Scrollbar(f, orient="vertical", command=self.team_tree.yview)
-        self.team_tree.configure(yscrollcommand=t_sb.set)
-        self.team_tree.grid(row=row, column=0, columnspan=2,
-                            sticky="ew", padx=12, pady=3)
-        t_sb.grid(row=row, column=2, sticky="ns", padx=(0, 12))
-        row += 1
-
-        self.team_tree.bind("<<TreeviewSelect>>", self._trainer_mon_preview)
-
-        tb = tk.Frame(f, bg=BG_MAIN)
-        tb.grid(row=row, column=0, columnspan=3, sticky="w", padx=12, pady=4)
-        ttk.Button(tb, text="+ 添加精灵",
-                   command=self._team_add).pack(side="left", padx=(0, 6))
-        ttk.Button(tb, text="× 移除",
-                   command=self._team_remove).pack(side="left")
-        row += 1
-
-        self._trainer_refresh_list()
-
-    def _trainer_show_form(self):
-        self._trainer_placeholder.pack_forget()
-        self._trainer_form_frame.pack(
-            side="right", fill="both", expand=True)
-
-    def _trainer_refresh_list(self):
-        q = self.trainer_search.get().lower()
-        self.trainer_list.delete(0, "end")
-        for tid, td in sorted(self.trainers.items(),
+    def _npc_refresh_list(self):
+        q = self.npc_search.get().lower()
+        filt = self.npc_filter_role.get() if hasattr(self, 'npc_filter_role') else "全部"
+        self.npc_list.delete(0, "end")
+        for nid, nd in sorted(self.npcs.items(),
                                key=lambda x: x[1].get("name", x[0])):
-            name = td.get("name", tid)
-            if not q or q in name.lower() or q in tid.lower():
-                self.trainer_list.insert("end", f"{name}  [{tid}]")
+            name = nd.get("name", nid)
+            role_key = nd.get("role", "")
+            is_trainer = "trainer" in nd
 
-    def _trainer_get_id(self, display):
+            # Filter
+            if filt == "训练师" and not is_trainer:
+                continue
+            if filt == "非训练师" and is_trainer:
+                continue
+            if filt not in ("全部", "训练师", "非训练师"):
+                filt_key = self.NPC_ROLE_LABEL2KEY.get(filt, filt)
+                if role_key != filt_key:
+                    continue
+
+            if q and q not in nid.lower() and q not in name.lower():
+                continue
+
+            tag = "⚔" if is_trainer else " "
+            role_label = self.NPC_ROLE_KEY2LABEL.get(role_key, role_key)
+            self.npc_list.insert("end", f"{tag} {name}  [{nid}]")
+
+    def _npc_get_id(self, display):
         if "[" in display and display.endswith("]"):
             return display.rsplit("[", 1)[1][:-1]
-        return display
+        return display.strip()
 
-    def _trainer_select(self, _=None):
-        sel = self.trainer_list.curselection()
-        if not sel: return
-        self._trainer_load(self._trainer_get_id(
-            self.trainer_list.get(sel[0])))
+    def _npc_select(self, _=None):
+        sel = self.npc_list.curselection()
+        if not sel:
+            return
+        self._npc_load(self._npc_get_id(self.npc_list.get(sel[0])))
 
-    def _trainer_load(self, tid):
-        self._trainer_show_form()
-        d = self.trainers[tid]
-        self._current_trainer = tid
+    def _npc_load(self, nid):
+        self._npc_show_form()
+        d = self.npcs[nid]
+        self._current_npc = nid
 
-        self.trainer_id_entry.delete(0, "end")
-        self.trainer_id_entry.insert(0, tid)
-        self.trainer_name_entry.delete(0, "end")
-        self.trainer_name_entry.insert(0, d.get("name", ""))
-        self.trainer_gender.set(d.get("gender", "男"))
-        self.trainer_class.set(d.get("class", "普通训练师"))
-        self.trainer_reward.delete(0, "end")
-        self.trainer_reward.insert(0, str(d.get("reward", 0)))
-        self.trainer_dialog_before.delete(0, "end")
-        self.trainer_dialog_before.insert(0, d.get("dialog_before", ""))
-        self.trainer_dialog_win.delete(0, "end")
-        self.trainer_dialog_win.insert(0, d.get("dialog_win", ""))
+        self.npc_id_entry.delete(0, "end")
+        self.npc_id_entry.insert(0, nid)
+        self.npc_name_entry.delete(0, "end")
+        self.npc_name_entry.insert(0, d.get("name", ""))
+        self.npc_title_entry.delete(0, "end")
+        self.npc_title_entry.insert(0, d.get("title", "") or "")
+        self.npc_role.set(self.NPC_ROLE_KEY2LABEL.get(d.get("role", ""), d.get("role", "")))
+        self.npc_gender.set(d.get("gender", ""))
+        self.npc_desc.delete("1.0", "end")
+        self.npc_desc.insert("1.0", d.get("desc", ""))
 
-        self.team_tree.delete(*self.team_tree.get_children())
-        for mem in d.get("team", []):
-            self.team_tree.insert("", "end", values=(
-                mem.get("species", ""), mem.get("level", 1)))
+        # Trainer section
+        trainer = d.get("trainer")
+        if trainer:
+            self._npc_is_trainer_var.set(True)
+            self._trainer_frame.grid()
+            self.npc_trainer_class.set(trainer.get("class", "普通训练师"))
+            self.npc_trainer_reward.delete(0, "end")
+            self.npc_trainer_reward.insert(0, str(trainer.get("reward", 0)))
+            self.npc_trainer_dialog_before.delete(0, "end")
+            self.npc_trainer_dialog_before.insert(0, trainer.get("dialog_before", ""))
+            self.npc_trainer_dialog_win.delete(0, "end")
+            self.npc_trainer_dialog_win.insert(0, trainer.get("dialog_win", ""))
+            self.npc_team_tree.delete(*self.npc_team_tree.get_children())
+            for mem in trainer.get("team", []):
+                self.npc_team_tree.insert("", "end", values=(
+                    mem.get("species", ""), mem.get("level", 1)))
+        else:
+            self._npc_is_trainer_var.set(False)
+            self._trainer_frame.grid_remove()
+            self.npc_team_tree.delete(*self.npc_team_tree.get_children())
 
-    def _trainer_save(self):
-        old_id = self._current_trainer
-        new_id = self.trainer_id_entry.get().strip()
-        name   = self.trainer_name_entry.get().strip()
+        # Auto-detect sprites
+        self._npc_load_sprites(d.get("name", nid))
+        # Clear mon preview
+        self._npc_clear_mon_preview()
+
+    def _npc_load_sprites(self, name):
+        """Auto-detect front/back sprites by NPC name in assets/npc/"""
+        self._npc_preview_name.config(text=name)
+        title = ""
+        if self._current_npc:
+            d = self.npcs.get(self._current_npc, {})
+            title = d.get("title", "") or ""
+            role_key = d.get("role", "")
+            role_label = self.NPC_ROLE_KEY2LABEL.get(role_key, role_key)
+            if role_label and not title:
+                title = role_label
+        self._npc_preview_title.config(text=title)
+
+        self._npc_photo_front = None
+        self._npc_photo_back  = None
+        if not HAS_PIL:
+            return
+        for suffix, lbl, attr in [
+            ("front", self._npc_front_lbl, "_npc_photo_front"),
+            ("back",  self._npc_back_lbl,  "_npc_photo_back"),
+        ]:
+            path = None
+            for ext in (".png", ".jpg", ".jpeg"):
+                p = os.path.join(self._npc_sprite_dir, f"{name}{suffix}{ext}")
+                if os.path.exists(p):
+                    path = p
+                    break
+            if path:
+                try:
+                    img = Image.open(path).convert("RGBA")
+                    img.thumbnail((120, 120), Image.LANCZOS)
+                    photo = ImageTk.PhotoImage(img)
+                    lbl.configure(image=photo, text="")
+                    setattr(self, attr, photo)
+                except Exception:
+                    lbl.configure(image="", text="加载失败")
+            else:
+                lbl.configure(image="", text="暂无")
+
+    def _npc_clear_mon_preview(self):
+        self._np_name_lbl.config(text="")
+        self._np_type_lbl.config(text="")
+        self._np_bst_lbl.config(text="")
+        self._np_sprite_lbl.config(image="", text="—")
+        self._np_photo = None
+        for skey in self._np_stat_bars:
+            self._np_stat_bars[skey].delete("all")
+            self._np_stat_vals[skey].config(text="0")
+
+    def _npc_mon_preview(self, _=None):
+        sel = self.npc_team_tree.selection()
+        if not sel:
+            return
+        vals = self.npc_team_tree.item(sel[0], "values")
+        sp_name = vals[0] if vals else ""
+        d = self.species.get(sp_name)
+        if not d:
+            self._np_name_lbl.config(text="（未知精灵）")
+            self._np_type_lbl.config(text="")
+            self._np_bst_lbl.config(text="")
+            self._np_sprite_lbl.config(image="", text="—")
+            self._np_photo = None
+            for skey in self._np_stat_bars:
+                self._np_stat_bars[skey].delete("all")
+                self._np_stat_vals[skey].config(text="0")
+            return
+
+        t1 = d.get("type1", ""); t2 = d.get("type2", "")
+        self._np_name_lbl.config(text=sp_name)
+        self._np_type_lbl.config(
+            text=f"{t1}{'/' + t2 if t2 else ''}  Lv.{vals[1] if len(vals) > 1 else '?'}")
+
+        base = d.get("base", {})
+        total = 0
+        for _, skey in STAT_LABELS:
+            v = base.get(skey, 0); total += v
+            c = self._np_stat_bars[skey]
+            c.delete("all")
+            bar_w = max(1, int(min(v, BAR_MAX) / BAR_MAX * 120))
+            c.create_rectangle(0, 0, 120, 6, fill="#E5E5EA", outline="")
+            c.create_rectangle(0, 0, bar_w, 6, fill=STAT_COLORS[skey], outline="")
+            self._np_stat_vals[skey].config(text=str(v))
+        self._np_bst_lbl.config(text=f"BST {total}")
+
+        # sprite
+        self._np_photo = None
+        self._np_sprite_lbl.config(image="", text="无图片")
+        if HAS_PIL:
+            path = None
+            for ext in (".png", ".jpg", ".jpeg"):
+                p = os.path.join(SPRITES_DIR, f"{sp_name}front{ext}")
+                if os.path.exists(p):
+                    path = p
+                    break
+            if path:
+                try:
+                    img = Image.open(path).convert("RGBA")
+                    img.thumbnail((80, 80), Image.LANCZOS)
+                    self._np_photo = ImageTk.PhotoImage(img)
+                    self._np_sprite_lbl.config(
+                        image=self._np_photo, text="")
+                except Exception:
+                    pass
+
+    def _npc_save(self):
+        old_id = self._current_npc
+        new_id = self.npc_id_entry.get().strip()
+        name   = self.npc_name_entry.get().strip()
         if not new_id:
             messagebox.showerror("错误", "ID 不能为空"); return
         if not name:
             messagebox.showerror("错误", "名字不能为空"); return
 
-        team = [
-            {"species": self.team_tree.item(iid, "values")[0],
-             "level":   _int(self.team_tree.item(iid, "values")[1])}
-            for iid in self.team_tree.get_children()
-        ]
-
-        # 写回 npcs.json
-        npc_id = self._trainer_npc_map.get(old_id, old_id)
-        npc = self.npcs.get(npc_id, {})
-        npc["name"] = name
-        npc["gender"] = self.trainer_gender.get()
-        npc["trainer"] = {
-            "trainer_id":    new_id,
-            "class":         self.trainer_class.get(),
-            "reward":        _int(self.trainer_reward.get()),
-            "dialog_before": self.trainer_dialog_before.get().strip(),
-            "dialog_win":    self.trainer_dialog_win.get().strip(),
-            "team":          team,
+        d = {
+            "id":     new_id,
+            "name":   name,
+            "title":  self.npc_title_entry.get().strip() or None,
+            "role":   self.NPC_ROLE_LABEL2KEY.get(self.npc_role.get(), self.npc_role.get()),
+            "gender": self.npc_gender.get(),
+            "desc":   self.npc_desc.get("1.0", "end-1c").strip(),
         }
-        # 处理 trainer_id 变更
+
+        # Preserve sprite fields from old data (auto-detect, no manual editing)
+        old_npc = self.npcs.get(old_id, {})
+        for sp_key in ("sprite_walk", "sprite_front", "sprite_back", "sprite_static"):
+            if sp_key in old_npc:
+                d[sp_key] = old_npc[sp_key]
+
+        # Trainer data
+        if self._npc_is_trainer_var.get():
+            team = [
+                {"species": self.npc_team_tree.item(iid, "values")[0],
+                 "level":   _int(self.npc_team_tree.item(iid, "values")[1])}
+                for iid in self.npc_team_tree.get_children()
+            ]
+            # Preserve extra trainer fields (gym, etc.)
+            old_trainer = old_npc.get("trainer", {})
+            trainer_data = {
+                "trainer_id":    new_id,
+                "class":         self.npc_trainer_class.get(),
+                "reward":        _int(self.npc_trainer_reward.get()),
+                "dialog_before": self.npc_trainer_dialog_before.get().strip(),
+                "dialog_win":    self.npc_trainer_dialog_win.get().strip(),
+                "team":          team,
+            }
+            for extra_key in ("gym",):
+                if extra_key in old_trainer:
+                    trainer_data[extra_key] = old_trainer[extra_key]
+            d["trainer"] = trainer_data
+        else:
+            # Remove trainer data if unchecked
+            pass
+
         if old_id and old_id != new_id:
-            if npc_id in self.npcs:
-                self.npcs[npc_id]["trainer"]["trainer_id"] = new_id
-        if npc_id not in self.npcs:
-            npc["id"] = npc_id
-            npc.setdefault("role", "trainer")
-            self.npcs[npc_id] = npc
+            if old_id in self.npcs:
+                del self.npcs[old_id]
+        self.npcs[new_id] = d
         save_json(NPCS_FILE, self.npcs)
-        self._rebuild_trainers()
-        self._current_trainer = new_id
-        self._trainer_refresh_list()
+        self._current_npc = new_id
+        self._npc_refresh_list()
         self._update_status()
         messagebox.showinfo("", "已保存 ✓")
 
-    def _trainer_add(self):
-        tid = "new_trainer"; i = 1
-        while tid in self.trainers or tid in self.npcs:
-            i += 1; tid = f"new_trainer_{i}"
-        self.npcs[tid] = {
-            "id": tid, "name": "新训练师", "role": "trainer",
+    def _npc_add(self):
+        nid = "new_npc"; i = 1
+        while nid in self.npcs:
+            i += 1; nid = f"new_npc_{i}"
+        self.npcs[nid] = {
+            "id": nid, "name": "新NPC", "title": "", "role": "npc",
+            "gender": "男", "desc": "",
+        }
+        save_json(NPCS_FILE, self.npcs)
+        self._npc_refresh_list()
+        for i in range(self.npc_list.size()):
+            if self._npc_get_id(self.npc_list.get(i)) == nid:
+                self.npc_list.selection_clear(0, "end")
+                self.npc_list.selection_set(i)
+                self.npc_list.see(i)
+                self._npc_load(nid)
+                break
+
+    def _npc_add_trainer(self):
+        nid = "new_trainer"; i = 1
+        while nid in self.npcs:
+            i += 1; nid = f"new_trainer_{i}"
+        self.npcs[nid] = {
+            "id": nid, "name": "新训练师", "role": "trainer",
             "gender": "男", "desc": "",
             "trainer": {
-                "trainer_id": tid, "class": "普通训练师", "reward": 100,
+                "trainer_id": nid, "class": "普通训练师", "reward": 100,
                 "dialog_before": "", "dialog_win": "", "team": [],
             },
         }
-        self._rebuild_trainers()
-        self._trainer_refresh_list()
-        for i in range(self.trainer_list.size()):
-            if self._trainer_get_id(self.trainer_list.get(i)) == tid:
-                self.trainer_list.selection_clear(0, "end")
-                self.trainer_list.selection_set(i)
-                self.trainer_list.see(i)
-                self._trainer_load(tid)
+        save_json(NPCS_FILE, self.npcs)
+        self._npc_refresh_list()
+        for i in range(self.npc_list.size()):
+            if self._npc_get_id(self.npc_list.get(i)) == nid:
+                self.npc_list.selection_clear(0, "end")
+                self.npc_list.selection_set(i)
+                self.npc_list.see(i)
+                self._npc_load(nid)
                 break
 
-    def _trainer_delete(self):
-        if not self._current_trainer: return
-        td  = self.trainers[self._current_trainer]
-        if not messagebox.askyesno(
-                "确认", f"删除「{td.get('name', self._current_trainer)}」的训练师数据?"): return
-        npc_id = self._trainer_npc_map.get(self._current_trainer)
-        if npc_id and npc_id in self.npcs:
-            del self.npcs[npc_id]["trainer"]
+    def _npc_delete(self):
+        if not self._current_npc:
+            return
+        nd = self.npcs[self._current_npc]
+        if not messagebox.askyesno("确认", f"删除「{nd.get('name', self._current_npc)}」?"):
+            return
+        del self.npcs[self._current_npc]
         save_json(NPCS_FILE, self.npcs)
-        self._rebuild_trainers()
-        self._current_trainer = None
-        self._trainer_refresh_list()
+        self._current_npc = None
+        self._npc_refresh_list()
         self._update_status()
-        self._trainer_form_frame.pack_forget()
-        self._trainer_placeholder.pack(side="right", fill="both", expand=True)
+        self._npc_right.pack_forget()
+        self._npc_placeholder.pack(side="right", fill="both", expand=True)
 
-    def _team_add(self):
+    def _npc_team_add(self):
         dlg = tk.Toplevel(self.root)
         dlg.title("添加队伍精灵")
         self._center_dialog(dlg, 360, 130)
@@ -2621,81 +2904,18 @@ class App:
         def ok():
             sp = cb.get(); lv = lv_var.get()
             if sp and lv.isdigit():
-                self.team_tree.insert("", "end", values=(sp, int(lv)))
+                self.npc_team_tree.insert("", "end", values=(sp, int(lv)))
                 dlg.destroy()
             else:
-                messagebox.showwarning("", "请选择精灵和等级", parent=dlg)
-
-        bf = ttk.Frame(dlg)
+                messagebox.showwarning("", "请填写完整", parent=dlg)
+        bf = tk.Frame(dlg)
         bf.grid(row=2, column=0, columnspan=2, pady=10)
         ttk.Button(bf, text="确定", command=ok).pack(side="left", padx=6)
         ttk.Button(bf, text="取消", command=dlg.destroy).pack(side="left", padx=6)
 
-    def _team_remove(self):
-        sel = self.team_tree.selection()
-        if sel: self.team_tree.delete(sel[0])
-
-    def _trainer_mon_preview(self, _=None):
-        sel = self.team_tree.selection()
-        if not sel:
-            return
-        vals = self.team_tree.item(sel[0], "values")
-        sp_name = vals[0] if vals else ""
-        d = self.species.get(sp_name)
-        if not d:
-            self._tp_name_lbl.config(text="（未知精灵）")
-            self._tp_type_lbl.config(text="")
-            self._tp_bst_lbl.config(text="")
-            self._tp_sprite_lbl.config(image="", text="—")
-            self._tp_photo = None
-            for skey in self._tp_stat_bars:
-                self._tp_stat_bars[skey].delete("all")
-                self._tp_stat_vals[skey].config(text="0")
-            self._tp_ls_tree.delete(*self._tp_ls_tree.get_children())
-            return
-
-        t1 = d.get("type1", ""); t2 = d.get("type2", "")
-        self._tp_name_lbl.config(text=sp_name)
-        self._tp_type_lbl.config(
-            text=f"{t1}{'/' + t2 if t2 else ''}  Lv.{vals[1] if len(vals) > 1 else '?'}")
-
-        base = d.get("base", {})
-        total = 0
-        for _, skey in STAT_LABELS:
-            v = base.get(skey, 0); total += v
-            c = self._tp_stat_bars[skey]
-            c.delete("all")
-            bar_w = max(1, int(min(v, BAR_MAX) / BAR_MAX * 120))
-            c.create_rectangle(0, 0, 120, 6, fill="#E5E5EA", outline="")
-            c.create_rectangle(0, 0, bar_w, 6, fill=STAT_COLORS[skey], outline="")
-            self._tp_stat_vals[skey].config(text=str(v))
-        self._tp_bst_lbl.config(text=f"BST {total}")
-
-        # learnset
-        self._tp_ls_tree.delete(*self._tp_ls_tree.get_children())
-        ls_flat = []
-        for lv_str, skills in d.get("learnset", {}).items():
-            for s in skills:
-                ls_flat.append((int(lv_str), s))
-        ls_flat.sort()
-        for lv, mv in ls_flat:
-            mt = self.moves.get(mv, {}).get("type", "?")
-            self._tp_ls_tree.insert("", "end", values=(lv, mv, mt))
-
-        # sprite
-        self._tp_photo = None
-        self._tp_sprite_lbl.config(image="", text="无图片")
-        if HAS_PIL:
-            path = os.path.join(SPRITES_DIR, f"{sp_name}front.png")
-            if os.path.exists(path):
-                try:
-                    img = Image.open(path).convert("RGBA")
-                    img.thumbnail((100, 100), Image.LANCZOS)
-                    self._tp_photo = ImageTk.PhotoImage(img)
-                    self._tp_sprite_lbl.config(
-                        image=self._tp_photo, text="")
-                except Exception:
-                    pass
+    def _npc_team_remove(self):
+        sel = self.npc_team_tree.selection()
+        if sel: self.npc_team_tree.delete(sel[0])
 
     # ── 剧情文本 Tab ────────────────────────────────────────────────────────────
     def _build_dialog_tab(self):
@@ -3360,312 +3580,6 @@ class App:
             self._ability_placeholder.pack(fill="both", expand=True)
             self._mon_refresh_ability_choices()
             self._update_status()
-
-    # ══════════════════════════════════════════════════════════════════════════
-    #  NPC编辑 TAB（260702）
-    # ══════════════════════════════════════════════════════════════════════════
-
-    NPC_ROLES = [
-        "", "professor", "rival", "npc", "family", "villager",
-        "gym_leader", "elite_four", "villain",
-    ]
-
-    def _build_npc_tab(self):
-        left = tk.Frame(self.npc_tab, bg=BG_SIDE, width=230)
-        left.pack(side="left", fill="y")
-        left.pack_propagate(False)
-
-        _lbl(left, "NPC列表", bg=BG_SIDE, bold=True).pack(
-            anchor="w", padx=12, pady=(12, 2))
-        self.npc_search = ttk.Entry(left)
-        self.npc_search.pack(fill="x", padx=10)
-        self.npc_search.bind("<KeyRelease>",
-                             lambda _: self._npc_refresh_list())
-
-        lf = tk.Frame(left, bg=BG_SIDE)
-        lf.pack(fill="both", expand=True, padx=10, pady=(6, 4))
-        sb = ttk.Scrollbar(lf, orient="vertical")
-        self.npc_list = tk.Listbox(
-            lf, yscrollcommand=sb.set, font=(FONT_CJK, 10),
-            bg=BG_CARD, fg=TEXT_PRI,
-            selectbackground=ACCENT, selectforeground="white",
-            borderwidth=0, highlightthickness=0, relief="flat",
-            activestyle="none")
-        sb.config(command=self.npc_list.yview)
-        sb.pack(side="right", fill="y")
-        self.npc_list.pack(side="left", fill="both", expand=True)
-        self.npc_list.bind("<<ListboxSelect>>", self._npc_select)
-
-        bf = tk.Frame(left, bg=BG_SIDE)
-        bf.pack(fill="x", padx=10, pady=(0, 12))
-        ttk.Button(bf, text="+ 新增",
-                   command=self._npc_add).pack(side="left", padx=(0, 4))
-        ttk.Button(bf, text="× 删除",
-                   command=self._npc_delete).pack(side="left")
-
-        self._npc_placeholder = tk.Label(
-            self.npc_tab, text="← 选择一个NPC开始编辑",
-            bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
-        self._npc_placeholder.pack(side="right", fill="both", expand=True)
-
-        # ── Right container: form + preview ─────────────────────────────────
-        self._npc_right = tk.Frame(self.npc_tab, bg=BG_MAIN)
-        _split = tk.Frame(self._npc_right, bg=BG_MAIN)
-        _split.pack(side="top", fill="both", expand=True)
-
-        # ── Form ────────────────────────────────────────────────────────────
-        self._npc_form = tk.Frame(_split, bg=BG_MAIN)
-        self._npc_form.pack(side="left", fill="both", expand=True)
-        f = self._npc_form
-        PAD = (10, 4)
-
-        # 标题行
-        hf = tk.Frame(f, bg=BG_MAIN)
-        hf.pack(fill="x", padx=12, pady=(14, 4))
-        _lbl(hf, "ID").pack(side="left")
-        self.npc_id_entry = ttk.Entry(hf, width=18)
-        self.npc_id_entry.pack(side="left", padx=(4, 16))
-        ttk.Button(hf, text="💾 保存",
-                   command=self._npc_save).pack(side="left")
-
-        # 基本字段
-        lf2 = tk.Frame(f, bg=BG_MAIN)
-        lf2.pack(fill="x", padx=12, pady=6)
-
-        r = 0
-        fields = [
-            ("名字", "npc_name_entry", 16),
-            ("称号", "npc_title_entry", 16),
-        ]
-        for lbl, attr, w in fields:
-            _lbl(lf2, lbl).grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
-            e = ttk.Entry(lf2, width=w)
-            e.grid(row=r, column=1, sticky="w", pady=3, padx=(0, 16))
-            setattr(self, attr, e)
-            r += 1
-
-        _lbl(lf2, "角色").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
-        self.npc_role = ttk.Combobox(lf2, values=self.NPC_ROLES, width=14, state="readonly")
-        self.npc_role.grid(row=r, column=1, sticky="w", pady=3)
-        r += 1
-
-        _lbl(lf2, "性别").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
-        self.npc_gender = ttk.Combobox(lf2, values=["", "男", "女", "未知"], width=8, state="readonly")
-        self.npc_gender.grid(row=r, column=1, sticky="w", pady=3)
-        r += 1
-
-        _lbl(lf2, "训练师数据").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
-        self.npc_trainer_id = ttk.Label(lf2, text="", width=22)
-        self.npc_trainer_id.grid(row=r, column=1, sticky="w", pady=3)
-
-        # 人物图
-        sep_f = tk.Frame(f, bg=BG_MAIN)
-        sep_f.pack(fill="x", padx=12)
-        tk.Frame(sep_f, bg=BORDER, height=1).pack(fill="x")
-        _lbl(f, "人物图（assets/sprites/npc/ 下）", bg=BG_MAIN, bold=True, size=9).pack(
-            anchor="w", padx=12, pady=(6, 2))
-
-        sprite_f = tk.Frame(f, bg=BG_MAIN)
-        sprite_f.pack(fill="x", padx=12, pady=2)
-
-        self._npc_sprite_dir = os.path.join(SPRITES_DIR, "npc")
-        try:
-            self._npc_sprite_files = sorted(f for f in os.listdir(self._npc_sprite_dir)
-                                            if f.endswith((".png", ".jpg", ".jpeg")))
-        except Exception:
-            self._npc_sprite_files = []
-
-        for idx, (lbl, attr) in enumerate([
-            ("行走图",  "npc_sprite_walk"),
-            ("正面图",  "npc_sprite_front"),
-            ("背面图",  "npc_sprite_back"),
-        ]):
-            row_f = tk.Frame(f, bg=BG_MAIN)
-            row_f.pack(fill="x", padx=12, pady=1)
-            _lbl(row_f, lbl, bg=BG_MAIN).pack(side="left")
-            sc = SearchableCombo(row_f, items=self._npc_sprite_files, width=28)
-            sc.pack(side="left", padx=(4, 4))
-            setattr(self, attr, sc)
-
-        # 描述
-        sep_f2 = tk.Frame(f, bg=BG_MAIN)
-        sep_f2.pack(fill="x", padx=12)
-        tk.Frame(sep_f2, bg=BORDER, height=1).pack(fill="x")
-        _lbl(f, "描述", bg=BG_MAIN, bold=True, size=9).pack(
-            anchor="w", padx=12, pady=(6, 2))
-        self.npc_desc = tk.Text(
-            f, width=46, height=6, wrap="word", bg=BG_CARD,
-            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
-            highlightthickness=1, highlightcolor=ACCENT,
-            highlightbackground=BORDER)
-        self.npc_desc.pack(fill="x", padx=12, pady=(0, 8))
-
-        # ── Right panel: preview ────────────────────────────────────────────
-        _pp = tk.Frame(_split, bg=BG_SIDE, width=260)
-        _pp.pack(side="right", fill="both")
-        _pp.pack_propagate(False)
-
-        _card = tk.Frame(_pp, bg=BG_CARD)
-        _card.pack(fill="x", padx=8, pady=(10, 4))
-        _lbl(_card, "人物预览", bg=BG_CARD, bold=True).pack(
-            anchor="w", padx=10, pady=(8, 4))
-
-        self._npc_preview_lbl = tk.Label(
-            _card, bg=BG_CARD, width=150, height=150,
-            text="暂无", fg=TEXT_SEC, font=(FONT_CJK, 8))
-        self._npc_preview_lbl.pack(pady=(0, 8))
-        _lbl(_card, "正面图", bg=BG_CARD, fg=TEXT_SEC).pack(pady=(0, 10))
-
-        self._npc_preview_name = tk.Label(
-            _card, bg=BG_CARD, text="", fg=TEXT_PRI,
-            font=(FONT_CJK, 10, "bold"), wraplength=220)
-        self._npc_preview_name.pack(padx=10)
-        self._npc_preview_title = tk.Label(
-            _card, bg=BG_CARD, text="", fg=TEXT_SEC,
-            font=(FONT_CJK, 9), wraplength=220)
-        self._npc_preview_title.pack(padx=10, pady=(2, 10))
-
-        self._npc_refresh_list()
-
-    def _npc_show_form(self):
-        self._npc_placeholder.pack_forget()
-        self._npc_right.pack(side="right", fill="both", expand=True, padx=6, pady=6)
-
-    def _npc_refresh_list(self):
-        q = self.npc_search.get().lower()
-        self.npc_list.delete(0, "end")
-        for nid, nd in sorted(self.npcs.items(), key=lambda x: x[1].get("name", x[0])):
-            name = nd.get("name", nid)
-            if not q or q in nid.lower() or q in name.lower():
-                self.npc_list.insert("end", f"{name}  [{nid}]")
-
-    def _npc_get_id(self, display):
-        if "[" in display and display.endswith("]"):
-            return display.rsplit("[", 1)[1][:-1]
-        return display
-
-    def _npc_select(self, _=None):
-        sel = self.npc_list.curselection()
-        if not sel:
-            return
-        self._npc_load(self._npc_get_id(self.npc_list.get(sel[0])))
-
-    def _npc_load(self, nid):
-        self._npc_show_form()
-        d = self.npcs[nid]
-        self._current_npc = nid
-
-        self.npc_id_entry.delete(0, "end")
-        self.npc_id_entry.insert(0, nid)
-        self.npc_name_entry.delete(0, "end")
-        self.npc_name_entry.insert(0, d.get("name", ""))
-        self.npc_title_entry.delete(0, "end")
-        self.npc_title_entry.insert(0, d.get("title", ""))
-        self.npc_role.set(d.get("role", ""))
-        self.npc_gender.set(d.get("gender", ""))
-        trainer_sub = d.get("trainer")
-        if trainer_sub:
-            tid = trainer_sub.get("trainer_id", "")
-            self.npc_trainer_id.config(text=f"✓ {tid}")
-        else:
-            self.npc_trainer_id.config(text="无")
-        self.npc_sprite_walk.set(d.get("sprite_walk", ""))
-        self.npc_sprite_front.set(d.get("sprite_front", ""))
-        self.npc_sprite_back.set(d.get("sprite_back", ""))
-        self.npc_desc.delete("1.0", "end")
-        self.npc_desc.insert("1.0", d.get("desc", ""))
-
-        # 加载预览图
-        self._npc_load_preview(nid, d)
-
-    def _npc_load_preview(self, nid, d):
-        self._npc_preview_name.config(text=d.get("name", nid))
-        self._npc_preview_title.config(text=d.get("title", ""))
-        if not HAS_PIL:
-            return
-        self._npc_photo = None
-        # 优先用正面图，fallback 行走图
-        front = d.get("sprite_front", "") or d.get("sprite_walk", "")
-        if front:
-            path = os.path.join(self._npc_sprite_dir, front)
-            if os.path.exists(path):
-                try:
-                    img = Image.open(path).convert("RGBA")
-                    img.thumbnail((150, 150), Image.LANCZOS)
-                    photo = ImageTk.PhotoImage(img)
-                    self._npc_preview_lbl.config(image=photo, text="")
-                    self._npc_photo = photo
-                except Exception:
-                    self._npc_preview_lbl.config(image="", text="加载失败")
-                return
-        self._npc_preview_lbl.config(image="", text="无图片")
-
-    def _npc_save(self):
-        old_id = self._current_npc
-        new_id = self.npc_id_entry.get().strip()
-        name   = self.npc_name_entry.get().strip()
-        if not new_id:
-            messagebox.showerror("错误", "ID 不能为空"); return
-        if not name:
-            messagebox.showerror("错误", "名字不能为空"); return
-
-        # 保留已有的 trainer 子对象
-        old_npc = self.npcs.get(old_id, {})
-        d = {
-            "id":          new_id,
-            "name":        name,
-            "title":       self.npc_title_entry.get().strip() or None,
-            "role":        self.npc_role.get(),
-            "gender":      self.npc_gender.get(),
-            "sprite_walk": self.npc_sprite_walk.get().strip() or None,
-            "sprite_front": self.npc_sprite_front.get().strip() or None,
-            "sprite_back": self.npc_sprite_back.get().strip() or None,
-            "desc":        self.npc_desc.get("1.0", "end-1c").strip(),
-        }
-        if "trainer" in old_npc:
-            d["trainer"] = old_npc["trainer"]
-
-        if old_id and old_id != new_id:
-            del self.npcs[old_id]
-        self.npcs[new_id] = d
-        save_json(NPCS_FILE, self.npcs)
-        self._current_npc = new_id
-        self._npc_refresh_list()
-        self._update_status()
-        messagebox.showinfo("", "已保存 ✓")
-
-    def _npc_add(self):
-        nid = "new_npc"; i = 1
-        while nid in self.npcs:
-            i += 1; nid = f"new_npc_{i}"
-        self.npcs[nid] = {
-            "id": nid, "name": "新NPC", "title": "", "role": "npc",
-            "gender": "男", "desc": "",
-            "sprite_walk": "", "sprite_front": "", "sprite_back": "",
-        }
-        save_json(NPCS_FILE, self.npcs)
-        self._npc_refresh_list()
-        for i in range(self.npc_list.size()):
-            if self._npc_get_id(self.npc_list.get(i)) == nid:
-                self.npc_list.selection_clear(0, "end")
-                self.npc_list.selection_set(i)
-                self.npc_list.see(i)
-                self._npc_load(nid)
-                break
-
-    def _npc_delete(self):
-        if not self._current_npc:
-            return
-        nd = self.npcs[self._current_npc]
-        if not messagebox.askyesno("确认", f"删除「{nd.get('name', self._current_npc)}」?"):
-            return
-        del self.npcs[self._current_npc]
-        save_json(NPCS_FILE, self.npcs)
-        self._current_npc = None
-        self._npc_refresh_list()
-        self._update_status()
-        self._npc_right.pack_forget()
-        self._npc_placeholder.pack(side="right", fill="both", expand=True)
 
     def run(self):
         self._ghost.mainloop()

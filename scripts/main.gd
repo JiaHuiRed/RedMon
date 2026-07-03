@@ -82,6 +82,10 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 	add_child(_current)
 	_scene_name = scene_name
 
+	# 260703 Red 统一更新 last_scene（排除 battle/title，它们不可存档）
+	if scene_name not in ["battle", "title"]:
+		GameState.last_scene = scene_name
+
 	if _current.has_signal("request_scene"):
 		_current.request_scene.connect(_on_request_scene)
 
