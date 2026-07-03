@@ -21,11 +21,12 @@ else:
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPECIES_FILE  = os.path.join(ROOT, "data", "species.json")
 MOVES_FILE    = os.path.join(ROOT, "data", "moves.json")
-TRAINERS_FILE = os.path.join(ROOT, "data", "trainers.json")
 DIALOGS_FILE  = os.path.join(ROOT, "data", "dialogs.json")
 ITEMS_FILE    = os.path.join(ROOT, "data", "items.json")
 ABILITIES_FILE = os.path.join(ROOT, "data", "abilities.json")  # 260702 Red 特性库
+NPCS_FILE = os.path.join(ROOT, "data", "npcs.json")  # 260702 NPC超集
 SPRITES_DIR   = os.path.join(ROOT, "assets", "sprites")
+ITEMS_UI_DIR  = os.path.join(ROOT, "assets", "ui", "items")
 
 TYPES      = ["", "空", "火", "水", "木", "虫", "土", "风", "仙", "灵", "龙", "格", "雷", "冰", "毒", "岩", "鬼", "暗", "钢", "光"]
 ABILITY_EFFECTS = [  # 260702 Red 效果标识：中文显示，底层存英文key
@@ -343,9 +344,10 @@ class App:
     def __init__(self):
         self.species  = load_json(SPECIES_FILE)
         self.moves    = load_json(MOVES_FILE)
-        self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
         self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
         self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}  # 260702 Red
+        self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}  # 260702 NPC
+        self._rebuild_trainers()  # 260703 Red 从 npcs 构建训练师视图
 
         # 隐藏根窗口用于保留任务栏图标，实际 UI 在 Toplevel 上
         self._ghost = tk.Tk()
@@ -395,10 +397,12 @@ class App:
         self.dialog_tab  = ttk.Frame(self.notebook)
         self.item_tab    = ttk.Frame(self.notebook)
         self.ability_tab = ttk.Frame(self.notebook)  # 260702 Red
+        self.npc_tab = ttk.Frame(self.notebook)  # 260702 NPC
         self.notebook.add(self.mon_tab,     text="  精灵图鉴  ")
         self.notebook.add(self.move_tab,    text="  技能库  ")
         self.notebook.add(self.item_tab,    text="  道具编辑  ")
         self.notebook.add(self.ability_tab, text="  特性库  ")
+        self.notebook.add(self.npc_tab,     text="  NPC编辑  ")
         self.notebook.add(self.trainer_tab, text="  角色编辑  ")
         self.notebook.add(self.dialog_tab,  text="  剧情文本  ")
 
@@ -406,6 +410,7 @@ class App:
         self._build_move_tab()
         self._build_item_tab()
         self._build_ability_tab()
+        self._build_npc_tab()
         self._build_trainer_tab()
         self._build_dialog_tab()
 
@@ -417,6 +422,7 @@ class App:
         self._current_mon     = None
         self._current_move    = None
         self._current_trainer = None
+        self._current_npc     = None
         self._learnset        = []
         self._photo_front     = None  # prevent GC
         self._photo_back      = None
@@ -496,12 +502,14 @@ class App:
         try:
             self.species  = load_json(SPECIES_FILE)
             self.moves    = load_json(MOVES_FILE)
-            self.trainers = load_json(TRAINERS_FILE) if os.path.exists(TRAINERS_FILE) else {}
             self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
             self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}
+            self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}
+            self._rebuild_trainers()
             self._mon_refresh_list()
             self._move_refresh_list()
             self._trainer_refresh_list()
+            self._npc_refresh_list()
             self._item_refresh_list()
             self._ability_refresh_list()
             self._mon_refresh_ability_choices()
@@ -617,6 +625,21 @@ class App:
             self.root.geometry(f"{sw}x{sh}+{sx}+{sy}")
             self._is_maximized = True
 
+    # ── 从 npcs 构建训练师视图 ──────────────────────────────────────────────
+    def _rebuild_trainers(self):
+        """从 npcs.json 中有 trainer 子对象的条目构建 self.trainers 平铺视图"""
+        self.trainers = {}
+        self._trainer_npc_map = {}  # trainer_id -> npc_id
+        for nid, npc in self.npcs.items():
+            if "trainer" in npc:
+                t = npc["trainer"].copy()
+                t["name"] = npc.get("name", "")
+                t["gender"] = npc.get("gender", "")
+                tid = t.get("trainer_id", nid)
+                t["id"] = tid
+                self.trainers[tid] = t
+                self._trainer_npc_map[tid] = nid
+
     # ── Status / draw helpers ───────────────────────────────────────────────
 
     def _update_status(self, msg=None):
@@ -625,9 +648,10 @@ class App:
         else:
             n_sp = len(self.species)
             n_mv = len(self.moves)
+            n_np = len(self.npcs)
             n_tr = len(self.trainers)
             self.status.config(
-                text=f"  精灵 {n_sp} 种  ·  技能 {n_mv} 个  ·  角色 {n_tr} 名")
+                text=f"  精灵 {n_sp} 种  ·  技能 {n_mv} 个  ·  NPC {n_np} 个（含训练师 {n_tr}）")
 
     def _draw_bar(self, canvas, value, color):
         canvas.delete("all")
@@ -1082,6 +1106,9 @@ class App:
         z    = {k: (v - avg) / sd for k, v in vals.items()}
         high = {k for k, v in z.items() if v > 1.0}
         top2 = {k for k, v in sorted(vals.items(), key=lambda x: -x[1])[:2]}
+        # 只有6项数据时z-score > 1.0阈值太严，加top2兜底
+        if not high:
+            high = top2
 
         # 核心类型（z-score > 1.0 = 显著偏离）
         if "spd" in high and ("atk" in high or "sp_atk" in high
@@ -2504,21 +2531,30 @@ class App:
              "level":   _int(self.team_tree.item(iid, "values")[1])}
             for iid in self.team_tree.get_children()
         ]
-        d = {
-            "id":            new_id,
-            "name":          name,
-            "gender":        self.trainer_gender.get(),
+
+        # 写回 npcs.json
+        npc_id = self._trainer_npc_map.get(old_id, old_id)
+        npc = self.npcs.get(npc_id, {})
+        npc["name"] = name
+        npc["gender"] = self.trainer_gender.get()
+        npc["trainer"] = {
+            "trainer_id":    new_id,
             "class":         self.trainer_class.get(),
             "reward":        _int(self.trainer_reward.get()),
             "dialog_before": self.trainer_dialog_before.get().strip(),
             "dialog_win":    self.trainer_dialog_win.get().strip(),
             "team":          team,
         }
-
+        # 处理 trainer_id 变更
         if old_id and old_id != new_id:
-            del self.trainers[old_id]
-        self.trainers[new_id] = d
-        save_json(TRAINERS_FILE, self.trainers)
+            if npc_id in self.npcs:
+                self.npcs[npc_id]["trainer"]["trainer_id"] = new_id
+        if npc_id not in self.npcs:
+            npc["id"] = npc_id
+            npc.setdefault("role", "trainer")
+            self.npcs[npc_id] = npc
+        save_json(NPCS_FILE, self.npcs)
+        self._rebuild_trainers()
         self._current_trainer = new_id
         self._trainer_refresh_list()
         self._update_status()
@@ -2526,13 +2562,17 @@ class App:
 
     def _trainer_add(self):
         tid = "new_trainer"; i = 1
-        while tid in self.trainers:
+        while tid in self.trainers or tid in self.npcs:
             i += 1; tid = f"new_trainer_{i}"
-        self.trainers[tid] = {
-            "id": tid, "name": "新训练师", "gender": "男",
-            "class": "普通训练师", "reward": 100,
-            "dialog_before": "", "dialog_win": "", "team": [],
+        self.npcs[tid] = {
+            "id": tid, "name": "新训练师", "role": "trainer",
+            "gender": "男", "desc": "",
+            "trainer": {
+                "trainer_id": tid, "class": "普通训练师", "reward": 100,
+                "dialog_before": "", "dialog_win": "", "team": [],
+            },
         }
+        self._rebuild_trainers()
         self._trainer_refresh_list()
         for i in range(self.trainer_list.size()):
             if self._trainer_get_id(self.trainer_list.get(i)) == tid:
@@ -2546,9 +2586,12 @@ class App:
         if not self._current_trainer: return
         td  = self.trainers[self._current_trainer]
         if not messagebox.askyesno(
-                "确认", f"删除「{td.get('name', self._current_trainer)}」?"): return
-        del self.trainers[self._current_trainer]
-        save_json(TRAINERS_FILE, self.trainers)
+                "确认", f"删除「{td.get('name', self._current_trainer)}」的训练师数据?"): return
+        npc_id = self._trainer_npc_map.get(self._current_trainer)
+        if npc_id and npc_id in self.npcs:
+            del self.npcs[npc_id]["trainer"]
+        save_json(NPCS_FILE, self.npcs)
+        self._rebuild_trainers()
         self._current_trainer = None
         self._trainer_refresh_list()
         self._update_status()
@@ -2987,7 +3030,14 @@ class App:
             bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
         self._item_placeholder.pack(side="right", fill="both", expand=True)
 
-        self._item_form = tk.Frame(self.item_tab, bg=BG_MAIN)
+        # ── Right container: form + preview ─────────────────────────────────
+        self._item_right = tk.Frame(self.item_tab, bg=BG_MAIN)
+        _split = tk.Frame(self._item_right, bg=BG_MAIN)
+        _split.pack(side="top", fill="both", expand=True)
+
+        # ── Form ────────────────────────────────────────────────────────────
+        self._item_form = tk.Frame(_split, bg=BG_MAIN)
+        self._item_form.pack(side="left", fill="both", expand=True)
         f = self._item_form
         PAD = (10, 4)
 
@@ -3034,11 +3084,30 @@ class App:
             highlightbackground=BORDER)
         self.item_desc.grid(row=r, column=1, columnspan=3, sticky="ew", pady=3)
 
+        # ── Right panel: icon preview ───────────────────────────────────────
+        _pp = tk.Frame(_split, bg=BG_SIDE, width=200)
+        _pp.pack(side="right", fill="both")
+        _pp.pack_propagate(False)
+
+        _card = tk.Frame(_pp, bg=BG_CARD)
+        _card.pack(fill="x", padx=8, pady=(10, 4))
+        _lbl(_card, "道具图标", bg=BG_CARD, bold=True).pack(
+            anchor="w", padx=10, pady=(8, 4))
+
+        self._item_icon_lbl = tk.Label(
+            _card, bg=BG_CARD, width=96, height=96,
+            text="暂无", fg=TEXT_SEC, font=(FONT_CJK, 8))
+        self._item_icon_lbl.pack(pady=(0, 8))
+        self._item_icon_name = tk.Label(
+            _card, bg=BG_CARD, text="", fg=TEXT_PRI,
+            font=(FONT_CJK, 10, "bold"), wraplength=160)
+        self._item_icon_name.pack(padx=10, pady=(0, 10))
+
         self._item_refresh_list()
 
     def _item_show_form(self):
         self._item_placeholder.pack_forget()
-        self._item_form.pack(side="right", fill="both", expand=True, padx=6, pady=6)
+        self._item_right.pack(side="right", fill="both", expand=True, padx=6, pady=6)
 
     def _item_refresh_list(self):
         q = self.item_search.get().lower()
@@ -3065,6 +3134,28 @@ class App:
         self.item_train_amount.insert(0, str(d.get("train_amount", 0)))
         self.item_desc.delete("1.0", "end")
         self.item_desc.insert("1.0", d.get("desc", ""))
+
+        # 加载道具图标
+        self._item_icon_name.config(text=name)
+        self._item_load_icon(name)
+
+    def _item_load_icon(self, name):
+        if not HAS_PIL:
+            return
+        self._item_photo = None
+        for ext in (".png", ".jpg", ".jpeg"):
+            path = os.path.join(ITEMS_UI_DIR, f"{name}{ext}")
+            if os.path.exists(path):
+                try:
+                    img = Image.open(path).convert("RGBA")
+                    img.thumbnail((96, 96), Image.LANCZOS)
+                    photo = ImageTk.PhotoImage(img)
+                    self._item_icon_lbl.config(image=photo, text="")
+                    self._item_photo = photo
+                except Exception:
+                    self._item_icon_lbl.config(image="", text="加载失败")
+                return
+        self._item_icon_lbl.config(image="", text="无图标")
 
     def _item_save(self):
         old = self._current_item
@@ -3116,7 +3207,7 @@ class App:
             save_json(ITEMS_FILE, self.items)
             self._item_refresh_list()
             self._current_item = None
-            self._item_form.pack_forget()
+            self._item_right.pack_forget()
             self._item_placeholder.pack(fill="both", expand=True)
             self._update_status()
 
@@ -3269,6 +3360,312 @@ class App:
             self._ability_placeholder.pack(fill="both", expand=True)
             self._mon_refresh_ability_choices()
             self._update_status()
+
+    # ══════════════════════════════════════════════════════════════════════════
+    #  NPC编辑 TAB（260702）
+    # ══════════════════════════════════════════════════════════════════════════
+
+    NPC_ROLES = [
+        "", "professor", "rival", "npc", "family", "villager",
+        "gym_leader", "elite_four", "villain",
+    ]
+
+    def _build_npc_tab(self):
+        left = tk.Frame(self.npc_tab, bg=BG_SIDE, width=230)
+        left.pack(side="left", fill="y")
+        left.pack_propagate(False)
+
+        _lbl(left, "NPC列表", bg=BG_SIDE, bold=True).pack(
+            anchor="w", padx=12, pady=(12, 2))
+        self.npc_search = ttk.Entry(left)
+        self.npc_search.pack(fill="x", padx=10)
+        self.npc_search.bind("<KeyRelease>",
+                             lambda _: self._npc_refresh_list())
+
+        lf = tk.Frame(left, bg=BG_SIDE)
+        lf.pack(fill="both", expand=True, padx=10, pady=(6, 4))
+        sb = ttk.Scrollbar(lf, orient="vertical")
+        self.npc_list = tk.Listbox(
+            lf, yscrollcommand=sb.set, font=(FONT_CJK, 10),
+            bg=BG_CARD, fg=TEXT_PRI,
+            selectbackground=ACCENT, selectforeground="white",
+            borderwidth=0, highlightthickness=0, relief="flat",
+            activestyle="none")
+        sb.config(command=self.npc_list.yview)
+        sb.pack(side="right", fill="y")
+        self.npc_list.pack(side="left", fill="both", expand=True)
+        self.npc_list.bind("<<ListboxSelect>>", self._npc_select)
+
+        bf = tk.Frame(left, bg=BG_SIDE)
+        bf.pack(fill="x", padx=10, pady=(0, 12))
+        ttk.Button(bf, text="+ 新增",
+                   command=self._npc_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="× 删除",
+                   command=self._npc_delete).pack(side="left")
+
+        self._npc_placeholder = tk.Label(
+            self.npc_tab, text="← 选择一个NPC开始编辑",
+            bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
+        self._npc_placeholder.pack(side="right", fill="both", expand=True)
+
+        # ── Right container: form + preview ─────────────────────────────────
+        self._npc_right = tk.Frame(self.npc_tab, bg=BG_MAIN)
+        _split = tk.Frame(self._npc_right, bg=BG_MAIN)
+        _split.pack(side="top", fill="both", expand=True)
+
+        # ── Form ────────────────────────────────────────────────────────────
+        self._npc_form = tk.Frame(_split, bg=BG_MAIN)
+        self._npc_form.pack(side="left", fill="both", expand=True)
+        f = self._npc_form
+        PAD = (10, 4)
+
+        # 标题行
+        hf = tk.Frame(f, bg=BG_MAIN)
+        hf.pack(fill="x", padx=12, pady=(14, 4))
+        _lbl(hf, "ID").pack(side="left")
+        self.npc_id_entry = ttk.Entry(hf, width=18)
+        self.npc_id_entry.pack(side="left", padx=(4, 16))
+        ttk.Button(hf, text="💾 保存",
+                   command=self._npc_save).pack(side="left")
+
+        # 基本字段
+        lf2 = tk.Frame(f, bg=BG_MAIN)
+        lf2.pack(fill="x", padx=12, pady=6)
+
+        r = 0
+        fields = [
+            ("名字", "npc_name_entry", 16),
+            ("称号", "npc_title_entry", 16),
+        ]
+        for lbl, attr, w in fields:
+            _lbl(lf2, lbl).grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+            e = ttk.Entry(lf2, width=w)
+            e.grid(row=r, column=1, sticky="w", pady=3, padx=(0, 16))
+            setattr(self, attr, e)
+            r += 1
+
+        _lbl(lf2, "角色").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.npc_role = ttk.Combobox(lf2, values=self.NPC_ROLES, width=14, state="readonly")
+        self.npc_role.grid(row=r, column=1, sticky="w", pady=3)
+        r += 1
+
+        _lbl(lf2, "性别").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.npc_gender = ttk.Combobox(lf2, values=["", "男", "女", "未知"], width=8, state="readonly")
+        self.npc_gender.grid(row=r, column=1, sticky="w", pady=3)
+        r += 1
+
+        _lbl(lf2, "训练师数据").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.npc_trainer_id = ttk.Label(lf2, text="", width=22)
+        self.npc_trainer_id.grid(row=r, column=1, sticky="w", pady=3)
+
+        # 人物图
+        sep_f = tk.Frame(f, bg=BG_MAIN)
+        sep_f.pack(fill="x", padx=12)
+        tk.Frame(sep_f, bg=BORDER, height=1).pack(fill="x")
+        _lbl(f, "人物图（assets/sprites/npc/ 下）", bg=BG_MAIN, bold=True, size=9).pack(
+            anchor="w", padx=12, pady=(6, 2))
+
+        sprite_f = tk.Frame(f, bg=BG_MAIN)
+        sprite_f.pack(fill="x", padx=12, pady=2)
+
+        self._npc_sprite_dir = os.path.join(SPRITES_DIR, "npc")
+        try:
+            self._npc_sprite_files = sorted(f for f in os.listdir(self._npc_sprite_dir)
+                                            if f.endswith((".png", ".jpg", ".jpeg")))
+        except Exception:
+            self._npc_sprite_files = []
+
+        for idx, (lbl, attr) in enumerate([
+            ("行走图",  "npc_sprite_walk"),
+            ("正面图",  "npc_sprite_front"),
+            ("背面图",  "npc_sprite_back"),
+        ]):
+            row_f = tk.Frame(f, bg=BG_MAIN)
+            row_f.pack(fill="x", padx=12, pady=1)
+            _lbl(row_f, lbl, bg=BG_MAIN).pack(side="left")
+            sc = SearchableCombo(row_f, items=self._npc_sprite_files, width=28)
+            sc.pack(side="left", padx=(4, 4))
+            setattr(self, attr, sc)
+
+        # 描述
+        sep_f2 = tk.Frame(f, bg=BG_MAIN)
+        sep_f2.pack(fill="x", padx=12)
+        tk.Frame(sep_f2, bg=BORDER, height=1).pack(fill="x")
+        _lbl(f, "描述", bg=BG_MAIN, bold=True, size=9).pack(
+            anchor="w", padx=12, pady=(6, 2))
+        self.npc_desc = tk.Text(
+            f, width=46, height=6, wrap="word", bg=BG_CARD,
+            font=(FONT_CJK, 9), relief="flat", borderwidth=1,
+            highlightthickness=1, highlightcolor=ACCENT,
+            highlightbackground=BORDER)
+        self.npc_desc.pack(fill="x", padx=12, pady=(0, 8))
+
+        # ── Right panel: preview ────────────────────────────────────────────
+        _pp = tk.Frame(_split, bg=BG_SIDE, width=260)
+        _pp.pack(side="right", fill="both")
+        _pp.pack_propagate(False)
+
+        _card = tk.Frame(_pp, bg=BG_CARD)
+        _card.pack(fill="x", padx=8, pady=(10, 4))
+        _lbl(_card, "人物预览", bg=BG_CARD, bold=True).pack(
+            anchor="w", padx=10, pady=(8, 4))
+
+        self._npc_preview_lbl = tk.Label(
+            _card, bg=BG_CARD, width=150, height=150,
+            text="暂无", fg=TEXT_SEC, font=(FONT_CJK, 8))
+        self._npc_preview_lbl.pack(pady=(0, 8))
+        _lbl(_card, "正面图", bg=BG_CARD, fg=TEXT_SEC).pack(pady=(0, 10))
+
+        self._npc_preview_name = tk.Label(
+            _card, bg=BG_CARD, text="", fg=TEXT_PRI,
+            font=(FONT_CJK, 10, "bold"), wraplength=220)
+        self._npc_preview_name.pack(padx=10)
+        self._npc_preview_title = tk.Label(
+            _card, bg=BG_CARD, text="", fg=TEXT_SEC,
+            font=(FONT_CJK, 9), wraplength=220)
+        self._npc_preview_title.pack(padx=10, pady=(2, 10))
+
+        self._npc_refresh_list()
+
+    def _npc_show_form(self):
+        self._npc_placeholder.pack_forget()
+        self._npc_right.pack(side="right", fill="both", expand=True, padx=6, pady=6)
+
+    def _npc_refresh_list(self):
+        q = self.npc_search.get().lower()
+        self.npc_list.delete(0, "end")
+        for nid, nd in sorted(self.npcs.items(), key=lambda x: x[1].get("name", x[0])):
+            name = nd.get("name", nid)
+            if not q or q in nid.lower() or q in name.lower():
+                self.npc_list.insert("end", f"{name}  [{nid}]")
+
+    def _npc_get_id(self, display):
+        if "[" in display and display.endswith("]"):
+            return display.rsplit("[", 1)[1][:-1]
+        return display
+
+    def _npc_select(self, _=None):
+        sel = self.npc_list.curselection()
+        if not sel:
+            return
+        self._npc_load(self._npc_get_id(self.npc_list.get(sel[0])))
+
+    def _npc_load(self, nid):
+        self._npc_show_form()
+        d = self.npcs[nid]
+        self._current_npc = nid
+
+        self.npc_id_entry.delete(0, "end")
+        self.npc_id_entry.insert(0, nid)
+        self.npc_name_entry.delete(0, "end")
+        self.npc_name_entry.insert(0, d.get("name", ""))
+        self.npc_title_entry.delete(0, "end")
+        self.npc_title_entry.insert(0, d.get("title", ""))
+        self.npc_role.set(d.get("role", ""))
+        self.npc_gender.set(d.get("gender", ""))
+        trainer_sub = d.get("trainer")
+        if trainer_sub:
+            tid = trainer_sub.get("trainer_id", "")
+            self.npc_trainer_id.config(text=f"✓ {tid}")
+        else:
+            self.npc_trainer_id.config(text="无")
+        self.npc_sprite_walk.set(d.get("sprite_walk", ""))
+        self.npc_sprite_front.set(d.get("sprite_front", ""))
+        self.npc_sprite_back.set(d.get("sprite_back", ""))
+        self.npc_desc.delete("1.0", "end")
+        self.npc_desc.insert("1.0", d.get("desc", ""))
+
+        # 加载预览图
+        self._npc_load_preview(nid, d)
+
+    def _npc_load_preview(self, nid, d):
+        self._npc_preview_name.config(text=d.get("name", nid))
+        self._npc_preview_title.config(text=d.get("title", ""))
+        if not HAS_PIL:
+            return
+        self._npc_photo = None
+        # 优先用正面图，fallback 行走图
+        front = d.get("sprite_front", "") or d.get("sprite_walk", "")
+        if front:
+            path = os.path.join(self._npc_sprite_dir, front)
+            if os.path.exists(path):
+                try:
+                    img = Image.open(path).convert("RGBA")
+                    img.thumbnail((150, 150), Image.LANCZOS)
+                    photo = ImageTk.PhotoImage(img)
+                    self._npc_preview_lbl.config(image=photo, text="")
+                    self._npc_photo = photo
+                except Exception:
+                    self._npc_preview_lbl.config(image="", text="加载失败")
+                return
+        self._npc_preview_lbl.config(image="", text="无图片")
+
+    def _npc_save(self):
+        old_id = self._current_npc
+        new_id = self.npc_id_entry.get().strip()
+        name   = self.npc_name_entry.get().strip()
+        if not new_id:
+            messagebox.showerror("错误", "ID 不能为空"); return
+        if not name:
+            messagebox.showerror("错误", "名字不能为空"); return
+
+        # 保留已有的 trainer 子对象
+        old_npc = self.npcs.get(old_id, {})
+        d = {
+            "id":          new_id,
+            "name":        name,
+            "title":       self.npc_title_entry.get().strip() or None,
+            "role":        self.npc_role.get(),
+            "gender":      self.npc_gender.get(),
+            "sprite_walk": self.npc_sprite_walk.get().strip() or None,
+            "sprite_front": self.npc_sprite_front.get().strip() or None,
+            "sprite_back": self.npc_sprite_back.get().strip() or None,
+            "desc":        self.npc_desc.get("1.0", "end-1c").strip(),
+        }
+        if "trainer" in old_npc:
+            d["trainer"] = old_npc["trainer"]
+
+        if old_id and old_id != new_id:
+            del self.npcs[old_id]
+        self.npcs[new_id] = d
+        save_json(NPCS_FILE, self.npcs)
+        self._current_npc = new_id
+        self._npc_refresh_list()
+        self._update_status()
+        messagebox.showinfo("", "已保存 ✓")
+
+    def _npc_add(self):
+        nid = "new_npc"; i = 1
+        while nid in self.npcs:
+            i += 1; nid = f"new_npc_{i}"
+        self.npcs[nid] = {
+            "id": nid, "name": "新NPC", "title": "", "role": "npc",
+            "gender": "男", "desc": "",
+            "sprite_walk": "", "sprite_front": "", "sprite_back": "",
+        }
+        save_json(NPCS_FILE, self.npcs)
+        self._npc_refresh_list()
+        for i in range(self.npc_list.size()):
+            if self._npc_get_id(self.npc_list.get(i)) == nid:
+                self.npc_list.selection_clear(0, "end")
+                self.npc_list.selection_set(i)
+                self.npc_list.see(i)
+                self._npc_load(nid)
+                break
+
+    def _npc_delete(self):
+        if not self._current_npc:
+            return
+        nd = self.npcs[self._current_npc]
+        if not messagebox.askyesno("确认", f"删除「{nd.get('name', self._current_npc)}」?"):
+            return
+        del self.npcs[self._current_npc]
+        save_json(NPCS_FILE, self.npcs)
+        self._current_npc = None
+        self._npc_refresh_list()
+        self._update_status()
+        self._npc_right.pack_forget()
+        self._npc_placeholder.pack(side="right", fill="both", expand=True)
 
     def run(self):
         self._ghost.mainloop()

@@ -2,6 +2,7 @@
   "精灵葫芦": {
     "name": "精灵葫芦",
     "category": "捕捉",
+    "catch_mult": 1.0,
     "price": 200,
     "desc": "素白葫芦，入门训练师常用。",
     "description": "标准捕捉葫芦，1x捕获率。"
@@ -9,6 +10,7 @@
   "超级葫芦": {
     "name": "超级葫芦",
     "category": "捕捉",
+    "catch_mult": 2.0,
     "price": 1200,
     "desc": "染蓝的葫芦，捕捉率提升。",
     "description": "精制葫芦，2x捕获率。"
@@ -16,6 +18,7 @@
   "高级葫芦": {
     "name": "高级葫芦",
     "category": "捕捉",
+    "catch_mult": 1.5,
     "price": 600,
     "desc": "金黄葫芦，捕捉率大幅提升。",
     "description": "高品质葫芦，1.5x捕获率。"
@@ -23,6 +26,7 @@
   "大师葫芦": {
     "name": "大师葫芦",
     "category": "捕捉",
+    "catch_mult": 255.0,
     "price": 0,
     "desc": "稀有紫葫芦，百分百捕捉成功。",
     "description": "传说中的极品葫芦，必定捕获。"
@@ -30,6 +34,7 @@
   "豪华葫芦": {
     "name": "豪华葫芦",
     "category": "捕捉",
+    "catch_mult": 3.0,
     "price": 3000,
     "desc": "乌黑葫芦，夜晚才敢拿出来用。",
     "description": "奢华葫芦，3x捕获率。"

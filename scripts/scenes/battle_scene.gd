@@ -521,7 +521,7 @@ func _refresh_bag_panel() -> void:
 		btn.text     = "%s ×%d" % [item_id, count]
 		btn.disabled = count <= 0
 		var item = MonDB.items.get(item_id, {})
-		if item.get("category", "") == "ball":
+		if item.get("category", "") == "捕捉":
 			btn.add_theme_color_override("font_color", Color(item.get("color", "#FFFFFF")))
 		else:
 			btn.add_theme_color_override("font_color", Color.WHITE)
@@ -535,8 +535,16 @@ func _on_use_item(item_id: String) -> void:
 
 	var item = MonDB.items.get(item_id, {})
 	match item.get("category", ""):
-		"ball":
-			var success = await _anim_throw_gourd(item_id, item.get("ball_bonus", 1.0))
+		"捕捉":
+			if _is_trainer:
+				await _show_message_async("训练师的精灵不能捕捉！")
+				GameState.items[item_id] += 1
+				_busy = false
+				_refresh_bag_panel()
+				_bag_panel.visible = true
+				return
+			var catch_mult = item.get("catch_mult", 1.0)
+			var success = await _anim_throw_gourd(item_id, catch_mult)
 
 			if success:
 				GameState.caught_count += 1  # 260630 Red
@@ -551,11 +559,11 @@ func _on_use_item(item_id: String) -> void:
 				_end_battle("caught")
 				return
 			# 捕捉失败 → 继续敌方回合
-		"heal":
+		"回复":
 			var item_data = MonDB.items.get(item_id, {})
 			if item_data.get("full_heal", false):
 				_player_mon["current_hp"] = _player_mon["max_hp"]
-				_refresh_info()
+				_refresh_info(true)
 				await _show_message_async("%s 的 HP 完全恢复了！" % MonDB.display_name(_player_mon))
 			else:
 				var heal = item_data.get("heal_amount", 20)
@@ -568,7 +576,7 @@ func _on_use_item(item_id: String) -> void:
 					return
 				var actual = min(heal, _player_mon["max_hp"] - _player_mon["current_hp"])
 				_player_mon["current_hp"] += actual
-				_refresh_info()
+				_refresh_info(true)
 				await _show_message_async("%s 回复了 %d HP！" % [MonDB.display_name(_player_mon), actual])
 			var mp_heal = item_data.get("mp_heal_amount", 0)
 			if mp_heal > 0:
@@ -656,7 +664,7 @@ func _refresh_mon_panel() -> void:
 			var is_sel  = (i == _mon_cursor)
 			var marker  = "★ " if is_cur else ("▶ " if is_sel else "   ")
 			var dead    = "  【倒下】" if m["current_hp"] <= 0 else ""
-			btn.text     = "%s%s  Lv.%d    HP: %d/%d%s" % [marker, MonDB.display_name(m), m["level"], m["current_hp"], m["max_hp"], dead]
+			btn.text     = "%s%s%s  Lv.%d    HP: %d/%d%s" % [marker, MonDB.display_name(m), _gender_symbol(m), m["level"], m["current_hp"], m["max_hp"], dead]
 			btn.disabled = m["current_hp"] <= 0 or is_cur
 			btn.modulate = Color(0.55, 0.55, 0.55) if m["current_hp"] <= 0 else Color(1, 1, 1)
 			if is_sel and not is_cur and m["current_hp"] > 0:
@@ -818,28 +826,44 @@ func _show_move_panel() -> void:
 # ══════════════════════════════════════════════════════════════════════════════
 # Refresh info boxes
 # ══════════════════════════════════════════════════════════════════════════════
-func _refresh_info() -> void:
+# 260703 Red 记录上次显示的HP，用于动画过渡
+var _enemy_hp_display: int = -1
+var _player_hp_display: int = -1
+
+func _gender_symbol(mon: Dictionary) -> String:
+	match mon.get("gender", ""):
+		"male":  return " ♂"
+		"female": return " ♀"
+		_: return ""
+
+func _refresh_info(animate: bool = false) -> void:
 	# Enemy
-	_enemy_name_lbl.text = MonDB.display_name(_enemy_mon)
+	_enemy_name_lbl.text = MonDB.display_name(_enemy_mon) + _gender_symbol(_enemy_mon)
 	_enemy_lv_lbl.text   = "Lv.%d" % _enemy_mon["level"]
-	var e_ratio = float(_enemy_mon["current_hp"]) / float(_enemy_mon["max_hp"])
-	_enemy_hp_bar.size.x = 150.0 * e_ratio
-	_enemy_hp_bar.color  = _hp_color(e_ratio)
-	_enemy_hp_val.text   = "%d/%d" % [_enemy_mon["current_hp"], _enemy_mon["max_hp"]]
 	var e_st = _enemy_mon.get("status", "")
 	_enemy_status_lbl.text  = "[%s]" % e_st if e_st != "" else ""
 	_enemy_status_lbl.add_theme_color_override("font_color", _status_color(e_st))
 
 	# Player
-	_player_name_lbl.text = MonDB.display_name(_player_mon)
+	_player_name_lbl.text = MonDB.display_name(_player_mon) + _gender_symbol(_player_mon)
 	_player_lv_lbl.text   = "Lv.%d" % _player_mon["level"]
-	var p_ratio = float(_player_mon["current_hp"]) / float(_player_mon["max_hp"])
-	_player_hp_bar.size.x = 150.0 * p_ratio
-	_player_hp_bar.color  = _hp_color(p_ratio)
-	_player_hp_val.text   = "%d/%d" % [_player_mon["current_hp"], _player_mon["max_hp"]]
 	var p_st = _player_mon.get("status", "")
 	_player_status_lbl.text = "[%s]" % p_st if p_st != "" else ""
 	_player_status_lbl.add_theme_color_override("font_color", _status_color(p_st))
+
+	var e_target = _enemy_mon["current_hp"]
+	var p_target = _player_mon["current_hp"]
+
+	if not animate or _enemy_hp_display < 0 or _player_hp_display < 0:
+		_enemy_hp_display = e_target
+		_player_hp_display = p_target
+		_set_hp_bar(_enemy_hp_bar, _enemy_hp_val, _enemy_mon, e_target)
+		_set_hp_bar(_player_hp_bar, _player_hp_val, _player_mon, p_target)
+	else:
+		_animate_hp(_enemy_hp_bar, _enemy_hp_val, _enemy_mon, _enemy_hp_display, e_target)
+		_animate_hp(_player_hp_bar, _player_hp_val, _player_mon, _player_hp_display, p_target)
+		_enemy_hp_display = e_target
+		_player_hp_display = p_target
 
 	# XP 条
 	if _player_mon.size() > 0:
@@ -853,6 +877,31 @@ func _refresh_info() -> void:
 		if exp_next > exp_this:
 			xp_ratio = clamp(float(cur_exp - exp_this) / float(exp_next - exp_this), 0.0, 1.0)
 		_player_xp_bar.size.x = 150.0 * xp_ratio
+
+func _set_hp_bar(bar: ColorRect, val_lbl: Label, mon: Dictionary, hp: int) -> void:
+	var ratio = float(hp) / float(mon["max_hp"]) if mon["max_hp"] > 0 else 0.0
+	bar.size.x = 150.0 * ratio
+	bar.color = _hp_color(ratio)
+	val_lbl.text = "%d/%d" % [hp, mon["max_hp"]]
+
+func _animate_hp(bar: ColorRect, val_lbl: Label, mon: Dictionary,
+		from_hp: int, to_hp: int) -> void:
+	if from_hp == to_hp:
+		return
+	var max_hp = mon["max_hp"]
+	if max_hp <= 0:
+		return
+	var duration = clamp(abs(from_hp - to_hp) / float(max_hp) * 0.8, 0.2, 0.8)
+	var tw = create_tween()
+	tw.set_parallel(true)
+	var target_w = 150.0 * float(to_hp) / float(max_hp)
+	tw.tween_property(bar, "size:x", target_w, duration)
+	var target_color = _hp_color(float(to_hp) / float(max_hp))
+	tw.tween_property(bar, "color", target_color, duration)
+	tw.set_parallel(false)
+	tw.tween_method(func(v: float):
+		val_lbl.text = "%d/%d" % [int(v), max_hp]
+	, float(from_hp), float(to_hp), duration)
 
 func _status_color(status: String) -> Color:
 	match status:
@@ -931,12 +980,23 @@ func _on_move_pressed(idx: int) -> void:
 	moves[idx]["pp"] -= 1
 	_show_move_panel()
 
-	# ── 先后手：比较有效速度（麻痹减半）──────────────────────────────────────
-	var p_spd = _player_mon["spd"] * MonDB._stage_mult(_player_mon["stages"].get("spd", 0))
-	if _player_mon.get("status") == "麻痹": p_spd *= 0.5
-	var e_spd = _enemy_mon["spd"]  * MonDB._stage_mult(_enemy_mon["stages"].get("spd", 0))
-	if _enemy_mon.get("status") == "麻痹":  e_spd *= 0.5
-	var player_first = p_spd >= e_spd
+	# ── 先后手：先制技能 > 速度比较（麻痹减半）────────────────────────────────
+	var p_mv_data = MonDB.moves.get(mv_id, {})
+	var e_mv_id = _pick_enemy_move()
+	var e_mv_data = MonDB.moves.get(e_mv_id, {})
+	var p_priority = p_mv_data.get("effect", "") == "priority"
+	var e_priority = e_mv_data.get("effect", "") == "priority"
+	var player_first: bool
+	if p_priority and not e_priority:
+		player_first = true
+	elif e_priority and not p_priority:
+		player_first = false
+	else:
+		var p_spd = _player_mon["spd"] * MonDB._stage_mult(_player_mon["stages"].get("spd", 0))
+		if _player_mon.get("status") == "麻痹": p_spd *= 0.5
+		var e_spd = _enemy_mon["spd"]  * MonDB._stage_mult(_enemy_mon["stages"].get("spd", 0))
+		if _enemy_mon.get("status") == "麻痹":  e_spd *= 0.5
+		player_first = p_spd >= e_spd
 
 	if player_first:
 		var blocked = await _check_status_block(_player_mon, false)
@@ -948,14 +1008,14 @@ func _on_move_pressed(idx: int) -> void:
 		await get_tree().create_timer(0.4).timeout
 		var e_blocked = await _check_status_block(_enemy_mon, true)
 		if not e_blocked:
-			await _execute_move(_enemy_mon, _player_mon, _pick_enemy_move(), true)
+			await _execute_move(_enemy_mon, _player_mon, e_mv_id, true)
 		if not is_inside_tree(): return
 		if _player_mon["current_hp"] <= 0:
 			await _handle_defeat(); return
 	else:
 		var e_blocked = await _check_status_block(_enemy_mon, true)
 		if not e_blocked:
-			await _execute_move(_enemy_mon, _player_mon, _pick_enemy_move(), true)
+			await _execute_move(_enemy_mon, _player_mon, e_mv_id, true)
 		if not is_inside_tree(): return
 		if _player_mon["current_hp"] <= 0:
 			await _handle_defeat(); return
@@ -1031,13 +1091,13 @@ func _apply_end_of_turn_damage(mon: Dictionary, spr: Sprite2D) -> void:
 			var dmg = max(1, mon["max_hp"] / 16)
 			mon["current_hp"] = max(0, mon["current_hp"] - dmg)
 			_flash_red(spr)
-			_refresh_info()
+			_refresh_info(true)
 			await _show_message_async("%s 受到烧伤伤害！（-%d）" % [name, dmg])
 		"中毒":
 			var dmg = max(1, mon["max_hp"] / 8)
 			mon["current_hp"] = max(0, mon["current_hp"] - dmg)
 			_flash_red(spr)
-			_refresh_info()
+			_refresh_info(true)
 			await _show_message_async("%s 受到中毒伤害！（-%d）" % [name, dmg])
 
 func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is_enemy: bool) -> void:
@@ -1062,6 +1122,11 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		var dmg    = result["damage"]
 		var eff    = result["effectiveness"]
 		var crit   = result["crit"]
+		# 260703 Red high_crit：提升暴击率到25%
+		if mv.get("effect", "") == "high_crit" and not crit:
+			crit = randf() < 0.20  # 额外20%机会（总计约25%）
+			if crit:
+				dmg = int(dmg * 1.3)  # 补算暴击倍率
 
 		defender["current_hp"] = max(0, defender["current_hp"] - dmg)
 
@@ -1070,7 +1135,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		_flash_red(target_spr)
 		_spawn_damage_number(dmg, target_spr.position)
 
-		_refresh_info()
+		_refresh_info(true)
 
 		var eff_msg = ""
 		if eff == 0.0:
@@ -1089,20 +1154,44 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		elif eff_msg != "":
 			await _show_message_async(eff_msg)
 
-		# 附带状态效果（有概率触发）
+		# 260703 Red recoil（反伤）
 		var sec_effect  = mv.get("effect", "")
-		var sec_chance  = mv.get("effect_chance", 0)
-		if sec_effect != "" and sec_chance > 0 and eff > 0.0:
-			if randf() * 100.0 < sec_chance:
-				var had_status = defender.get("status", "") != ""
-				_apply_effect(sec_effect, attacker, defender, is_enemy)
-				if not had_status and defender.get("status", "") != "":
+		var sec_value   = mv.get("effect_value", 0)
+		if sec_effect == "recoil" and dmg > 0:
+			var recoil_pct = sec_value if sec_value > 0 else 33
+			var recoil_dmg = max(1, int(dmg * recoil_pct / 100.0))
+			attacker["current_hp"] = max(0, attacker["current_hp"] - recoil_dmg)
+			var self_spr = _player_spr if not is_enemy else _enemy_spr
+			_flash_red(self_spr)
+			_refresh_info(true)
+			await _show_message_async("%s 受到了反伤！（-%d）" % [attacker_name, recoil_dmg])
+
+		# 260703 Red drain（吸血）
+		elif sec_effect == "drain" and dmg > 0:
+			var drain_pct = sec_value if sec_value > 0 else 50
+			var heal_amt = max(1, int(dmg * drain_pct / 100.0))
+			attacker["current_hp"] = min(attacker["max_hp"], attacker["current_hp"] + heal_amt)
+			_refresh_info(true)
+			await _show_message_async("%s 吸取了对手的体力！（+%d）" % [attacker_name, heal_amt])
+
+		# 附带状态/能力效果（有概率触发）
+		elif sec_effect != "" and sec_effect != "high_crit":
+			var sec_chance = mv.get("effect_chance", 0)
+			if sec_chance > 0 and eff > 0.0:
+				if randf() * 100.0 < sec_chance:
+					_apply_effect(sec_effect, attacker, defender, is_enemy)
 					_refresh_info()
-					await _show_message_async(_effect_message(sec_effect, attacker, defender))
+					var msg = _effect_message(sec_effect, attacker, defender)
+					if msg != "":
+						await _show_message_async(msg)
 	else:
-		# Status effect
-		_apply_effect(mv.get("effect", ""), attacker, defender, is_enemy)
-		await _show_message_async(_effect_message(mv.get("effect", ""), attacker, defender))
+		# 纯状态技能（power=0）
+		var effect = mv.get("effect", "")
+		_apply_effect(effect, attacker, defender, is_enemy)
+		_refresh_info(true)
+		var msg = _effect_message(effect, attacker, defender)
+		if msg != "":
+			await _show_message_async(msg)
 
 func _show_message_async(text: String) -> void:
 	_msg_label.text = text
@@ -1113,6 +1202,7 @@ func _show_message_async(text: String) -> void:
 # ══════════════════════════════════════════════════════════════════════════════
 func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _is_enemy: bool) -> void:
 	match effect:
+		# ── 能力阶段变化 ──────────────────────────────────────────────────────
 		"lower_atk":
 			defender["stages"]["atk"] = max(-6, defender["stages"].get("atk", 0) - 1)
 		"lower_acc":
@@ -1123,6 +1213,14 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 			attacker["stages"]["def"] = min(6, attacker["stages"].get("def", 0) + 1)
 		"raise_sp_atk":
 			attacker["stages"]["sp_atk"] = min(6, attacker["stages"].get("sp_atk", 0) + 1)
+		"raise_sp_def":
+			attacker["stages"]["sp_def"] = min(6, attacker["stages"].get("sp_def", 0) + 1)
+		"raise_spd":
+			attacker["stages"]["spd"] = min(6, attacker["stages"].get("spd", 0) + 1)
+		# ── 自我回复 ──────────────────────────────────────────────────────────
+		"heal_self":
+			var heal = max(1, int(attacker["max_hp"] * 0.5))
+			attacker["current_hp"] = min(attacker["max_hp"], attacker["current_hp"] + heal)
 		# ── 状态异常（仅在目标无状态时生效）──────────────────────────────────
 		"inflict_burn":
 			if defender.get("status", "") == "":
@@ -1150,6 +1248,9 @@ func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary)
 		"lower_spd":        return "%s 速度下降了！" % d
 		"raise_def":        return "%s 的防御提升了！" % a
 		"raise_sp_atk":     return "%s 的特攻提升了！" % a
+		"raise_sp_def":     return "%s 的特防提升了！" % a
+		"raise_spd":        return "%s 的速度提升了！" % a
+		"heal_self":        return "%s 回复了体力！" % a
 		"inflict_burn":     return "%s 陷入了烧伤状态！" % d
 		"inflict_poison":   return "%s 陷入了中毒状态！" % d
 		"inflict_paralysis":return "%s 陷入了麻痹状态！" % d

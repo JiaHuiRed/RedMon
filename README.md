@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.10.8-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.11.0-green.svg)](./CHANGELOG.md)
 
 ---
 

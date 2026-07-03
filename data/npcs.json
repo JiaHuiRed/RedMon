@@ -1,0 +1,397 @@
+{
+  "professor": {
+    "id": "professor",
+    "name": "陈教授",
+    "title": "博士",
+    "role": "professor",
+    "sprite_walk": "博士walk_sheet.png",
+    "sprite_front": "博士front.png",
+    "sprite_back": "博士back.png",
+    "desc": "华灵大陆精灵研究权威",
+    "gender": "男"
+  },
+  "rival": {
+    "id": "rival",
+    "name": "劲敌",
+    "title": null,
+    "role": "rival",
+    "sprite_walk": "劲敌walk_sheet.png",
+    "sprite_front": "劲敌front.png",
+    "sprite_back": "劲敌back.png",
+    "desc": "白丝少女，青梅竹马对手，名字由玩家决定",
+    "gender": "女"
+  },
+  "shenhe": {
+    "id": "shenhe",
+    "name": "申鹤",
+    "title": null,
+    "role": "rival",
+    "sprite_walk": "申鹤walk_sheet.png",
+    "sprite_front": "申鹤front.png",
+    "sprite_back": "申鹤back.png",
+    "desc": "第二位劲敌，持有第三只御三家",
+    "gender": "女"
+  },
+  "linwei": {
+    "id": "linwei",
+    "name": "林薇",
+    "title": null,
+    "role": "npc",
+    "sprite_walk": "林薇walk_sheet.png",
+    "sprite_front": "林薇front.png",
+    "sprite_back": "林薇back.png",
+    "desc": "青木村的少女",
+    "gender": "女"
+  },
+  "mother": {
+    "id": "mother",
+    "name": "妈妈",
+    "title": null,
+    "role": "family",
+    "sprite_walk": "npc_young_woman_walk_sheet.png",
+    "desc": "玩家的母亲",
+    "gender": "女"
+  },
+  "grandma": {
+    "id": "grandma",
+    "name": "老奶奶",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "老奶奶.png",
+    "desc": "青木村的老人",
+    "gender": "女"
+  },
+  "young_man": {
+    "id": "young_man",
+    "name": "青年",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "青年.png",
+    "desc": "青木村的青年",
+    "gender": "男"
+  },
+  "lin_qingsong": {
+    "id": "lin_qingsong",
+    "name": "林青松",
+    "title": "翠竹馆馆主",
+    "role": "gym_leader",
+    "sprite_walk": "林青松walk_sheet.png",
+    "desc": "木系道馆馆主",
+    "gender": "男",
+    "trainer": {
+      "trainer_id": "leader_qingsong",
+      "class": "道馆馆主",
+      "reward": 1800,
+      "dialog_before": "我是翠竹馆馆主林青松。竹以柔克刚，精灵亦然——准备好了吗？",
+      "dialog_win": "……了不起。这枚翠竹徽，你当之无愧。",
+      "team": [
+        {
+          "species": "蹦蹦草",
+          "level": 12
+        },
+        {
+          "species": "绿叶蜥",
+          "level": 13
+        },
+        {
+          "species": "核胄叶",
+          "level": 15
+        }
+      ],
+      "gym": "翠竹馆"
+    }
+  },
+  "han_yanchi": {
+    "id": "han_yanchi",
+    "name": "韩炎驰",
+    "title": "炎心馆馆主",
+    "role": "gym_leader",
+    "sprite_front": "韩炎驰front.png",
+    "desc": "火系道馆馆主",
+    "gender": "男"
+  },
+  "su_yiyi": {
+    "id": "su_yiyi",
+    "name": "苏漪漪",
+    "title": "碧波馆馆主",
+    "role": "gym_leader",
+    "sprite_front": "苏漪漪front.png",
+    "desc": "水系道馆馆主",
+    "gender": "女"
+  },
+  "zhao_panshi": {
+    "id": "zhao_panshi",
+    "name": "赵磐石",
+    "title": "磐石馆馆主",
+    "role": "gym_leader",
+    "sprite_front": "赵磐石front.png",
+    "desc": "岩系道馆馆主",
+    "gender": "男"
+  },
+  "chen_zheyun": {
+    "id": "chen_zheyun",
+    "name": "陈赭云",
+    "title": "厚土馆馆主",
+    "role": "gym_leader",
+    "sprite_front": "陈赭云front.png",
+    "desc": "土系道馆馆主",
+    "gender": "女"
+  },
+  "lu_chengyang": {
+    "id": "lu_chengyang",
+    "name": "鲁成洋",
+    "title": "寒霜馆馆主",
+    "role": "gym_leader",
+    "sprite_walk": "鲁成洋walk_sheet.png",
+    "sprite_front": "鲁成洋front.png",
+    "desc": "冰系道馆馆主",
+    "gender": "男"
+  },
+  "xiao_zi": {
+    "id": "xiao_zi",
+    "name": "小紫",
+    "title": "灵悟天王",
+    "role": "elite_four",
+    "sprite_front": "小紫front.png",
+    "sprite_back": "小紫back.png",
+    "desc": "灵系四天王",
+    "gender": "女"
+  },
+  "shen_zi": {
+    "id": "shen_zi",
+    "name": "神子",
+    "title": "铁壁天王",
+    "role": "elite_four",
+    "sprite_walk": "神子walk_sheet.png",
+    "sprite_front": "神子front.png",
+    "sprite_back": "神子back.png",
+    "desc": "钢系四天王，看似柔弱实为强敌",
+    "gender": "女"
+  },
+  "meimei": {
+    "id": "meimei",
+    "name": "美美",
+    "title": null,
+    "role": "villain",
+    "sprite_walk": "美美walk_sheet.png",
+    "sprite_front": "美美front.png",
+    "desc": "黑风堂堂主·伪装形态，前期支线结识的朋友",
+    "gender": "女"
+  },
+  "wujunmei": {
+    "id": "wujunmei",
+    "name": "邬君梅",
+    "title": "黑风堂堂主",
+    "role": "villain",
+    "sprite_walk": "邬君梅walk_sheet.png",
+    "sprite_front": "邬君梅front.png",
+    "desc": "黑风堂堂主·真身·龙系，最终BOSS",
+    "gender": "女"
+  },
+  "shangguan_lie": {
+    "id": "shangguan_lie",
+    "name": "上官烈",
+    "title": null,
+    "role": "npc",
+    "sprite_static": "上官烈.png",
+    "desc": "华灵大陆的知名人物",
+    "gender": "男"
+  },
+  "fang_xuanyou": {
+    "id": "fang_xuanyou",
+    "name": "方玄幽",
+    "title": null,
+    "role": "npc",
+    "sprite_front": "方玄幽front.png",
+    "desc": "",
+    "gender": "女"
+  },
+  "wu_chengshan": {
+    "id": "wu_chengshan",
+    "name": "武承山",
+    "title": null,
+    "role": "npc",
+    "sprite_static": "武承山.png",
+    "desc": "",
+    "gender": "男"
+  },
+  "gan_yu": {
+    "id": "gan_yu",
+    "name": "甘雨",
+    "title": null,
+    "role": "npc",
+    "sprite_static": "甘雨.png",
+    "desc": "",
+    "gender": "女"
+  },
+  "xie_mingdu": {
+    "id": "xie_mingdu",
+    "name": "谢冥毒",
+    "title": null,
+    "role": "npc",
+    "sprite_front": "谢冥毒front.png",
+    "desc": "",
+    "gender": "男"
+  },
+  "he_tiecheng": {
+    "id": "he_tiecheng",
+    "name": "贺铁城",
+    "title": null,
+    "role": "npc",
+    "sprite_static": "贺铁城.png",
+    "desc": "",
+    "gender": "男"
+  },
+  "gu_qingwu": {
+    "id": "gu_qingwu",
+    "name": "顾清梧",
+    "title": null,
+    "role": "npc",
+    "sprite_static": "顾清梧.png",
+    "desc": "",
+    "gender": "女"
+  },
+  "pretty_sister": {
+    "id": "pretty_sister",
+    "name": "漂亮姐姐",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "漂亮姐姐.png",
+    "desc": "青木村的居民",
+    "gender": "女"
+  },
+  "fat_woman": {
+    "id": "fat_woman",
+    "name": "胖女人",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "胖女人.png",
+    "desc": "青木村的居民",
+    "gender": "女"
+  },
+  "fat_man": {
+    "id": "fat_man",
+    "name": "胖男人",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "胖男人.png",
+    "desc": "青木村的居民",
+    "gender": "男"
+  },
+  "young_girl": {
+    "id": "young_girl",
+    "name": "少女",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "少女.png",
+    "desc": "青木村的居民",
+    "gender": "女"
+  },
+  "old_man": {
+    "id": "old_man",
+    "name": "老爷爷",
+    "title": null,
+    "role": "villager",
+    "sprite_static": "老爷爷.png",
+    "desc": "青木村的居民",
+    "gender": "男"
+  },
+  "t_xiaomin": {
+    "id": "t_xiaomin",
+    "name": "学员小闵",
+    "title": null,
+    "role": "trainer",
+    "desc": "普通训练师",
+    "gender": "男",
+    "trainer": {
+      "trainer_id": "t_xiaomin",
+      "class": "普通训练师",
+      "reward": 200,
+      "dialog_before": "前面的！站住！",
+      "dialog_win": "你……你真厉害！",
+      "team": [
+        {
+          "species": "绿肥虫",
+          "level": 6
+        },
+        {
+          "species": "小灯鼠",
+          "level": 5
+        }
+      ]
+    }
+  },
+  "t_laoka": {
+    "id": "t_laoka",
+    "name": "武者老卡",
+    "title": null,
+    "role": "trainer",
+    "desc": "普通训练师",
+    "gender": "男",
+    "trainer": {
+      "trainer_id": "t_laoka",
+      "class": "普通训练师",
+      "reward": 350,
+      "dialog_before": "哼，路过此地？先过了我这关！",
+      "dialog_win": "哼……你有两下子。",
+      "team": [
+        {
+          "species": "岩灵",
+          "level": 8
+        }
+      ]
+    }
+  },
+  "g1": {
+    "id": "g1",
+    "name": "竹林学徒 林小凡",
+    "title": null,
+    "role": "trainer",
+    "desc": "道馆学徒",
+    "gender": "男",
+    "trainer": {
+      "trainer_id": "g1",
+      "class": "道馆学徒",
+      "reward": 300,
+      "dialog_before": "道馆内禁止通行！先过了我这关！",
+      "dialog_win": "好强……通过吧。",
+      "team": [
+        {
+          "species": "蹦蹦草",
+          "level": 8
+        },
+        {
+          "species": "青果种子",
+          "level": 9
+        }
+      ],
+      "gym": "翠竹馆"
+    }
+  },
+  "g2": {
+    "id": "g2",
+    "name": "竹林学徒 江木青",
+    "title": null,
+    "role": "trainer",
+    "desc": "道馆学徒",
+    "gender": "男",
+    "trainer": {
+      "trainer_id": "g2",
+      "class": "道馆学徒",
+      "reward": 400,
+      "dialog_before": "没打败所有学徒就想见馆主？休想！",
+      "dialog_win": "没想到……请进吧。",
+      "team": [
+        {
+          "species": "绿叶蜥",
+          "level": 10
+        },
+        {
+          "species": "核胄叶",
+          "level": 10
+        }
+      ],
+      "gym": "翠竹馆"
+    }
+  }
+}

@@ -1947,6 +1947,18 @@
     "gender_ratio": "50/50",
     "height": "0.7",
     "weight": "28.0",
+    "abilities": [
+      "一般皮肤",
+      "复眼"
+    ],
+    "evolutions": [
+      {
+        "into": "乐手伯德",
+        "level": 32
+      }
+    ],
+    "evolves_into": "乐手伯德",
+    "evolve_level": 32,
     "learnset": {
       "1": [
         "紧束"
@@ -1984,11 +1996,7 @@
       "95": [
         "终极冲击"
       ]
-    },
-    "abilities": [
-      "一般皮肤",
-      "复眼"
-    ]
+    }
   },
   "君美": {
     "id": 34,
@@ -7470,13 +7478,17 @@
     "gender_ratio": "87.5/12.5",
     "height": "0.7",
     "weight": "32",
+    "abilities": [
+      "达摩模式",
+      "雪隐"
+    ],
     "evolutions": [
       {
-        "into": "武道熊",
+        "into": "胖凌凌",
         "level": 15
       }
     ],
-    "evolves_into": "武道熊",
+    "evolves_into": "胖凌凌",
     "evolve_level": 15,
     "learnset": {
       "1": [
@@ -7491,11 +7503,7 @@
       "11": [
         "冷冻干燥"
       ]
-    },
-    "abilities": [
-      "达摩模式",
-      "雪隐"
-    ]
+    }
   },
   "胖凌凌": {
     "id": 124,
@@ -7530,7 +7538,10 @@
     "evolve_level": 36,
     "learnset": {
       "1": [
-        "水流連打"
+        "水流連打",
+        "冰冻之风",
+        "冰锥",
+        "冰砾"
       ],
       "4": [
         "水枪"
@@ -7590,7 +7601,10 @@
         "冷冻干燥",
         "热水",
         "水流尾",
-        "加农水炮"
+        "加农水炮",
+        "冰锥",
+        "冰冻之风",
+        "冰砾"
       ],
       "4": [
         "水枪"
@@ -13666,24 +13680,36 @@
   },
   "墨螈": {
     "id": 223,
+    "name": "墨螈",
     "type1": "水",
     "type2": "",
-    "hp": 50,
-    "atk": 40,
-    "def": 35,
-    "sp_atk": 55,
-    "sp_def": 40,
-    "spd": 45,
-    "tier": "凡",
-    "role": "特攻手",
-    "desc": "栖息在深山暗潭中的小蝾螈，背部的墨色斑纹会随情绪变化。受惊时从口中喷出黑色墨汁遮蔽视野后逃走。",
-    "design_origin": "大鲵幼体+墨鱼喷墨",
+    "base": {
+      "hp": 55,
+      "atk": 61,
+      "def": 50,
+      "sp_atk": 20,
+      "sp_def": 27,
+      "spd": 15
+    },
     "catch_rate": 190,
     "exp_yield": 55,
-    "growth_rate": "medium",
-    "gender_ratio": 50,
-    "height": 0.4,
-    "weight": 5.2,
+    "growth_rate": "中速",
+    "desc": "栖息在深山暗潭中的小蝾螈，背部的墨色斑纹会随情绪变化。受惊时从口中喷出黑色墨汁遮蔽视野后逃走。",
+    "tier": "凡",
+    "role": "物攻手",
+    "gender_ratio": "50",
+    "height": "0.4",
+    "weight": "5.2",
+    "abilities": [
+      "储水",
+      "干燥皮肤"
+    ],
+    "evolutions": [
+      {
+        "into": "渊螈",
+        "level": 18
+      }
+    ],
     "evolves_into": "渊螈",
     "evolve_level": 18,
     "learnset": {
@@ -13699,32 +13725,40 @@
       "13": [
         "鳃咬"
       ]
-    },
-    "abilities": [
-      "储水",
-      "干燥皮肤"
-    ]
+    }
   },
   "渊螈": {
     "id": 224,
+    "name": "渊螈",
     "type1": "水",
     "type2": "暗",
-    "hp": 70,
-    "atk": 55,
-    "def": 55,
-    "sp_atk": 80,
-    "sp_def": 60,
-    "spd": 60,
-    "tier": "灵",
-    "role": "特攻手",
-    "desc": "进化后眼睛变为金色竖瞳，能在完全黑暗的水底精准捕猎。会用尾巴拍击水面制造漩涡困住猎物。",
-    "design_origin": "中国大鲵+深海掠食者",
+    "base": {
+      "hp": 74,
+      "atk": 81,
+      "def": 77,
+      "sp_atk": 31,
+      "sp_def": 38,
+      "spd": 25
+    },
     "catch_rate": 90,
     "exp_yield": 145,
-    "growth_rate": "medium",
-    "gender_ratio": 50,
-    "height": 1.1,
-    "weight": 28.5,
+    "growth_rate": "缓慢",
+    "desc": "进化后眼睛变为金色竖瞳，能在完全黑暗的水底精准捕猎。会用尾巴拍击水面制造漩涡困住猎物。",
+    "tier": "凡",
+    "role": "物攻手",
+    "gender_ratio": "50",
+    "height": "1.1",
+    "weight": "28.5",
+    "abilities": [
+      "雨盘",
+      "顺手牵羊"
+    ],
+    "evolutions": [
+      {
+        "into": "冥渊鲵",
+        "level": 36
+      }
+    ],
     "evolves_into": "冥渊鲵",
     "evolve_level": 36,
     "learnset": {
@@ -13747,41 +13781,41 @@
       "35": [
         "加农水炮"
       ]
-    },
-    "abilities": [
-      "雨盘",
-      "顺手牵羊"
-    ]
+    }
   },
   "冥渊鲵": {
     "id": 225,
+    "name": "冥渊鲵",
     "type1": "水",
     "type2": "暗",
-    "hp": 95,
-    "atk": 70,
-    "def": 75,
-    "sp_atk": 110,
-    "sp_def": 80,
-    "spd": 75,
-    "tier": "玄",
-    "role": "特攻手",
-    "desc": "地下暗河的绝对霸主。全身暗紫色的纹路会在捕猎时发出幽蓝光芒，猎物见到光时已无法逃脱。据说它能吞噬周围一切光线。",
-    "design_origin": "大鲵王+深渊巨兽+山海经",
+    "base": {
+      "hp": 99,
+      "atk": 103,
+      "def": 100,
+      "sp_atk": 44,
+      "sp_def": 56,
+      "spd": 39
+    },
     "catch_rate": 45,
     "exp_yield": 240,
-    "growth_rate": "medium",
-    "gender_ratio": 50,
-    "height": 2.3,
-    "weight": 98.0,
-    "evolves_into": "",
-    "evolve_level": 0,
+    "growth_rate": "缓慢",
+    "desc": "地下暗河的绝对霸主。全身暗紫色的纹路会在捕猎时发出幽蓝光芒，猎物见到光时已无法逃脱。据说它能吞噬周围一切光线。",
+    "tier": "灵",
+    "role": "物攻手",
+    "gender_ratio": "50",
+    "height": "2.3",
+    "weight": "98.0",
+    "abilities": [
+      "悠游自如",
+      "毅力"
+    ],
     "learnset": {
       "1": [
+        "加农水炮",
         "水流連打",
-        "鳃咬",
         "狂舞挥打",
         "狙击",
-        "加农水炮"
+        "鳃咬"
       ],
       "4": [
         "水流喷射"
@@ -13816,11 +13850,7 @@
       "97": [
         "喷水"
       ]
-    },
-    "abilities": [
-      "悠游自如",
-      "毅力"
-    ]
+    }
   },
   "鸡傲天": {
     "id": 226,
@@ -15638,7 +15668,7 @@
     "id": 255,
     "name": "岩鞍战马",
     "type1": "岩",
-    "type2": "地面",
+    "type2": "土",
     "base": {
       "hp": 70,
       "atk": 85,
@@ -18664,12 +18694,12 @@
     "type1": "龙",
     "type2": "钢",
     "base": {
-      "hp": 100,
-      "atk": 140,
-      "def": 110,
+      "hp": 106,
+      "atk": 132,
+      "def": 121,
       "sp_atk": 50,
       "sp_def": 75,
-      "spd": 100
+      "spd": 102
     },
     "catch_rate": 25,
     "exp_yield": 210,
@@ -18680,17 +18710,17 @@
     "gender_ratio": "50/50",
     "height": "2.2",
     "weight": "120.0",
-    "evolutions": [],
-    "evolves_into": "",
-    "evolve_level": 0,
-    "design_origin": "机甲龙兽 + 暴龙",
+    "abilities": [
+      "毅力",
+      "磁力"
+    ],
     "learnset": {
       "1": [
-        "鱗射",
         "核心惩罚者",
+        "铁蹄光线",
         "镜光射击",
-        "龙之俯冲",
-        "铁蹄光线"
+        "鱗射",
+        "龙之俯冲"
       ],
       "4": [
         "龙卷风"
@@ -18725,11 +18755,7 @@
       "97": [
         "日光回旋下苍穹"
       ]
-    },
-    "abilities": [
-      "毅力",
-      "磁力"
-    ]
+    }
   },
   "福绒雏": {
     "id": 304,
@@ -18737,22 +18763,26 @@
     "type1": "风",
     "type2": "",
     "base": {
-      "hp": 60,
+      "hp": 72,
       "atk": 35,
       "def": 40,
       "sp_atk": 55,
       "sp_def": 65,
-      "spd": 40
+      "spd": 48
     },
     "catch_rate": 200,
     "exp_yield": 50,
     "growth_rate": "中速",
     "desc": "圆滚滚毛茸茸的小鸟灵，身上还沾着蛋壳碎片，走起路来摇摇晃晃十分可爱，据说见到它的人会有好运。",
     "tier": "凡",
-    "role": "肉盾特攻手",
+    "role": "肉盾均衡",
     "gender_ratio": "50/50",
     "height": "0.3",
     "weight": "1.8",
+    "abilities": [
+      "危险预知",
+      "厚脂肪"
+    ],
     "evolutions": [
       {
         "into": "瑞霓仙",
@@ -18761,7 +18791,6 @@
     ],
     "evolves_into": "瑞霓仙",
     "evolve_level": 20,
-    "design_origin": "圆胖幼鸟 + 蛋壳吉祥物",
     "learnset": {
       "1": [
         "起风"
@@ -18781,11 +18810,7 @@
       "19": [
         "画龙点睛"
       ]
-    },
-    "abilities": [
-      "危险预知",
-      "厚脂肪"
-    ]
+    }
   },
   "瑞霓仙": {
     "id": 305,
@@ -18795,30 +18820,30 @@
     "base": {
       "hp": 85,
       "atk": 45,
-      "def": 60,
+      "def": 72,
       "sp_atk": 95,
       "sp_def": 90,
-      "spd": 60
+      "spd": 99
     },
     "catch_rate": 45,
     "exp_yield": 158,
     "growth_rate": "中速",
     "desc": "褪去圆胖体态，蜕变为身姿修长的仙灵鸟，双翼化作绚丽长羽，飞行时会留下七彩光带，被视为祥瑞的化身。",
-    "tier": "灵",
-    "role": "肉盾特攻手",
+    "tier": "玄",
+    "role": "肉盾均衡",
     "gender_ratio": "50/50",
     "height": "0.8",
     "weight": "3.5",
-    "evolutions": [],
-    "evolves_into": "",
-    "evolve_level": 0,
-    "design_origin": "修长仙鸟 + 祥瑞信使",
+    "abilities": [
+      "飘浮",
+      "白色烟雾"
+    ],
     "learnset": {
       "1": [
-        "起风",
-        "空气利刃",
         "弹跳",
-        "画龙点睛"
+        "画龙点睛",
+        "空气利刃",
+        "起风"
       ],
       "4": [
         "杂技"
@@ -18853,10 +18878,308 @@
       "96": [
         "神鸟猛击"
       ]
+    }
+  },
+  "奇树": {
+    "id": 297,
+    "name": "奇树",
+    "type1": "雷",
+    "type2": "",
+    "base": {
+      "hp": 65,
+      "atk": 72,
+      "def": 61,
+      "sp_atk": 54,
+      "sp_def": 54,
+      "spd": 72
     },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "role": "快攻手",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
     "abilities": [
-      "飘浮",
-      "白色烟雾"
-    ]
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "鸣依",
+        "level": 26,
+        "item": "辉光珀"
+      }
+    ],
+    "evolves_into": "鸣依",
+    "evolve_level": 26,
+    "learnset": {}
+  },
+  "鸣依": {
+    "id": 298,
+    "name": "鸣依",
+    "type1": "雷",
+    "type2": "光",
+    "base": {
+      "hp": 98,
+      "atk": 100,
+      "def": 82,
+      "sp_atk": 73,
+      "sp_def": 76,
+      "spd": 100
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "玄",
+    "role": "高速物攻手",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "乐手伯德": {
+    "id": 300,
+    "name": "乐手伯德",
+    "type1": "光",
+    "type2": "空",
+    "base": {
+      "hp": 101,
+      "atk": 99,
+      "def": 104,
+      "sp_atk": 98,
+      "sp_def": 104,
+      "spd": 88
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "role": "肉盾",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {
+      "1": [
+        "三重攻击",
+        "佯攻",
+        "拍击",
+        "硬撑",
+        "神速",
+        "紧束",
+        "终极冲击",
+        "聚宝功",
+        "舍身冲撞",
+        "觉醒之舞",
+        "角撞",
+        "高速旋转"
+      ]
+    }
+  },
+  "焰霆": {
+    "id": 299,
+    "name": "焰霆",
+    "type1": "火",
+    "type2": "雷",
+    "base": {
+      "hp": 88,
+      "atk": 135,
+      "def": 50,
+      "sp_atk": 35,
+      "sp_def": 50,
+      "spd": 151
+    },
+    "catch_rate": 45,
+    "exp_yield": 185,
+    "growth_rate": "快速",
+    "desc": "体内同时奔涌着烈焰与雷霆的极速猎手。冲刺时身后拖出赤金交织的尾炎，对手往往只看到一道闪光就被击倒。",
+    "tier": "玄",
+    "role": "快攻手",
+    "gender_ratio": "50",
+    "height": "1.8",
+    "weight": "52.0",
+    "abilities": [
+      "加速",
+      "引火"
+    ],
+    "learnset": {
+      "1": [
+        "撞击",
+        "电击"
+      ],
+      "5": [
+        "火花"
+      ],
+      "8": [
+        "电光一闪"
+      ],
+      "12": [
+        "火焰牙"
+      ],
+      "16": [
+        "雷电牙"
+      ],
+      "21": [
+        "影子分身"
+      ],
+      "25": [
+        "火焰拳"
+      ],
+      "30": [
+        "雷光拳"
+      ],
+      "36": [
+        "闪焰冲锋"
+      ],
+      "42": [
+        "疯狂伏特"
+      ],
+      "50": [
+        "近身战"
+      ]
+    }
+  },
+  "琵琶娘": {
+    "id": 306,
+    "name": "琵琶娘",
+    "type1": "光",
+    "type2": "",
+    "base": {
+      "hp": 48,
+      "atk": 33,
+      "def": 35,
+      "sp_atk": 49,
+      "sp_def": 41,
+      "spd": 54
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "凡",
+    "role": "快攻手",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "霓裳",
+        "level": 28
+      }
+    ],
+    "evolves_into": "霓裳",
+    "evolve_level": 28,
+    "learnset": {}
+  },
+  "霓裳": {
+    "id": 307,
+    "name": "霓裳",
+    "type1": "光",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "role": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "铁渊甲": {
+    "id": 308,
+    "name": "铁渊甲",
+    "type1": "钢",
+    "type2": "水",
+    "base": {
+      "hp": 120,
+      "atk": 35,
+      "def": 160,
+      "sp_atk": 35,
+      "sp_def": 150,
+      "spd": 10
+    },
+    "catch_rate": 25,
+    "exp_yield": 195,
+    "growth_rate": "快速",
+    "desc": "深海深渊中行走的钢铁堡垒。背甲由特殊合金构成，能承受海底万米水压，尾巴末端的钢铁尾锤一击可粉碎礁石。",
+    "tier": "玄",
+    "role": "盾",
+    "gender_ratio": "50",
+    "height": "2.5",
+    "weight": "380.0",
+    "abilities": [
+      "坚硬爪子",
+      "激流"
+    ],
+    "evolutions": [],
+    "evolves_into": "",
+    "evolve_level": 0,
+    "learnset": {
+      "1": [
+        "撞击",
+        "摇尾巴",
+        "水枪"
+      ],
+      "5": [
+        "铁壁"
+      ],
+      "9": [
+        "盐水"
+      ],
+      "13": [
+        "头槌"
+      ],
+      "18": [
+        "铁头"
+      ],
+      "22": [
+        "热水"
+      ],
+      "28": [
+        "守住"
+      ],
+      "34": [
+        "陀螺球"
+      ],
+      "40": [
+        "自我再生"
+      ],
+      "48": [
+        "重磅冲撞"
+      ],
+      "55": [
+        "加农水炮"
+      ]
+    }
   }
 }

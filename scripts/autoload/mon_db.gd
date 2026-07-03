@@ -5,7 +5,8 @@ var moves:   Dictionary = {}
 var species: Dictionary = {}
 var items:   Dictionary = {}
 var dialogs: Dictionary = {}
-var trainers: Dictionary = {}  # 260630 Red 所有训练师数据
+var trainers: Dictionary = {}  # 260630 Red 所有训练师数据（运行时从 npcs.json 构建）
+var npcs: Dictionary = {}  # 260703 Red NPC总表
 var natures: Dictionary = {}  # 260702 Red 性格表（上升属性/下降属性各5%，中性性格up/down为空）
 var abilities: Dictionary = {}  # 260702 Red 特性表：{名: {desc, effect}}
 
@@ -128,7 +129,8 @@ func _ready() -> void:
 	_load_json("res://data/moves.json",   moves)
 	_load_json("res://data/items.json",   items)
 	_load_json("res://data/dialogs.json", dialogs)
-	_load_json("res://data/trainers.json", trainers)  # 260630 Red
+	_load_json("res://data/npcs.json", npcs)  # 260703 Red NPC+训练师合并
+	_build_trainers_from_npcs()
 	_load_json("res://data/natures.json", natures)  # 260702 Red
 	_load_json("res://data/abilities.json", abilities)  # 260702 Red
 	_load_species_json()
@@ -145,6 +147,18 @@ func _load_json(path: String, target: Dictionary) -> void:
 		push_error("MonDB: JSON 解析失败 %s – %s" % [path, json.get_error_message()])
 		return
 	target.merge(json.get_data(), true)
+
+# 260703 Red 从 npcs.json 构建 trainers dict，保持场景代码兼容
+func _build_trainers_from_npcs() -> void:
+	for npc_id in npcs:
+		var npc = npcs[npc_id]
+		if npc.has("trainer"):
+			var t = npc["trainer"].duplicate(true)
+			t["name"] = npc.get("name", "")
+			t["gender"] = npc.get("gender", "")
+			var tid = t.get("trainer_id", npc_id)
+			t["id"] = tid
+			trainers[tid] = t
 
 func _load_species_json() -> void:
 	var file = FileAccess.open("res://data/species.json", FileAccess.READ)
