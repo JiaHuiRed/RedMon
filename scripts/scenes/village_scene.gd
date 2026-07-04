@@ -32,9 +32,17 @@ var _battling: bool = false
 var _starter_alert_shown: bool = false
 var _lab_open: bool = false
 var _lab_panel: Control
+var _lab_dlg_label: Label
+var _lab_dialogs: Array = []
+var _lab_dialog_idx: int = 0
 const LINWEI_TILE := Vector2i(22, 6)
 const LAB_DOOR_TILE := Vector2i(21, 6)
 const HOME_DOOR_TILE := Vector2i(6, 7)
+
+# ── 260704 Red 遇敌草丛系统 ──────────────────────────────────────────────────
+var _grass_tiles: Array = []  # 遇敌草丛坐标
+const ENCOUNTER_RATE := 0.12  # 12% per step
+var _encounter_table: Array = []
 
 # ── 环境过场精灵（丰富画面，全程慢速游走，不参与战斗） ──────────────────────
 var _ambient_mons: Array = []  # [{node: Sprite2D, target: Vector2}]
@@ -51,20 +59,129 @@ func _ready() -> void:
 	elif GameState.rival_done:
 		_rival_done = true
 
-	_build_ground()
-	_build_buildings()
-	_build_npcs()
+	# 260704 Red .tscn 已包含静态节点(Ground/Buildings/NPCs/Decorations)
+	# 仅在纯脚本模式下创建（向后兼容）
+	if not has_node("Ground"):
+		_build_ground()
+	if not has_node("Buildings"):
+		_build_buildings()
+	if not has_node("NPCs"):
+		_build_npcs()
+		_build_labels()
+	# 260704 Red 研究所白底转透明（.tscn 和代码模式通用）
+	_fix_lab_background()
+	# 260704 Red 初始化遇敌系统
+	_setup_encounters()
+	_setup_camera()
 	_build_ambient_mons()
 	_build_rival()
 	_build_player()
 	_build_dialog()
-	_build_labels()
 	if GameState.rival_name.is_empty():
 		GameState.rival_name = "小敏"
 
 	if _rival_done:
 		_rival_leave()
-		call_deferred("_on_rival_battle_done")
+		# 260704 Red 只在本次战斗刚结束时弹提示，重新进村不再触发
+		if battle_result == "win":
+			call_deferred("_on_rival_battle_done")
+
+func _fix_lab_background() -> void:
+	# 260704 Red 使用裁剪好的透明版研究所图片
+	var lab_node = get_node_or_null("Buildings/Lab")
+	if not lab_node:
+		return
+	var cropped = _load_tex("res://assets/backgrounds/buildings/研究所_cropped.png")
+	if cropped:
+		lab_node.texture = cropped
+
+func _setup_encounters() -> void:
+	# 260704 Red 青木村遇敌：低等级精灵，适合新手练级
+	_encounter_table = MonDB.get_encounters("华灵草原")  # 共用草原遇敌表
+	# 扫描 Ground TileMapLayer 中的遇敌草丛 tile
+	var ground = get_node_or_null("Ground")
+	if ground and ground is TileMapLayer:
+		var used = ground.get_used_cells()
+		for cell in used:
+			var atlas = ground.get_cell_atlas_coords(cell)
+			if atlas == Vector2i(2, 0):  # 260704 Red 遇敌高草 tile（同华灵草原）
+				_grass_tiles.append(cell)
+	# 260704 Red 装饰物碰撞 + 边界墙
+	_build_tile_colliders()
+	_build_border_walls()
+
+func _build_tile_colliders() -> void:
+	# 260704 Red 给装饰性 tile（灌木/树/水）加碰撞，不含遇敌草丛
+	var ground = get_node_or_null("Ground")
+	if not ground or not ground is TileMapLayer:
+		return
+	var collision_tiles := [
+		Vector2i(0, 4),  # 灌木
+		Vector2i(4, 5),  # 树
+		Vector2i(7, 5),  # 栅栏
+		Vector2i(0, 5),  # 水1
+		Vector2i(1, 5),  # 水2
+		Vector2i(0, 6),  # 水3
+		Vector2i(1, 6),  # 水4
+	]
+	var used = ground.get_used_cells()
+	for cell in used:
+		var atlas = ground.get_cell_atlas_coords(cell)
+		if atlas in collision_tiles:
+			_add_collider(
+				Vector2(cell.x * TILE + TILE / 2, cell.y * TILE + TILE / 2),
+				Vector2(TILE, TILE))
+
+func _build_border_walls() -> void:
+	# 260704 Red 东西边界隐形墙，只留北(华灵草原)和南(碧溪镇)出口
+	# 西墙（整条）
+	_add_collider(Vector2(-TILE / 2, VH / 2), Vector2(TILE, VH))
+	# 东墙（整条）
+	_add_collider(Vector2(VW + TILE / 2, VH / 2), Vector2(TILE, VH))
+	# 北墙：左段 + 右段，中间留出口（col 13-16）
+	_add_collider(Vector2(6 * TILE, -TILE / 2), Vector2(13 * TILE, TILE))
+	_add_collider(Vector2(VW - 6 * TILE, -TILE / 2), Vector2(13 * TILE, TILE))
+	# 南墙：左段 + 右段，中间留出口（col 13-16）
+	_add_collider(Vector2(6 * TILE, VH + TILE / 2), Vector2(13 * TILE, TILE))
+	_add_collider(Vector2(VW - 6 * TILE, VH + TILE / 2), Vector2(13 * TILE, TILE))
+
+func _check_encounter() -> void:
+	if not GameState.has_starter or _dialog_active or _battling or _lab_open:
+		return
+	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+	if tile not in _grass_tiles:
+		return
+	if randf() > ENCOUNTER_RATE:
+		return
+	_trigger_encounter()
+
+func _trigger_encounter() -> void:
+	if _encounter_table.is_empty():
+		return
+	var roll = randf()
+	var cumulative = 0.0
+	var species_id = _encounter_table[0][0]
+	var level_min = _encounter_table[0][1]
+	var level_max = _encounter_table[0][2]
+	for entry in _encounter_table:
+		cumulative += entry[3] if entry.size() > 3 else (1.0 / _encounter_table.size())
+		if roll <= cumulative:
+			species_id = entry[0]
+			level_min = entry[1]
+			level_max = entry[2]
+			break
+	# 青木村等级比草原低一些
+	var lv = randi_range(maxi(level_min - 2, 2), maxi(level_max - 2, 3))
+	var wild = MonDB.make_mon(species_id, lv)
+	_battling = true
+	request_scene.emit("battle", {
+		"wild": wild,
+		"return_scene": "village",
+		"from_scene": "village"
+	})
+
+func _setup_camera() -> void:
+	pass  # 260704 Red 相机在 _build_player 中创建并设置限制
 
 # ── Ground (TileMap) ──────────────────────────────────────────────────────────
 func _make_tile_set() -> TileSet:
@@ -394,10 +511,12 @@ func _build_player() -> void:
 	_player = CharacterBody2D.new()
 	var data = get_meta("scene_data", {})
 	match data.get("spawn", ""):
-		"world":  # YYMMDD Red 从华灵草原南下进入，出生在北边缺口内侧
-			_player.position = Vector2(15 * TILE, TILE * 7 + 20)
-		"home":   # YYMMDD Red 从家出门，出生在家门口
-			_player.position = Vector2(HOME_DOOR_TILE.x * TILE, HOME_DOOR_TILE.y * TILE + TILE)
+		"world":  # 260704 Red 从华灵草原回来，出生在北边出口
+			_player.position = Vector2(15 * TILE, TILE * 2)
+		"home":   # 260704 Red 从家出门，出生在家门前
+			_player.position = Vector2(HOME_DOOR_TILE.x * TILE + TILE / 2, HOME_DOOR_TILE.y * TILE + TILE + 8)
+		"town":   # 从碧溪镇回来，出生在南出口
+			_player.position = Vector2(15 * TILE, (ROWS - 2) * TILE)
 		_:
 			_player.position = Vector2(15 * TILE, 12 * TILE)
 	add_child(_player)
@@ -552,22 +671,33 @@ func _physics_process(delta: float) -> void:
 	_player.position.x = clamp(_player.position.x, TILE, TILE * (COLS - 1))
 	_player.position.y = clamp(_player.position.y, TILE, TILE * (ROWS - 1))
 
-	# 260703 Red North exit → 地图北边缘(第1行)才跳转华灵草原
-	var col = int(_player.position.x / TILE)
-	if _player.position.y <= TILE * 2:
+	# 260704 Red 遇敌检测（仅移动中触发）
+	if moving:
+		_check_encounter()
+
+	# 260704 Red North exit → 贴近北边缘才弹确认对话
+	if _player.position.y <= TILE:
+		_player.position.y = TILE
 		if GameState.has_starter:
-			GameState.last_scene = "village"
-			request_scene.emit("world", {"spawn": "village"})
-			return
-		_player.position.y = TILE * 2
-		if not _starter_alert_shown:
-			_starter_alert_shown = true
-			_show_dialog("北边似乎传来了打斗的声音……\n是陈教授的声音！他好像被什么围住了！", 2)
+			if not _dialog_active:
+				_show_dialog("前方是华灵草原，要出发吗？\n【Z 确认 / X 返回】", 200)
+		else:
+			if not _starter_alert_shown:
+				_starter_alert_shown = true
+				_show_dialog("北边似乎传来了打斗的声音……\n是陈教授的声音！他好像被什么围住了！", 2)
 
 func _input(event: InputEvent) -> void:
-	# 260703 Red 研究所室内：X/Esc关闭
+	# 260704 Red 研究所室内：Z下一段对话，X离开
 	if _lab_open:
-		if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_accept"):
+		if event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			_lab_dialog_idx += 1
+			if _lab_dialog_idx >= _lab_dialogs.size():
+				_lab_dialog_idx = _lab_dialogs.size() - 2  # 回到最后两句常规对话循环
+				if _lab_dialog_idx < 0:
+					_lab_dialog_idx = 0
+			_lab_dlg_label.text = _lab_dialogs[_lab_dialog_idx]
+		elif event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled()
 			_close_lab()
 		return
@@ -575,6 +705,11 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
 			_advance_dialog()
+		elif event.is_action_pressed("ui_cancel") and _dialog_phase == 200:
+			# 260704 Red 北出口确认对话按X取消
+			get_viewport().set_input_as_handled()
+			_dialog_active = false
+			_dialog_panel.visible = false
 		return
 
 	if event.is_action_pressed("ui_accept"):
@@ -636,6 +771,11 @@ func _advance_dialog() -> void:
 			_dialog_active = false
 			_dialog_panel.visible = false
 			request_scene.emit("starter", {})
+		200:  # 260704 Red 北出口确认 → 跳转华灵草原
+			_dialog_active = false
+			_dialog_panel.visible = false
+			GameState.last_scene = "village"
+			request_scene.emit("world", {"spawn": "village"})
 		_:
 			_dialog_active = false
 			_dialog_panel.visible = false
@@ -700,55 +840,59 @@ func _open_lab() -> void:
 		bg.size = Vector2(VW, VH)
 		bg.color = Color(0.15, 0.15, 0.22)
 		_lab_panel.add_child(bg)
-	# 教授 sprite
+	# 260704 Red 教授 sprite（放大到合理比例）
 	var prof_tex = _load_tex("res://assets/npc/博士front.png")
 	if prof_tex:
 		var prof_spr = TextureRect.new()
 		prof_spr.texture = prof_tex
 		prof_spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		prof_spr.custom_minimum_size = Vector2(80, 80)
-		prof_spr.size = Vector2(80, 80)
-		prof_spr.position = Vector2(VW / 2 - 120, VH / 2 - 100)
+		prof_spr.custom_minimum_size = Vector2(160, 160)
+		prof_spr.size = Vector2(160, 160)
+		prof_spr.position = Vector2(VW / 2 - 200, VH / 2 - 160)
 		_lab_panel.add_child(prof_spr)
-	# 林薇 sprite
+	# 260704 Red 林薇 sprite（放大）
 	var lw_tex = _load_tex("res://assets/npc/林薇front.png")
 	if lw_tex:
 		var lw_spr = TextureRect.new()
 		lw_spr.texture = lw_tex
 		lw_spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		lw_spr.custom_minimum_size = Vector2(64, 64)
-		lw_spr.size = Vector2(64, 64)
-		lw_spr.position = Vector2(VW / 2 + 60, VH / 2 - 80)
+		lw_spr.custom_minimum_size = Vector2(140, 140)
+		lw_spr.size = Vector2(140, 140)
+		lw_spr.position = Vector2(VW / 2 + 80, VH / 2 - 140)
 		_lab_panel.add_child(lw_spr)
-	# 对话
+	# 260704 Red 多轮对话系统：Z 切换对话，X 离开
 	var dlg_bg = ColorRect.new()
 	dlg_bg.size = Vector2(VW, 70)
 	dlg_bg.position = Vector2(0, VH - 70)
 	dlg_bg.color = Color(0.05, 0.05, 0.12, 0.92)
 	_lab_panel.add_child(dlg_bg)
-	var dlg_lbl = Label.new()
-	dlg_lbl.size = Vector2(VW - 24, 60)
-	dlg_lbl.position = Vector2(12, VH - 66)
-	dlg_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	dlg_lbl.add_theme_color_override("font_color", Color.WHITE)
-	dlg_lbl.add_theme_font_size_override("font_size", 12)
-	_lab_panel.add_child(dlg_lbl)
-	# 根据进度显示对话
+	_lab_dlg_label = Label.new()
+	_lab_dlg_label.size = Vector2(VW - 24, 60)
+	_lab_dlg_label.position = Vector2(12, VH - 66)
+	_lab_dlg_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_lab_dlg_label.add_theme_color_override("font_color", Color.WHITE)
+	_lab_dlg_label.add_theme_font_size_override("font_size", 12)
+	_lab_panel.add_child(_lab_dlg_label)
+
+	# 构建对话队列
+	_lab_dialogs = []
 	if not GameState.items.has("精灵葫芦") or GameState.items.get("精灵葫芦", 0) == 0:
 		GameState.items["精灵葫芦"] = GameState.items.get("精灵葫芦", 0) + 3
 		GameState.save_game()
-		dlg_lbl.text = "陈教授：%s，你回来了！感谢你之前的帮忙。\n这是三个精灵葫芦，出门探险必备，拿去用吧！" % GameState.player_name
-	else:
-		dlg_lbl.text = "陈教授：去吧！华灵大陆上有无数精灵等着你去发现。\n遇到强大的训练师就勇敢挑战！"
-	# 林薇对话检查
+		_lab_dialogs.append("陈教授：%s，你回来了！感谢你之前的帮忙。\n这是三个精灵葫芦，出门探险必备，拿去用吧！" % GameState.player_name)
 	if not GameState.has_running_shoes:
 		GameState.has_running_shoes = true
 		GameState.save_game()
-		dlg_lbl.text = "林薇：%s，恭喜你拿到了第一只精灵！\n教授让我把这双跑步鞋给你——穿上会走得更快哦！\n\n获得了【跑步鞋】！" % GameState.player_name
-	# 提示
+		_lab_dialogs.append("林薇：%s，恭喜你拿到了第一只精灵！\n教授让我把这双跑步鞋给你——穿上会走得更快哦！\n\n获得了【跑步鞋】！" % GameState.player_name)
+	# 常规对话（可重复触发）
+	_lab_dialogs.append("陈教授：华灵大陆上有无数精灵等着你去发现。\n遇到强大的训练师就勇敢挑战！")
+	_lab_dialogs.append("林薇：多抓一些精灵吧！每捕获10只我会给你奖励哦～")
+	_lab_dialog_idx = 0
+	_lab_dlg_label.text = _lab_dialogs[0]
+
 	var hint = Label.new()
-	hint.text = "【X/Esc 离开研究所】"
-	hint.position = Vector2(VW - 170, VH - 18)
+	hint.text = "【Z 继续对话 / X 离开研究所】"
+	hint.position = Vector2(VW - 230, VH - 18)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	hint.add_theme_font_size_override("font_size", 10)
 	_lab_panel.add_child(hint)

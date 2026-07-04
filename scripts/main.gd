@@ -62,22 +62,27 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		await get_tree().process_frame
 		_current = null
 
-	var script: GDScript
-	match scene_name:
-		"title":       script = load("res://scripts/scenes/title_scene.gd")
-		"char_create": script = load("res://scripts/scenes/char_create_scene.gd")
-		"starter":     script = load("res://scripts/scenes/starter_scene.gd")
-		"home":        script = load("res://scripts/scenes/home_scene.gd")
-		"village":     script = load("res://scripts/scenes/village_scene.gd")
-		"town":        script = load("res://scripts/scenes/town_scene.gd")
-		"gym":         script = load("res://scripts/scenes/gym_scene.gd")
-		"world":       script = load("res://scripts/scenes/world_scene.gd")
-		"battle":      script = load("res://scripts/scenes/battle_scene.gd")
-		_:
-			push_error("Unknown scene: " + scene_name)
-			return
-
-	_current = script.new()
+	# 260704 Red .tscn 场景优先，纯脚本场景 fallback
+	var _TSCN_SCENES := {
+		"village": "res://scenes/village.tscn",
+	}
+	if _TSCN_SCENES.has(scene_name):
+		_current = load(_TSCN_SCENES[scene_name]).instantiate()
+	else:
+		var script: GDScript
+		match scene_name:
+			"title":       script = load("res://scripts/scenes/title_scene.gd")
+			"char_create": script = load("res://scripts/scenes/char_create_scene.gd")
+			"starter":     script = load("res://scripts/scenes/starter_scene.gd")
+			"home":        script = load("res://scripts/scenes/home_scene.gd")
+			"town":        script = load("res://scripts/scenes/town_scene.gd")
+			"gym":         script = load("res://scripts/scenes/gym_scene.gd")
+			"world":       script = load("res://scripts/scenes/world_scene.gd")
+			"battle":      script = load("res://scripts/scenes/battle_scene.gd")
+			_:
+				push_error("Unknown scene: " + scene_name)
+				return
+		_current = script.new()
 	_current.set_meta("scene_data", data)
 	add_child(_current)
 	_scene_name = scene_name
