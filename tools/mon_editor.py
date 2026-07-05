@@ -974,8 +974,22 @@ class App:
         # Patch comboboxes into misc layout
         self.mon_growth = ttk.Combobox(misc, values=GROWTH, width=8, state="readonly")
         self.mon_growth.grid(row=1, column=1, sticky="w", pady=2)
-        self.mon_gender = ttk.Combobox(misc, values=GENDERS, width=12, state="normal")
-        self.mon_gender.grid(row=1, column=4, sticky="w", pady=2)
+
+        # 性别比例 → Scale 滑动条(雌性%) + 无性别复选框
+        self._gender_asexual = tk.BooleanVar(value=False)
+        self.mon_gender_frame = tk.Frame(misc, bg=BG_MAIN)
+        self.mon_gender_frame.grid(row=1, column=3, columnspan=3, sticky="w", pady=2)
+        self.mon_gender_slider = tk.Scale(
+            self.mon_gender_frame, from_=0, to=100, orient="horizontal",
+            length=100, showvalue=True, bg=BG_MAIN, fg=TEXT_PRI,
+            highlightthickness=0, tickinterval=50, resolution=0.5)
+        self.mon_gender_slider.pack(side="left")
+        self.gender_asexual_chk = tk.Checkbutton(
+            self.mon_gender_frame, text="无性别", variable=self._gender_asexual,
+            bg=BG_MAIN, fg=TEXT_PRI, selectcolor=BG_CARD,
+            activebackground=BG_MAIN,
+            command=self._toggle_gender_asexual)
+        self.gender_asexual_chk.pack(side="left", padx=(4, 0))
 
         # 图鉴描述（放在左侧列身高体重下方）260702 Red
         _lbl(misc_desc_col, "图鉴描述", bg=BG_MAIN).pack(anchor="w", pady=(8, 2))
@@ -1150,7 +1164,7 @@ class App:
         self.mon_exp.delete(0, "end")
         self.mon_exp.insert(0, str(d.get("exp_yield", 0)))
         self.mon_growth.set(d.get("growth_rate", ""))
-        self.mon_gender.set(d.get("gender_ratio", ""))
+        self._load_gender_ratio(d.get("gender_ratio", "50/50"))
 
         # height / weight — backward-compat: parse old size_info if needed
         height = d.get("height", "")
@@ -1199,6 +1213,34 @@ class App:
 
         self._refresh_evo_compare(name, d)
         self._load_sprite(name)
+
+    # ── 性别比例辅助 ──────────────────────────────────────────────────────────
+    def _load_gender_ratio(self, val: str) -> None:
+        if val == "无性别":
+            self._gender_asexual.set(True)
+            self.mon_gender_slider.config(state="disabled")
+        else:
+            self._gender_asexual.set(False)
+            self.mon_gender_slider.config(state="normal")
+            parts = val.split("/")
+            if len(parts) == 2:
+                try:
+                    self.mon_gender_slider.set(float(parts[1]))
+                except ValueError:
+                    pass
+
+    def _save_gender_ratio(self) -> str:
+        if self._gender_asexual.get():
+            return "无性别"
+        f = self.mon_gender_slider.get()
+        m, f = round(100.0 - f, 1), round(f, 1)
+        m = int(m) if m == int(m) else m
+        f = int(f) if f == int(f) else f
+        return f"{m}/{f}"
+
+    def _toggle_gender_asexual(self) -> None:
+        self.mon_gender_slider.config(
+            state="disabled" if self._gender_asexual.get() else "normal")
 
     def _load_sprite(self, name):
         if not HAS_PIL:
@@ -1855,7 +1897,7 @@ class App:
             "desc":        self.mon_desc.get("1.0", "end-1c").strip(),
             "tier":        self.mon_tier.get(),
 
-            "gender_ratio": self.mon_gender.get(),
+            "gender_ratio": self._save_gender_ratio(),
             "height":      self.mon_height.get().strip(),
             "weight":      self.mon_weight.get().strip(),
             "abilities":   [self.mon_ability1.get(), self.mon_ability2.get()],

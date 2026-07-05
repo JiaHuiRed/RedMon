@@ -65,6 +65,9 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 	# 260704 Red .tscn 场景优先，纯脚本场景 fallback
 	var _TSCN_SCENES := {
 		"village": "res://scenes/village.tscn",
+		"world":   "res://scenes/world.tscn",
+		"town":    "res://scenes/town.tscn",
+		"gym":     "res://scenes/gym.tscn",
 	}
 	if _TSCN_SCENES.has(scene_name):
 		_current = load(_TSCN_SCENES[scene_name]).instantiate()

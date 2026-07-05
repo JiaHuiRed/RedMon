@@ -23,20 +23,10 @@ const WALK_FRAME_SEC := 0.15    # 每帧间隔
 var _battling: bool = false
 var _hud: Control
 
-# 灵疗所
-const CLINIC_DOOR_TILE := Vector2i(26, 4)
 var _dialog_active: bool = false
-var _dialog_phase: int = 0   # 0=greeting 1=healed  (clinic); 100=trainer_before 101=trainer_win (trainer)
+var _dialog_phase: int = 0   # 100=trainer_before 101=trainer_win (trainer); 200=npc_dialog
 var _dialog_panel: Control
 var _dialog_label: Label
-
-# 商店
-const SHOP_DOOR_TILE := Vector2i(20, 4)
-var SHOP_ITEMS := ["精灵葫芦", "铜丹", "银丹", "金丹", "铁丹"]  # 从 MonDB.items 加载
-var _shop_active: bool = false
-var _shop_cursor: int  = 0
-var _shop_panel:  Control
-var _shop_result_label: Label
 
 # 静态NPC（不战斗，按Z对话）
 const STATIC_NPCS := []  # 260703 Red 移除占位NPC，草原上不放教授
@@ -72,7 +62,29 @@ var ENCOUNTER_TABLE: Array = []
 func _ready() -> void:
 	ENCOUNTER_TABLE = MonDB.get_encounters("华灵草原")
 	_load_trainer_data()
-	_build_world()
+
+	# 260705 Red .tscn 混合模式
+	_setup_ground()
+	_place_flowers()
+	_place_trees()
+	_build_signpost()
+
+	_build_npcs()
+	_build_trainers()
+	_build_player()
+	_build_hud()
+	_build_dialog()
+	_build_menu()
+	print("[WORLD] 华灵草原")
+
+# 260705 Red 复用 .tscn 中的 Ground，为空则代码生成
+func _setup_ground() -> void:
+	var ground = get_node_or_null("Ground")
+	if ground and ground is TileMapLayer:
+		_tilemap = ground
+	else:
+		_setup_tilemap()
+	_paint_terrain()
 
 # 260630 Red 从 trainers.json 合并训练师数据
 func _load_trainer_data() -> void:
@@ -83,28 +95,14 @@ func _load_trainer_data() -> void:
 		t["team"]          = td.get("team", [])
 		t["reward"]        = td.get("reward", 100)
 		t["dialog_before"] = td.get("dialog_before", "……！")
-		t["dialog_win"]    = td.get("dialog_win", "……")
+		t["dialog_win"]          = td.get("dialog_win", "……")
+		t["dialog_after"]        = td.get("dialog_after", "")
+		t["dialog_player_lose"]  = td.get("dialog_player_lose", "")
+		t["difficulty"]          = td.get("difficulty", 0)
 		TRAINERS.append(t)
-	_build_signpost()
-	_build_clinic()
-	_build_shop()
-	_build_npcs()
-	_build_trainers()
-	_build_player()
-	_build_hud()
-	_build_dialog()
-	_build_shop_panel()
-	_build_menu()
-	print("[WORLD] 华灵草原")
 
 # ── World construction ───────────────────────────────────────────────────────
 var _tilemap: TileMap
-
-func _build_world() -> void:
-	_setup_tilemap()
-	_paint_terrain()
-	_place_flowers()
-	_place_trees()
 
 func _setup_tilemap() -> void:
 	var tileset := TileSet.new()
@@ -280,142 +278,7 @@ func _add_collider(pos: Vector2, size: Vector2) -> void:
 	body.add_child(shape)
 	add_child(body)
 
-func _build_clinic() -> void:
-	# Building occupies col 24-28, row 1-3 (top-right open area)
-	var bx: int = 24 * TILE
-	var by: int = 1 * TILE
-	var bw: int = 5 * TILE   # 80px
-	var bh: int = 3 * TILE   # 48px
 
-	# Wall (light pink/cream)
-	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
-	wall_img.fill(Color(0.98, 0.88, 0.90))
-	# Window (left)
-	wall_img.fill_rect(Rect2i(8, 10, 18, 16), Color(0.60, 0.82, 0.96))
-	wall_img.fill_rect(Rect2i(8, 10, 18, 1),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 25, 18, 1),  Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 10, 1,  16), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(25, 10, 1, 16), Color(0.30, 0.30, 0.30))
-	# Window cross
-	wall_img.fill_rect(Rect2i(16, 10, 1, 16), Color(0.30, 0.30, 0.30))
-	wall_img.fill_rect(Rect2i(8, 17,  18, 1), Color(0.30, 0.30, 0.30))
-	# Door (center-right)
-	wall_img.fill_rect(Rect2i(34, 14, 16, 18), Color(0.62, 0.38, 0.20))
-	wall_img.fill_rect(Rect2i(35, 15, 14, 16), Color(0.78, 0.52, 0.30))
-	# Red cross symbol (right of window)
-	wall_img.fill_rect(Rect2i(58, 10, 6, 18), Color(0.88, 0.12, 0.12))
-	wall_img.fill_rect(Rect2i(53, 15, 16, 8), Color(0.88, 0.12, 0.12))
-	# Outline
-	for x in range(bw):
-		wall_img.set_pixel(x, 0, Color(0.40, 0.20, 0.20))
-		wall_img.set_pixel(x, bh - 1, Color(0.40, 0.20, 0.20))
-	for y in range(bh):
-		wall_img.set_pixel(0, y,      Color(0.40, 0.20, 0.20))
-		wall_img.set_pixel(bw - 1, y, Color(0.40, 0.20, 0.20))
-
-	var wall_tex = ImageTexture.new()
-	wall_tex.set_image(wall_img)
-	var wall_spr = Sprite2D.new()
-	wall_spr.texture = wall_tex
-	wall_spr.offset = Vector2(bw / 2.0, bh / 2.0)
-	wall_spr.position = Vector2(bx, by)
-	wall_spr.z_index = 2
-	add_child(wall_spr)
-
-	_add_collider(Vector2(bx + bw / 2.0, by + bh / 2.0), Vector2(bw, bh))
-
-	# Roof (dark red, triangle via stacked rects)
-	var roof_img = Image.create(bw + 8, 20, false, Image.FORMAT_RGBA8)
-	roof_img.fill(Color(0, 0, 0, 0))
-	var roof_color = Color(0.70, 0.14, 0.14)
-	var dark_roof  = Color(0.50, 0.08, 0.08)
-	for i in range(10):
-		var rw = bw + 8 - i * 2
-		var rx = i
-		roof_img.fill_rect(Rect2i(rx, i * 2, rw, 2), roof_color)
-	# Shadow line at bottom of roof
-	roof_img.fill_rect(Rect2i(0, 18, bw + 8, 2), dark_roof)
-	var roof_tex = ImageTexture.new()
-	roof_tex.set_image(roof_img)
-	var roof_spr = Sprite2D.new()
-	roof_spr.texture = roof_tex
-	roof_spr.offset = Vector2((bw + 8) / 2.0, 0)
-	roof_spr.position = Vector2(bx - 4, by - 16)
-	roof_spr.z_index = 3
-	add_child(roof_spr)
-
-	# "灵疗所" sign above door
-	var sign_lbl = Label.new()
-	sign_lbl.text = "灵疗所"
-	sign_lbl.position = Vector2(bx + 28, by - 2)
-	sign_lbl.add_theme_color_override("font_color", Color(0.80, 0.10, 0.10))
-	sign_lbl.add_theme_font_size_override("font_size", 9)
-	sign_lbl.z_index = 4
-	add_child(sign_lbl)
-
-func _build_shop() -> void:
-	# 商店在诊所左边：col 19-22, row 1-3
-	var bx: int = 19 * TILE
-	var by: int = 1  * TILE
-	var bw: int = 4  * TILE   # 64px
-	var bh: int = 3  * TILE   # 48px
-
-	var wall_img = Image.create(bw, bh, false, Image.FORMAT_RGBA8)
-	wall_img.fill(Color(0.82, 0.92, 0.98))   # 淡蓝
-	# 窗口
-	wall_img.fill_rect(Rect2i(6, 8, 16, 14), Color(0.50, 0.75, 0.95))
-	wall_img.fill_rect(Rect2i(6, 8, 16, 1),  Color(0.20, 0.20, 0.25))
-	wall_img.fill_rect(Rect2i(6, 21, 16, 1), Color(0.20, 0.20, 0.25))
-	wall_img.fill_rect(Rect2i(6, 8, 1, 14),  Color(0.20, 0.20, 0.25))
-	wall_img.fill_rect(Rect2i(21, 8, 1, 14), Color(0.20, 0.20, 0.25))
-	wall_img.fill_rect(Rect2i(13, 8, 1, 14), Color(0.20, 0.20, 0.25))
-	# 门
-	wall_img.fill_rect(Rect2i(28, 14, 14, 18), Color(0.50, 0.30, 0.15))
-	wall_img.fill_rect(Rect2i(29, 15, 12, 16), Color(0.70, 0.48, 0.28))
-	# 钱币符号
-	for y in range(10, 20):
-		for x in range(44, 56):
-			var dx = x - 50; var dy = y - 15
-			if dx*dx + dy*dy <= 22:
-				wall_img.set_pixel(x, y, Color(0.95, 0.78, 0.10))
-	wall_img.fill_rect(Rect2i(49, 9, 2, 3),  Color(0.80, 0.60, 0.05))
-	# 外框
-	for x in range(bw):
-		wall_img.set_pixel(x, 0, Color(0.25, 0.35, 0.55))
-		wall_img.set_pixel(x, bh-1, Color(0.25, 0.35, 0.55))
-	for y in range(bh):
-		wall_img.set_pixel(0, y, Color(0.25, 0.35, 0.55))
-		wall_img.set_pixel(bw-1, y, Color(0.25, 0.35, 0.55))
-
-	var wall_tex = ImageTexture.new(); wall_tex.set_image(wall_img)
-	var wall_spr = Sprite2D.new()
-	wall_spr.texture = wall_tex
-	wall_spr.offset = Vector2(bw/2.0, bh/2.0)
-	wall_spr.position = Vector2(bx, by)
-	wall_spr.z_index = 2; add_child(wall_spr)
-
-	_add_collider(Vector2(bx + bw / 2.0, by + bh / 2.0), Vector2(bw, bh))
-
-	# 屋顶（蓝色调）
-	var roof_img = Image.create(bw+8, 20, false, Image.FORMAT_RGBA8)
-	roof_img.fill(Color(0, 0, 0, 0))
-	var rc = Color(0.22, 0.40, 0.75); var rcd = Color(0.14, 0.28, 0.55)
-	for i in range(10):
-		roof_img.fill_rect(Rect2i(i, i*2, bw+8-i*2, 2), rc)
-	roof_img.fill_rect(Rect2i(0, 18, bw+8, 2), rcd)
-	var roof_tex = ImageTexture.new(); roof_tex.set_image(roof_img)
-	var roof_spr = Sprite2D.new()
-	roof_spr.texture = roof_tex
-	roof_spr.offset = Vector2((bw+8)/2.0, 0)
-	roof_spr.position = Vector2(bx-4, by-16)
-	roof_spr.z_index = 3; add_child(roof_spr)
-
-	var sign_lbl = Label.new()
-	sign_lbl.text = "道具店"
-	sign_lbl.position = Vector2(bx + 10, by - 2)
-	sign_lbl.add_theme_color_override("font_color", Color(0.10, 0.20, 0.70))
-	sign_lbl.add_theme_font_size_override("font_size", 9)
-	sign_lbl.z_index = 4; add_child(sign_lbl)
 
 func _build_npcs() -> void:
 	for npc in STATIC_NPCS:
@@ -488,47 +351,7 @@ func _draw_trainer(initial: String) -> ImageTexture:
 	var tex = ImageTexture.new(); tex.set_image(img)
 	return tex
 
-func _build_shop_panel() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
-	_shop_panel = Control.new(); _shop_panel.visible = false; cl.add_child(_shop_panel)
 
-	# 背景
-	var bg = ColorRect.new()
-	bg.size = Vector2(220, 200); bg.position = Vector2(130, 60)
-	bg.color = Color(0.04, 0.06, 0.18, 0.96); _shop_panel.add_child(bg)
-	var border = ColorRect.new()
-	border.size = Vector2(220, 2); border.position = Vector2(130, 60)
-	border.color = Color(0.50, 0.70, 1.0); _shop_panel.add_child(border)
-
-	# 标题
-	var title = Label.new(); title.text = "■ 道具店"
-	title.position = Vector2(142, 66)
-	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-	title.add_theme_font_size_override("font_size", 12); _shop_panel.add_child(title)
-
-	# 金币
-	var money_lbl = Label.new(); money_lbl.name = "ShopMoney"
-	money_lbl.position = Vector2(268, 66)
-	money_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-	money_lbl.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(money_lbl)
-
-	# 商品列表（创建好，刷新时设文字）
-	for i in range(SHOP_ITEMS.size()):
-		var row_lbl = Label.new(); row_lbl.name = "ShopRow%d" % i
-		row_lbl.position = Vector2(142, 90 + i * 22)
-		row_lbl.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(row_lbl)
-
-	# 操作结果提示
-	_shop_result_label = Label.new()
-	_shop_result_label.position = Vector2(142, 200)
-	_shop_result_label.add_theme_font_size_override("font_size", 10)
-	_shop_result_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
-	_shop_panel.add_child(_shop_result_label)
-
-	var hint = Label.new(); hint.text = "↑↓选择  Z购买  X/Esc离开"
-	hint.position = Vector2(134, 244)
-	hint.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
-	hint.add_theme_font_size_override("font_size", 9); _shop_panel.add_child(hint)
 
 func _build_dialog() -> void:
 	# Fixed-screen dialog box (CanvasLayer so it ignores camera)
@@ -756,42 +579,8 @@ func _build_hud() -> void:
 	_hud.add_child(key_hint)
 
 # ── Movement & encounter ─────────────────────────────────────────────────────
-func _refresh_shop_panel() -> void:
-	var money_lbl = _shop_panel.get_node_or_null("ShopMoney")
-	if money_lbl: money_lbl.text = "%dG" % GameState.money
-	for i in range(SHOP_ITEMS.size()):
-		var item_key = SHOP_ITEMS[i]
-		var item_def = MonDB.items.get(item_key, {})
-		var row  = _shop_panel.get_node_or_null("ShopRow%d" % i)
-		if not row: continue
-		var sel = (i == _shop_cursor)
-		row.text = ("%s%s  %dG" % ["▶ " if sel else "  ", item_def.get("name", item_key), item_def.get("price", 0)])
-		row.add_theme_color_override("font_color",
-			Color.WHITE if sel else Color(0.70, 0.70, 0.85))
-
-func _open_shop() -> void:
-	_shop_active = true; _shop_cursor = 0
-	_shop_result_label.text = ""
-	_shop_panel.visible = true
-	_refresh_shop_panel()
-
-func _close_shop() -> void:
-	_shop_active = false; _shop_panel.visible = false
-
-func _shop_buy() -> void:
-	var item_key = SHOP_ITEMS[_shop_cursor]
-	var item_def = MonDB.items.get(item_key, {})
-	var price = item_def.get("price", 0)
-	if GameState.money < price:
-		_shop_result_label.text = "钱不够！"
-		return
-	GameState.money -= price
-	GameState.items[item_key] = GameState.items.get(item_key, 0) + 1
-	_shop_result_label.text = "购买了%s！" % item_def.get("name", item_key)
-	_refresh_shop_panel()
-
 func _physics_process(_delta: float) -> void:
-	if _battling or _dialog_active or _menu_active or _shop_active:
+	if _battling or _dialog_active or _menu_active:
 		return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
@@ -822,7 +611,6 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_menu"):
 		get_viewport().set_input_as_handled()
 		if _dialog_active: return
-		if _shop_active:   _close_shop(); return
 		if _menu_active:
 			if _menu_sub != "":
 				_menu_sub = ""; _menu_cursor = 0; _refresh_menu()
@@ -836,7 +624,6 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		if _dialog_active: return
-		if _shop_active:   _close_shop(); return
 		if _menu_active:
 			if _menu_sub != "":
 				_menu_sub = ""; _menu_cursor = 0; _refresh_menu()
@@ -850,20 +637,6 @@ func _input(event: InputEvent) -> void:
 			_advance_dialog()
 		return
 
-	if _shop_active:
-		if event.is_action_pressed("ui_up"):
-			get_viewport().set_input_as_handled()
-			_shop_cursor = (_shop_cursor - 1 + SHOP_ITEMS.size()) % SHOP_ITEMS.size()
-			_shop_result_label.text = ""; _refresh_shop_panel()
-		elif event.is_action_pressed("ui_down"):
-			get_viewport().set_input_as_handled()
-			_shop_cursor = (_shop_cursor + 1) % SHOP_ITEMS.size()
-			_shop_result_label.text = ""; _refresh_shop_panel()
-		elif event.is_action_pressed("ui_accept"):
-			get_viewport().set_input_as_handled()
-			_shop_buy()
-		return
-
 	if _menu_active:
 		_handle_menu_nav(event)
 		return
@@ -871,15 +644,11 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 		if tile.y <= 1 and tile.x >= 12 and tile.x <= 17:
-			GameState.last_scene = "world"  # YYMMDD Red
+			GameState.last_scene = "world"
 			request_scene.emit("town", {})
-		elif tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:  # YYMMDD Red 南边缺口 → 青木村
+		elif tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:
 			GameState.last_scene = "world"
 			request_scene.emit("village", {"spawn": "world"})
-		elif tile == CLINIC_DOOR_TILE:
-			_open_clinic()
-		elif tile == SHOP_DOOR_TILE:
-			_open_shop()
 		else:
 			_try_talk_npc()
 
@@ -899,20 +668,8 @@ func _try_talk_npc() -> void:
 			_dialog_label.text = _npc_dialog_lines[0]
 			return
 
-func _open_clinic() -> void:
-	_dialog_active = true
-	_dialog_phase = 0
-	_dialog_panel.visible = true
-	_dialog_label.text = MonDB.dlg("world", "clinic_greeting")
-
 func _advance_dialog() -> void:
 	match _dialog_phase:
-		0:  # 灵疗所问候
-			_heal_all_mons()
-			_dialog_phase = 1
-			_dialog_label.text = MonDB.dlg("world", "clinic_healed")
-		1:  # 灵疗所结束
-			_dialog_active = false; _dialog_panel.visible = false; _update_hud()
 		100:  # 训练师挑战确认 → 开战
 			_dialog_active = false; _dialog_panel.visible = false
 			_battling = true

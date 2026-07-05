@@ -85,26 +85,29 @@ func _build_town() -> void:
 	# Center fountain
 	_draw_fountain(14, 9)
 
-	# Houses
-	_draw_house_sprite(3, 1, 5, 4, "res://assets/backgrounds/buildings/精灵堂.png")   # 精灵堂 (治疗+仓库, left)
-	_draw_house_sprite(20, 1, 5, 4, "res://assets/backgrounds/buildings/杂货铺.png")  # 杂货铺 (right)
+	# .tscn 未提供 Buildings 节点时用代码生成精灵堂+杂货铺
+	if not has_node("Buildings"):
+		_draw_house_sprite(3, 1, 5, 4, "res://assets/backgrounds/buildings/精灵堂.png")   # 精灵堂 (治疗+仓库, left)
+		_draw_house_sprite(20, 1, 5, 4, "res://assets/backgrounds/buildings/杂货铺.png")  # 杂货铺 (right)
+
+		# Signs on buildings
+		var clinic_sign = Label.new()
+		clinic_sign.text = "精灵堂"
+		clinic_sign.position = Vector2(5 * TILE + 8, 4)
+		clinic_sign.add_theme_color_override("font_color", Color(0.80, 0.10, 0.10))
+		clinic_sign.add_theme_font_size_override("font_size", 10)
+		clinic_sign.z_index = 8; add_child(clinic_sign)
+
+		var shop_sign = Label.new()
+		shop_sign.text = "杂货铺"
+		shop_sign.position = Vector2(22 * TILE + 12, 4)
+		shop_sign.add_theme_color_override("font_color", Color(0.10, 0.20, 0.70))
+		shop_sign.add_theme_font_size_override("font_size", 10)
+		shop_sign.z_index = 8; add_child(shop_sign)
+	
+	# 代码生成的民居（不在 .tscn 中）
 	_draw_house(2, 13, 4, 3, Color(0.90, 0.85, 0.75))    # 民居1
 	_draw_house(22, 13, 4, 3, Color(0.92, 0.80, 0.72))   # 民居2
-
-	# Signs on buildings
-	var clinic_sign = Label.new()
-	clinic_sign.text = "精灵堂"
-	clinic_sign.position = Vector2(5 * TILE + 8, 4)
-	clinic_sign.add_theme_color_override("font_color", Color(0.80, 0.10, 0.10))
-	clinic_sign.add_theme_font_size_override("font_size", 10)
-	clinic_sign.z_index = 8; add_child(clinic_sign)
-
-	var shop_sign = Label.new()
-	shop_sign.text = "杂货铺"
-	shop_sign.position = Vector2(22 * TILE + 12, 4)
-	shop_sign.add_theme_color_override("font_color", Color(0.10, 0.20, 0.70))
-	shop_sign.add_theme_font_size_override("font_size", 10)
-	shop_sign.z_index = 8; add_child(shop_sign)
 
 	# Town name
 	var name_lbl = Label.new()

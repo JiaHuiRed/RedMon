@@ -14,6 +14,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.12.6] - 2026-07-05
+
+> 训练师数据系统升级 + 战斗难度分档 + 编辑器性别滑动条 + 素材目录清理
+
+#### Added
+- **训练师数据格式升级**：`data/npcs.json` 8 位训练师新增 `dialog_intro` / `dialog_lose` / `dialog_after` / `dialog_player_lose` + `class`（普通/学徒/馆主/天王）+ `difficulty`（0/64/128/192）+ 每只精灵 `moves: []` 和 `item: ""`
+- **战斗 IV 分档**：`battle_scene.gd` `_calc_trainer_ivs(difficulty)` 按难度级差生成 IV（普通 0-4、学徒 4-12、馆主 12-20、四天王 19-27），训练师精灵创建时自动传入
+- **战后对话**：训练师全队倒下弹出 `dialog_after` 后再结算奖金，玩家全灭弹出 `dialog_player_lose` 后再判定失败
+- **编辑器性别滑动条**：`mon_editor.py` 原 Combobox 下拉改为 `tk.Scale` 滑动条（雌性% 0-100）+ 无性别复选框
+- **难度分档透传**：`world_scene.gd` / `gym_scene.gd` 读取并传递 `dialog_after` / `dialog_player_lose` / `difficulty` 到战斗场景
+
+#### Removed
+- **孤儿素材文件**：删除 `assets/sprites/npc/` 下 33 个残留 `.import` 文件（素材已移至 `assets/npc/`）
+
+### [0.12.5] - 2026-07-05
+
+> world/town/gym 三地图 .tscn 可视化迁移 + 华灵草原删建筑 + 旧脚本精简
+
+#### Added
+- **world.tscn 可视化场景**：华灵草原从纯代码迁移到 .tscn + 脚本混合模式，Ground TileMapLayer 容器预置
+- **town.tscn 可视化场景**：碧溪镇精灵堂+杂货铺建筑 Sprite2D 移至 .tscn，带碰撞体
+- **gym.tscn 可视化场景**：翠竹馆背景/站台/馆名牌/出口移至 .tscn
+- **main.gd .tscn 注册**：world/town/gym 全部加入 `_TSCN_SCENES` 字典
+- **world_scene.gd 混合模式**：`_setup_ground()` 复用 .tscn TileMapLayer，为空则代码填充
+
+#### Removed
+- **华灵草原两栋建筑**：删除灵疗所 + 道具店（`_build_clinic`, `_build_shop` 等 8 个函数及相关常量和变量）
+- **商店系统**：华灵草原的商店面板、购买逻辑、仓库访问入口一并移除
+- **诊所对话**：华灵草原的宿屋回复对话流程移除
+
+#### Changed
+- **town_scene.gd 混合模式**：精灵堂/杂货铺从代码生成改为 .tscn 容器节点，民居1/民居2 仍在代码
+- **gym_scene.gd 混合模式**：Room 容器节点跳过代码生成，`_build_floor()` 独立为始终运行的棋盘格地板
+
 ### [0.12.4] - 2026-07-04
 
 > 青木村 .tscn 可视化迁移 + 装饰碰撞 + 边界墙 + 遇敌草丛 + 旧脚本清理

@@ -66,14 +66,20 @@ func _load_trainer_data() -> void:
 		g["name"]   = td.get("name", "学徒")
 		g["team"]   = td.get("team", [])
 		g["reward"] = td.get("reward", 200)
-		g["before"] = td.get("dialog_before", "……！")
-		g["after"]  = td.get("dialog_win", "……")
+		g["before"]            = td.get("dialog_before", "……！")
+		g["after"]             = td.get("dialog_win", "......")
+		g["dialog_after"]      = td.get("dialog_after", "")
+		g["dialog_player_lose"] = td.get("dialog_player_lose", "")
+		g["difficulty"]        = td.get("difficulty", 0)
 		_guards.append(g)
 	var ltd = MonDB.trainers.get(LEADER_LAYOUT["id"], {})
 	_leader = LEADER_LAYOUT.duplicate()
-	_leader["name"]   = ltd.get("name", "馆主")
-	_leader["team"]   = ltd.get("team", [])
-	_leader["reward"] = ltd.get("reward", 1000)
+	_leader["name"]            = ltd.get("name", "馆主")
+	_leader["team"]            = ltd.get("team", [])
+	_leader["reward"]          = ltd.get("reward", 1000)
+	_leader["dialog_after"]    = ltd.get("dialog_after", "")
+	_leader["dialog_player_lose"] = ltd.get("dialog_player_lose", "")
+	_leader["difficulty"]      = ltd.get("difficulty", 0)
 	_build_guards()
 	_build_leader()
 	_build_player()
@@ -84,6 +90,10 @@ func _load_trainer_data() -> void:
 
 # ── 室内绘制 ──────────────────────────────────────────────────────────────────
 func _build_room() -> void:
+	if has_node("Room"):
+		_build_floor()
+		return
+
 	# 260630 Red 翠竹馆内背景（有图用图，无图用纯色）
 	var bg_path = "res://assets/backgrounds/翠竹馆内.png"
 	if ResourceLoader.exists(bg_path):
@@ -99,14 +109,7 @@ func _build_room() -> void:
 		wall.color = Color(0.18, 0.28, 0.14)
 		add_child(wall)
 
-	# 竹木地板
-	for r in range(2, ROWS - 1):
-		for c in range(1, COLS - 1):
-			var tile_bg = ColorRect.new()
-			tile_bg.size    = Vector2(TILE - 1, TILE - 1)
-			tile_bg.position = Vector2(c * TILE, r * TILE)
-			tile_bg.color   = Color(0.52, 0.68, 0.38) if (c + r) % 2 == 0 else Color(0.47, 0.62, 0.33)
-			add_child(tile_bg)
+	_build_floor()
 
 	# 出口（底部中央）
 	var exit_lbl = Label.new()
@@ -129,6 +132,15 @@ func _build_room() -> void:
 	gym_sign.add_theme_color_override("font_color", Color(0.9, 1.0, 0.7))
 	gym_sign.add_theme_font_size_override("font_size", 14)
 	add_child(gym_sign)
+
+func _build_floor() -> void:
+	for r in range(2, ROWS - 1):
+		for c in range(1, COLS - 1):
+			var tile_bg = ColorRect.new()
+			tile_bg.size    = Vector2(TILE - 1, TILE - 1)
+			tile_bg.position = Vector2(c * TILE, r * TILE)
+			tile_bg.color   = Color(0.52, 0.68, 0.38) if (c + r) % 2 == 0 else Color(0.47, 0.62, 0.33)
+			add_child(tile_bg)
 
 # ── 杂兵 ─────────────────────────────────────────────────────────────────────
 func _add_collider(pos: Vector2, size: Vector2) -> void:
@@ -316,6 +328,9 @@ func _make_trainer_data(g: Dictionary) -> Dictionary:
 		"id": g["id"], "name": g["name"],
 		"team": g["team"], "reward": g["reward"],
 		"dialog_before": g["before"], "dialog_win": g["after"],
+		"dialog_after": g.get("dialog_after", ""),
+		"dialog_player_lose": g.get("dialog_player_lose", ""),
+		"difficulty": g.get("difficulty", 0),
 	}
 
 func _make_leader_data() -> Dictionary:
@@ -325,6 +340,9 @@ func _make_leader_data() -> Dictionary:
 		"id": _leader["id"], "name": _leader["name"],
 		"team": _leader["team"], "reward": _leader["reward"],
 		"dialog_before": dlg_before, "dialog_win": dlg_win,
+		"dialog_after": _leader.get("dialog_after", ""),
+		"dialog_player_lose": _leader.get("dialog_player_lose", ""),
+		"difficulty": _leader.get("difficulty", 0),
 		"is_leader": true,
 	}
 

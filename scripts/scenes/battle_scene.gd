@@ -69,6 +69,14 @@ var _move_hl:           Panel  = null
 var _bag_hl:            Panel  = null
 var _move_info_lbl:     Label  = null   # 260703 Red 技能效果说明
 
+# 根据训练师难度计算 IV
+func _calc_trainer_ivs(difficulty: int) -> Dictionary:
+	var base = difficulty * 31.0 / 255.0
+	var ivs = {}
+	for stat in ["hp", "atk", "def", "spa", "spd", "spe"]:
+		ivs[stat] = clampi(int(base) + randi() % 9 - 4, 0, 31)
+	return ivs
+
 # YYMMDD Red 战斗结束统一返回，记录 last_scene
 func _end_battle(result: String) -> void:
 	GameState.last_scene = _return_scene
@@ -84,6 +92,9 @@ var _trainer_name:    String = ""
 var _trainer_team:    Array  = []
 var _trainer_mon_idx: int    = 0
 var _trainer_reward:  int    = 0
+var _trainer_dialog_after:       String = ""
+var _trainer_dialog_player_lose: String = ""
+var _trainer_difficulty:         int    = 0
 
 const FIELD_H := 510
 const MSG_Y   := 510
@@ -105,8 +116,11 @@ func _ready() -> void:
 		_trainer_id     = trainer_data.get("id", "")
 		_trainer_name   = trainer_data.get("name", "训练师")
 		_trainer_reward = trainer_data.get("reward", 100)
+		_trainer_dialog_after       = trainer_data.get("dialog_after", "")
+		_trainer_dialog_player_lose = trainer_data.get("dialog_player_lose", "")
+		_trainer_difficulty         = trainer_data.get("difficulty", 0)
 		for slot in trainer_data.get("team", []):
-			_trainer_team.append(MonDB.create_mon(slot["species"], slot["level"]))
+			_trainer_team.append(MonDB.create_mon(slot["species"], slot["level"], _calc_trainer_ivs(_trainer_difficulty)))
 		_enemy_mon = _trainer_team[0]
 	else:
 		_enemy_mon = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))
@@ -1352,10 +1366,12 @@ func _handle_victory() -> void:
 			return
 		else:
 			# 训练师全队倒下
+			_busy = false
+			if not _trainer_dialog_after.is_empty():
+				await _show_message_async(_trainer_dialog_after)
 			GameState.money += _trainer_reward
 			GameState.defeated_trainers.append(_trainer_id)
 			GameState.save_game()
-			_busy = false
 			await _show_message_async("打败了训练师%s！\n获得了 %dG！" % [_trainer_name, _trainer_reward])
 			_end_battle("win")
 			return
@@ -1374,6 +1390,9 @@ func _handle_defeat() -> void:
 			has_alive = true; break
 
 	if not has_alive:
+		if _is_trainer and not _trainer_dialog_player_lose.is_empty():
+			_busy = false
+			await _show_message_async(_trainer_dialog_player_lose)
 		await _show_message_async("所有精灵都倒下了……\n失败了……")
 		for m in GameState.player_team:
 			m["current_hp"] = 1   # 防止卡死

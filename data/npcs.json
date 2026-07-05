@@ -37,7 +37,12 @@
       "reward": 8000,
       "dialog_before": "前面的！站住！",
       "dialog_win": "你……你真厉害！",
-      "team": []
+      "team": [],
+      "dialog_intro": "前面的！站住！",
+      "dialog_lose": "你……你真厉害！",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 192
     }
   },
   "linwei": {
@@ -95,18 +100,29 @@
       "team": [
         {
           "species": "蹦蹦草",
-          "level": 12
+          "level": 12,
+          "moves": [],
+          "item": ""
         },
         {
           "species": "绿叶蜥",
-          "level": 13
+          "level": 13,
+          "moves": [],
+          "item": ""
         },
         {
           "species": "核胄叶",
-          "level": 15
+          "level": 15,
+          "moves": [],
+          "item": ""
         }
       ],
-      "gym": "翠竹馆"
+      "gym": "翠竹馆",
+      "dialog_intro": "我是翠竹馆馆主林青松。竹以柔克刚，精灵亦然——准备好了吗？",
+      "dialog_lose": "……了不起。这枚翠竹徽，你当之无愧。",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 128
     }
   },
   "han_yanchi": {
@@ -181,7 +197,12 @@
       "reward": 8000,
       "dialog_before": "前面的！站住！",
       "dialog_win": "你……你真厉害！",
-      "team": []
+      "team": [],
+      "dialog_intro": "前面的！站住！",
+      "dialog_lose": "你……你真厉害！",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 192
     }
   },
   "meimei": {
@@ -199,7 +220,12 @@
       "reward": 8000,
       "dialog_before": "前面的！站住！",
       "dialog_win": "你……你真厉害！",
-      "team": []
+      "team": [],
+      "dialog_intro": "前面的！站住！",
+      "dialog_lose": "你……你真厉害！",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 0
     }
   },
   "wujunmei": {
@@ -338,13 +364,22 @@
       "team": [
         {
           "species": "绿肥虫",
-          "level": 6
+          "level": 6,
+          "moves": [],
+          "item": ""
         },
         {
           "species": "小灯鼠",
-          "level": 5
+          "level": 5,
+          "moves": [],
+          "item": ""
         }
-      ]
+      ],
+      "dialog_intro": "前面的！站住！",
+      "dialog_lose": "你……你真厉害！",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 0
     }
   },
   "t_laoka": {
@@ -363,9 +398,16 @@
       "team": [
         {
           "species": "岩灵",
-          "level": 8
+          "level": 8,
+          "moves": [],
+          "item": ""
         }
-      ]
+      ],
+      "dialog_intro": "哼，路过此地？先过了我这关！",
+      "dialog_lose": "哼……你有两下子。",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 0
     }
   },
   "g1": {
@@ -384,14 +426,23 @@
       "team": [
         {
           "species": "蹦蹦草",
-          "level": 8
+          "level": 8,
+          "moves": [],
+          "item": ""
         },
         {
           "species": "青果种子",
-          "level": 9
+          "level": 9,
+          "moves": [],
+          "item": ""
         }
       ],
-      "gym": "翠竹馆"
+      "gym": "翠竹馆",
+      "dialog_intro": "道馆内禁止通行！先过了我这关！",
+      "dialog_lose": "好强……通过吧。",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 64
     }
   },
   "g2": {
@@ -410,14 +461,23 @@
       "team": [
         {
           "species": "绿叶蜥",
-          "level": 10
+          "level": 10,
+          "moves": [],
+          "item": ""
         },
         {
           "species": "核胄叶",
-          "level": 10
+          "level": 10,
+          "moves": [],
+          "item": ""
         }
       ],
-      "gym": "翠竹馆"
+      "gym": "翠竹馆",
+      "dialog_intro": "没打败所有学徒就想见馆主？休想！",
+      "dialog_lose": "没想到……请进吧。",
+      "dialog_after": "",
+      "dialog_player_lose": "",
+      "difficulty": 64
     }
   }
 }
