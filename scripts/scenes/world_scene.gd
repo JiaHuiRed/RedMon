@@ -56,11 +56,7 @@ var _menu_sub:   String = ""   # "" | "party" | "bag" | "saved"
 var _menu_panel: Control
 var _bag_cursor: int = 0  # 260703 Red 背包选中项
 
-# 遭遇表从 species.json encounters 字段动态生成
-var ENCOUNTER_TABLE: Array = []
-
 func _ready() -> void:
-	ENCOUNTER_TABLE = MonDB.get_encounters("华灵草原")
 	_load_trainer_data()
 
 	# 260705 Red .tscn 混合模式
@@ -965,19 +961,12 @@ func _check_encounter() -> void:
 func _trigger_encounter() -> void:
 	_battling = true
 
-	# Pick wild mon from table
-	var roll = randi() % 100
-	var cumul = 0
-	var chosen_species = "绿肥虫"
-	for entry in ENCOUNTER_TABLE:
-		cumul += entry[1]
-		if roll < cumul:
-			chosen_species = entry[0]
-			break
-
-	# Wild mon level = player mon level ± 1
-	var player_lv = GameState.first_mon().get("level", 5)
-	var wild_lv = max(2, player_lv + randi_range(-1, 1))
+	var entry = EncounterDB.pick_mon("华灵草原", "grass")
+	if entry.is_empty():
+		_battling = false
+		return
+	var chosen_species = entry.get("species", "坤仔")
+	var wild_lv = randi_range(entry.get("level_min", 3), entry.get("level_max", 6))
 	var wild_mon = MonDB.create_mon(chosen_species, wild_lv)
 
 	print("[WORLD] 野生 %s Lv.%d 出现！" % [chosen_species, wild_lv])

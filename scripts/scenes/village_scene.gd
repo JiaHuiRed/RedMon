@@ -42,7 +42,6 @@ const HOME_DOOR_TILE := Vector2i(6, 7)
 # ── 260704 Red 遇敌草丛系统 ──────────────────────────────────────────────────
 var _grass_tiles: Array = []  # 遇敌草丛坐标
 const ENCOUNTER_RATE := 0.12  # 12% per step
-var _encounter_table: Array = []
 
 # ── 环境过场精灵（丰富画面，全程慢速游走，不参与战斗） ──────────────────────
 var _ambient_mons: Array = []  # [{node: Sprite2D, target: Vector2}]
@@ -96,8 +95,6 @@ func _fix_lab_background() -> void:
 		lab_node.texture = cropped
 
 func _setup_encounters() -> void:
-	# 260704 Red 青木村遇敌：低等级精灵，适合新手练级
-	_encounter_table = MonDB.get_encounters("华灵草原")  # 共用草原遇敌表
 	# 扫描 Ground TileMapLayer 中的遇敌草丛 tile
 	var ground = get_node_or_null("Ground")
 	if ground and ground is TileMapLayer:
@@ -156,22 +153,11 @@ func _check_encounter() -> void:
 	_trigger_encounter()
 
 func _trigger_encounter() -> void:
-	if _encounter_table.is_empty():
+	var entry = EncounterDB.pick_mon("青木村", "grass")
+	if entry.is_empty():
 		return
-	var roll = randf()
-	var cumulative = 0.0
-	var species_id = _encounter_table[0][0]
-	var level_min = _encounter_table[0][1]
-	var level_max = _encounter_table[0][2]
-	for entry in _encounter_table:
-		cumulative += entry[3] if entry.size() > 3 else (1.0 / _encounter_table.size())
-		if roll <= cumulative:
-			species_id = entry[0]
-			level_min = entry[1]
-			level_max = entry[2]
-			break
-	# 青木村等级比草原低一些
-	var lv = randi_range(maxi(level_min - 2, 2), maxi(level_max - 2, 3))
+	var species_id = entry.get("species", "坤仔")
+	var lv = randi_range(entry.get("level_min", 2), entry.get("level_max", 4))
 	var wild = MonDB.make_mon(species_id, lv)
 	_battling = true
 	request_scene.emit("battle", {
@@ -341,12 +327,13 @@ func _build_npcs() -> void:
 	_add_collider(well.position + well.size / 2, well.size)
 
 func _build_ambient_mons() -> void:
-	var encounters = MonDB.get_encounters("华灵草原")
+	var method = EncounterDB.get_method("华灵草原", "grass")
+	var encounters = method.get("mons", [])
 	if encounters.is_empty():
 		return
 	encounters.shuffle()
 	for i in mini(2, encounters.size()):
-		var sp_id = encounters[i][0]
+		var sp_id = encounters[i].get("species", "")
 		var tex: Texture2D = _load_tex("res://assets/sprites/%sfront.png" % sp_id)
 		if not tex:
 			continue

@@ -982,7 +982,7 @@ class App:
         self.mon_gender_slider = tk.Scale(
             self.mon_gender_frame, from_=0, to=100, orient="horizontal",
             length=100, showvalue=True, bg=BG_MAIN, fg=TEXT_PRI,
-            highlightthickness=0, tickinterval=50, resolution=0.5)
+            highlightthickness=0, tickinterval=50, resolution=10)
         self.mon_gender_slider.pack(side="left")
         self.gender_asexual_chk = tk.Checkbutton(
             self.mon_gender_frame, text="无性别", variable=self._gender_asexual,
@@ -1232,10 +1232,8 @@ class App:
     def _save_gender_ratio(self) -> str:
         if self._gender_asexual.get():
             return "无性别"
-        f = self.mon_gender_slider.get()
-        m, f = round(100.0 - f, 1), round(f, 1)
-        m = int(m) if m == int(m) else m
-        f = int(f) if f == int(f) else f
+        f = int(self.mon_gender_slider.get())
+        m = 100 - f
         return f"{m}/{f}"
 
     def _toggle_gender_asexual(self) -> None:

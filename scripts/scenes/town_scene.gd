@@ -42,10 +42,7 @@ var _pcbox_panel: Control
 var _grass_tiles: Array = []
 var _step_counter: int = 0
 var _battling: bool = false
-var ENCOUNTER_TABLE: Array = []
-
 func _ready() -> void:
-	ENCOUNTER_TABLE = MonDB.get_encounters("翠竹镇")
 	_build_town()
 	_build_clinic()
 	_build_shop()
@@ -650,16 +647,12 @@ func _check_encounter() -> void:
 
 func _trigger_encounter() -> void:
 	_battling = true
-	var roll = randi() % 100
-	var cumul = 0
-	var chosen_species = "绿肥虫"
-	for entry in ENCOUNTER_TABLE:
-		cumul += entry[1]
-		if roll < cumul:
-			chosen_species = entry[0]
-			break
-	var player_lv = GameState.first_mon().get("level", 5)
-	var wild_lv = max(2, player_lv + randi_range(-1, 1))
+	var entry = EncounterDB.pick_mon("翠竹镇", "grass")
+	if entry.is_empty():
+		_battling = false
+		return
+	var chosen_species = entry.get("species", "芙芙")
+	var wild_lv = randi_range(entry.get("level_min", 5), entry.get("level_max", 8))
 	var wild_mon = MonDB.create_mon(chosen_species, wild_lv)
 	request_scene.emit("battle", {"wild_mon": wild_mon, "from_scene": "town", "return_scene": "town"})
 

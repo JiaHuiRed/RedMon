@@ -543,12 +543,6 @@
 	"gender_ratio": "50/50",
 	"height": "0.3",
 	"weight": "2.8",
-	"encounters": [
-	  {
-		"location": "华灵草原",
-		"rate": 8
-	  }
-	],
 	"evolutions": [
 	  {
 		"into": "坤鸡",
@@ -684,12 +678,6 @@
         "十字剪"
 	  ]
 	},
-	"encounters": [
-	  {
-		"location": "华灵草原",
-		"rate": 40
-	  }
-	],
 	"abilities": [
 	  "虫之预感",
       "采蜜"
@@ -856,12 +844,6 @@
         "头锤"
 	  ]
 	},
-	"encounters": [
-	  {
-		"location": "华灵草原",
-		"rate": 27
-	  }
-	],
 	"abilities": [
 	  "一般皮肤",
       "踩影"
@@ -955,12 +937,6 @@
 	"gender_ratio": "0/100",
 	"height": "0.5",
 	"weight": "5",
-	"encounters": [
-	  {
-		"location": "翠竹镇",
-		"rate": 10
-	  }
-	],
 	"evolutions": [
 	  {
 		"into": "贝丽斯",
@@ -1095,12 +1071,6 @@
         "狼啸石牙飓风暴"
 	  ]
 	},
-	"encounters": [
-	  {
-		"location": "华灵草原",
-		"rate": 15
-	  }
-	],
 	"abilities": [
 	  "神奇鳞片",
       "恒净之躯"
@@ -1645,12 +1615,6 @@
 	"gender_ratio": "0/100",
 	"height": "0.4",
 	"weight": "5.2",
-	"encounters": [
-	  {
-		"location": "华灵草原",
-		"rate": 10
-	  }
-	],
 	"evolutions": [
 	  {
 		"into": "蓬蓬丘",
