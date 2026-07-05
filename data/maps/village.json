@@ -1,0 +1,86 @@
+{
+  "encounter_map": "青木村",
+  "encounter_rate": 12,
+
+  "npc_data": [
+    {
+      "id": "grandma",
+      "pos": [8, 12],
+      "facing": "down",
+      "sprite": "老奶奶.png",
+      "fallback": {"shirt": [0.15, 0.35, 0.85], "hair": [0.70, 0.68, 0.66]},
+      "script": [
+        {"type": "dialog", "key": "village.npc1"},
+        {"type": "end"}
+      ]
+    },
+    {
+      "id": "young_man",
+      "pos": [9, 15],
+      "facing": "down",
+      "sprite": "青年.png",
+      "fallback": {"shirt": [0.40, 0.30, 0.50], "hair": [0.70, 0.68, 0.66]},
+      "script": [
+        {"type": "dialog", "key": "village.npc2"},
+        {"type": "end"}
+      ]
+    }
+  ],
+
+  "warps": [
+    {
+      "trigger": "tile",
+      "tiles": [12, 19, 17, 19],
+      "target": "town",
+      "data": {},
+      "cond_has_starter": true,
+      "cond_flag": "rival_done",
+      "cond_flag_else_script": [
+        {"type": "dialog", "text": "先去村北的草原找找陈教授吧！\n听说他遇到麻烦了……"},
+        {"type": "end"}
+      ],
+      "script": [
+        {"type": "dialog", "text": "前方是翠竹镇，要出发吗？\n【Z 确认 / X 返回】"},
+        {"type": "end"}
+      ]
+    },
+    {
+      "trigger": "tile",
+      "tiles": [6, 7],
+      "target": "home",
+      "data": {},
+      "script": [
+        {"type": "warp", "target": "home", "data": {}}
+      ]
+    }
+  ],
+
+  "bg_events": [
+    {
+      "tile": [7, 8],
+      "name": "player_home_sign",
+      "script": [
+        {"type": "dialog", "text": "【{player}的家】"},
+        {"type": "end"}
+      ]
+    },
+    {
+      "tile": [24, 16],
+      "name": "rival_home_sign",
+      "script": [
+        {"type": "dialog", "text": "【{rival}的家】"},
+        {"type": "end"}
+      ]
+    }
+  ],
+
+  "coord_events": [
+    {
+      "area": [11, 1, 16, 1],
+      "script": [
+        {"type": "dialog", "text": "北边似乎传来了打斗的声音……\n是陈教授的声音！他好像被什么围住了！"},
+        {"type": "end"}
+      ]
+    }
+  ]
+}

@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.13.0] - 2026-07-05
+
+> NPC 交互重构：配置驱动脚本引擎 + 暂停菜单 Z 键修复
+
+#### 新增
+- **脚本引擎**：`script_engine.gd` 自动加载，支持 dialog / end / battle / warp / set_flag / give_item / heal / shop 指令
+- **地图配置系统**：`data/maps/village.json` 定义 NPC、告示牌、传送、坐标事件
+- **NPC 配置化**：village_scene 的 NPC 创建从硬编码改为 JSON 循环
+
+#### 修复
+- **暂停菜单 Z 键**：`pause_open` 元标记阻止场景消费 ui_accept 事件，修复暂停菜单打开时子菜单无法用 Z 选择的问题
+
+#### 技术
+- `_add_collider()` 返回 `StaticBody2D` 引用
+- 场景间统一 `_handle_map_event(tile)` 入口
+
+---
+
 ### [0.12.9] - 2026-07-05
 
 > 新增 10 只精灵：冰灵少女进化链、妮可、露比 4 分支形态

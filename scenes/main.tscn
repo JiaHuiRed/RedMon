@@ -1,12 +1,6 @@
 [gd_scene format=3 uid="uid://cf4josvlj3d2h"]
 
 [ext_resource type="Script" uid="uid://nylsegw4mcf1" path="res://scripts/main.gd" id="1_o5qli"]
-[ext_resource type="PackedScene" uid="uid://c2cdd285u1sc2" path="res://scenes/village.tscn" id="2_0wfyh"]
 
 [node name="Main" type="Node2D" unique_id=45133326]
 script = ExtResource("1_o5qli")
-
-[node name="DemoSprite" type="Sprite2D" parent="." unique_id=129688752]
-
-[node name="village" parent="." unique_id=1796374134 instance=ExtResource("2_0wfyh")]
-position = Vector2(-538, 247)

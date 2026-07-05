@@ -39,6 +39,12 @@ const LINWEI_TILE := Vector2i(22, 6)
 const LAB_DOOR_TILE := Vector2i(21, 6)
 const HOME_DOOR_TILE := Vector2i(6, 7)
 
+# 地图事件配置
+var _map_config: Dictionary = {}
+
+# 脚本引擎 NPC 节点引用
+var _script_npcs: Dictionary = {}  # npc_id → {"sprite": Sprite2D, "collider": StaticBody2D}
+
 # ── 260704 Red 遇敌草丛系统 ──────────────────────────────────────────────────
 var _grass_tiles: Array = []  # 遇敌草丛坐标
 const ENCOUNTER_RATE := 0.12  # 12% per step
@@ -60,10 +66,14 @@ func _ready() -> void:
 
 	# 260704 Red .tscn 已包含静态节点(Ground/Buildings/NPCs/Decorations)
 	# 仅在纯脚本模式下创建（向后兼容）
+	# 260705 地图事件配置必须先加载，供 _build_npcs 使用
+	_map_config = _load_map_config("village")
 	if not has_node("Ground"):
 		_build_ground()
 	if not has_node("Buildings"):
 		_build_buildings()
+	# 260705 NPC 交互数据始终从配置加载（即使 .tscn 有视觉节点）
+	_load_npc_config()
 	if not has_node("NPCs"):
 		_build_npcs()
 		_build_labels()
@@ -84,6 +94,20 @@ func _ready() -> void:
 		# 260704 Red 只在本次战斗刚结束时弹提示，重新进村不再触发
 		if battle_result == "win":
 			call_deferred("_on_rival_battle_done")
+
+	# 连接脚本引擎信号
+	ScriptEngine.dialog_requested.connect(_on_script_dialog)
+	ScriptEngine.script_ended.connect(_on_script_end)
+
+func _load_map_config(map_name: String) -> Dictionary:
+	var path = "res://data/maps/%s.json" % map_name
+	if not FileAccess.file_exists(path):
+		return {}
+	var file = FileAccess.open(path, FileAccess.READ)
+	if not file:
+		return {}
+	var parsed = JSON.parse_string(file.get_as_text())
+	return parsed if parsed is Dictionary else {}
 
 func _fix_lab_background() -> void:
 	# 260704 Red 使用裁剪好的透明版研究所图片
@@ -213,7 +237,7 @@ func _build_ground() -> void:
 		tm.set_cell(0, Vector2i(spot[0], spot[1]), 0, Vector2i(0, 4))  # bush
 
 # ── Collision helper ────────────────────────────────────────────────────────────
-func _add_collider(pos: Vector2, size: Vector2) -> void:
+func _add_collider(pos: Vector2, size: Vector2) -> StaticBody2D:
 	var body = StaticBody2D.new()
 	body.position = pos
 	var shape = CollisionShape2D.new()
@@ -222,6 +246,7 @@ func _add_collider(pos: Vector2, size: Vector2) -> void:
 	shape.shape = rect
 	body.add_child(shape)
 	add_child(body)
+	return body
 
 # ── Buildings ─────────────────────────────────────────────────────────────────
 func _build_buildings() -> void:
@@ -284,36 +309,56 @@ func _load_tex(path: String) -> Texture2D:
 	return null
 
 # ── NPCs ──────────────────────────────────────────────────────────────────────
-func _build_npcs() -> void:
-	# NPC 1 — 老奶奶 near well
-	var npc1 = Sprite2D.new()
-	npc1.texture = _load_tex("res://assets/npc/老奶奶.png")
-	if npc1.texture:
-		npc1.region_enabled = true
-		npc1.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		npc1.centered = true
-	else:
-		npc1.texture = _draw_npc_fallback(Color(0.15, 0.35, 0.85), Color(0.70, 0.68, 0.66))
-	npc1.scale = Vector2(NPC_SCALE, NPC_SCALE)
-	npc1.position = Vector2(8 * TILE + TILE/2, 12 * TILE + TILE/2)
-	npc1.z_index = 5
-	add_child(npc1)
-	_add_collider(npc1.position, Vector2(36, 36))
+func _load_npc_config() -> void:
+	# 260705 从 map config 加载 NPC 交互数据（始终执行，供 _handle_map_event 使用）
+	_script_npcs.clear()
+	for nd in _map_config.get("npc_data", []):
+		var nid = nd.get("id", "npc_%d" % _script_npcs.size())
+		_script_npcs[nid] = {
+			"script": nd.get("script", []),
+			"pos": nd.get("pos", [8, 12])
+		}
+	# 260705 如果 .tscn 有 NPCs 节点，用实际节点位置覆盖配置位置
+	var npcs_node = get_node_or_null("NPCs")
+	if npcs_node:
+		for child in npcs_node.get_children():
+			if child is Sprite2D and child.name in _script_npcs:
+				var tile_pos = Vector2i(int(child.position.x / TILE), int(child.position.y / TILE))
+				_script_npcs[child.name]["pos"] = [tile_pos.x, tile_pos.y]
 
-	# NPC 2 — 青年 near well
-	var npc2 = Sprite2D.new()
-	npc2.texture = _load_tex("res://assets/npc/青年.png")
-	if npc2.texture:
-		npc2.region_enabled = true
-		npc2.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		npc2.centered = true
-	else:
-		npc2.texture = _draw_npc_fallback(Color(0.40, 0.30, 0.50), Color(0.70, 0.68, 0.66))
-	npc2.scale = Vector2(NPC_SCALE, NPC_SCALE)
-	npc2.position = Vector2(9 * TILE + TILE/2, 15 * TILE + TILE/2)
-	npc2.z_index = 5
-	add_child(npc2)
-	_add_collider(npc2.position, Vector2(36, 36))
+func _build_npcs() -> void:
+	# 创建 NPC 视觉节点（仅在无 .tscn NPCs 节点时调用）
+	for nid in _script_npcs:
+		var nd = _script_npcs[nid]
+		var pos_arr = nd.get("pos", [8, 12])
+		var pos = Vector2(pos_arr[0] * TILE + TILE/2, pos_arr[1] * TILE + TILE/2)
+
+		# 从 config 原始数据读取视觉信息
+		var cfg = {}
+		for cd in _map_config.get("npc_data", []):
+			if cd.get("id", "") == nid:
+				cfg = cd
+				break
+		var spr_name = cfg.get("sprite", "")
+		var fallback = cfg.get("fallback", {})
+
+		var npc = Sprite2D.new()
+		if not spr_name.is_empty():
+			var tex = _load_tex("res://assets/npc/" + spr_name)
+			if tex:
+				npc.texture = tex
+				npc.region_enabled = true
+				npc.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+				npc.centered = true
+		if not npc.texture and not fallback.is_empty():
+			var shirt = fallback.get("shirt", [0.5, 0.5, 0.5])
+			var hair = fallback.get("hair", [0.5, 0.5, 0.5])
+			npc.texture = _draw_npc_fallback(Color(shirt[0], shirt[1], shirt[2]), Color(hair[0], hair[1], hair[2]))
+		npc.scale = Vector2(NPC_SCALE, NPC_SCALE)
+		npc.position = pos
+		npc.z_index = 5
+		add_child(npc)
+		_add_collider(pos, Vector2(36, 36))
 
 	# 260703 Red 陈教授和林薇移到研究所内部，外面不再显示
 
@@ -576,6 +621,54 @@ func _draw_player_fallback() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
+# ── 地图事件处理（从配置读取 NPC/告示牌） ──────────────────────────────────────
+func _handle_map_event(tile: Vector2i) -> void:
+	# 检查 bg_events（告示牌等）
+	for be in _map_config.get("bg_events", []):
+		var bt = be.get("tile", [])
+		if bt.size() >= 2 and tile.distance_to(Vector2i(bt[0], bt[1])) < 2:
+			var script = be.get("script", [])
+			if not script.is_empty():
+				var text = _resolve_script_text(script)
+				_show_dialog(text, -1)
+			return
+
+	# 检查 NPC 交互
+	for nid in _script_npcs:
+		var nd = _script_npcs[nid]
+		var pos_arr = nd.get("pos", [])
+		if pos_arr.size() >= 2 and tile.distance_to(Vector2i(pos_arr[0], pos_arr[1])) < 3:
+			var script = nd.get("script", [])
+			if not script.is_empty():
+				ScriptEngine.run(script)
+				# 引擎会通过 dialog_requested 信号触发对话
+			return
+
+func _resolve_script_text(script: Array) -> String:
+	for cmd in script:
+		if cmd.get("type", "") == "dialog":
+			var text = cmd.get("text", "")
+			if text.is_empty():
+				var key = cmd.get("key", "")
+				var parts = key.split(".")
+				if parts.size() >= 2:
+					text = MonDB.dlg(parts[0], parts[1])
+			# 替换模板变量
+			text = text.replace("{player}", GameState.player_name)
+			text = text.replace("{rival}", GameState.rival_name)
+			return text
+	return ""
+
+func _on_script_dialog(text: String) -> void:
+	# 脚本引擎请求显示对话
+	text = text.replace("{player}", GameState.player_name)
+	text = text.replace("{rival}", GameState.rival_name)
+	_show_dialog(text, -1)
+
+func _on_script_end() -> void:
+	_dialog_active = false
+	_dialog_panel.visible = false
+
 # ── Dialog ────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
 	var cl = CanvasLayer.new()
@@ -674,6 +767,9 @@ func _physics_process(delta: float) -> void:
 				_show_dialog("北边似乎传来了打斗的声音……\n是陈教授的声音！他好像被什么围住了！", 2)
 
 func _input(event: InputEvent) -> void:
+	# 暂停菜单打开时不处理本场景输入
+	if has_meta("pause_open") and get_meta("pause_open"):
+		return
 	# 260704 Red 研究所室内：Z下一段对话，X离开
 	if _lab_open:
 		if event.is_action_pressed("ui_accept"):
@@ -691,7 +787,10 @@ func _input(event: InputEvent) -> void:
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
-			_advance_dialog()
+			if ScriptEngine.is_running():
+				ScriptEngine.advance()
+			else:
+				_advance_dialog()
 		elif event.is_action_pressed("ui_cancel") and _dialog_phase == 200:
 			# 260704 Red 北出口确认对话按X取消
 			get_viewport().set_input_as_handled()
@@ -725,17 +824,9 @@ func _input(event: InputEvent) -> void:
 				_show_dialog("???：嘿，你也是新来的训练师？\n等教授回来我们比试比试！", -1)
 			else:
 				_start_rival_battle()
-		# 260703 Red 告示牌交互
-		elif tile.distance_to(Vector2i(HOME_DOOR_TILE.x + 1, HOME_DOOR_TILE.y + 1)) < 2:
-			_show_dialog("【%s的家】" % GameState.player_name, -1)
-		elif tile.distance_to(Vector2i(24, 16)) < 2:
-			_show_dialog("【%s的家】" % GameState.rival_name, -1)
-		# Talk to NPC 1 (near well)
-		elif tile.distance_to(Vector2i(8, 12)) < 3:
-			_show_dialog(MonDB.dlg("village", "npc1"), -1)
-		# Talk to NPC 2
-		elif tile.distance_to(Vector2i(9, 15)) < 3:
-			_show_dialog(MonDB.dlg("village", "npc2"), -1)
+		else:
+			# 地图事件配置：bg_events / NPC 交互
+			_handle_map_event(tile)
 
 func _advance_dialog() -> void:
 	if _dialog_phase < 0:

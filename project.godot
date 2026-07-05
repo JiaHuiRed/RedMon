@@ -19,6 +19,7 @@ config/features=PackedStringArray("4.7")
 GameState="*res://scripts/autoload/game_state.gd"
 MonDB="*res://scripts/autoload/mon_db.gd"
 EncounterDB="*res://scripts/autoload/encounter_db.gd"
+ScriptEngine="*res://scripts/autoload/script_engine.gd"
 
 [display]
 

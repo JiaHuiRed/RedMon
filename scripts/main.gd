@@ -238,6 +238,7 @@ func _open_pause() -> void:
 	_swap_pick_idx = -1
 	_pause_panel.visible = true
 	if _current != null:
+		_current.set_meta("pause_open", true)
 		_current.process_mode = Node.PROCESS_MODE_DISABLED
 	_draw_pause()
 
@@ -246,6 +247,7 @@ func _close_pause() -> void:
 	_pause_sub    = ""
 	_pause_panel.visible = false
 	if _current != null:
+		_current.set_meta("pause_open", false)
 		_current.process_mode = Node.PROCESS_MODE_INHERIT
 
 # ── Drawing ─────────────────────────────────────────────────────
