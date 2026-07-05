@@ -17,8 +17,10 @@ from PIL import Image
 import numpy as np
 from collections import deque
 
-SPRITES_DIR = r"D:\AI\Game\RPG_Demo\assets\sprites"
-BG_DIR      = r"D:\AI\Game\RPG_Demo\assets\backgrounds"
+SPRITES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "sprites")
+SPRITES_DIR = os.path.abspath(SPRITES_DIR)
+BG_DIR      = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "backgrounds")
+BG_DIR      = os.path.abspath(BG_DIR)
 
 # Explicitly named backgrounds -> output filename in backgrounds/
 BACKGROUNDS = {
@@ -78,13 +80,13 @@ def pad_to_square(arr: np.ndarray, size: int) -> np.ndarray:
 
 
 def process_sprite(path: str):
-    """Remove bg + crop + pad to 512x512. For mons and NPC fronts."""
+    """Remove bg + crop + pad to 1024x1024. For mons and NPC fronts."""
     arr = np.array(Image.open(path).convert("RGBA"))
     arr = flood_fill_bg(arr, tolerance=55)
     arr = crop_to_content(arr)
-    arr = pad_to_square(arr, 512)
+    arr = pad_to_square(arr, 1024)
     Image.fromarray(arr, "RGBA").save(path)
-    print(f"  [sprite 512x512] {os.path.basename(path)}")
+    print(f"  [sprite 1024x1024] {os.path.basename(path)}")
 
 
 def process_walk_sheet(path: str, out_path: str = None):

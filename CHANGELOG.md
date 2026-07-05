@@ -14,6 +14,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.12.8] - 2026-07-05
+
+> 精灵缩放器 1024 + 路径修复 + EXE 重建
+
+#### Changed
+- **精灵缩放尺寸**：`resize_sprites.py` TARGET 从 512 改为 1024，所有精灵统一缩放到 1024×1024 画布（保持长宽比居中）
+- **打包路径修复**：`__file__` → `sys.executable` 定位自身目录，EXE 不再因 PyInstaller 临时目录导致 `FileNotFoundError`
+- **新版 EXE**：pyinstaller 6.20.0 重建 `resize_sprites.exe`
+
+### [0.12.7] - 2026-07-05
+
+> 遇敌表集中管理 EncounterDB + 编辑器性别滑动条分辨率提升
+
+#### Added
+- **EncounterDB 遇敌系统**：`data/encounters.json` 按地图集中管理遇敌表，`EncounterDB` autoload 单例提供加权随机选怪
+- **等级范围**：每只精灵独立 `level_min` / `level_max`，不再依赖玩家等级±1
+- **多方法预备**：数据结构预留 `grass` / `surf` / `fishing` 多种遇敌方式
+
+#### Changed
+- **world/town/village 三场景**：改用 `EncounterDB.pick_mon()` 统一接口
+- **编辑器性别滑动条**：`mon_editor.py` 步进从 0.5 改为 10，保存值改为整型
+
+#### Fixed
+- **青木村遇敌等级 bug**：`village_scene.gd` 原来把 rate 权重值误当 `level_min`（如 40 级草丛），改 EncounterDB 后修复
+
+#### Removed
+- **species.json encounters 字段**：6 处按需 per-species 遇敌数据迁移到集中 `encounters.json`
+
 ### [0.12.6] - 2026-07-05
 
 > 训练师数据系统升级 + 战斗难度分档 + 编辑器性别滑动条 + 素材目录清理
