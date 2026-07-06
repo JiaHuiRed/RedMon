@@ -56,12 +56,25 @@ var _area_label: Label
 
 # 训练师
 const TRAINER_LAYOUT := [
-	{"id": "t_xiaomin", "tile": Vector2i(68, 18), "dir": Vector2i(1, 0),  "sight": 4},
-	{"id": "t_laoka",   "tile": Vector2i(80, 19), "dir": Vector2i(-1, 0), "sight": 4},
+	# 草原训练师
+	{"id": "t_xiaomin",    "tile": Vector2i(68, 18), "dir": Vector2i(1, 0),  "sight": 4},
+	{"id": "t_laoka",      "tile": Vector2i(80, 19), "dir": Vector2i(-1, 0), "sight": 4},
+	{"id": "t_grassland1", "tile": Vector2i(75, 10), "dir": Vector2i(0, 1),  "sight": 3},
+	{"id": "t_grassland2", "tile": Vector2i(95, 28), "dir": Vector2i(-1, 0), "sight": 4},
+	{"id": "t_grassland3", "tile": Vector2i(110, 15),"dir": Vector2i(0, 1),  "sight": 4},
+	# 黑风堂事件
+	{"id": "t_heifeng1",   "tile": Vector2i(72, 8),  "dir": Vector2i(0, 1),  "sight": 5},
+	# 青木村训练师
+	{"id": "t_village1",   "tile": Vector2i(40, 30), "dir": Vector2i(1, 0),  "sight": 3},
 ]
 var TRAINERS:         Array      = []
 var _pending_trainer: Dictionary = {}
 var _rival_done:      bool       = false
+var _prof_event_shown: bool      = false  # 260706 Red 开场教授遇难触发（仅一次）
+var _shenhe_village_done: bool   = false  # 260706 Red 申鹤村内对话已触发
+var _shenhe_grassland_done: bool = false  # 260706 Red 申鹤草原出口对话已触发
+var _shenhe_town_done: bool      = false  # 260706 Red 申鹤碧溪镇对战已完成
+var _heifeng1_done: bool         = false  # 260706 Red 黑风堂第一战已完成
 
 # 菜单
 const MENU_W := 260;  const MENU_H := 340
@@ -236,6 +249,41 @@ func _build_npcs() -> void:
 	_add_npc(Vector2i(38, 25), "npc_young_woman_walk_sheet.png", "林薇", "")
 	_add_npc(Vector2i(143, 18), "", "路人", "路人：前面就是华灵草原，那边的精灵比村子附近要强一些，准备好了吗？")
 	_add_npc(Vector2i(156, 7),  "", "店员", "店员：想买精灵葫芦的话，去杂货铺看看吧！")
+	# 260706 Red 村民NPC
+	_add_npc(Vector2i(18, 22), "", "阿婆", "阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！")
+	_add_npc(Vector2i(55, 15), "", "告示牌", "【华灵草原】→ 前方草丛危险，请带足补给再出发。
+黑风堂出没，请市民提高警惕。")
+	_add_npc(Vector2i(118, 8), "", "路标", "← 华灵草原  碧溪镇 →
+翠竹馆（木系）开放中。")
+	# 260706 Red 申鹤（村内）
+	_build_shenhe_village()
+
+func _build_shenhe_village() -> void:
+	var path = "res://assets/npc/申鹤walk_sheet.png"
+	var spr = Sprite2D.new()
+	if ResourceLoader.exists(path):
+		spr.texture = load(path)
+		spr.region_enabled = true
+		spr.region_rect = Rect2(0, 0, 48, 48)
+		spr.centered = true
+		spr.scale = Vector2(1.5, 1.5)
+	else:
+		spr.texture = _tex_npc()
+	var tile = Vector2i(45, 28)
+	spr.position = Vector2(tile.x * TILE + TILE / 2.0, tile.y * TILE + TILE / 2.0)
+	spr.z_index = 5
+	spr.set_meta("npc_tile", tile)
+	spr.set_meta("npc_name", "申鹤")
+	spr.set_meta("npc_dialog", "shenhe_village")
+	add_child(spr)
+	_npc_nodes.append(spr)
+	# 申鹤 标签
+	var lbl = Label.new()
+	lbl.text = "申鹤"
+	lbl.position = spr.position + Vector2(-14, -32)
+	lbl.add_theme_font_size_override("font_size", 9)
+	lbl.add_theme_color_override("font_color", Color(0.80, 0.90, 1.0))
+	add_child(lbl)
 
 func _add_npc(tile: Vector2i, sprite_name: String, npc_name: String, dialog: String) -> void:
 	var spr = Sprite2D.new()
@@ -405,6 +453,18 @@ func _advance_dialog() -> void:
 			_dialog_label.text = "精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？"
 		401:
 			_dialog_active = false; _dialog_panel.visible = false; _open_pcbox()
+		500:  # 260706 Red 开场教授遇难 → 跳 starter_scene
+			_dialog_active = false; _dialog_panel.visible = false
+			request_scene.emit("starter", {})
+		600:  # 260706 Red 申鹤碧溪镇对战
+			_dialog_active = false; _dialog_panel.visible = false; _battling = true
+			var shenhe_data = MonDB.trainers.get("shenhe", {})
+			if shenhe_data.is_empty():
+				shenhe_data = {"name":"申鹤","team":[{"species":"坤仔","level":14},{"species":"炎喵","level":16}],"reward":1600,"id":"shenhe","dialog_win":"哼……还算有点意思。","difficulty":2}
+			request_scene.emit("battle", {
+				"trainer": shenhe_data, "from_scene": "overworld",
+				"player_pos": [_player.position.x, _player.position.y]
+			})
 		-1:
 			_dialog_active = false; _dialog_panel.visible = false
 		_:
@@ -430,6 +490,8 @@ func _physics_process(delta: float) -> void:
 		if _step_counter % 4 == 0: _check_encounter()
 		_check_trainer_sight()
 		_check_rival()
+		_check_shenhe_grassland()
+		_check_shenhe_town()
 	_update_hud()
 
 func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
@@ -503,6 +565,9 @@ func _try_talk_npc(tile: Vector2i) -> void:
 			if spr.get_meta("npc_name", "") == "林薇":
 				_handle_linwei(); return
 			var dlg: String = spr.get_meta("npc_dialog", "…")
+			# 260706 Red 申鹤专属逻辑
+			if dlg == "shenhe_village":
+				_handle_shenhe_village(); return
 			_npc_dialog_lines = [dlg]; _npc_dialog_idx = 0
 			_show_dialog(dlg, 200); return
 
@@ -516,6 +581,31 @@ func _handle_linwei() -> void:
 		return
 	_show_dialog("林薇：加油！每捕获10只精灵我就给你奖励！", -1)
 
+func _handle_shenhe_village() -> void:
+	_shenhe_village_done = true
+	if not GameState.has_starter:
+		_show_dialog("申鹤：你连精灵都没有就想出门？真是白痴。", -1); return
+	_show_dialog("申鹤：哼，你也拿到精灵了。我申鹤的目标是成为华灵大陆最强——你这等路人根本不在我眼里。
+……等等，草原里最近有黑风堂的人，你没事别乱跑。", -1)
+
+func _check_shenhe_grassland() -> void:
+	# 260706 Red 申鹤草原出口（对话，不对战）
+	if _shenhe_grassland_done or not GameState.has_starter or _dialog_active or _battling: return
+	var px = _player.position.x
+	if px >= GRASSLAND_END - 3 * TILE and px <= GRASSLAND_END:
+		_shenhe_grassland_done = true
+		_show_dialog("申鹤：……你要去碧溪镇？黑风堂在镇里也有眼线，注意点。
+对了，林青松馆主使用木系，火系或虫系会很有利。
+我先走了。", -1)
+
+func _check_shenhe_town() -> void:
+	# 260706 Red 申鹤碧溪镇对战（道馆前）
+	if _shenhe_town_done or not GameState.has_starter or _dialog_active or _battling: return
+	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+	if tile.x >= 127 and tile.x <= 133 and tile.y >= 14 and tile.y <= 20:
+		_shenhe_town_done = true
+		_show_dialog("申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！", 600)
+
 func _check_rival() -> void:
 	if _rival_done or not GameState.has_starter or _battling or _dialog_active: return
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
@@ -526,8 +616,17 @@ func _check_rival() -> void:
 func _check_encounter() -> void:
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 	if tile not in _grass_tiles: return
+	# 260706 Red 首次踩草若无御三家 → 触发开场事件
+	if not GameState.has_starter:
+		_trigger_professor_event(); return
 	if randf() > 0.15: return
 	_trigger_encounter()
+
+func _trigger_professor_event() -> void:
+	if _prof_event_shown or _dialog_active or _battling: return
+	_prof_event_shown = true
+	_show_dialog("林薇：%s，等等！那片草丛危险得很，野生精灵随时会冲出来！
+……教授！教授被一只绿肥虫攻击了，快去帮他！" % GameState.player_name, 500)
 
 func _trigger_encounter() -> void:
 	_battling = true

@@ -24,25 +24,37 @@
   "shenhe": {
     "id": "shenhe",
     "name": "申鹤",
-    "title": null,
-    "role": "trainer",
+    "title": "劲敌",
+    "role": "rival",
     "gender": "女",
-    "desc": "钢系四天王，看似柔弱实为强敌",
-    "sprite_walk": null,
+    "desc": "冰系天才，表面冷漠实为强者",
+    "sprite_walk": "申鹤walk_sheet.png",
     "sprite_front": "申鹤front.png",
     "sprite_back": "申鹤back.png",
     "trainer": {
       "trainer_id": "shenhe",
-      "class": "四天王",
-      "reward": 8000,
-      "dialog_before": "前面的！站住！",
-      "dialog_win": "你……你真厉害！",
-      "team": [],
-      "dialog_intro": "前面的！站住！",
-      "dialog_lose": "你……你真厉害！",
-      "dialog_after": "",
-      "dialog_player_lose": "",
-      "iv_tier": 3
+      "class": "神秘少女",
+      "reward": 1600,
+      "iv_tier": 2,
+      "dialog_before": "你敢跟我对战，胆子倒不小。",
+      "dialog_win": "哼……还算有点意思。",
+      "dialog_lose": "……你居然赢了我。算了，黑风堂的事你自己小心。",
+      "dialog_player_lose": "太弱了，差得远呢。",
+      "dialog_after": "下次我不会再让着你。",
+      "team": [
+        {
+          "species": "坤仔",
+          "level": 14,
+          "moves": [],
+          "item": ""
+        },
+        {
+          "species": "炎喵",
+          "level": 16,
+          "moves": [],
+          "item": ""
+        }
+      ]
     }
   },
   "linwei": {
@@ -487,6 +499,165 @@
       "dialog_after": "",
       "dialog_player_lose": "",
       "iv_tier": 1
+    }
+  },
+  "t_grassland1": {
+    "id": "t_grassland1",
+    "name": "虫虫爱好者 小花",
+    "title": null,
+    "role": "trainer",
+    "gender": "女",
+    "desc": "普通训练师",
+    "trainer": {
+      "trainer_id": "t_grassland1",
+      "class": "普通训练师",
+      "reward": 240,
+      "iv_tier": 0,
+      "dialog_before": "嘿！在草原遇到陌生人，就来一场吧！",
+      "dialog_win": "我的精灵还需要磨练！",
+      "dialog_lose": "哇，好厉害！",
+      "dialog_player_lose": "嘻嘻，我的精灵很强的！",
+      "dialog_after": "草原深处有黑风堂的人在活动，你要小心点！",
+      "team": [
+        {
+          "species": "绿肥虫",
+          "level": 7,
+          "moves": [],
+          "item": ""
+        },
+        {
+          "species": "绿肥虫",
+          "level": 7,
+          "moves": [],
+          "item": ""
+        }
+      ]
+    }
+  },
+  "t_grassland2": {
+    "id": "t_grassland2",
+    "name": "露营大叔 老余",
+    "title": null,
+    "role": "trainer",
+    "gender": "男",
+    "desc": "普通训练师",
+    "trainer": {
+      "trainer_id": "t_grassland2",
+      "class": "普通训练师",
+      "reward": 360,
+      "iv_tier": 0,
+      "dialog_before": "哦？年轻人，让老夫见识见识你的实力！",
+      "dialog_win": "还嫩了点，多经历磨砺才能成长！",
+      "dialog_lose": "哈哈哈！年轻人就是厉害！",
+      "dialog_player_lose": "老骥伏枥，志在千里！",
+      "dialog_after": "碧溪镇的翠竹馆馆主林青松，是位厉害角色，做好准备再去。",
+      "team": [
+        {
+          "species": "坤仔",
+          "level": 9,
+          "moves": [],
+          "item": ""
+        },
+        {
+          "species": "蓝蛇",
+          "level": 8,
+          "moves": [],
+          "item": ""
+        }
+      ]
+    }
+  },
+  "t_grassland3": {
+    "id": "t_grassland3",
+    "name": "旅行少女 晓月",
+    "title": null,
+    "role": "trainer",
+    "gender": "女",
+    "desc": "普通训练师",
+    "trainer": {
+      "trainer_id": "t_grassland3",
+      "class": "普通训练师",
+      "reward": 320,
+      "iv_tier": 0,
+      "dialog_before": "从远方旅行至此，请接受我的挑战！",
+      "dialog_win": "看来我的旅途还要更磨砺一番。",
+      "dialog_lose": "太棒了！你很有天赋！",
+      "dialog_player_lose": "旅途中的经验就是最好的老师！",
+      "dialog_after": "翠竹馆的馆主使用木系精灵，用火系或虫系都很有效。",
+      "team": [
+        {
+          "species": "坤仔",
+          "level": 8,
+          "moves": [],
+          "item": ""
+        },
+        {
+          "species": "炎喵",
+          "level": 9,
+          "moves": [],
+          "item": ""
+        }
+      ]
+    }
+  },
+  "t_heifeng1": {
+    "id": "t_heifeng1",
+    "name": "黑风堂地鼠甲",
+    "title": null,
+    "role": "trainer",
+    "gender": "男",
+    "desc": "黑风堂成员",
+    "trainer": {
+      "trainer_id": "t_heifeng1",
+      "class": "黑风堂成员",
+      "reward": 500,
+      "iv_tier": 0,
+      "dialog_before": "滚！这片草原的精灵都归黑风堂所有，碍事的小鬼给我受着！",
+      "dialog_win": "哈！识相就赶紧滚！",
+      "dialog_lose": "可恶……记住你了！下次不会这么轻易放你走的！",
+      "dialog_player_lose": "哈哈哈！弱鸡就别多管闲事！",
+      "dialog_after": "哼，今天先记着……",
+      "team": [
+        {
+          "species": "坤仔",
+          "level": 9,
+          "moves": [],
+          "item": ""
+        },
+        {
+          "species": "坤仔",
+          "level": 10,
+          "moves": [],
+          "item": ""
+        }
+      ]
+    }
+  },
+  "t_village1": {
+    "id": "t_village1",
+    "name": "调皮小孩 大毛",
+    "title": null,
+    "role": "trainer",
+    "gender": "男",
+    "desc": "普通训练师",
+    "trainer": {
+      "trainer_id": "t_village1",
+      "class": "普通训练师",
+      "reward": 100,
+      "iv_tier": 0,
+      "dialog_before": "哇你也有精灵！来对战！我的精灵最厉害了！",
+      "dialog_win": "哼哼，你不行嘛！",
+      "dialog_lose": "哇呜……你好强……",
+      "dialog_player_lose": "哈哈！我就说我最强！",
+      "dialog_after": "村子里听说陈教授最近在研究一种从没见过的精灵，好神秘哦！",
+      "team": [
+        {
+          "species": "坤仔",
+          "level": 5,
+          "moves": [],
+          "item": ""
+        }
+      ]
     }
   }
 }
