@@ -31,7 +31,7 @@ const WALK_FRAME_H   := 160
 const WALK_FRAME_SEC := 0.15
 
 # ── 状态变量 ──────────────────────────────────────────────────────────────────
-var _tilemap:        TileMap
+var _tilemap:        TileMapLayer
 var _player:         CharacterBody2D
 var _player_spr:     Sprite2D
 var _has_walk_sheet: bool  = false

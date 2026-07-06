@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.14.5] - 2026-07-06
+
+> 修复大世界进场崩溃 + 家室内碰撞限制
+
+- **修复** overworld_scene.gd `_tilemap` 类型 `TileMap` → `TileMapLayer`，修复出家门必崩的类型错误
+- **修复** home_scene.gd `FLOOR_MIN_Y` 280 → 120，打开玩家在室内上半部分（桌子/妈妈/楼梯）的通行空间
+
+---
+
 ### [0.14.4] - 2026-07-06
 
 > 编辑器地面补全 + 女主行走图重建 + 人物比例修正
