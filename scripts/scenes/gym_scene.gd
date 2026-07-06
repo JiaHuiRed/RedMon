@@ -512,4 +512,4 @@ func _input(event: InputEvent) -> void:
 		# 出口检测
 		var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 		if tile.y >= ROWS - 2 and tile.x >= 12 and tile.x <= 16:
-			request_scene.emit("town", {"from": "gym"})
+			request_scene.emit("overworld", {"spawn": "town", "from": "gym"})

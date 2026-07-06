@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://home_floor1_cc"]
+
+[ext_resource type="Texture2D" uid="uid://bbye4i7tl5opy" path="res://assets/backgrounds/buildings/家中.png" id="1_floor1"]
+
+[node name="home_floor1" type="Node2D"]
+
+[node name="BG" type="Sprite2D" parent="."]
+texture = ExtResource("1_floor1")
+centered = false
+scale = Vector2(0.7595, 0.7547)

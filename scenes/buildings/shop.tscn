@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dx10ku7tlgrbk"]
+
+[ext_resource type="Texture2D" uid="uid://y3xbmprnb5ry" path="res://assets/backgrounds/buildings/杂货铺.png" id="1_632wb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sy4r7"]
+size = Vector2(155, 106)
+
+[node name="shop" type="Node2D" unique_id=1609326368]
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1117527147]
+z_index = 2
+texture = ExtResource("1_632wb")
+centered = false
+
+[node name="Collider" type="StaticBody2D" parent="." unique_id=877302587]
+position = Vector2(77.5, 53)
+
+[node name="Shape" type="CollisionShape2D" parent="Collider" unique_id=1000373858]
+shape = SubResource("RectangleShape2D_sy4r7")

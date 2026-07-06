@@ -6,7 +6,7 @@ const VW := 960
 const VH := 640
 const TILE  := 16
 const SPEED := 100.0
-const FLOOR_MIN_Y := 300  # YYMMDD Red 墙面区域不可行走，地板从此处开始
+const FLOOR_MIN_Y := 280  # 260706 Red 墙面区域不可行走，地板从此处开始（配合新背景）
 const WALK_FRAME_W := 48
 const WALK_FRAME_H := 48
 const WALK_FRAME_SEC := 0.15
@@ -28,10 +28,10 @@ var _walk_frame: int = 0
 var _walk_anim_t: float = 0.0
 var _has_walk_sheet: bool = false
 
-const STAIRS1_POS := Vector2(60, 320)   # 1F 楼梯口（靠墙）
+const STAIRS1_POS := Vector2(155, 330)  # 260706 Red 1F 楼梯口，对应背景图楼梯底部
 const STAIRS2_POS := Vector2(60, 320)   # 2F 楼梯口（对应位置）
 const DOOR_CENTER := Vector2(VW / 2, VH - 18)
-const MOM_POS := Vector2(VW / 2 + 50, VH - 38)
+const MOM_POS := Vector2(VW / 2 - 80, VH / 2 + 30)  # 260706 Red 客厅桌旁，远离门口
 
 func _ready() -> void:
 	_build_floor1()
@@ -60,81 +60,15 @@ func _load_tex(path: String) -> Texture2D:
 			return ImageTexture.create_from_image(img)
 	return null
 
-# ── 通用房间背景（地板+墙+窗） ────────────────────────────────────────────────
-func _build_room_shell(parent: Node2D, floor_color: Color, wall_color: Color) -> void:
-	var floor_r = ColorRect.new()
-	floor_r.size = Vector2(VW, VH)
-	floor_r.color = floor_color
-	parent.add_child(floor_r)
-
-	var wall = ColorRect.new()
-	wall.size = Vector2(VW, VH / 2 + 20)
-	wall.color = wall_color
-	parent.add_child(wall)
-
-	# Window (right side)
-	var win_bg = ColorRect.new()
-	win_bg.size = Vector2(48, 40)
-	win_bg.position = Vector2(VW - 80, 40)
-	win_bg.color = Color(0.60, 0.82, 0.96)
-	parent.add_child(win_bg)
-	for wf in [
-		{"size": Vector2(48, 2), "pos": Vector2(VW - 80, 40)},
-		{"size": Vector2(48, 2), "pos": Vector2(VW - 80, 78)},
-		{"size": Vector2(2, 40), "pos": Vector2(VW - 80, 40)},
-		{"size": Vector2(2, 40), "pos": Vector2(VW - 34, 40)},
-		{"size": Vector2(2, 40), "pos": Vector2(VW - 56, 40)},
-	]:
-		var frame = ColorRect.new()
-		frame.size = wf["size"]; frame.position = wf["pos"]
-		frame.color = Color(0.40, 0.28, 0.16)
-		parent.add_child(frame)
-
-func _build_stairs(parent: Node2D, pos: Vector2, label_text: String) -> void:
-	for i in range(4):
-		var step = ColorRect.new()
-		step.size = Vector2(40 - i * 8, 6)
-		step.position = pos + Vector2(i * 4, i * 8)
-		step.color = Color(0.45, 0.32, 0.18)
-		parent.add_child(step)
-	var lbl = Label.new()
-	lbl.text = label_text
-	lbl.position = pos + Vector2(-4, -18)
-	lbl.add_theme_font_size_override("font_size", 9)
-	lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.40))
-	parent.add_child(lbl)
-
 # ── 1F 客厅 ───────────────────────────────────────────────────────────────────
 func _build_floor1() -> void:
-	_floor1 = Node2D.new()
-	add_child(_floor1)
-
-	# 背景图（家中.png 960×640）
-	var bg_tex = _load_tex("res://assets/backgrounds/buildings/家中.png")
-	if bg_tex:
-		var bg = Sprite2D.new()
-		bg.texture = bg_tex
-		bg.centered = false
-		bg.z_index = 0
-		_floor1.add_child(bg)
+	# 260706 Red 改为 .tscn，碰撞体积在编辑器中手动调整
+	var packed = load("res://scenes/buildings/home_floor1.tscn")
+	if packed:
+		_floor1 = packed.instantiate()
 	else:
-		_build_room_shell(_floor1, Color(0.88, 0.82, 0.72), Color(0.95, 0.92, 0.85))
-
-	# 沙发碰撞（左侧墙边区域）
-	_add_collider(_floor1, Vector2(180, FLOOR_MIN_Y + 23), Vector2(90, 34))
-
-	# 桌子碰撞（中央）
-	_add_collider(_floor1, Vector2(VW / 2, VH / 2 + 40), Vector2(80, 40))
-
-	# 出门标签
-	var door_lbl = Label.new()
-	door_lbl.text = "出门"
-	door_lbl.position = Vector2(VW / 2 - 14, VH - 56)
-	door_lbl.add_theme_font_size_override("font_size", 9)
-	door_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.40))
-	_floor1.add_child(door_lbl)
-
-	_build_stairs(_floor1, STAIRS1_POS, "上楼")
+		_floor1 = Node2D.new()
+	add_child(_floor1)
 	_build_mom()
 
 func _build_mom() -> void:
@@ -187,27 +121,13 @@ func _draw_mom() -> ImageTexture:
 
 # ── 2F 卧室 ───────────────────────────────────────────────────────────────────
 func _build_floor2() -> void:
-	_floor2 = Node2D.new()
-	add_child(_floor2)
-
-	# 背景图（卧室.png 960×640）
-	var bg_tex = _load_tex("res://assets/backgrounds/buildings/卧室.png")
-	if bg_tex:
-		var bg = Sprite2D.new()
-		bg.texture = bg_tex
-		bg.centered = false
-		bg.z_index = 0
-		_floor2.add_child(bg)
+	# 260706 Red 改为 .tscn，碰撞体积在编辑器中手动调整
+	var packed = load("res://scenes/buildings/home_floor2.tscn")
+	if packed:
+		_floor2 = packed.instantiate()
 	else:
-		_build_room_shell(_floor2, Color(0.80, 0.78, 0.88), Color(0.90, 0.90, 0.95))
-
-	# 床碰撞（右侧）
-	_add_collider(_floor2, Vector2(VW - 72, VH - 90), Vector2(56, 40))
-
-	# 书架碰撞（上方墙边）
-	_add_collider(_floor2, Vector2(325, FLOOR_MIN_Y), Vector2(50, 60))
-
-	_build_stairs(_floor2, STAIRS2_POS, "下楼")
+		_floor2 = Node2D.new()
+	add_child(_floor2)
 
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
@@ -382,7 +302,7 @@ func _input(event: InputEvent) -> void:
 		if _floor == 1:
 			if _player.position.distance_to(DOOR_CENTER) < 40:
 				GameState.last_scene = "home"
-				request_scene.emit("village", {"spawn": "home"})
+				request_scene.emit("overworld", {"spawn": "home"})
 				return
 			elif _player.position.distance_to(MOM_POS) < 30:
 				_start_mom_dialog()

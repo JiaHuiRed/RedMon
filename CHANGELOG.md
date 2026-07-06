@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.14.0] - 2026-07-06
+
+> 无缝大世界地图：青木村 + 华灵草原 + 碧溪镇 三区合并
+
+#### 新增
+- **overworld_scene.gd**：180×40 TileMap 无缝大地图，三区（青木村/华灵草原/碧溪镇）统一在一个场景
+- Camera2D 跟随玩家，limit 覆盖全图（2880×640px）
+- 区域 HUD 标签动态切换（青木村/华灵草原/碧溪镇）
+- 保留林薇跑步鞋/捕捉奖励逻辑、劲敌触发、训练师视线
+
+#### 变更
+- **home_scene.gd**：出门改为 emit "overworld"（spawn=home）
+- **gym_scene.gd**：出道馆改为 emit "overworld"（spawn=town）
+- **main.gd**：`_on_request_scene` 将 village/world/town 请求统一重定向到 overworld；添加 "overworld" 路由和地图名
+- **home_floor1.tscn / home_floor2.tscn**：新建 .tscn，碰撞体积改为编辑器手动调整
+
+---
+
 ### [0.13.0] - 2026-07-05
 
 > NPC 交互重构：配置驱动脚本引擎 + 暂停菜单 Z 键修复

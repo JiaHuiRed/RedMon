@@ -13,7 +13,7 @@ var _map_label: Label
 
 const _MAP_NAMES := {
 	"home": "家", "village": "青木村", "town": "翠竹镇",
-	"world": "华灵草原", "gym": "翠竹馆"
+	"world": "华灵草原", "gym": "翠竹馆", "overworld": "华灵大陆"
 }
 var _pause_cursor: int = 0
 var _pause_sub: String = ""
@@ -82,6 +82,7 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 			"gym":         script = load("res://scripts/scenes/gym_scene.gd")
 			"world":       script = load("res://scripts/scenes/world_scene.gd")
 			"battle":      script = load("res://scripts/scenes/battle_scene.gd")
+			"overworld":   script = load("res://scripts/scenes/overworld_scene.gd")
 			_:
 				push_error("Unknown scene: " + scene_name)
 				return
@@ -499,4 +500,16 @@ func _select_pause() -> void:
 		4: _close_pause()
 
 func _on_request_scene(scene_name: String, data: Dictionary) -> void:
-	switch_to(scene_name, data)
+	# 260706 Red 旧场景名重定向到无缝大世界地图
+	match scene_name:
+		"village":
+			var d = data.duplicate(); d["spawn"] = d.get("spawn", "village")
+			switch_to("overworld", d)
+		"world":
+			var d = data.duplicate(); d["spawn"] = d.get("spawn", "grassland")
+			switch_to("overworld", d)
+		"town":
+			var d = data.duplicate(); d["spawn"] = d.get("spawn", "town")
+			switch_to("overworld", d)
+		_:
+			switch_to(scene_name, data)

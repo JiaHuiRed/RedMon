@@ -198,3 +198,5 @@ shape = SubResource("RectangleShape2D_ksooq")
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1709012675]
 position = Vector2(208, 272)
+
+[node name="BG" type="Sprite2D" parent="." unique_id=959645119]
