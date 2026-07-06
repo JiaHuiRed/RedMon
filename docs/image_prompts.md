@@ -4,6 +4,28 @@
 
 ---
 
+## ⚠️ 生图规范（必读）
+
+### 背景处理
+- **必须指定透明背景**：所有角色/精灵立绘必须用透明背景（transparent background / PNG格式）
+- 白底和黑底都会导致去背复杂且损伤皮肤/高光色
+- 使用 NovelAI/ComfyUI：negative prompt 加 `white background, solid background, grey background`
+- 使用 Midjourney：`--no background` 或最后加 `transparent background`
+- 使用 DALL-E/其他：明确写 "transparent PNG background"
+
+### 行走图（walk sheet）规范
+- 生图时分开出图：正面行走图（3帧横排）/ 背面行走图（3帧横排）/ 侧走图（5帧横排）
+- 各帧之间留明显白色/透明间隔，便于脚本等分裁剪
+- 处理脚本：`tools/rebuild_walksheet.py`（女主）/ `tools/rebuild_walksheet_v2.py`（通用）
+- 最终格式：480×640 PNG，5列×4行，每格 96×160px
+
+### 投掷/特效动作图（throw/action）
+- 2帧横排，帧间留间隔
+- 处理脚本：`tools/process_throw.py`
+- 最终格式：192×160 PNG，2帧横排
+
+---
+
 ## 一、黑风堂干部立绘（中期剧情）
 
 ### 凌蛊叟_front.png → assets/sprites/
