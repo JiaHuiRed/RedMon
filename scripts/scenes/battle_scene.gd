@@ -69,12 +69,13 @@ var _move_hl:           Panel  = null
 var _bag_hl:            Panel  = null
 var _move_info_lbl:     Label  = null   # 260703 Red 技能效果说明
 
-# 根据训练师难度计算 IV
-func _calc_trainer_ivs(difficulty: int) -> Dictionary:
-	var base = difficulty * 31.0 / 255.0
-	var ivs = {}
+# 五档 IV: 0=路人(0) 1=普通(8) 2=精英(16) 3=道馆主/首领(25) 4=四天王/冠军(31)
+func _calc_trainer_ivs(iv_tier: int) -> Dictionary:
+	const IV_TABLE := [0, 8, 16, 25, 31]
+	var base := IV_TABLE[clampi(iv_tier, 0, 4)]
+	var ivs := {}
 	for stat in ["hp", "atk", "def", "spa", "spd", "spe"]:
-		ivs[stat] = clampi(int(base) + randi() % 9 - 4, 0, 31)
+		ivs[stat] = clampi(base + randi() % 5 - 2, 0, 31)
 	return ivs
 
 # YYMMDD Red 战斗结束统一返回，记录 last_scene
@@ -94,7 +95,7 @@ var _trainer_mon_idx: int    = 0
 var _trainer_reward:  int    = 0
 var _trainer_dialog_after:       String = ""
 var _trainer_dialog_player_lose: String = ""
-var _trainer_difficulty:         int    = 0
+var _trainer_iv_tier:            int    = 0
 
 const FIELD_H := 510
 const MSG_Y   := 510
@@ -118,9 +119,9 @@ func _ready() -> void:
 		_trainer_reward = trainer_data.get("reward", 100)
 		_trainer_dialog_after       = trainer_data.get("dialog_after", "")
 		_trainer_dialog_player_lose = trainer_data.get("dialog_player_lose", "")
-		_trainer_difficulty         = trainer_data.get("difficulty", 0)
+		_trainer_iv_tier            = trainer_data.get("iv_tier", 0)
 		for slot in trainer_data.get("team", []):
-			_trainer_team.append(MonDB.create_mon(slot["species"], slot["level"], _calc_trainer_ivs(_trainer_difficulty)))
+			_trainer_team.append(MonDB.create_mon(slot["species"], slot["level"], _calc_trainer_ivs(_trainer_iv_tier)))
 		_enemy_mon = _trainer_team[0]
 	else:
 		_enemy_mon = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))

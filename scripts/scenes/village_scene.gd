@@ -154,17 +154,17 @@ func _build_tile_colliders() -> void:
 				Vector2(TILE, TILE))
 
 func _build_border_walls() -> void:
-	# 260704 Red 东西边界隐形墙，只留北(华灵草原)和南(碧溪镇)出口
+	# 260706 Red 北出口(华灵草原) + 右出口(碧溪镇)，南/西封死
 	# 西墙（整条）
 	_add_collider(Vector2(-TILE / 2, VH / 2), Vector2(TILE, VH))
-	# 东墙（整条）
-	_add_collider(Vector2(VW + TILE / 2, VH / 2), Vector2(TILE, VH))
+	# 东墙：上段 + 下段，中间留出口（row 7-10）
+	_add_collider(Vector2(VW + TILE / 2, 4 * TILE), Vector2(TILE, 8 * TILE))
+	_add_collider(Vector2(VW + TILE / 2, VH - 4 * TILE), Vector2(TILE, 8 * TILE))
 	# 北墙：左段 + 右段，中间留出口（col 13-16）
 	_add_collider(Vector2(6 * TILE, -TILE / 2), Vector2(13 * TILE, TILE))
 	_add_collider(Vector2(VW - 6 * TILE, -TILE / 2), Vector2(13 * TILE, TILE))
-	# 南墙：左段 + 右段，中间留出口（col 13-16）
-	_add_collider(Vector2(6 * TILE, VH + TILE / 2), Vector2(13 * TILE, TILE))
-	_add_collider(Vector2(VW - 6 * TILE, VH + TILE / 2), Vector2(13 * TILE, TILE))
+	# 南墙（整条封死）
+	_add_collider(Vector2(VW / 2, VH + TILE / 2), Vector2(VW, TILE))
 
 func _check_encounter() -> void:
 	if not GameState.has_starter or _dialog_active or _battling or _lab_open:
@@ -372,7 +372,7 @@ func _build_npcs() -> void:
 	_add_collider(well.position + well.size / 2, well.size)
 
 func _build_ambient_mons() -> void:
-	var method = EncounterDB.get_method("华灵草原", "grass")
+	var method = EncounterDB.get_method("青木村", "grass")
 	var encounters = method.get("mons", [])
 	if encounters.is_empty():
 		return
@@ -547,8 +547,8 @@ func _build_player() -> void:
 			_player.position = Vector2(15 * TILE, TILE * 2)
 		"home":   # 260704 Red 从家出门，出生在家门前
 			_player.position = Vector2(HOME_DOOR_TILE.x * TILE + TILE / 2, HOME_DOOR_TILE.y * TILE + TILE + 8)
-		"town":   # 从碧溪镇回来，出生在南出口
-			_player.position = Vector2(15 * TILE, (ROWS - 2) * TILE)
+		"town":   # 260706 Red 从碧溪镇回来，出生在右出口
+			_player.position = Vector2((COLS - 2) * TILE, 8 * TILE)
 		_:
 			_player.position = Vector2(15 * TILE, 12 * TILE)
 	add_child(_player)
@@ -755,6 +755,16 @@ func _physics_process(delta: float) -> void:
 	if moving:
 		_check_encounter()
 
+	# 260706 Red 右出口 → 碧溪镇
+	if _player.position.x >= (COLS - 1) * TILE:
+		_player.position.x = (COLS - 1) * TILE
+		if GameState.has_starter and _rival_done:
+			if not _dialog_active:
+				_show_dialog("前方是碧溪镇，要出发吗？\n【Z 确认 / X 返回】", 201)
+		elif not GameState.has_starter:
+			if not _dialog_active:
+				_show_dialog("先去找陈教授拿精灵吧！", -1)
+
 	# 260704 Red North exit → 贴近北边缘才弹确认对话
 	if _player.position.y <= TILE:
 		_player.position.y = TILE
@@ -791,8 +801,8 @@ func _input(event: InputEvent) -> void:
 				ScriptEngine.advance()
 			else:
 				_advance_dialog()
-		elif event.is_action_pressed("ui_cancel") and _dialog_phase == 200:
-			# 260704 Red 北出口确认对话按X取消
+		elif event.is_action_pressed("ui_cancel") and _dialog_phase in [200, 201]:
+			# 260706 Red 出口确认对话按X取消
 			get_viewport().set_input_as_handled()
 			_dialog_active = false
 			_dialog_panel.visible = false
@@ -854,6 +864,11 @@ func _advance_dialog() -> void:
 			_dialog_panel.visible = false
 			GameState.last_scene = "village"
 			request_scene.emit("world", {"spawn": "village"})
+		201:  # 260706 Red 右出口确认 → 跳转碧溪镇
+			_dialog_active = false
+			_dialog_panel.visible = false
+			GameState.last_scene = "village"
+			request_scene.emit("town", {"spawn": "village"})
 		_:
 			_dialog_active = false
 			_dialog_panel.visible = false

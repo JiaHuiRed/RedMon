@@ -2435,6 +2435,20 @@ class App:
             setattr(self, attr, e)
             tr += 1
 
+        # IV 档位选择
+        IV_TIER_LABELS = [
+            "0 - 路人杂兵 (IV=0)",
+            "1 - 普通训练师 (IV=8)",
+            "2 - 精英/道馆杂兵 (IV=16)",
+            "3 - 道馆主/首领 (IV=25)",
+            "4 - 四天王/冠军/黑风堂主 (IV=31)",
+        ]
+        _lbl(tf, "IV 档位").grid(row=tr, column=0, sticky="e", padx=PAD, pady=3)
+        self.npc_trainer_iv_tier = ttk.Combobox(tf, values=IV_TIER_LABELS, width=32, state="readonly")
+        self.npc_trainer_iv_tier.grid(row=tr, column=1, columnspan=2, sticky="ew", pady=3, padx=(0, 4))
+        self.npc_trainer_iv_tier.set(IV_TIER_LABELS[0])
+        tr += 1
+
         _lbl(tf, "队伍精灵", bold=True, size=9).grid(
             row=tr, column=0, columnspan=3, sticky="w", pady=(6, 2))
         tr += 1
@@ -2632,6 +2646,13 @@ class App:
             self.npc_trainer_dialog_before.insert(0, trainer.get("dialog_before", ""))
             self.npc_trainer_dialog_win.delete(0, "end")
             self.npc_trainer_dialog_win.insert(0, trainer.get("dialog_win", ""))
+            iv_tier = trainer.get("iv_tier", 0)
+            IV_TIER_LABELS = [
+                "0 - 路人杂兵 (IV=0)", "1 - 普通训练师 (IV=8)",
+                "2 - 精英/道馆杂兵 (IV=16)", "3 - 道馆主/首领 (IV=25)",
+                "4 - 四天王/冠军/黑风堂主 (IV=31)",
+            ]
+            self.npc_trainer_iv_tier.set(IV_TIER_LABELS[min(iv_tier, 4)])
             self.npc_team_tree.delete(*self.npc_team_tree.get_children())
             for mem in trainer.get("team", []):
                 self.npc_team_tree.insert("", "end", values=(
@@ -2783,10 +2804,13 @@ class App:
             ]
             # Preserve extra trainer fields (gym, etc.)
             old_trainer = old_npc.get("trainer", {})
+            iv_tier_str = self.npc_trainer_iv_tier.get()
+            iv_tier = int(iv_tier_str[0]) if iv_tier_str else 0
             trainer_data = {
                 "trainer_id":    new_id,
                 "class":         self.npc_trainer_class.get(),
                 "reward":        _int(self.npc_trainer_reward.get()),
+                "iv_tier":       iv_tier,
                 "dialog_before": self.npc_trainer_dialog_before.get().strip(),
                 "dialog_win":    self.npc_trainer_dialog_win.get().strip(),
                 "team":          team,
