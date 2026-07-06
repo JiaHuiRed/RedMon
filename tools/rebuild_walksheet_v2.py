@@ -69,17 +69,18 @@ def extract_frame_equal(img_arr, frame_idx, total_frames, fit_mode='both'):
 
     sw, sh = sprite.size
     if fit_mode == 'width':
-        # 按宽缩放，超高时从20%偏移裁取（保留头+身体，少量跳过顶端武器/光效）
-        ratio = FRAME_W / sw
-        nw, nh = FRAME_W, int(sh * ratio)
+        # fit_height: 所有帧统一缩放到 FRAME_H=160，宽度自适应
+        # 各方向身高一致；宽度超出时居中裁，不足时居中留空
+        ratio = FRAME_H / sh
+        nw, nh = int(sw * ratio), FRAME_H
         sprite = sprite.resize((nw, nh), Image.LANCZOS)
-        if nh > FRAME_H:
-            top_offset = int((nh - FRAME_H) * 0.25)  # 跳过顶部25%超出量
-            sprite = sprite.crop((0, top_offset, FRAME_W, top_offset + FRAME_H))
-            nh = FRAME_H
+        if nw > FRAME_W:
+            cx = (nw - FRAME_W) // 2
+            sprite = sprite.crop((cx, 0, cx + FRAME_W, FRAME_H))
+            nw = FRAME_W
         canvas = Image.new('RGBA', (FRAME_W, FRAME_H), (0,0,0,0))
-        oy = FRAME_H - nh  # 底对齐
-        canvas.paste(sprite, (0, oy), sprite)
+        ox = (FRAME_W - nw) // 2
+        canvas.paste(sprite, (ox, 0), sprite)
     else:
         ratio = min(FRAME_W / sw, FRAME_H / sh)
         nw, nh = int(sw * ratio), int(sh * ratio)
