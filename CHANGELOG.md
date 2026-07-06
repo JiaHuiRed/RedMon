@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.14.4] - 2026-07-06
+
+> 编辑器地面补全 + 女主行走图重建 + 人物比例修正
+
+- **修复** world.tscn / town.tscn 地面 TileMapLayer 填充草地/路面数据，编辑器内可见
+- **修复** 女主 walk_sheet.png 从原始 JPG 素材重建（洪水填充法去白底，保留皮肤色）
+- **修复** 玩家/NPC 行走图缩放 1.5 → 1.0（overworld_scene.gd / home_scene.gd）
+- **修复** town.tscn 新增 Ground TileMapLayer（草地 + 石板路布局）
+- **数据** 遭遇表小幅调整（用户微调）
+
+---
+
 ### [0.14.3] - 2026-07-06
 
 > overworld.tscn 编辑器可视化整合 + 遭遇地补全青木村

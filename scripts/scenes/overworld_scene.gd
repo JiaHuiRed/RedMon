@@ -244,6 +244,27 @@ func _build_buildings() -> void:
 	s2.add_theme_color_override("font_color", Color(0.10, 0.20, 0.70))
 	s2.add_theme_font_size_override("font_size", 11); s2.z_index = 8; add_child(s2)
 
+	# 260706 Red 翠竹馆（木系道馆） x=157-165, y=9-13, 门在y=14（与_try_interact对应）
+	_draw_house_sprite(157, 9, 9, 5, "res://assets/backgrounds/buildings/翠竹馆.png")
+	var gym_lbl = Label.new(); gym_lbl.text = "翠竹馆"
+	gym_lbl.position = Vector2(160 * TILE, 9 * TILE - 14)
+	gym_lbl.add_theme_color_override("font_color", Color(0.10, 0.52, 0.16))
+	gym_lbl.add_theme_font_size_override("font_size", 12); gym_lbl.z_index = 8; add_child(gym_lbl)
+	# 道馆两侧竹林装饰
+	var _gym_trees := [[155,9],[155,10],[155,11],[155,12],[166,9],[166,10],[166,11],[166,12]]
+	for _gt in _gym_trees:
+		_draw_tree(_gt[0], _gt[1])
+	# 道馆石牌
+	_draw_sign(Vector2(157 * TILE + 4, 14 * TILE + 4), "馆主 林青松")
+
+	# 260706 Red 华灵草原驿站 x=83-87, y=2-5
+	_draw_house_sprite(83, 2, 5, 4, "res://assets/backgrounds/buildings/普通小屋.png")
+	_draw_sign(Vector2(84 * TILE, 1 * TILE + 2), "草原驿站")
+	# 驿站周围树丛
+	var _sta_trees := [[80,2],[80,3],[80,4],[81,2],[88,2],[88,3],[88,4],[89,2]]
+	for _st in _sta_trees:
+		_draw_tree(_st[0], _st[1])
+
 # ── NPC ───────────────────────────────────────────────────────────────────────
 func _build_npcs() -> void:
 	_add_npc(Vector2i(38, 25), "npc_young_woman_walk_sheet.png", "林薇", "")
@@ -251,6 +272,15 @@ func _build_npcs() -> void:
 	_add_npc(Vector2i(156, 7),  "", "店员", "店员：想买精灵葫芦的话，去杂货铺看看吧！")
 	# 260706 Red 村民NPC
 	_add_npc(Vector2i(18, 22), "", "阿婆", "阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！")
+	# 260706 Red 华灵草原 NPC
+	_add_npc(Vector2i(85, 7),  "", "驿站老伯", "老伯：旅人辛苦了，这里是草原驿站，可以稍作休息。\n近日黑风堂在草原西北一带出没，多加小心。")
+	_add_npc(Vector2i(90, 34), "", "路牌",    "← 青木村  碧溪镇 →\n前方高草丛遭遇率高，建议补足精灵葫芦再出发。")
+	_add_npc(Vector2i(107, 22),"", "旅行者",  "旅行者：我刚从碧溪镇过来，翠竹馆的林青松馆主功力深厚。\n他擅用木系精灵，火系或虫系技能克制效果翻倍！")
+	# 260706 Red 碧溪镇 NPC
+	_add_npc(Vector2i(162, 14),"", "道馆守卫", "守卫：这里是翠竹馆。\n准备好向馆主林青松发起挑战了吗？\n推荐携带火系或虫系精灵。")
+	_add_npc(Vector2i(130, 20),"", "镇民甲",   "镇民：碧溪镇以翠竹著称，林馆主就是在后山竹林中磨炼出来的。\n据说他十岁就自己驯服了一只大竹熊！")
+	_add_npc(Vector2i(150, 28),"", "小女孩",   "小女孩：姐姐/哥哥，你是来挑战道馆的吗？\n林馆主好强的！上周来了好多人都败退了……")
+	_add_npc(Vector2i(140, 35),"", "行商",     "行商：从省城来的路上碰到了黑风堂的人，\n他们在收购什么神秘道具，真是越来越猖獗了……")
 	_add_npc(Vector2i(55, 15), "", "告示牌", "【华灵草原】→ 前方草丛危险，请带足补给再出发。
 黑风堂出没，请市民提高警惕。")
 	_add_npc(Vector2i(118, 8), "", "路标", "← 华灵草原  碧溪镇 →
@@ -266,7 +296,7 @@ func _build_shenhe_village() -> void:
 		spr.region_enabled = true
 		spr.region_rect = Rect2(0, 0, 48, 48)
 		spr.centered = true
-		spr.scale = Vector2(1.5, 1.5)
+		spr.scale = Vector2(1.0, 1.0)
 	else:
 		spr.texture = _tex_npc()
 	var tile = Vector2i(45, 28)
@@ -292,7 +322,7 @@ func _add_npc(tile: Vector2i, sprite_name: String, npc_name: String, dialog: Str
 		spr.texture = load(path)
 		spr.region_enabled = true
 		spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		spr.scale = Vector2(1.5, 1.5)
+		spr.scale = Vector2(1.0, 1.0)
 	else:
 		spr.texture = _tex_npc()
 	spr.centered = true; spr.z_index = 5
@@ -337,7 +367,7 @@ func _build_player() -> void:
 		_player_spr.texture = load(sheet_path)
 		_player_spr.region_enabled = true
 		_player_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		_player_spr.centered = true; _player_spr.scale = Vector2(1.5, 1.5)
+		_player_spr.centered = true; _player_spr.scale = Vector2(1.0, 1.0)
 		_has_walk_sheet = true
 	else:
 		_player_spr.texture = _tex_player()
@@ -497,17 +527,25 @@ func _physics_process(delta: float) -> void:
 func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
 	if not _has_walk_sheet: return
 	if moving:
-		if   dir.y > 0: _walk_dir = 0
-		elif dir.y < 0: _walk_dir = 1
-		elif dir.x > 0: _walk_dir = 2
-		elif dir.x < 0: _walk_dir = 3
+		var new_dir := _walk_dir
+		if   dir.y > 0: new_dir = 0
+		elif dir.y < 0: new_dir = 1
+		elif dir.x > 0: new_dir = 2
+		elif dir.x < 0: new_dir = 3
+		if new_dir != _walk_dir:  # 换方向时重置帧
+			_walk_dir = new_dir; _walk_frame = 0; _walk_anim_t = 0.0
 		_walk_anim_t += delta
+		# 260706 Red 侧走5帧(walk_dir>=2)，正/背面4帧循环
+		var max_f := 5 if _walk_dir >= 2 else 4
 		if _walk_anim_t >= WALK_FRAME_SEC:
-			_walk_anim_t -= WALK_FRAME_SEC; _walk_frame = (_walk_frame + 1) % 4
+			_walk_anim_t -= WALK_FRAME_SEC; _walk_frame = (_walk_frame + 1) % max_f
 	else:
 		_walk_frame = 0; _walk_anim_t = 0.0
-	var col: int = [0, 1, 0, 2][_walk_frame]
-	
+	var col: int
+	if _walk_dir >= 2:
+		col = _walk_frame  # 侧走直接用帧索引 0-4
+	else:
+		col = [0, 1, 0, 2][_walk_frame]  # 正/背面 3列循环
 	_player_spr.flip_h = false
 	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 

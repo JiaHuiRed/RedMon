@@ -143,7 +143,7 @@ func _build_player() -> void:
 		_player_spr.region_enabled = true
 		_player_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		_player_spr.centered = true
-		_player_spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
+		_player_spr.scale = Vector2(1.0, 1.0)  # 260706 Red 玩家用1.0，NPC_SCALE(3.0)仅用于小帧NPC
 		_has_walk_sheet = true
 	else:
 		_player_spr.texture = _draw_player_spr()
@@ -271,21 +271,25 @@ func _physics_process(delta: float) -> void:
 	_player.position.x = clamp(_player.position.x, 8, VW - 8)
 	_player.position.y = clamp(_player.position.y, FLOOR_MIN_Y, VH - 8)
 
-	# 260703 Red 行走动画：下0/上1/左2/右3，3帧循环
+	# 260706 Red 行走动画：侧走5帧，正/背面4帧循环
 	if _has_walk_sheet:
 		if moving:
-			if   dir.y > 0: _walk_dir = 0  # 下
-			elif dir.y < 0: _walk_dir = 1  # 上
-			elif dir.x > 0: _walk_dir = 2  # 右
-			elif dir.x < 0: _walk_dir = 3  # 左
+			var new_dir := _walk_dir
+			if   dir.y > 0: new_dir = 0
+			elif dir.y < 0: new_dir = 1
+			elif dir.x > 0: new_dir = 2
+			elif dir.x < 0: new_dir = 3
+			if new_dir != _walk_dir:
+				_walk_dir = new_dir; _walk_frame = 0; _walk_anim_t = 0.0
 			_walk_anim_t += delta
+			var max_f := 5 if _walk_dir >= 2 else 4
 			if _walk_anim_t >= WALK_FRAME_SEC:
 				_walk_anim_t -= WALK_FRAME_SEC
-				_walk_frame = (_walk_frame + 1) % 4
+				_walk_frame = (_walk_frame + 1) % max_f
 		else:
 			_walk_frame = 0
 			_walk_anim_t = 0.0
-		var col: int = [0, 1, 0, 2][_walk_frame]
+		var col: int = _walk_frame if _walk_dir >= 2 else [0, 1, 0, 2][_walk_frame]
 		_player_spr.flip_h = false
 		_player_spr.region_rect = Rect2(
 			col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H,
