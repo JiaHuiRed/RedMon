@@ -10,8 +10,8 @@ const TILE  := 32
 const COLS  := 30
 const ROWS  := 20
 const SPEED := 96.0
-const WALK_FRAME_W := 48
-const WALK_FRAME_H := 48
+const WALK_FRAME_W := 96  # 260706 Red 升96px，走表4行(下/上/右/左)
+const WALK_FRAME_H := 160
 const WALK_FRAME_SEC := 0.15
 const NPC_SCALE := 1.5
 
@@ -247,8 +247,8 @@ func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 	if moving:
 		if   dir.y > 0: _walk_dir = 0  # 下
 		elif dir.y < 0: _walk_dir = 1  # 上
-		elif dir.x < 0: _walk_dir = 2  # 左
-		elif dir.x > 0: _walk_dir = 3  # 右
+		elif dir.x > 0: _walk_dir = 2  # 右
+		elif dir.x < 0: _walk_dir = 3  # 左
 		_walk_anim_t += delta
 		if _walk_anim_t >= WALK_FRAME_SEC:
 			_walk_anim_t -= WALK_FRAME_SEC
@@ -257,6 +257,8 @@ func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 		_walk_frame = 0
 		_walk_anim_t = 0.0
 	var col: int = [0, 1, 0, 2][_walk_frame]
+	
+	_player_spr.flip_h = false
 	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 
 # ── 对话框 ────────────────────────────────────────────────────────────────────

@@ -198,7 +198,7 @@ func _draw_slot_picker() -> void:
 		var info_lbl := Label.new()
 		if summary["exists"]:
 			var loc = scene_names.get(summary["last_scene"], summary["last_scene"])
-			info_lbl.text = "%s  ·  徽章 %d  ·  %s" % [summary["name"], summary["badges"], loc]
+			info_lbl.text = "%s  ·  徽章 %d  ·  %s  ·  %s" % [summary["name"], summary["badges"], loc, summary.get("play_time", "00:00:00")]
 			info_lbl.add_theme_color_override("font_color", Color.WHITE if sel else Color(0.78, 0.78, 0.90))
 		else:
 			info_lbl.text = "—— 空档 ——"

@@ -7,8 +7,8 @@ const VH := 640
 const TILE  := 16
 const SPEED := 100.0
 const FLOOR_MIN_Y := 280  # 260706 Red 墙面区域不可行走，地板从此处开始（配合新背景）
-const WALK_FRAME_W := 48
-const WALK_FRAME_H := 48
+const WALK_FRAME_W := 96  # 260706 Red 走表4行(下/上/右/左)
+const WALK_FRAME_H := 160
 const WALK_FRAME_SEC := 0.15
 const NPC_SCALE := 3.0  # 260703 Red 室内放大比例，匹配背景
 
@@ -23,7 +23,7 @@ var _mom_spr: Sprite2D
 var _floor1: Node2D   # 1F 客厅
 var _floor2: Node2D   # 2F 卧室
 var _floor: int = 1   # 260703 Red 进门默认1楼客厅
-var _walk_dir: int = 0       # 0=下 1=上 2=左 3=右
+var _walk_dir: int = 0       # 0=下 1=上 2=右 3=左，走表4行
 var _walk_frame: int = 0
 var _walk_anim_t: float = 0.0
 var _has_walk_sheet: bool = false
@@ -276,8 +276,8 @@ func _physics_process(delta: float) -> void:
 		if moving:
 			if   dir.y > 0: _walk_dir = 0  # 下
 			elif dir.y < 0: _walk_dir = 1  # 上
-			elif dir.x < 0: _walk_dir = 2  # 左
-			elif dir.x > 0: _walk_dir = 3  # 右
+			elif dir.x > 0: _walk_dir = 2  # 右
+			elif dir.x < 0: _walk_dir = 3  # 左
 			_walk_anim_t += delta
 			if _walk_anim_t >= WALK_FRAME_SEC:
 				_walk_anim_t -= WALK_FRAME_SEC
@@ -286,6 +286,7 @@ func _physics_process(delta: float) -> void:
 			_walk_frame = 0
 			_walk_anim_t = 0.0
 		var col: int = [0, 1, 0, 2][_walk_frame]
+		_player_spr.flip_h = false
 		_player_spr.region_rect = Rect2(
 			col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H,
 			WALK_FRAME_W, WALK_FRAME_H)

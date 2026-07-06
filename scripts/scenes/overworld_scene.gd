@@ -26,8 +26,8 @@ const HOME_DOOR   := Vector2i(30, 36)
 const CLINIC_DOOR := Vector2i(125, 7)
 const SHOP_DOOR   := Vector2i(147, 7)
 
-const WALK_FRAME_W   := 48
-const WALK_FRAME_H   := 48
+const WALK_FRAME_W   := 96  # 260706 Red 升96px，走表4行(下/上/右/左)
+const WALK_FRAME_H   := 160
 const WALK_FRAME_SEC := 0.15
 
 # ── 状态变量 ──────────────────────────────────────────────────────────────────
@@ -443,7 +443,7 @@ func _advance_dialog() -> void:
 			var starter_id = GameState.player_team[0].get("species_id", "炎喵") if not GameState.player_team.is_empty() else "炎喵"
 			var rival_sp = {"炎喵": "蓝蛇", "蓝蛇": "小竹熊", "小竹熊": "炎喵"}.get(starter_id, "蓝蛇")
 			request_scene.emit("battle", {
-				"trainer": {"name": "小翔", "team": [MonDB.create_mon(rival_sp, 7)],
+				"trainer": {"name": GameState.rival_name, "team": [MonDB.create_mon(rival_sp, 7)],
 					"reward": 500, "id": "rival", "dialog_win": "我才刚起步，下次一定！", "difficulty": 1},
 				"from_scene": "overworld",
 				"player_pos": [_player.position.x, _player.position.y]
@@ -499,14 +499,16 @@ func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
 	if moving:
 		if   dir.y > 0: _walk_dir = 0
 		elif dir.y < 0: _walk_dir = 1
-		elif dir.x < 0: _walk_dir = 2
-		elif dir.x > 0: _walk_dir = 3
+		elif dir.x > 0: _walk_dir = 2
+		elif dir.x < 0: _walk_dir = 3
 		_walk_anim_t += delta
 		if _walk_anim_t >= WALK_FRAME_SEC:
 			_walk_anim_t -= WALK_FRAME_SEC; _walk_frame = (_walk_frame + 1) % 4
 	else:
 		_walk_frame = 0; _walk_anim_t = 0.0
 	var col: int = [0, 1, 0, 2][_walk_frame]
+	
+	_player_spr.flip_h = false
 	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 
 func _input(event: InputEvent) -> void:
@@ -611,7 +613,7 @@ func _check_rival() -> void:
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 	if tile.x >= 50 and tile.x <= 57 and tile.y >= 18 and tile.y <= 26:
 		_rival_done = true
-		_show_dialog("小翔：%s！终于等到你了！拿了精灵就来一场吧！" % GameState.player_name, 300)
+		_show_dialog("%s：%s！终于等到你了！拿了精灵就来一场吧！" % [GameState.rival_name, GameState.player_name], 300)
 
 func _check_encounter() -> void:
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
