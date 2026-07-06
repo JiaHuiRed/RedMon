@@ -193,7 +193,7 @@ region_rect = Rect2(0, 0, 48, 48)
 position = Vector2(593, 369)
 
 [node name="NPCs_YoungManCollider#Shape" type="CollisionShape2D" parent="." unique_id=7748540]
-position = Vector2(-2, 4)
+position = Vector2(594, 363)
 shape = SubResource("RectangleShape2D_ksooq")
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1709012675]

@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://ctff78v2lth0a"]
+
+[ext_resource type="PackedScene" uid="uid://c2cdd285u1sc2" path="res://scenes/village.tscn" id="1_eab5i"]
+[ext_resource type="Script" uid="uid://byyhgjwf62kl7" path="res://scripts/scenes/village_scene.gd" id="2_fkyvp"]
+[ext_resource type="PackedScene" uid="uid://b05tpaffa7f5y" path="res://scenes/world.tscn" id="3_qjxaj"]
+[ext_resource type="Script" uid="uid://cr8qavbl618fw" path="res://scripts/scenes/overworld_scene.gd" id="4_e184d"]
+[ext_resource type="PackedScene" path="res://scenes/town.tscn" id="5_nesqq"]
+[ext_resource type="Script" uid="uid://dji36ohthdtgj" path="res://scripts/scenes/town_scene.gd" id="6_lsky2"]
+
+[node name="overworld" type="Node" unique_id=1342609686]
+
+[node name="village" type="Node2D" parent="." unique_id=1796374134 instance=ExtResource("1_eab5i")]
+script = ExtResource("2_fkyvp")
+
+[node name="world" type="Node2D" parent="." unique_id=171178249 instance=ExtResource("3_qjxaj")]
+position = Vector2(960, 0)
+script = ExtResource("4_e184d")
+
+[node name="town" type="Node2D" parent="." unique_id=2035275529 instance=ExtResource("5_nesqq")]
+position = Vector2(1920, 0)
+script = ExtResource("6_lsky2")

@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.14.3] - 2026-07-06
+
+> overworld.tscn 编辑器可视化整合 + 遭遇地补全青木村
+
+#### 新增
+- **scenes/overworld.tscn**：在编辑器中将 village/world/town 三个 .tscn 作为子场景实例化，横向拼接（0/960/1920 px），地图内容完全由编辑器可视化管理
+
+#### 变更
+- **scripts/main.gd**：注册 "overworld" 路由指向 overworld.tscn
+- **tools/mon_editor.py**：遭遇地下拉列表补上"青木村"（之前漏掉）
+
+---
+
 ### [0.14.0] - 2026-07-06
 
 > 无缝大世界地图：青木村 + 华灵草原 + 碧溪镇 三区合并

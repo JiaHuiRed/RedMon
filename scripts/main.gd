@@ -68,6 +68,7 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		"world":   "res://scenes/world.tscn",
 		"town":    "res://scenes/town.tscn",
 		"gym":     "res://scenes/gym.tscn",
+		"overworld": "res://scenes/overworld.tscn",
 	}
 	if _TSCN_SCENES.has(scene_name):
 		_current = load(_TSCN_SCENES[scene_name]).instantiate()
