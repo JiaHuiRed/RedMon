@@ -152,13 +152,22 @@ func _scan_grass_tiles() -> void:
 
 # ── 边界 ──────────────────────────────────────────────────────────────────────
 func _build_border_walls() -> void:
-	_add_collider(Vector2(MAP_W / 2.0, -TILE / 2.0), Vector2(MAP_W, TILE))
+	# 260707 Red 青木村北出口：col 30 留一格缺口（冠军之路入口）
+	if name == "village":
+		var gx := 30 * TILE
+		_add_collider(Vector2(gx / 2.0, -TILE / 2.0), Vector2(gx, TILE))
+		var rw := MAP_W - gx - TILE
+		_add_collider(Vector2(gx + TILE + rw / 2.0, -TILE / 2.0), Vector2(rw, TILE))
+	else:
+		_add_collider(Vector2(MAP_W / 2.0, -TILE / 2.0), Vector2(MAP_W, TILE))
 	_add_collider(Vector2(MAP_W / 2.0, MAP_H + TILE / 2.0), Vector2(MAP_W, TILE))
 	_add_collider(Vector2(-TILE / 2.0, MAP_H / 2.0), Vector2(TILE, MAP_H))
 	_add_collider(Vector2(MAP_W + TILE / 2.0, MAP_H / 2.0), Vector2(TILE, MAP_H))
-	# 边界树（视觉）
+	# 边界树（视觉），青木村 col 30 留缺口
 	for c in range(COLS):
-		_draw_tree(c, 0); _draw_tree(c, ROWS - 1)
+		if not (name == "village" and c == 30):
+			_draw_tree(c, 0)
+		_draw_tree(c, ROWS - 1)
 	for r in range(1, ROWS - 1):
 		_draw_tree(0, r); _draw_tree(COLS - 1, r)
 
@@ -226,6 +235,9 @@ func _build_npcs() -> void:
 黑风堂出没，请市民提高警惕。")
 	_add_npc(Vector2i(118, 8), "", "路标", "← 华灵草原  碧溪镇 →
 翠竹馆（木系）开放中。")
+	# 260707 Red 青木村北出口守卫（集齐八枚徽章解锁冠军之路）
+	if name == "village" and GameState.badges < 8:
+		_add_npc(Vector2i(30, 1), "", "守卫", "__guard_north__")
 	# 260706 Red 申鹤（村内）
 	_build_shenhe_village()
 
@@ -547,6 +559,8 @@ func _try_talk_npc(tile: Vector2i) -> void:
 				_handle_linwei(); return
 			var dlg: String = spr.get_meta("npc_dialog", "…")
 			# 260706 Red 申鹤专属逻辑
+			if dlg == "__guard_north__":
+				_handle_north_guard(); return
 			if dlg == "shenhe_village":
 				_handle_shenhe_village(); return
 			_npc_dialog_lines = [dlg]; _npc_dialog_idx = 0
@@ -561,6 +575,10 @@ func _handle_linwei() -> void:
 		_show_dialog("林薇：%s，等等！这是陈教授叫我转交的跑步鞋，穿上它你能跑得更快！" % GameState.player_name, -1)
 		return
 	_show_dialog("林薇：加油！每捕获10只精灵我就给你奖励！", -1)
+
+func _handle_north_guard() -> void:
+	var n := GameState.badges
+	_show_dialog("守卫：前方是华灵冠军之路。\n集齐全部八枚道馆徽章方可通行。\n当前徽章：%d / 8 枚。" % n, -1)
 
 func _handle_shenhe_village() -> void:
 	_shenhe_village_done = true

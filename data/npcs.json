@@ -259,49 +259,47 @@
     "desc": "黑风堂堂主·真身·龙系，最终BOSS",
     "gender": "女"
   },
-  "shangguan_lie": {
-    "id": "shangguan_lie",
-    "name": "上官烈",
-    "title": null,
-    "role": "npc",
-    "sprite_static": "上官烈.png",
-    "desc": "华灵大陆的知名人物",
-    "gender": "男"
-  },
   "fang_xuanyou": {
     "id": "fang_xuanyou",
     "name": "方玄幽",
-    "title": null,
-    "role": "npc",
+    "title": "幽冥部干部",
+    "role": "villain",
     "sprite_front": "方玄幽front.png",
-    "desc": "",
+    "desc": "黑风堂幽冥部，鬼系",
     "gender": "女"
   },
   "wu_chengshan": {
     "id": "wu_chengshan",
     "name": "武承山",
-    "title": null,
-    "role": "npc",
+    "title": "铁拳馆馆主",
+    "role": "gym_leader",
     "sprite_static": "武承山.png",
-    "desc": "",
+    "desc": "格斗系道馆馆主，第8馆",
+    "gender": "男"
+  },
+  "yang_tao": {
+    "id": "yang_tao",
+    "name": "杨焘",
+    "title": "惊雷馆馆主",
+    "role": "gym_leader",
+    "sprite_front": "杨焘front.png",
+    "desc": "雷系道馆馆主，第6馆",
     "gender": "男"
   },
   "gan_yu": {
     "id": "gan_yu",
     "name": "甘雨",
-    "title": null,
-    "role": "elite_four",
+    "title": "冠军",
+    "role": "champion",
     "gender": "女",
-    "sprite_walk": null,
     "sprite_front": "甘雨.png",
-    "sprite_back": null,
-    "desc": "灵系四天王"
+    "desc": "华灵大陆冠军"
   },
   "xie_mingdu": {
     "id": "xie_mingdu",
     "name": "谢冥毒",
-    "title": null,
-    "role": "npc",
+    "title": "毒雾部干部",
+    "role": "villain",
     "sprite_front": "谢冥毒front.png",
     "desc": "",
     "gender": "男"
@@ -309,20 +307,47 @@
   "he_tiecheng": {
     "id": "he_tiecheng",
     "name": "贺铁城",
-    "title": null,
-    "role": "npc",
+    "title": "暗渊部干部",
+    "role": "villain",
     "sprite_static": "贺铁城.png",
-    "desc": "",
+    "desc": "黑风堂暗渊部，暗系",
     "gender": "男"
+  },
+  "wuwo": {
+    "id": "wuwo",
+    "name": "无我",
+    "title": "空部堂主",
+    "role": "villain",
+    "sprite_front": "无我front.png",
+    "desc": "黑风堂空部堂主，空系",
+    "gender": "男"
+  },
+  "jiang_zimeng": {
+    "id": "jiang_zimeng",
+    "name": "江梓萌",
+    "title": "御风天王",
+    "role": "elite_four",
+    "sprite_front": "江梓萌front.png",
+    "desc": "风系四天王",
+    "gender": "女"
   },
   "gu_qingwu": {
     "id": "gu_qingwu",
     "name": "顾清梧",
-    "title": null,
-    "role": "npc",
-    "sprite_static": "顾清梧.png",
-    "desc": "",
+    "title": "仙道天王（一代）",
+    "role": "elite_four",
+    "sprite_front": "顾清梧front.png",
+    "desc": "仙系四天王，第一代",
     "gender": "女"
+  },
+  "ling_gusou": {
+    "id": "ling_gusou",
+    "name": "凌蛊叟",
+    "title": "蛊虫部干部",
+    "role": "villain",
+    "sprite_front": "凌蛊叟front.png",
+    "desc": "黑风堂蛊虫部，虫系",
+    "gender": "男"
   },
   "pretty_sister": {
     "id": "pretty_sister",
