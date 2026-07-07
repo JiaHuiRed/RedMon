@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c2cdd285u1sc2" path="res://scenes/village.tscn" id="1_eab5i"]
 [ext_resource type="PackedScene" uid="uid://b05tpaffa7f5y" path="res://scenes/world.tscn" id="3_qjxaj"]
-[ext_resource type="PackedScene" path="res://scenes/town.tscn" id="5_nesqq"]
+[ext_resource type="PackedScene" uid="uid://m5m4amronkfy0" path="res://scenes/town.tscn" id="5_nesqq"]
 
 [node name="overworld" type="Node" unique_id=1342609686]
 
