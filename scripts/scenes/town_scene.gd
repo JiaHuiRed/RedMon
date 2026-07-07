@@ -6,7 +6,7 @@ signal request_scene(scene_name: String, data: Dictionary)
 
 const VW := 960
 const VH := 640
-const TILE  := 16
+const TILE  := 32
 const COLS  := 30
 const ROWS  := 20
 const SPEED := 100.0
