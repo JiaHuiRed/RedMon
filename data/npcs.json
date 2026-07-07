@@ -82,18 +82,18 @@
     "name": "老奶奶",
     "title": null,
     "role": "villager",
-    "sprite_static": "老奶奶.png",
     "desc": "青木村的老人",
-    "gender": "女"
+    "gender": "女",
+    "sprite_front": "老奶奶.png"
   },
   "young_man": {
     "id": "young_man",
     "name": "青年",
     "title": null,
     "role": "villager",
-    "sprite_static": "青年.png",
     "desc": "青木村的青年",
-    "gender": "男"
+    "gender": "男",
+    "sprite_front": "青年.png"
   },
   "lin_qingsong": {
     "id": "lin_qingsong",
@@ -273,9 +273,9 @@
     "name": "武承山",
     "title": "铁拳馆馆主",
     "role": "gym_leader",
-    "sprite_static": "武承山.png",
     "desc": "格斗系道馆馆主，第8馆",
-    "gender": "男"
+    "gender": "男",
+    "sprite_front": "武承山.png"
   },
   "yang_tao": {
     "id": "yang_tao",
@@ -309,9 +309,9 @@
     "name": "贺铁城",
     "title": "暗渊部干部",
     "role": "villain",
-    "sprite_static": "贺铁城.png",
     "desc": "黑风堂暗渊部，暗系",
-    "gender": "男"
+    "gender": "男",
+    "sprite_front": "贺铁城.png"
   },
   "wuwo": {
     "id": "wuwo",
@@ -354,45 +354,45 @@
     "name": "漂亮姐姐",
     "title": null,
     "role": "villager",
-    "sprite_static": "漂亮姐姐.png",
     "desc": "青木村的居民",
-    "gender": "女"
+    "gender": "女",
+    "sprite_front": "漂亮姐姐.png"
   },
   "fat_woman": {
     "id": "fat_woman",
     "name": "胖女人",
     "title": null,
     "role": "villager",
-    "sprite_static": "胖女人.png",
     "desc": "青木村的居民",
-    "gender": "女"
+    "gender": "女",
+    "sprite_front": "胖女人.png"
   },
   "fat_man": {
     "id": "fat_man",
     "name": "胖男人",
     "title": null,
     "role": "villager",
-    "sprite_static": "胖男人.png",
     "desc": "青木村的居民",
-    "gender": "男"
+    "gender": "男",
+    "sprite_front": "胖男人.png"
   },
   "young_girl": {
     "id": "young_girl",
     "name": "少女",
     "title": null,
     "role": "villager",
-    "sprite_static": "少女.png",
     "desc": "青木村的居民",
-    "gender": "女"
+    "gender": "女",
+    "sprite_front": "少女.png"
   },
   "old_man": {
     "id": "old_man",
     "name": "老爷爷",
     "title": null,
     "role": "villager",
-    "sprite_static": "老爷爷.png",
     "desc": "青木村的居民",
-    "gender": "男"
+    "gender": "男",
+    "sprite_front": "老爷爷.png"
   },
   "t_xiaomin": {
     "id": "t_xiaomin",

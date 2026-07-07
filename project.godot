@@ -20,7 +20,6 @@ GameState="*res://scripts/autoload/game_state.gd"
 MonDB="*res://scripts/autoload/mon_db.gd"
 EncounterDB="*res://scripts/autoload/encounter_db.gd"
 ScriptEngine="*res://scripts/autoload/script_engine.gd"
-MCPRuntimeProbe="*res://addons/godot_mcp/runtime/mcp_runtime_probe.gd"
 
 [display]
 

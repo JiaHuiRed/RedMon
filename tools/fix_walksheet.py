@@ -2,11 +2,14 @@
 修复女主 walk_sheet.png 白底透明化
 使用逐帧洪水填充（从帧四角向内），只去掉连通的背景白色，不影响皮肤等内部颜色
 """
+import os
 from PIL import Image
 import numpy as np
 from collections import deque
 
-SHEET_PATH = r"D:\AI\Game\RPG_Demo\assets\npc\女主walk_sheet.png"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+SHEET_PATH = os.path.join(ROOT, "assets", "npc", "女主walk_sheet.png")
 
 FRAME_W = 96
 FRAME_H = 160
