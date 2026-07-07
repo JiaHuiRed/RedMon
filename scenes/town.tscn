@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://town_tscn"]
+[gd_scene format=4]
 
 [ext_resource type="Script" path="res://scripts/scenes/town_scene.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/tilemaps/world_tiles16.png" id="10"]
@@ -44,7 +44,7 @@ z_index = 2
 [node name="ClinicCollider" type="StaticBody2D" parent="Buildings"]
 position = Vector2(88, 48)
 
-[node name="ClinicCollider/Shape" type="CollisionShape2D" parent="Buildings"]
+[node name="Shape" type="CollisionShape2D" parent="Buildings/ClinicCollider"]
 shape = SubResource("rect_clinic")
 
 [node name="Shop" type="Sprite2D" parent="Buildings"]
@@ -56,5 +56,5 @@ z_index = 2
 [node name="ShopCollider" type="StaticBody2D" parent="Buildings"]
 position = Vector2(360, 48)
 
-[node name="ShopCollider/Shape" type="CollisionShape2D" parent="Buildings"]
+[node name="Shape" type="CollisionShape2D" parent="Buildings/ShopCollider"]
 shape = SubResource("rect_shop")
