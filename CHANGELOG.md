@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.14.6] - 2026-07-07
+
+> 修复 tile_map_data 缺失格式头导致的地图损坏 + 大世界脚本死代码清理
+
+- **修复** `world.tscn` / `town.tscn` 的 `tile_map_data` 缺少 Godot TileMapLayer 要求的 2 字节格式头，导致编辑器报 "Corrupted tile map data: tiles might be missing"（根因排查确认，非字段顺序问题）
+- **修复** 重新生成 world.tscn（Ground+Trees）、town.tscn（Ground+DecoTiles）共 4 处 tile_map_data，地面复原 + 树木/灌木/告示牌装饰重建
+- **修复** `overworld_scene.gd` 遗留的旧版 180×40 单地图程序化建图代码（`_build_tilemap`/`_paint_terrain`/`_paint_patch`）与新 TileMapLayer API 不兼容导致编译错误，整段移除并改为 `_scan_grass_tiles()` 从编辑器搭建的 Ground 扫描高草丛用于遇敌判定
+
+---
+
 ### [0.14.5] - 2026-07-06
 
 > 修复大世界进场崩溃 + 家室内碰撞限制

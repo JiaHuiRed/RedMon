@@ -112,9 +112,7 @@ func _ready() -> void:
 	var ground = get_node_or_null("Ground")
 	if ground and ground is TileMapLayer:
 		_tilemap = ground
-	else:
-		_build_tilemap()
-	_paint_terrain()
+	_scan_grass_tiles()
 
 	_build_border_walls()
 	_build_buildings()
@@ -143,71 +141,14 @@ func _load_trainer_data() -> void:
 		TRAINERS.append(t)
 
 # ── TileMap ────────────────────────────────────────────────────────────────────
-func _build_tilemap() -> void:
-	var tileset := TileSet.new()
-	tileset.tile_size = Vector2i(TILE, TILE)
-	var src := TileSetAtlasSource.new()
-	src.texture = load("res://assets/tilemaps/world_tiles16.png")
-	src.texture_region_size = Vector2i(TILE, TILE)
-	for r in range(8):
-		for c in range(8):
-			src.create_tile(Vector2i(c, r))
-	tileset.add_source(src)
-	_tilemap = TileMap.new()
-	_tilemap.tile_set = tileset
-	_tilemap.z_index = -5
-	add_child(_tilemap)
-
-func _paint_terrain() -> void:
-	var T_GRASS      := Vector2i(0, 0)
-	var T_TALL_GRASS := Vector2i(2, 0)
-	var T_DIRT       := Vector2i(4, 0)
-	var T_WATER      := Vector2i(0, 1)
-	var T_STONE      := Vector2i(6, 0)
-
-	# 全图底层
-	for r in range(ROWS):
-		for c in range(COLS):
-			_tilemap.set_cell(0, Vector2i(c, r), 0, T_GRASS)
-
-	# 青木村高草
-	for patch in [[5,22,5,4],[8,28,6,4],[18,20,4,5],[22,26,5,3]]:
-		_paint_patch(patch[0], patch[1], patch[2], patch[3], T_TALL_GRASS)
-	# 村内路
-	for c in range(2, 60):
-		_tilemap.set_cell(0, Vector2i(c, 36), 0, T_DIRT)
-		_tilemap.set_cell(0, Vector2i(c, 37), 0, T_DIRT)
-
-	# 草原高草
-	for patch in [[64,8,6,4],[72,14,5,5],[80,6,7,4],[66,24,5,4],[76,28,6,3],[90,15,5,4],[100,22,6,4]]:
-		_paint_patch(patch[0], patch[1], patch[2], patch[3], T_TALL_GRASS)
-	# 草原路
-	for c in range(60, 120):
-		_tilemap.set_cell(0, Vector2i(c, 36), 0, T_DIRT)
-		_tilemap.set_cell(0, Vector2i(c, 37), 0, T_DIRT)
-	# 水池
-	for pt in [[90,20],[91,20],[92,20],[89,21],[90,21],[91,21],[92,21],[93,21],[90,22],[91,22],[92,22]]:
-		_tilemap.set_cell(0, Vector2i(pt[0], pt[1]), 0, T_WATER)
-
-	# 碧溪镇石板
-	for r in range(ROWS):
-		for c in range(133, 137):
-			_tilemap.set_cell(0, Vector2i(c, r), 0, T_STONE)
-	for c in range(120, 180):
-		_tilemap.set_cell(0, Vector2i(c, 16), 0, T_STONE)
-		_tilemap.set_cell(0, Vector2i(c, 17), 0, T_STONE)
-		_tilemap.set_cell(0, Vector2i(c, 36), 0, T_STONE)
-		_tilemap.set_cell(0, Vector2i(c, 37), 0, T_STONE)
-	# 镇边草丛
-	for patch in [[122,27,4,3],[158,25,4,3]]:
-		_paint_patch(patch[0], patch[1], patch[2], patch[3], T_TALL_GRASS)
-
-func _paint_patch(col: int, row: int, w: int, h: int, tile: Vector2i) -> void:
-	for r in range(h):
-		for c in range(w):
-			var gi = Vector2i(col + c, row + r)
-			_tilemap.set_cell(0, gi, 0, tile)
-			_grass_tiles.append(gi)
+# 260707 Red 地图现由 .tscn 编辑器搭建（Ground TileMapLayer 内建 tile_map_data），
+# 此处不再用代码生成地形，只扫描已有 Ground 找出高草丛用于遇敌判定。
+func _scan_grass_tiles() -> void:
+	if not _tilemap: return
+	var t_tall_grass := Vector2i(2, 0)
+	for cell in _tilemap.get_used_cells():
+		if _tilemap.get_cell_atlas_coords(cell) == t_tall_grass:
+			_grass_tiles.append(cell)
 
 # ── 边界 ──────────────────────────────────────────────────────────────────────
 func _build_border_walls() -> void:
