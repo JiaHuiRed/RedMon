@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://byyhgjwf62kl7" path="res://scripts/scenes/village_scene.gd" id="1_mv8fa"]
 [ext_resource type="Texture2D" uid="uid://ccgolre10q0iy" path="res://assets/backgrounds/buildings/普通小屋.png" id="2_mv8fa"]
-[ext_resource type="TileSet" path="res://assets/tilemaps/world_tileset.tres" id="10_ts"]
+[ext_resource type="TileSet" uid="uid://dmmc27tsay1lw" path="res://assets/tilemaps/world_tileset.tres" id="10_ts"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gktdk"]
 size = Vector2(107, 84)
@@ -122,27 +122,24 @@ metadata/dialog = "__guard_north__"
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1709012675]
 position = Vector2(208, 272)
 
-[node name="EncounterZones" type="Node2D" parent="."]
+[node name="EncounterZones" type="Node2D" parent="." unique_id=1007383495]
 
-[node name="Z_Center" type="Area2D" parent="EncounterZones"]
+[node name="Z_Center" type="Area2D" parent="EncounterZones" unique_id=1397686879]
 position = Vector2(192, 416)
-collision_mask = 1
 
-[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Center"]
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Center" unique_id=1458768995]
 shape = SubResource("RectangleShape2D_zone1")
 
-[node name="Z_Right" type="Area2D" parent="EncounterZones"]
+[node name="Z_Right" type="Area2D" parent="EncounterZones" unique_id=426984070]
 position = Vector2(800, 512)
-collision_mask = 1
 
-[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Right"]
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Right" unique_id=1893746125]
 shape = SubResource("RectangleShape2D_zone2")
 
-[node name="Z_Top" type="Area2D" parent="EncounterZones"]
+[node name="Z_Top" type="Area2D" parent="EncounterZones" unique_id=1227470776]
 position = Vector2(112, 608)
-collision_mask = 1
 
-[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Top"]
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Top" unique_id=560784526]
 shape = SubResource("RectangleShape2D_zone3")
 
 [node name="BG" type="Sprite2D" parent="." unique_id=959645119]

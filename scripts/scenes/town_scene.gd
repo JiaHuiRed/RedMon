@@ -647,7 +647,7 @@ func _check_encounter() -> void:
 
 func _trigger_encounter() -> void:
 	_battling = true
-	var entry = EncounterDB.pick_mon("翠竹镇", "grass")
+	var entry = EncounterDB.pick_mon("碧游镇", "grass")
 	if entry.is_empty():
 		_battling = false
 		return

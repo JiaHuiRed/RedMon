@@ -45,8 +45,8 @@ var _map_config: Dictionary = {}
 # 脚本引擎 NPC 节点引用
 var _script_npcs: Dictionary = {}  # npc_id → {"sprite": Sprite2D, "collider": StaticBody2D}
 
-# ── 260704 Red 遇敌草丛系统 ──────────────────────────────────────────────────
-var _grass_tiles: Array = []  # 遇敌草丛坐标
+# ── 260708 遇敌草丛系统（Area2D 碰撞检测） ──────────────────────────────────
+var _in_encounter_zone: bool = false
 const ENCOUNTER_RATE := 0.12  # 12% per step
 
 # ── 环境过场精灵（丰富画面，全程慢速游走，不参与战斗） ──────────────────────
@@ -85,6 +85,7 @@ func _ready() -> void:
 	_build_ambient_mons()
 	_build_rival()
 	_build_player()
+	call_deferred("_init_encounter_zone_state")
 	_build_dialog()
 	if GameState.rival_name.is_empty():
 		GameState.rival_name = "小敏"
@@ -119,17 +120,36 @@ func _fix_lab_background() -> void:
 		lab_node.texture = cropped
 
 func _setup_encounters() -> void:
-	# 扫描 Ground TileMapLayer 中的遇敌草丛 tile
-	var ground = get_node_or_null("Ground")
-	if ground and ground is TileMapLayer:
-		var used = ground.get_used_cells()
-		for cell in used:
-			var atlas = ground.get_cell_atlas_coords(cell)
-			if atlas == Vector2i(2, 0):  # 260704 Red 遇敌高草 tile（同华灵草原）
-				_grass_tiles.append(cell)
-	# 260704 Red 装饰物碰撞 + 边界墙
+	# 260708 用 EncounterZone Area2D 做像素级碰撞检测，取代 tile 坐标扫描
+	var zones = get_node_or_null("EncounterZones")
+	if zones:
+		for child in zones.get_children():
+			if child is Area2D:
+				child.body_entered.connect(_on_encounter_zone_entered)
+				child.body_exited.connect(_on_encounter_zone_exited)
+	# 装饰物碰撞 + 边界墙
 	_build_tile_colliders()
 	_build_border_walls()
+
+func _on_encounter_zone_entered(body: Node) -> void:
+	if body == _player:
+		_in_encounter_zone = true
+
+func _on_encounter_zone_exited(body: Node) -> void:
+	if body == _player:
+		_in_encounter_zone = false
+
+func _init_encounter_zone_state() -> void:
+	# 260708 玩家出生在草丛中时，body_entered 不会触发，手动检查初始重叠
+	if not _player:
+		return
+	var zones = get_node_or_null("EncounterZones")
+	if zones:
+		for child in zones.get_children():
+			if child is Area2D and child.has_overlapping_bodies():
+				if _player in child.get_overlapping_bodies():
+					_in_encounter_zone = true
+					return
 
 func _build_tile_colliders() -> void:
 	# 260704 Red 给装饰性 tile（灌木/树/水）加碰撞，不含遇敌草丛
@@ -169,8 +189,7 @@ func _build_border_walls() -> void:
 func _check_encounter() -> void:
 	if not GameState.has_starter or _dialog_active or _battling or _lab_open:
 		return
-	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
-	if tile not in _grass_tiles:
+	if not _in_encounter_zone:
 		return
 	if randf() > ENCOUNTER_RATE:
 		return
