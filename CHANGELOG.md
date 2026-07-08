@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.16.2] - 2026-07-09
+
+- 我方精灵 scale 0.2→0.4，小竹熊透明背景修复
+
+
 
 
 All notable changes to this project will be documented in this file.

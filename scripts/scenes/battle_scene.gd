@@ -199,7 +199,7 @@ func _build_battle_field() -> void:
 	_player_spr = Sprite2D.new()
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 	_player_spr.position = Vector2(110, FIELD_H - 68)
-	_player_spr.scale = Vector2(0.2, 0.2)
+	_player_spr.scale = Vector2(0.4, 0.4)
 	add_child(_player_spr)
 
 func _draw_cloud(pos: Vector2, w: float, h: float) -> void:
