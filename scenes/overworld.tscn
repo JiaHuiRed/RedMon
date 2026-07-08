@@ -1,16 +1,21 @@
 [gd_scene format=3 uid="uid://ctff78v2lth0a"]
 
 [ext_resource type="PackedScene" uid="uid://c2cdd285u1sc2" path="res://scenes/village.tscn" id="1_eab5i"]
-[ext_resource type="PackedScene" uid="uid://b05tpaffa7f5y" path="res://scenes/world.tscn" id="3_qjxaj"]
+[ext_resource type="PackedScene" uid="uid://b05tpaffa7f5y" path="res://scenes/grassland.tscn" id="3_qjxaj"]
 [ext_resource type="PackedScene" uid="uid://bkfiig0wxxspp" path="res://scenes/town.tscn" id="5_nesqq"]
+[ext_resource type="Script" uid="uid://cr8qavbl618fw" path="res://scripts/scenes/overworld_scene.gd" id="6_script"]
 
-[node name="overworld" type="Node" unique_id=1342609686]
+[node name="overworld" type="Node2D" unique_id=1342609686]
+script = ExtResource("6_script")
 
-[node name="village" parent="." unique_id=1796374134 instance=ExtResource("1_eab5i")]
-position = Vector2(-1, -3)
+[node name="青木村" parent="." unique_id=1796374134 instance=ExtResource("1_eab5i")]
+position = Vector2(0, 0)
+script = null
 
-[node name="world" parent="." unique_id=171178249 instance=ExtResource("3_qjxaj")]
+[node name="华灵草原" parent="." unique_id=171178249 instance=ExtResource("3_qjxaj")]
 position = Vector2(960, 0)
+script = null
 
-[node name="town" parent="." unique_id=2035275529 instance=ExtResource("5_nesqq")]
+[node name="碧溪镇" parent="." unique_id=2035275529 instance=ExtResource("5_nesqq")]
 position = Vector2(1920, 0)
+script = null

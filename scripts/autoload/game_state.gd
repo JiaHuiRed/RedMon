@@ -7,7 +7,7 @@ var player_team: Array = []      # Array of mon dicts from MonDB.create_mon()
 var has_starter: bool = false
 var badges: int = 0
 var money: int = 500
-var items: Dictionary = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
+var items: Dictionary = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
 var pc_box: Array = []              # 精灵堂仓库（队伍满6时捕捉的精灵送到这里）
 var caught_count: int = 0           # 260630 Red 累计捕捉数（林薇奖励用）
 var linwei_reward_tier: int = 0     # 260630 Red 林薇已发放的奖励阶段（每10只+1）
@@ -214,7 +214,7 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	has_starter = false
 	badges = 0
 	money = 500
-	items = {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5}
+	items = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
 	defeated_trainers = []
 	rival_done = false
 	cleared_gyms = []

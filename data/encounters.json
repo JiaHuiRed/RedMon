@@ -8,7 +8,6 @@
             { "species": "坤仔", "weight": 8, "level_min": 2, "level_max": 4 },
             { "species": "绵绵虫", "weight": 40, "level_min": 2, "level_max": 4 },
             { "species": "眀灯鼠", "weight": 27, "level_min": 2, "level_max": 4 },
-            { "species": "露比伊布", "weight": 15, "level_min": 2, "level_max": 4 },
             { "species": "蓬蓬丘", "weight": 10, "level_min": 2, "level_max": 4 }
           ]
         }
@@ -22,13 +21,13 @@
             { "species": "坤仔", "weight": 8, "level_min": 3, "level_max": 6 },
             { "species": "绵绵虫", "weight": 40, "level_min": 3, "level_max": 5 },
             { "species": "眀灯鼠", "weight": 27, "level_min": 3, "level_max": 6 },
-            { "species": "露比伊布", "weight": 15, "level_min": 3, "level_max": 5 },
+            { "species": "露比", "weight": 2, "level_min": 3, "level_max": 5 },
             { "species": "蓬蓬丘", "weight": 10, "level_min": 4, "level_max": 6 }
           ]
         }
       }
     },
-    "翠竹镇": {
+    "碧溪镇": {
       "methods": {
         "grass": {
           "encounter_rate": 10,

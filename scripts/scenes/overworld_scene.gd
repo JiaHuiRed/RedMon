@@ -21,8 +21,8 @@ const SPAWN_VILLAGE   := Vector2(28 * TILE, 34 * TILE)
 const SPAWN_GRASSLAND := Vector2(80 * TILE, 20 * TILE)
 const SPAWN_TOWN      := Vector2(150 * TILE, 34 * TILE)
 
-# 建筑门（tile 坐标）
-const HOME_DOOR   := Vector2i(30, 36)
+# 260708 Red 建筑门（16px tile 坐标，对齐 .tscn 实际位置）
+const HOME_DOOR   := Vector2i(12, 14)   # village.tscn Home≈(194,218), global≈(193,215)
 const CLINIC_DOOR := Vector2i(125, 7)
 const SHOP_DOOR   := Vector2i(147, 7)
 
@@ -50,6 +50,7 @@ var _npc_dialog_idx:   int     = 0
 
 var _npc_nodes:   Array = []
 var _grass_tiles: Array = []
+var _water_tiles: Array = []
 
 var _hud:        Control
 var _area_label: Label
@@ -70,6 +71,7 @@ const TRAINER_LAYOUT := [
 var TRAINERS:         Array      = []
 var _pending_trainer: Dictionary = {}
 var _rival_done:      bool       = false
+var _rival_node:      Node2D     = null   # 260708 Red 劲敌可见精灵图
 var _prof_event_shown: bool      = false  # 260706 Red 开场教授遇难触发（仅一次）
 var _shenhe_village_done: bool   = false  # 260706 Red 申鹤村内对话已触发
 var _shenhe_grassland_done: bool = false  # 260706 Red 申鹤草原出口对话已触发
@@ -109,14 +111,16 @@ func _ready() -> void:
 	_load_trainer_data()
 	_rival_done = "rival" in GameState.defeated_trainers
 
-	var ground = get_node_or_null("Ground")
-	if ground and ground is TileMapLayer:
-		_tilemap = ground
+	# 260708 Red 脚本已挂在 overworld 根节点，Ground 在子场景下
 	_scan_grass_tiles()
+	print("[overworld] grass tiles found: ", _grass_tiles.size())
+	_build_water_colliders()
+	print("[overworld] water tiles found: ", _water_tiles.size())
 
 	_build_border_walls()
-	_build_buildings()
+	# 260708 Red _build_buildings() 已移除——建筑/标签全部由 .tscn 编辑器搭建
 	_build_npcs()
+	_build_rival()
 	_build_trainers()
 	_build_player()
 	_build_hud()
@@ -124,6 +128,10 @@ func _ready() -> void:
 	_build_menu()
 	_build_shop_panel()
 	_build_pcbox_panel()
+	# 260708 Red 战败处理：菜字动画 → 传送精灵堂 → 扣金币 → 满血
+	var data = get_meta("scene_data", {})
+	if data.get("battle_result", "") == "lose":
+		_handle_defeat()
 	print("[OVERWORLD] 大世界三区合并 v1")
 
 func _load_trainer_data() -> void:
@@ -142,34 +150,78 @@ func _load_trainer_data() -> void:
 
 # ── TileMap ────────────────────────────────────────────────────────────────────
 # 260707 Red 地图现由 .tscn 编辑器搭建（Ground TileMapLayer 内建 tile_map_data），
-# 此处不再用代码生成地形，只扫描已有 Ground 找出高草丛用于遇敌判定。
+# 此处不再用代码生成地形，只扫描已有 Ground 找出高草丛/水面用于遇敌判定+碰撞。
+# 260708 Red TileSet custom_data_layer "terrain_type" 标记瓦片类型：
+#   "grass" → 遇敌触发，"water" → 自动碰撞（不可通行）
+#   编辑器拖入草丛/水面瓦片即自动生效，无需改代码
 func _scan_grass_tiles() -> void:
-	if not _tilemap: return
-	var t_tall_grass := Vector2i(2, 0)
-	for cell in _tilemap.get_used_cells():
-		if _tilemap.get_cell_atlas_coords(cell) == t_tall_grass:
-			_grass_tiles.append(cell)
+	var grass_atlas: Array[Vector2i] = [Vector2i(6, 1)]  # fallback
+	# 260708 Red 水面只通过 TileSet custom_data "terrain_type"="water" 识别，
+	# 不做atlas fallback，避免误判。在编辑器 TileSet 里标记水面瓦片即可。
+	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
+		var ground = get_node_or_null(child_name + "/Ground")
+		if not ground or not ground is TileMapLayer:
+			continue
+		if _tilemap == null:
+			_tilemap = ground
+		var parent_node = get_node_or_null(child_name)
+		var parent_px := Vector2.ZERO
+		if parent_node:
+			parent_px = parent_node.position
+		var ts := Vector2i(32, 32)
+		if ground.tile_set:
+			ts = ground.tile_set.tile_size
+		var use_custom := _has_terrain_layer(ground.tile_set)
+		for cell in ground.get_used_cells():
+			var terrain := ""
+			if use_custom:
+				var td = ground.get_cell_tile_data(cell)
+				if td:
+					terrain = str(td.get_custom_data("terrain_type"))
+			if terrain.is_empty():
+				var ac = ground.get_cell_atlas_coords(cell)
+				if ac in grass_atlas:
+					terrain = "grass"
+			if terrain == "grass" or terrain == "water":
+				var px_x: int = cell.x * ts.x + int(parent_px.x)
+				var px_y: int = cell.y * ts.y + int(parent_px.y)
+				var bx: int = px_x / TILE
+				var by: int = px_y / TILE
+				var sx: int = ts.x / TILE
+				var sy: int = ts.y / TILE
+				for dx in range(sx):
+					for dy in range(sy):
+						var v := Vector2i(bx + dx, by + dy)
+						if terrain == "grass":
+							_grass_tiles.append(v)
+						else:
+							_water_tiles.append(v)
+
+func _has_terrain_layer(ts: TileSet) -> bool:
+	if not ts: return false
+	for i in ts.get_custom_data_layers_count():
+		if ts.get_custom_data_layer_name(i) == "terrain_type":
+			return true
+	return false
+
+# 260708 Red 水面瓦片自动生成碰撞体，合并相邻水格减少碰撞体数量
+func _build_water_colliders() -> void:
+	if _water_tiles.is_empty(): return
+	# 逐格添加碰撞（每个16px格一个碰撞体）
+	for wt in _water_tiles:
+		_add_collider(Vector2(wt.x * TILE + TILE / 2.0, wt.y * TILE + TILE / 2.0), Vector2(TILE, TILE))
 
 # ── 边界 ──────────────────────────────────────────────────────────────────────
 func _build_border_walls() -> void:
-	# 260707 Red 青木村北出口：col 30 留一格缺口（冠军之路入口）
-	if name == "village":
-		var gx := 30 * TILE
-		_add_collider(Vector2(gx / 2.0, -TILE / 2.0), Vector2(gx, TILE))
-		var rw := MAP_W - gx - TILE
-		_add_collider(Vector2(gx + TILE + rw / 2.0, -TILE / 2.0), Vector2(rw, TILE))
-	else:
-		_add_collider(Vector2(MAP_W / 2.0, -TILE / 2.0), Vector2(MAP_W, TILE))
+	# 260708 Red 青木村北出口：col 30 留一格缺口（冠军之路入口）
+	var gx := 30 * TILE
+	_add_collider(Vector2(gx / 2.0, -TILE / 2.0), Vector2(gx, TILE))
+	var rw := MAP_W - gx - TILE
+	_add_collider(Vector2(gx + TILE + rw / 2.0, -TILE / 2.0), Vector2(rw, TILE))
 	_add_collider(Vector2(MAP_W / 2.0, MAP_H + TILE / 2.0), Vector2(MAP_W, TILE))
 	_add_collider(Vector2(-TILE / 2.0, MAP_H / 2.0), Vector2(TILE, MAP_H))
 	_add_collider(Vector2(MAP_W + TILE / 2.0, MAP_H / 2.0), Vector2(TILE, MAP_H))
-	# 边界树（视觉），青木村 col 30 留缺口
-	for c in range(COLS):
-		if not (name == "village" and c == 30):
-			_draw_tree(c, 0)
-		_draw_tree(c, ROWS - 1)
-	for r in range(1, ROWS - 1):
-		_draw_tree(0, r); _draw_tree(COLS - 1, r)
+	# 260708 Red 边界树视觉由 .tscn 编辑器处理，此处只保留碰撞墙
 
 # ── 建筑 ──────────────────────────────────────────────────────────────────────
 func _build_buildings() -> void:
@@ -217,56 +269,88 @@ func _build_buildings() -> void:
 
 # ── NPC ───────────────────────────────────────────────────────────────────────
 func _build_npcs() -> void:
-	_add_npc(Vector2i(38, 25), "npc_young_woman_walk_sheet.png", "林薇", "")
-	_add_npc(Vector2i(143, 18), "", "路人", "路人：前面就是华灵草原，那边的精灵比村子附近要强一些，准备好了吗？")
-	_add_npc(Vector2i(156, 7),  "", "店员", "店员：想买精灵葫芦的话，去杂货铺看看吧！")
-	# 260706 Red 村民NPC
-	_add_npc(Vector2i(18, 22), "", "阿婆", "阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！")
-	# 260706 Red 华灵草原 NPC
-	_add_npc(Vector2i(85, 7),  "", "驿站老伯", "老伯：旅人辛苦了，这里是草原驿站，可以稍作休息。\n近日黑风堂在草原西北一带出没，多加小心。")
+	# ── 青木村 NPC ──
+	_add_npc(Vector2i(18, 22), "老奶奶.png", "阿婆", "阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！")
+	# 260708 Red 右出口村民：没御三家时拦住玩家，有了就放行提醒
+	_add_npc(Vector2i(56, 18), "青年.png", "村民", "__guard_right__")
+	# 260708 Red 北出口守卫：常驻，集齐八徽章放行
+	_add_npc(Vector2i(30, 1), "青年.png", "守卫", "__guard_north__")
+	# ── 华灵草原 NPC ──
+	_add_npc(Vector2i(85, 7),  "老爷爷.png", "驿站老伯", "老伯：旅人辛苦了，这里是草原驿站，可以稍作休息。\n近日黑风堂在草原西北一带出没，多加小心。")
 	_add_npc(Vector2i(90, 34), "", "路牌",    "← 青木村  碧溪镇 →\n前方高草丛遭遇率高，建议补足精灵葫芦再出发。")
-	_add_npc(Vector2i(107, 22),"", "旅行者",  "旅行者：我刚从碧溪镇过来，翠竹馆的林青松馆主功力深厚。\n他擅用木系精灵，火系或虫系技能克制效果翻倍！")
-	# 260706 Red 碧溪镇 NPC
-	_add_npc(Vector2i(162, 14),"", "道馆守卫", "守卫：这里是翠竹馆。\n准备好向馆主林青松发起挑战了吗？\n推荐携带火系或虫系精灵。")
-	_add_npc(Vector2i(130, 20),"", "镇民甲",   "镇民：碧溪镇以翠竹著称，林馆主就是在后山竹林中磨炼出来的。\n据说他十岁就自己驯服了一只大竹熊！")
-	_add_npc(Vector2i(150, 28),"", "小女孩",   "小女孩：姐姐/哥哥，你是来挑战道馆的吗？\n林馆主好强的！上周来了好多人都败退了……")
-	_add_npc(Vector2i(140, 35),"", "行商",     "行商：从省城来的路上碰到了黑风堂的人，\n他们在收购什么神秘道具，真是越来越猖獗了……")
-	_add_npc(Vector2i(55, 15), "", "告示牌", "【华灵草原】→ 前方草丛危险，请带足补给再出发。
-黑风堂出没，请市民提高警惕。")
-	_add_npc(Vector2i(118, 8), "", "路标", "← 华灵草原  碧溪镇 →
-翠竹馆（木系）开放中。")
-	# 260707 Red 青木村北出口守卫（集齐八枚徽章解锁冠军之路）
-	if name == "village" and GameState.badges < 8:
-		_add_npc(Vector2i(30, 1), "", "守卫", "__guard_north__")
-	# 260706 Red 申鹤（村内）
-	_build_shenhe_village()
+	_add_npc(Vector2i(107, 22),"青年.png", "旅行者",  "旅行者：我刚从碧溪镇过来，翠竹馆的林青松馆主功力深厚。\n他擅用木系精灵，火系或虫系技能克制效果翻倍！")
+	_add_npc(Vector2i(55, 15), "", "告示牌", "【华灵草原】→ 前方草丛危险，请带足补给再出发。\n黑风堂出没，请市民提高警惕。")
+	_add_npc(Vector2i(118, 8), "", "路标", "← 华灵草原  碧溪镇 →\n翠竹馆（木系）开放中。")
+	# ── 碧溪镇 NPC ──
+	_add_npc(Vector2i(162, 14),"青年.png", "道馆守卫", "守卫：这里是翠竹馆。\n准备好向馆主林青松发起挑战了吗？\n推荐携带火系或虫系精灵。")
+	_add_npc(Vector2i(130, 20),"老爷爷.png", "镇民",   "镇民：碧溪镇以翠竹著称，林馆主就是在后山竹林中磨炼出来的。\n据说他十岁就自己驯服了一只大竹熊！")
+	_add_npc(Vector2i(150, 28),"少女.png", "小女孩",   "小女孩：姐姐/哥哥，你是来挑战道馆的吗？\n林馆主好强的！上周来了好多人都败退了……")
+	_add_npc(Vector2i(140, 35),"青年.png", "行商",     "行商：从省城来的路上碰到了黑风堂的人，\n他们在收购什么神秘道具，真是越来越猖獗了……")
+	_add_npc(Vector2i(156, 7), "青年.png", "店员", "店员：想买精灵葫芦的话，去杂货铺看看吧！")
+	# 260708 Red 申鹤（华灵草原）
+	_build_shenhe_grassland_npc()
 
-func _build_shenhe_village() -> void:
+func _build_shenhe_grassland_npc() -> void:
+	if _shenhe_village_done or not GameState.has_starter: return
 	var path = "res://assets/npc/申鹤walk_sheet.png"
 	var spr = Sprite2D.new()
 	if ResourceLoader.exists(path):
 		spr.texture = load(path)
 		spr.region_enabled = true
-		spr.region_rect = Rect2(0, 0, 48, 48)
+		spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
 		spr.centered = true
-		spr.scale = Vector2(1.0, 1.0)
+		spr.scale = Vector2(0.6, 0.6)
 	else:
 		spr.texture = _tex_npc()
-	var tile = Vector2i(45, 28)
+	var tile = Vector2i(70, 15)  # 华灵草原入口附近
 	spr.position = Vector2(tile.x * TILE + TILE / 2.0, tile.y * TILE + TILE / 2.0)
 	spr.z_index = 5
 	spr.set_meta("npc_tile", tile)
 	spr.set_meta("npc_name", "申鹤")
-	spr.set_meta("npc_dialog", "shenhe_village")
+	spr.set_meta("npc_dialog", "shenhe_grassland_npc")
 	add_child(spr)
 	_npc_nodes.append(spr)
-	# 申鹤 标签
 	var lbl = Label.new()
 	lbl.text = "申鹤"
-	lbl.position = spr.position + Vector2(-14, -32)
+	lbl.position = spr.position + Vector2(-14, -36)
 	lbl.add_theme_font_size_override("font_size", 9)
 	lbl.add_theme_color_override("font_color", Color(0.80, 0.90, 1.0))
 	add_child(lbl)
+
+# 260708 Red 劲敌（青木村，得到精灵后出村前拦路对战）
+func _build_rival() -> void:
+	if _rival_done or not GameState.has_starter:
+		return
+	_rival_node = Node2D.new()
+	add_child(_rival_node)
+	var spr = Sprite2D.new()
+	var path = "res://assets/npc/劲敌walk_sheet.png"
+	if ResourceLoader.exists(path):
+		spr.texture = load(path)
+		spr.region_enabled = true
+		spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+		spr.centered = true
+		spr.scale = Vector2(0.6, 0.6)
+	else:
+		spr.texture = _tex_npc()
+	var tile = Vector2i(53, 22)  # 村东出口附近，挡路
+	spr.position = Vector2(tile.x * TILE + TILE / 2.0, tile.y * TILE + TILE / 2.0)
+	spr.z_index = 5
+	spr.set_meta("npc_tile", tile)
+	spr.set_meta("npc_name", GameState.rival_name)
+	spr.set_meta("npc_dialog", "__rival__")
+	_rival_node.add_child(spr)
+	_npc_nodes.append(spr)
+	# 劲敌 碰撞体
+	var body = StaticBody2D.new()
+	body.position = spr.position
+	var cshape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = Vector2(12, 12)
+	cshape.shape = rect
+	body.add_child(cshape)
+	_rival_node.add_child(body)
+	# 260708 Red 劲敌不加名字标签，行走图本身就够辨认
 
 func _add_npc(tile: Vector2i, sprite_name: String, npc_name: String, dialog: String) -> void:
 	var spr = Sprite2D.new()
@@ -274,10 +358,18 @@ func _add_npc(tile: Vector2i, sprite_name: String, npc_name: String, dialog: Str
 	if sprite_name != "" and ResourceLoader.exists(path):
 		spr.texture = load(path)
 		spr.region_enabled = true
-		spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		spr.scale = Vector2(1.0, 1.0)
+		if "walk_sheet" in sprite_name:
+			# 大走表(96×160帧)：取正面第一帧
+			spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
+			spr.scale = Vector2(0.6, 0.6)
+		else:
+			# 260708 Red 小走表NPC(48×48帧，3列×4行=144×192)：取正面站立帧
+			spr.region_rect = Rect2(48, 0, 48, 48)
+			spr.scale = Vector2(1.2, 1.2)
+	elif sprite_name == "":
+		spr.visible = false  # 告示牌/路牌等无人形，仅交互区
 	else:
-		spr.texture = _tex_npc()
+		spr.visible = false
 	spr.centered = true; spr.z_index = 5
 	spr.position = Vector2(tile.x * TILE + TILE / 2.0, tile.y * TILE + TILE / 2.0)
 	spr.set_meta("npc_tile", tile)
@@ -289,7 +381,8 @@ func _add_npc(tile: Vector2i, sprite_name: String, npc_name: String, dialog: Str
 func _build_trainers() -> void:
 	for td in TRAINERS:
 		if td["id"] in GameState.defeated_trainers: continue
-		var spr = Sprite2D.new(); spr.texture = _tex_trainer()
+		var spr = Sprite2D.new()
+		spr.visible = false  # 260708 Red 训练师暂无行走图，隐藏色块，仅保留交互/视线触发
 		spr.centered = true; spr.z_index = 5
 		spr.position = Vector2(td["tile"].x * TILE + TILE / 2.0, td["tile"].y * TILE + TILE / 2.0)
 		spr.set_meta("trainer_data", td)
@@ -320,7 +413,7 @@ func _build_player() -> void:
 		_player_spr.texture = load(sheet_path)
 		_player_spr.region_enabled = true
 		_player_spr.region_rect = Rect2(0, 0, WALK_FRAME_W, WALK_FRAME_H)
-		_player_spr.centered = true; _player_spr.scale = Vector2(1.0, 1.0)
+		_player_spr.centered = true; _player_spr.scale = Vector2(0.6, 0.6)  # 260708 Red 室外缩放，96×160→~58×96
 		_has_walk_sheet = true
 	else:
 		_player_spr.texture = _tex_player()
@@ -339,25 +432,7 @@ func _build_player() -> void:
 # ── HUD ───────────────────────────────────────────────────────────────────────
 func _build_hud() -> void:
 	_hud = Control.new(); _hud.set_anchors_preset(Control.PRESET_FULL_RECT); add_child(_hud)
-	var mon = GameState.first_mon()
-	if not mon.is_empty():
-		var sbg = ColorRect.new(); sbg.size = Vector2(130, 42); sbg.position = Vector2(VW-136, 4)
-		sbg.color = Color(0.05, 0.05, 0.1, 0.82); _hud.add_child(sbg)
-		var nl = Label.new(); nl.name = "MonName"
-		nl.text = MonDB.display_name(mon) + "  Lv." + str(mon["level"])
-		nl.position = Vector2(VW-132, 6)
-		nl.add_theme_color_override("font_color", Color.WHITE)
-		nl.add_theme_font_size_override("font_size", 11); _hud.add_child(nl)
-		var hpbg = ColorRect.new(); hpbg.size = Vector2(110, 6); hpbg.position = Vector2(VW-132, 22)
-		hpbg.color = Color(0.3, 0.3, 0.3); _hud.add_child(hpbg)
-		var hpf = ColorRect.new(); hpf.name = "HPFill"
-		hpf.size = Vector2(110, 6); hpf.position = Vector2(VW-132, 22)
-		hpf.color = Color(0.2, 0.85, 0.3); _hud.add_child(hpf)
-		var hpt = Label.new(); hpt.name = "HPText"
-		hpt.text = "%d/%d" % [mon["current_hp"], mon["max_hp"]]
-		hpt.position = Vector2(VW-132, 30)
-		hpt.add_theme_color_override("font_color", Color.WHITE)
-		hpt.add_theme_font_size_override("font_size", 10); _hud.add_child(hpt)
+	# 260708 Red 移除右上角精灵状态栏——大世界不需要常驻显示
 	_area_label = Label.new(); _area_label.name = "AreaLabel"
 	_area_label.text = "青木村"; _area_label.position = Vector2(4, VH - 18)
 	_area_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.8))
@@ -366,6 +441,14 @@ func _build_hud() -> void:
 	kh.position = Vector2(VW - 158, VH - 18)
 	kh.add_theme_color_override("font_color", Color(1, 1, 1, 0.55))
 	kh.add_theme_font_size_override("font_size", 9); _hud.add_child(kh)
+
+func _current_area() -> String:
+	var px = _player.position.x
+	return "青木村" if px < VILLAGE_END else "华灵草原" if px < GRASSLAND_END else "碧溪镇"
+
+func _save_with_area() -> void:
+	GameState.last_scene = _current_area()
+	GameState.save_game()
 
 func _update_hud() -> void:
 	var mon = GameState.first_mon(); if mon.is_empty(): return
@@ -423,11 +506,12 @@ func _advance_dialog() -> void:
 				_npc_dialog_lines = []; _npc_dialog_idx = 0
 		300:  # 劲敌确认 → 开战
 			_dialog_active = false; _dialog_panel.visible = false; _battling = true
+			_rival_leave()
 			var starter_id = GameState.player_team[0].get("species_id", "炎喵") if not GameState.player_team.is_empty() else "炎喵"
 			var rival_sp = {"炎喵": "蓝蛇", "蓝蛇": "小竹熊", "小竹熊": "炎喵"}.get(starter_id, "蓝蛇")
 			request_scene.emit("battle", {
 				"trainer": {"name": GameState.rival_name, "team": [MonDB.create_mon(rival_sp, 7)],
-					"reward": 500, "id": "rival", "dialog_win": "我才刚起步，下次一定！", "difficulty": 1},
+					"reward": 500, "id": "rival", "dialog_win": "%s：切……这次算你走运！下次我一定赢！" % GameState.rival_name, "difficulty": 1},
 				"from_scene": "overworld",
 				"player_pos": [_player.position.x, _player.position.y]
 			})
@@ -438,7 +522,7 @@ func _advance_dialog() -> void:
 			_dialog_active = false; _dialog_panel.visible = false; _open_pcbox()
 		500:  # 260706 Red 开场教授遇难 → 跳 starter_scene
 			_dialog_active = false; _dialog_panel.visible = false
-			request_scene.emit("starter", {})
+			request_scene.emit("starter", {"player_pos": [_player.position.x, _player.position.y]})
 		600:  # 260706 Red 申鹤碧溪镇对战
 			_dialog_active = false; _dialog_panel.visible = false; _battling = true
 			var shenhe_data = MonDB.trainers.get("shenhe", {})
@@ -468,11 +552,13 @@ func _physics_process(delta: float) -> void:
 	_player.move_and_slide()
 	_player.position.x = clamp(_player.position.x, TILE, MAP_W - TILE)
 	_player.position.y = clamp(_player.position.y, TILE, MAP_H - TILE)
+	# 260708 Red 没御三家不能离开青木村
+	if not GameState.has_starter and _player.position.x > VILLAGE_END - TILE * 2:
+		_player.position.x = VILLAGE_END - TILE * 2
 	if moved:
 		_step_counter += 1
 		if _step_counter % 4 == 0: _check_encounter()
 		_check_trainer_sight()
-		_check_rival()
 		_check_shenhe_grassland()
 		_check_shenhe_town()
 	_update_hud()
@@ -540,7 +626,7 @@ func _try_interact() -> void:
 		_open_shop(); return
 	# 主角家
 	if tile.x >= HOME_DOOR.x - 1 and tile.x <= HOME_DOOR.x + 3 and abs(tile.y - HOME_DOOR.y) <= 1:
-		GameState.last_scene = "overworld"
+		GameState.last_scene = _current_area()
 		request_scene.emit("home", {"spawn": "overworld"}); return
 	# 道馆（碧溪镇 tile 158-165, row 14-16）
 	if tile.x >= 158 and tile.x <= 165 and tile.y >= 14 and tile.y <= 16:
@@ -561,8 +647,12 @@ func _try_talk_npc(tile: Vector2i) -> void:
 			# 260706 Red 申鹤专属逻辑
 			if dlg == "__guard_north__":
 				_handle_north_guard(); return
-			if dlg == "shenhe_village":
-				_handle_shenhe_village(); return
+			if dlg == "__guard_right__":
+				_handle_right_guard(); return
+			if dlg == "__rival__":
+				_handle_rival_talk(); return
+			if dlg == "shenhe_grassland_npc":
+				_handle_shenhe_grassland_npc(); return
 			_npc_dialog_lines = [dlg]; _npc_dialog_idx = 0
 			_show_dialog(dlg, 200); return
 
@@ -578,14 +668,34 @@ func _handle_linwei() -> void:
 
 func _handle_north_guard() -> void:
 	var n := GameState.badges
-	_show_dialog("守卫：前方是华灵冠军之路。\n集齐全部八枚道馆徽章方可通行。\n当前徽章：%d / 8 枚。" % n, -1)
+	if n >= 8:
+		_show_dialog("守卫：集齐八枚徽章了！冠军之路向你敞开，祝你好运！", -1)
+	else:
+		_show_dialog("守卫：前方是华灵冠军之路。\n集齐全部八枚道馆徽章方可通行。\n当前徽章：%d / 8 枚。" % n, -1)
 
-func _handle_shenhe_village() -> void:
+# 260708 Red 右出口村民：没御三家拦住，有了就放行
+func _handle_right_guard() -> void:
+	if not GameState.has_starter:
+		_show_dialog("村民：嘿，前面是华灵草原，没有精灵的话太危险了！\n先去找陈教授领一只精灵吧，他的研究所就在村北。", -1)
+	else:
+		_show_dialog("村民：你已经有自己的精灵了啊！前面就是华灵草原，比村子附近要强一些，准备好了吗？", -1)
+
+# 260708 Red 劲敌对话 → 多段台词 → 对战
+func _handle_rival_talk() -> void:
+	_rival_done = true
+	var rn = GameState.rival_name
+	var pn = GameState.player_name
+	_show_dialog("%s：哟，%s！你终于出来了！\n我也从陈教授那里拿到精灵了哦！\n怎么样——既然都有搭档了，不如来一场！" % [rn, pn], 300)
+
+func _rival_leave() -> void:
+	if _rival_node:
+		_rival_node.visible = false
+
+func _handle_shenhe_grassland_npc() -> void:
 	_shenhe_village_done = true
 	if not GameState.has_starter:
-		_show_dialog("申鹤：你连精灵都没有就想出门？真是白痴。", -1); return
-	_show_dialog("申鹤：哼，你也拿到精灵了。我申鹤的目标是成为华灵大陆最强——你这等路人根本不在我眼里。
-……等等，草原里最近有黑风堂的人，你没事别乱跑。", -1)
+		_show_dialog("申鹤：你连精灵都没有就敢来草原？回去吧。", -1); return
+	_show_dialog("申鹤：哼，你也拿到精灵了？我申鹤的目标是成为华灵大陆最强——你这等路人根本不在我眼里。\n……不过，前面有黑风堂的人在出没，你小心点。", -1)
 
 func _check_shenhe_grassland() -> void:
 	# 260706 Red 申鹤草原出口（对话，不对战）
@@ -605,15 +715,10 @@ func _check_shenhe_town() -> void:
 		_shenhe_town_done = true
 		_show_dialog("申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！", 600)
 
-func _check_rival() -> void:
-	if _rival_done or not GameState.has_starter or _battling or _dialog_active: return
-	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
-	if tile.x >= 50 and tile.x <= 57 and tile.y >= 18 and tile.y <= 26:
-		_rival_done = true
-		_show_dialog("%s：%s！终于等到你了！拿了精灵就来一场吧！" % [GameState.rival_name, GameState.player_name], 300)
-
 func _check_encounter() -> void:
-	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
+	# 260708 Red 用玩家脚底中心检测，避免站在草外也触发遭遇
+	var foot_y := _player.position.y + 8  # 脚底偏移（精灵图下半身）
+	var tile = Vector2i(int(_player.position.x / TILE), int(foot_y / TILE))
 	if tile not in _grass_tiles: return
 	# 260706 Red 首次踩草若无御三家 → 触发开场事件
 	if not GameState.has_starter:
@@ -651,13 +756,87 @@ func _check_trainer_sight() -> void:
 				_show_dialog("训练师%s：\n%s" % [td["name"], td["dialog_before"]], 100)
 				return
 
+# ── 战败处理 ──────────────────────────────────────────────────────────────────
+func _handle_defeat() -> void:
+	_battling = true  # 锁住输入
+	# 扣金币（一半，最少留0）
+	var penalty = int(GameState.money / 2)
+	GameState.money -= penalty
+	# 满血恢复
+	for mon in GameState.player_team:
+		mon["current_hp"] = mon["max_hp"]
+		for mv in mon["moves"]: mv["pp"] = mv["max_pp"]
+		mon["status"] = ""
+	# 就近传送：碧溪镇→精灵堂，否则→回家（妈妈恢复）
+	var defeat_pos_x = _player.position.x
+	var wake_msg: String
+	if defeat_pos_x >= GRASSLAND_END:
+		# 碧溪镇：传送精灵堂门口
+		_player.position = Vector2(CLINIC_DOOR.x * TILE + TILE * 2, CLINIC_DOOR.y * TILE + TILE * 2)
+		wake_msg = "在精灵堂醒来了。"
+	else:
+		# 青木村/华灵草原：传送回家门口
+		_player.position = Vector2(HOME_DOOR.x * TILE + TILE / 2.0, HOME_DOOR.y * TILE + TILE)
+		wake_msg = "迷迷糊糊被人送回了家……\n妈妈照顾你的精灵恢复了体力。"
+	_save_with_area()
+	# 显示"菜"字动画
+	_show_defeat_screen(penalty, wake_msg)
+
+func _show_defeat_screen(gold_lost: int, wake_msg: String) -> void:
+	var cl = CanvasLayer.new(); cl.layer = 50; add_child(cl)
+	# 全屏黑幕
+	var overlay = ColorRect.new()
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.color = Color(0.0, 0.0, 0.0, 0.0)
+	cl.add_child(overlay)
+	# "菜" 大字
+	var cai_label = Label.new()
+	cai_label.text = "菜"
+	cai_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cai_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	cai_label.set_anchors_preset(Control.PRESET_CENTER)
+	cai_label.add_theme_font_size_override("font_size", 120)
+	cai_label.add_theme_color_override("font_color", Color(0.85, 0.12, 0.12, 0.0))
+	cai_label.pivot_offset = Vector2(60, 70)
+	cai_label.position = Vector2(VW / 2.0 - 60, VH / 2.0 - 80)
+	cl.add_child(cai_label)
+	# 金币扣除提示
+	var info_label = Label.new()
+	info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	info_label.add_theme_font_size_override("font_size", 13)
+	info_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.0))
+	info_label.position = Vector2(VW / 2.0 - 140, VH / 2.0 + 60)
+	info_label.size = Vector2(280, 40)
+	if gold_lost > 0:
+		info_label.text = "慌忙中丢失了 %dG……\n%s" % [gold_lost, wake_msg]
+	else:
+		info_label.text = wake_msg
+	cl.add_child(info_label)
+	# 动画：黑幕淡入 → 菜字放大淡入 → 停顿 → 全部淡出
+	var tw = create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(overlay, "color:a", 0.88, 0.6)
+	tw.tween_property(cai_label, "theme_override_colors/font_color:a", 1.0, 0.8).set_delay(0.3)
+	tw.tween_property(cai_label, "scale", Vector2(1.0, 1.0), 0.8).from(Vector2(3.0, 3.0)).set_delay(0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(info_label, "theme_override_colors/font_color:a", 1.0, 0.5).set_delay(1.2)
+	tw.set_parallel(false)
+	tw.tween_interval(3.0)
+	tw.tween_property(overlay, "color:a", 0.0, 0.8)
+	tw.tween_property(cai_label, "theme_override_colors/font_color:a", 0.0, 0.8)
+	tw.tween_property(info_label, "theme_override_colors/font_color:a", 0.0, 0.8)
+	tw.tween_callback(func():
+		cl.queue_free()
+		_battling = false
+		_update_hud()
+	)
+
 # ── 精灵堂 ────────────────────────────────────────────────────────────────────
 func _heal_all_mons() -> void:
 	for mon in GameState.player_team:
 		mon["current_hp"] = mon["max_hp"]
 		for mv in mon["moves"]: mv["pp"] = mv["max_pp"]
 		mon["status"] = ""
-	GameState.save_game()
+	_save_with_area()
 
 # ── 商店 ──────────────────────────────────────────────────────────────────────
 func _build_shop_panel() -> void:
@@ -896,8 +1075,8 @@ func _handle_menu_nav(event: InputEvent) -> void:
 			match _menu_cursor:
 				0: _menu_sub = "party"; _refresh_menu()
 				1: _menu_sub = "bag"; _refresh_menu()
-				2: GameState.save_game(); _menu_sub = "saved"; _refresh_menu()
-				3: GameState.save_game(); get_tree().quit()
+				2: _save_with_area(); _menu_sub = "saved"; _refresh_menu()
+				3: _save_with_area(); get_tree().quit()
 				4: _close_menu()
 
 func _use_field_item(item_name: String) -> void:
@@ -910,7 +1089,7 @@ func _use_field_item(item_name: String) -> void:
 		else: mon["current_hp"] = mini(mon["max_hp"], mon["current_hp"] + item.get("heal", 9999))
 		GameState.items[item_name] -= 1
 		if GameState.items[item_name] <= 0: GameState.items.erase(item_name)
-		GameState.save_game(); _menu_sub = "saved"; _refresh_menu()
+		_save_with_area(); _menu_sub = "saved"; _refresh_menu()
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────────
 func _add_collider(pos: Vector2, size: Vector2) -> void:

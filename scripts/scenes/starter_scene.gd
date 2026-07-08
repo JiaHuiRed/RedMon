@@ -45,7 +45,7 @@ func _ready() -> void:
 	_build_confirm()
 
 	var data = get_meta("scene_data", {})
-	if data.get("battle_result", "") in ["win", "lose"]:
+	if data.get("battle_result", "") in ["win", "lose", "capture"]:
 		# 从"营救教授"战斗返回：精灵已在 _on_confirm() 中入队，直接进入后置对话
 		_threat_spr.visible = false
 		_start_outro()
@@ -275,7 +275,9 @@ func _start_outro() -> void:
 func _advance_outro() -> void:
 	_outro_idx += 1
 	if _outro_idx >= OUTRO_LINES.size():
-		request_scene.emit("village", {})
+		var scene_data = get_meta("scene_data", {})
+		var ppos = scene_data.get("player_pos", [])
+		request_scene.emit("village", {"player_pos": ppos})
 		return
 	var text = OUTRO_LINES[_outro_idx]
 	text = MonDB.dlg_sub(text, {"player": GameState.player_name, "mon": MonDB.display_name(GameState.player_team[0])})
@@ -430,11 +432,14 @@ func _on_confirm() -> void:
 	if _desc_label: _desc_label.visible = false
 	_dialog_lbl.text = "%s挺身而出，冲向了野生精灵！" % MonDB.display_name(mon)
 	GameState.last_scene = "starter"
+	var scene_data = get_meta("scene_data", {})
+	var ppos = scene_data.get("player_pos", [])
 	await get_tree().create_timer(1.0).timeout
 	request_scene.emit("battle", {
 		"wild_mon": MonDB.create_mon(WILD_THREAT_ID, WILD_THREAT_LEVEL),
 		"return_scene": "starter",
-		"from_scene": "starter"
+		"from_scene": "starter",
+		"player_pos": ppos
 	})
 
 # ── Keyboard nav ─────────────────────────────────────────────────────────────

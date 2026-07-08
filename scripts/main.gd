@@ -63,10 +63,8 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		_current = null
 
 	# 260704 Red .tscn 场景优先，纯脚本场景 fallback
+	# 260708 Red village/world/town 不再独立加载，统一走 overworld
 	var _TSCN_SCENES := {
-		"village": "res://scenes/village.tscn",
-		"world":   "res://scenes/world.tscn",
-		"town":    "res://scenes/town.tscn",
 		"gym":     "res://scenes/gym.tscn",
 		"overworld": "res://scenes/overworld.tscn",
 	}
@@ -502,14 +500,15 @@ func _select_pause() -> void:
 
 func _on_request_scene(scene_name: String, data: Dictionary) -> void:
 	# 260706 Red 旧场景名重定向到无缝大世界地图
+	# 260708 Red 中文/英文场景名统一路由到 overworld
 	match scene_name:
-		"village":
+		"village", "青木村":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "village")
 			switch_to("overworld", d)
-		"world":
+		"world", "grassland", "华灵草原":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "grassland")
 			switch_to("overworld", d)
-		"town":
+		"town", "碧溪镇":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "town")
 			switch_to("overworld", d)
 		_:

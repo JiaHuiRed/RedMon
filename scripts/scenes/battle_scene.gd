@@ -48,6 +48,7 @@ var _bag_btns:     Dictionary = {}
 var _mon_panel:    Control
 var _mon_btns:     Array = []
 var _mon_close_btn: Button
+var _mon_flee_btn:  Button  # 260708 Red 强制换场时可逃跑（野生战斗）
 
 var _bg_path:         String = "res://assets/backgrounds/战斗背景_草原.png"
 var _force_switch:    bool = false
@@ -72,7 +73,7 @@ var _move_info_lbl:     Label  = null   # 260703 Red 技能效果说明
 # 五档 IV: 0=路人(0) 1=普通(8) 2=精英(16) 3=道馆主/首领(25) 4=四天王/冠军(31)
 func _calc_trainer_ivs(iv_tier: int) -> Dictionary:
 	const IV_TABLE := [0, 8, 16, 25, 31]
-	var base := IV_TABLE[clampi(iv_tier, 0, 4)]
+	var base: int = IV_TABLE[clampi(iv_tier, 0, 4)]
 	var ivs := {}
 	for stat in ["hp", "atk", "def", "spa", "spd", "spe"]:
 		ivs[stat] = clampi(base + randi() % 5 - 2, 0, 31)
@@ -675,6 +676,15 @@ func _build_mon_panel() -> void:
 	_mon_close_btn.pressed.connect(func(): _mon_panel.visible = false; _show_action_panel())
 	_mon_panel.add_child(_mon_close_btn)
 
+	# 260708 Red 强制换场时野生战斗可逃跑
+	_mon_flee_btn = Button.new()
+	_mon_flee_btn.text = "逃跑"
+	_mon_flee_btn.size = Vector2(60, 22)
+	_mon_flee_btn.position = Vector2(VW - 136, 3)
+	_mon_flee_btn.pressed.connect(func(): _on_force_switch_flee())
+	_mon_flee_btn.visible = false
+	_mon_panel.add_child(_mon_flee_btn)
+
 	_mon_btns = []
 	for i in range(6):
 		var btn = Button.new()
@@ -693,6 +703,7 @@ func _build_mon_panel() -> void:
 
 func _refresh_mon_panel() -> void:
 	_mon_close_btn.visible = not _force_switch
+	_mon_flee_btn.visible = _force_switch and not _is_trainer  # 260708 Red 野生战可逃
 	for i in range(6):
 		var btn: Button = _mon_btns[i]
 		if i < GameState.player_team.size():
@@ -1001,6 +1012,17 @@ func _on_run() -> void:
 	if _is_trainer:
 		_show_message("训练师对战中，无法逃跑！", func(): _show_action_panel())
 		return
+	_busy = true
+	_show_message("你逃跑了！", func():
+		_busy = false
+		_end_battle("flee")
+	)
+
+# 260708 Red 精灵倒下后强制换场面板中的逃跑
+func _on_force_switch_flee() -> void:
+	if _busy or _is_trainer: return
+	_force_switch = false
+	_mon_panel.visible = false
 	_busy = true
 	_show_message("你逃跑了！", func():
 		_busy = false
@@ -1513,7 +1535,10 @@ func _input(event: InputEvent) -> void:
 				_on_switch_mon(_mon_cursor)
 			elif event.is_action_pressed("ui_cancel"):
 				get_viewport().set_input_as_handled()
-				if not _force_switch:
+				if _force_switch:
+					if not _is_trainer:  # 260708 Red 野生战可按X逃跑
+						_on_force_switch_flee()
+				else:
 					_active_panel = "none"
 					_mon_panel.visible = false
 					_show_action_panel()
@@ -1891,7 +1916,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	await get_tree().create_timer(0.1).timeout  # 确保吸入完成
 
 	# 4. 葫芦落地
-	var land_pos := Vector2(end_pos.x, FIELD_H - 80)
+	var land_pos := Vector2(end_pos.x, FIELD_H - 140)
 	var land_tw := create_tween()
 	land_tw.tween_property(gourd_spr, "position", land_pos, 0.18)
 	await get_tree().create_timer(0.22).timeout

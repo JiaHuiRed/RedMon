@@ -38,7 +38,12 @@ func _ready() -> void:
 	_build_floor2()
 	_build_player()
 	_build_dialog()
-	_set_floor(1)  # 260703 Red 进门到1楼
+	# 260708 Red 新游戏（没御三家）从2F卧室醒来，有御三家后从1F门口进入
+	if not GameState.has_starter:
+		_set_floor(2)
+		_player.position = STAIRS2_POS + Vector2(10, 40)
+	else:
+		_set_floor(1)
 
 func _add_collider(parent: Node2D, pos: Vector2, size: Vector2) -> void:
 	var body = StaticBody2D.new()
@@ -241,16 +246,29 @@ func _start_mom_dialog() -> void:
 	_dialog_active = true
 	_dialog_phase = 0
 	_dialog_panel.visible = true
-	_dialog_label.text = MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name)
+	if not GameState.has_starter:
+		# 260708 Red 未拿御三家：出门前嘱咐
+		_dialog_label.text = MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name)
+	else:
+		# 260708 Red 已有精灵：直接治疗
+		for mon in GameState.player_team:
+			mon["current_hp"] = mon["max_hp"]
+		_dialog_label.text = "妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。"
 
 func _advance_dialog() -> void:
 	_dialog_phase += 1
-	match _dialog_phase:
-		1:
-			_dialog_label.text = MonDB.dlg("home", "mom_professor")
-		_:
-			_dialog_active = false
-			_dialog_panel.visible = false
+	if not GameState.has_starter:
+		# 未拿御三家：多段对话
+		match _dialog_phase:
+			1:
+				_dialog_label.text = MonDB.dlg("home", "mom_professor")
+			_:
+				_dialog_active = false
+				_dialog_panel.visible = false
+	else:
+		# 已有精灵：一段对话后结束
+		_dialog_active = false
+		_dialog_panel.visible = false
 
 # ── Movement & input ─────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
