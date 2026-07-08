@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.16.1] - 2026-07-08
+> tilemap 素材扩充 — 室内素材/家具/碰撞遮挡/冰块/山体
+
+#### 新增
+- **5 组 tilemap 素材** — 室内素材、家具、碰撞遮挡、冰块、山体（`assets/tilemaps/`）
+
+---
+
 ### [0.16.0] - 2026-07-08
 > Area2D遇敌检测 + 地图改名 + 6只精灵高清重制
 
