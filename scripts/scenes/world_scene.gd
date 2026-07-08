@@ -965,7 +965,7 @@ func _trigger_encounter() -> void:
 	if entry.is_empty():
 		_battling = false
 		return
-	var chosen_species = entry.get("species", "坤仔")
+	var chosen_species = entry.get("species", "小雉鸡")
 	var wild_lv = randi_range(entry.get("level_min", 3), entry.get("level_max", 6))
 	var wild_mon = MonDB.create_mon(chosen_species, wild_lv)
 

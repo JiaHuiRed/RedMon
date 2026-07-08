@@ -1,12 +1,13 @@
 {
+  "_comment": "⚠ 此文件已废弃（2026-07-08）。实际遇敌表由 species.json 的 encounters 字段驱动，EncounterDB 优先读取它。本文件仅作为 species.json 无 encounters 数据时的 fallback，未在编辑器（mon_editor.py）中维护，内容可能过期。",
   "maps": {
     "青木村": {
       "methods": {
         "grass": {
           "encounter_rate": 15,
           "mons": [
-            { "species": "坤仔", "weight": 8, "level_min": 2, "level_max": 4 },
-            { "species": "绵绵虫", "weight": 40, "level_min": 2, "level_max": 4 },
+            { "species": "小雉鸡", "weight": 8, "level_min": 2, "level_max": 4 },
+            { "species": "绿肥虫", "weight": 40, "level_min": 2, "level_max": 4 },
             { "species": "眀灯鼠", "weight": 27, "level_min": 2, "level_max": 4 },
             { "species": "蓬蓬丘", "weight": 10, "level_min": 2, "level_max": 4 }
           ]
@@ -18,7 +19,7 @@
         "grass": {
           "encounter_rate": 15,
           "mons": [
-            { "species": "坤仔", "weight": 8, "level_min": 3, "level_max": 6 },
+            { "species": "小雉鸡", "weight": 8, "level_min": 3, "level_max": 6 },
             { "species": "绵绵虫", "weight": 40, "level_min": 3, "level_max": 5 },
             { "species": "眀灯鼠", "weight": 27, "level_min": 3, "level_max": 6 },
             { "species": "露比", "weight": 2, "level_min": 3, "level_max": 5 },

@@ -180,7 +180,7 @@ func _trigger_encounter() -> void:
 	var entry = EncounterDB.pick_mon("青木村", "grass")
 	if entry.is_empty():
 		return
-	var species_id = entry.get("species", "坤仔")
+	var species_id = entry.get("species", "小雉鸡")
 	var lv = randi_range(entry.get("level_min", 2), entry.get("level_max", 4))
 	var wild = MonDB.make_mon(species_id, lv)
 	_battling = true

@@ -51,6 +51,7 @@ var _npc_dialog_idx:   int     = 0
 var _npc_nodes:   Array = []
 var _grass_tiles: Array = []
 var _water_tiles: Array = []
+var _in_village_grass: bool = false
 
 var _hud:        Control
 var _area_label: Label
@@ -527,7 +528,7 @@ func _advance_dialog() -> void:
 			_dialog_active = false; _dialog_panel.visible = false; _battling = true
 			var shenhe_data = MonDB.trainers.get("shenhe", {})
 			if shenhe_data.is_empty():
-				shenhe_data = {"name":"申鹤","team":[{"species":"坤仔","level":14},{"species":"炎喵","level":16}],"reward":1600,"id":"shenhe","dialog_win":"哼……还算有点意思。","difficulty":2}
+				shenhe_data = {"name":"申鹤","team":[{"species":"小雉鸡","level":14},{"species":"炎喵","level":16}],"reward":1600,"id":"shenhe","dialog_win":"哼……还算有点意思。","difficulty":2}
 			request_scene.emit("battle", {
 				"trainer": shenhe_data, "from_scene": "overworld",
 				"player_pos": [_player.position.x, _player.position.y]
@@ -739,7 +740,7 @@ func _trigger_encounter() -> void:
 	var entry = EncounterDB.pick_mon(area, "grass")
 	if entry.is_empty(): _battling = false; return
 	var lv = randi_range(entry.get("level_min", 3), entry.get("level_max", 6))
-	var wild_mon = MonDB.create_mon(entry.get("species", "坤仔"), lv)
+	var wild_mon = MonDB.create_mon(entry.get("species", "小雉鸡"), lv)
 	request_scene.emit("battle", {
 		"wild_mon": wild_mon, "from_scene": "overworld",
 		"player_pos": [_player.position.x, _player.position.y]

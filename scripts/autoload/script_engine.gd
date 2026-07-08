@@ -83,7 +83,7 @@ func _exec(cmd: Dictionary) -> String:
 
 		"wild_battle":
 			wild_battle_requested.emit(
-				cmd.get("species", "坤仔"),
+				cmd.get("species", "小雉鸡"),
 				cmd.get("level", 5),
 				cmd.get("return_scene", "")
 			)

@@ -25,6 +25,15 @@ size = Vector2(260, 158)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kcivn"]
 size = Vector2(109, 110)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_zone1"]
+size = Vector2(128, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_zone2"]
+size = Vector2(128, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_zone3"]
+size = Vector2(224, 64)
+
 [node name="village" type="Node2D" unique_id=1796374134]
 script = ExtResource("1_mv8fa")
 
@@ -112,5 +121,28 @@ metadata/dialog = "__guard_north__"
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1709012675]
 position = Vector2(208, 272)
+
+[node name="EncounterZones" type="Node2D" parent="."]
+
+[node name="Z_Center" type="Area2D" parent="EncounterZones"]
+position = Vector2(192, 416)
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Center"]
+shape = SubResource("RectangleShape2D_zone1")
+
+[node name="Z_Right" type="Area2D" parent="EncounterZones"]
+position = Vector2(800, 512)
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Right"]
+shape = SubResource("RectangleShape2D_zone2")
+
+[node name="Z_Top" type="Area2D" parent="EncounterZones"]
+position = Vector2(112, 608)
+collision_mask = 1
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/Z_Top"]
+shape = SubResource("RectangleShape2D_zone3")
 
 [node name="BG" type="Sprite2D" parent="." unique_id=959645119]
