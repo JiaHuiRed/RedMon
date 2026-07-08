@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.14.9] - 2026-07-08
+> world.tscn 冗余层清理 + 瓦片图集重排
+
+- **修复** `world.tscn` 删除完全被 Trees 层遮盖的冗余 Ground 层（16px），Trees 改名为 Ground（32px 唯一层）
+- **优化** `world_tiles32.png` 从 8×9 (256×288) 重排为 12×6 (384×192)，编辑器内地图与素材面板可同屏显示
+- **修复** `world.tscn` / `village.tscn` / `town.tscn` tile_map_data 图集坐标重映射，匹配新 12×6 布局
+- **修复** 三场景 TileSetAtlasSource 注册更新为 12×6 全72格
+
+---
+
 ### [0.14.7] - 2026-07-07
 
 > 剧情人物完善 + 地图装饰瓦片 + 青木村北出口守卫 + 故事大纲文档
