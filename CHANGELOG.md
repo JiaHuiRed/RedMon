@@ -14,6 +14,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### [0.16.0] - 2026-07-08
+> Area2D遇敌检测 + 地图改名 + 6只精灵高清重制
+
+#### 新增
+- **Area2D 遇敌碰撞区** — 青木村遇敌从 tile 坐标数组改为 EncounterZone Area2D 碰撞检测（`village_scene.gd`、`village.tscn`）
+- **出生重叠防误触** — `call_deferred("_init_encounter_zone_state")` 检查初始重叠状态，防止开局立即遇敌
+
+#### 修复
+- **草地外触发遭遇** — 用 `_in_encounter_zone` 布尔标志 + `body_entered/exited` 信号替代像素位置比对，彻底消除边缘误判（`village_scene.gd`）
+
+#### 变更
+- **翠竹镇→碧游镇** — 地图名/遇敌键/编辑器列表/NPC对话统一改名（`main.gd`、`town_scene.gd`、`mon_editor.py`、`village.json`）
+- **HD 精灵重置** — 君美/小雉鸡/浅浅丘/粉粉丘/雷礼/露比 12 帧 front/back 高清化
+
+---
+
 ### [0.15.0] - 2026-07-08
 > 开局流程打通 + 战斗体验优化 + 捕捉率平衡 + TileSet共享
 
