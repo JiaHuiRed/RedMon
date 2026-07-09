@@ -229,6 +229,12 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	_play_timer_active = true
 
 func add_mon(mon: Dictionary) -> void:
+	# 260709 Red 记录相遇信息
+	if not mon.has("met_date"):
+		var dt = Time.get_datetime_dict_from_system()
+		mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
+	if not mon.has("met_location"):
+		mon["met_location"] = last_scene if last_scene != "" else "未知"
 	player_team.append(mon)
 
 func first_mon() -> Dictionary:

@@ -36,7 +36,7 @@ const INFO_LABELS := ["属性", "特性", "等级", "性格", "基础数值"]
 const ACTION_LABELS := ["排序", "替换", "返回"]
 
 func _ready() -> void:
-	layer = 10
+	layer = 51  # 260709 Red 覆盖 map_label(layer=50)
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_ui()
 
@@ -109,13 +109,23 @@ func _draw_mon_card(idx: int, mon: Dictionary, x: int, y: int, selected: bool) -
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.position = Vector2(x + 10, y + 8); _root.add_child(icon)
 
-	# 名称 + 等级
+	# 名称 + 性别 + 等级
+	var gender = mon.get("gender", "")
+	var gender_icon = " ♂" if gender == "male" else " ♀" if gender == "female" else ""
 	var name_lbl = Label.new()
-	name_lbl.text = MonDB.display_name(mon)
+	name_lbl.text = MonDB.display_name(mon) + gender_icon
 	name_lbl.position = Vector2(x + 58, y + 8)
 	name_lbl.add_theme_font_size_override("font_size", 13)
 	name_lbl.add_theme_color_override("font_color", TEXT_PRI)
 	_root.add_child(name_lbl)
+	# 性别符号着色
+	if gender_icon != "":
+		var g_lbl = Label.new()
+		g_lbl.text = gender_icon.strip_edges()
+		g_lbl.position = Vector2(name_lbl.position.x + MonDB.display_name(mon).length() * 13 + 4, y + 8)
+		g_lbl.add_theme_font_size_override("font_size", 13)
+		g_lbl.add_theme_color_override("font_color", Color(0.30, 0.55, 0.90) if gender == "male" else Color(0.90, 0.40, 0.55))
+		_root.add_child(g_lbl)
 
 	var lv_lbl = Label.new()
 	lv_lbl.text = "Lv.%d" % mon["level"]
@@ -155,12 +165,7 @@ func _draw_mon_card(idx: int, mon: Dictionary, x: int, y: int, selected: bool) -
 		st_lbl.add_theme_color_override("font_color", Color(0.85, 0.3, 0.3))
 		_root.add_child(st_lbl)
 
-	# 精灵球图标（右侧圆圈占位）
-	var ball = Label.new()
-	ball.text = "⊕"; ball.position = Vector2(x + cw - 24, y + 30)
-	ball.add_theme_font_size_override("font_size", 18)
-	ball.add_theme_color_override("font_color", Color(0.75, 0.75, 0.78))
-	_root.add_child(ball)
+	# （已移除⊕占位符）
 
 func _draw_empty_card(x: int, y: int) -> void:
 	var cw = LEFT_W - CARD_X * 2
@@ -203,8 +208,14 @@ func _draw_right_panel() -> void:
 	# ── 右侧标签按钮 ──
 	_draw_info_tags(mon, sp)
 
+	# ── 种族值 + 性格 + IV ──
+	_draw_base_stats(mon, sp)
+
 	# ── 技能卡片 ──
 	_draw_move_cards(mon)
+
+	# ── 描述/身高体重/相遇信息 ──
+	_draw_flavor_info(mon, sp)
 
 	# ── 底部操作按钮 ──
 	_draw_action_buttons()
@@ -298,6 +309,108 @@ func _draw_info_tags(mon: Dictionary, sp: Dictionary) -> void:
 		val_lbl.add_theme_color_override("font_color", TEXT_PRI if not is_sel else Color.WHITE)
 		_root.add_child(val_lbl)
 
+func _draw_base_stats(mon: Dictionary, sp: Dictionary) -> void:
+	var bs = sp.get("base", {})
+	var nature_name = mon.get("nature", "")
+	var nature_data = MonDB.natures.get(nature_name, {})
+	var nature_up = nature_data.get("up", "")
+	var nature_down = nature_data.get("down", "")
+	var ivs = mon.get("ivs", {})
+
+	# 260709 Red 属性名映射（species.json用简写key）
+	var stat_keys := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
+	var stat_names := ["HP", "攻击", "防御", "特攻", "特防", "速度"]
+	var nature_keys := ["", "atk", "def", "sp_atk", "sp_def", "spd"]  # HP无性格影响
+	var bar_colors := [
+		Color(0.40, 0.82, 0.40),  # HP 绿
+		Color(0.90, 0.40, 0.30),  # 攻击 红
+		Color(0.90, 0.70, 0.20),  # 防御 黄
+		Color(0.35, 0.50, 0.85),  # 特攻 蓝
+		Color(0.85, 0.35, 0.45),  # 特防 粉红
+		Color(0.40, 0.65, 0.85),  # 速度 浅蓝
+	]
+
+	var sx := DETAIL_X + 320; var sy := DETAIL_Y + 130
+	var bar_w := 80; var bar_h := 6; var row_h := 20
+	var bst_total := 0
+
+	# 性格说明
+	if nature_up != "" and nature_down != "":
+		var up_name = _nature_stat_name(nature_up)
+		var down_name = _nature_stat_name(nature_down)
+		var nature_lbl = Label.new()
+		nature_lbl.text = "%s（+%s -%s）" % [nature_name, up_name, down_name]
+		nature_lbl.position = Vector2(sx, sy - 16)
+		nature_lbl.add_theme_font_size_override("font_size", 9)
+		nature_lbl.add_theme_color_override("font_color", TEXT_SEC)
+		_root.add_child(nature_lbl)
+
+	for i in range(6):
+		var val = bs.get(stat_keys[i], 0)
+		bst_total += val
+		var iv_val = ivs.get(stat_keys[i], 0)
+		var ry = sy + i * row_h
+
+		# 性格加减标识
+		var nature_mod = ""
+		if i > 0 and nature_keys[i] == nature_up: nature_mod = "↑"
+		elif i > 0 and nature_keys[i] == nature_down: nature_mod = "↓"
+
+		# 属性名
+		var nm = Label.new()
+		nm.text = stat_names[i]
+		nm.position = Vector2(sx, ry)
+		nm.add_theme_font_size_override("font_size", 9)
+		var nm_col = TEXT_PRI
+		if nature_mod == "↑": nm_col = Color(0.85, 0.30, 0.20)
+		elif nature_mod == "↓": nm_col = Color(0.20, 0.45, 0.85)
+		nm.add_theme_color_override("font_color", nm_col)
+		_root.add_child(nm)
+
+		# 数值
+		var v_lbl = Label.new()
+		v_lbl.text = str(val) + nature_mod
+		v_lbl.position = Vector2(sx + 32, ry)
+		v_lbl.add_theme_font_size_override("font_size", 9)
+		v_lbl.add_theme_color_override("font_color", nm_col)
+		_root.add_child(v_lbl)
+
+		# 条形图背景
+		var bg = ColorRect.new()
+		bg.size = Vector2(bar_w, bar_h); bg.position = Vector2(sx + 62, ry + 4)
+		bg.color = Color(0.90, 0.90, 0.88); _root.add_child(bg)
+
+		# 条形图填充 (max 255 为满格)
+		var fill = ColorRect.new()
+		var ratio = clampf(float(val) / 255.0, 0.0, 1.0)
+		fill.size = Vector2(bar_w * ratio, bar_h); fill.position = Vector2(sx + 62, ry + 4)
+		fill.color = bar_colors[i]; _root.add_child(fill)
+
+		# IV值
+		var iv_lbl = Label.new()
+		iv_lbl.text = "IV:%d" % iv_val
+		iv_lbl.position = Vector2(sx + 146, ry)
+		iv_lbl.add_theme_font_size_override("font_size", 8)
+		iv_lbl.add_theme_color_override("font_color", TEXT_SEC)
+		_root.add_child(iv_lbl)
+
+	# BST 总和
+	var bst_lbl = Label.new()
+	bst_lbl.text = "BST: %d" % bst_total
+	bst_lbl.position = Vector2(sx, sy + 6 * row_h + 2)
+	bst_lbl.add_theme_font_size_override("font_size", 10)
+	bst_lbl.add_theme_color_override("font_color", TEXT_PRI)
+	_root.add_child(bst_lbl)
+
+func _nature_stat_name(key: String) -> String:
+	match key:
+		"atk": return "物攻"
+		"def": return "物防"
+		"sp_atk": return "特攻"
+		"sp_def": return "特防"
+		"spd": return "速度"
+		_: return key
+
 func _draw_move_cards(mon: Dictionary) -> void:
 	var moves = mon.get("moves", [])
 	var mx := DETAIL_X; var my := DETAIL_Y + 290
@@ -387,6 +500,77 @@ func _draw_move_cards(mon: Dictionary) -> void:
 			empty.add_theme_font_size_override("font_size", 11)
 			empty.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75))
 			_root.add_child(empty)
+
+func _draw_flavor_info(mon: Dictionary, sp: Dictionary) -> void:
+	var fx := DETAIL_X; var fy := DETAIL_Y + 430
+	var fw := RIGHT_W; var fh := 140
+
+	# 背景卡片
+	var panel = PanelContainer.new()
+	panel.position = Vector2(fx, fy)
+	panel.custom_minimum_size = Vector2(fw, fh); panel.size = Vector2(fw, fh)
+	var style = StyleBoxFlat.new()
+	style.bg_color = CARD_COLOR
+	style.set_corner_radius_all(10)
+	panel.add_theme_stylebox_override("panel", style)
+	_root.add_child(panel)
+
+	# 左侧：描述文案
+	var desc = sp.get("desc", "")
+	if desc != "":
+		var desc_lbl = Label.new()
+		desc_lbl.text = desc
+		desc_lbl.position = Vector2(fx + 12, fy + 8)
+		desc_lbl.custom_minimum_size = Vector2(fw * 0.55, fh - 16)
+		desc_lbl.size = Vector2(fw * 0.55, fh - 16)
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_color_override("font_color", TEXT_SEC)
+		_root.add_child(desc_lbl)
+
+	# 右侧：身高体重 + 性别比 + 相遇信息
+	var rx := fx + int(fw * 0.60); var ry := fy + 10
+	var height_str = sp.get("height", "?")
+	var weight_str = sp.get("weight", "?")
+	_flavor_lbl("身高: %sm" % str(height_str), rx, ry)
+	_flavor_lbl("体重: %skg" % str(weight_str), rx, ry + 16)
+
+	# 性别比
+	var gr = sp.get("gender_ratio", "")
+	if gr != "":
+		var parts = str(gr).split("/")
+		if parts.size() == 2:
+			_flavor_lbl("♂%s%% ♀%s%%" % [parts[0], parts[1]], rx, ry + 32)
+
+	# 相遇信息
+	var met_date = mon.get("met_date", "")
+	var met_loc = mon.get("met_location", "")
+	if met_date != "" or met_loc != "":
+		var met_text = ""
+		if met_date != "" and met_loc != "":
+			met_text = "%s\n在「%s」相遇" % [met_date, met_loc]
+		elif met_loc != "":
+			met_text = "在「%s」相遇" % met_loc
+		else:
+			met_text = met_date
+		var met_lbl = Label.new()
+		met_lbl.text = met_text
+		met_lbl.position = Vector2(rx, ry + 56)
+		met_lbl.custom_minimum_size = Vector2(fw * 0.38, 40)
+		met_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		met_lbl.add_theme_font_size_override("font_size", 9)
+		met_lbl.add_theme_color_override("font_color", Color(0.55, 0.50, 0.40))
+		_root.add_child(met_lbl)
+	else:
+		# 旧存档精灵没有相遇信息
+		_flavor_lbl("初始的伙伴", rx, ry + 56)
+
+func _flavor_lbl(text: String, x: int, y: int) -> void:
+	var lbl = Label.new()
+	lbl.text = text; lbl.position = Vector2(x, y)
+	lbl.add_theme_font_size_override("font_size", 9)
+	lbl.add_theme_color_override("font_color", TEXT_SEC)
+	_root.add_child(lbl)
 
 func _draw_action_buttons() -> void:
 	var by := VH - 56; var bw := 120; var bh := 38; var gap := 12
@@ -500,8 +684,8 @@ func _close() -> void:
 
 # ── 工具 ──────────────────────────────────────────────────────────────────────
 func _calc_bst(mon: Dictionary) -> int:
-	# 260709 Red 读种族值base_stats，不是个体战斗属性
+	# 260709 Red 读种族值base，不是个体战斗属性
 	var sp = MonDB.species.get(mon.get("species_id", ""), {})
-	var bs = sp.get("base_stats", {})
-	return bs.get("hp", 0) + bs.get("attack", 0) + bs.get("defense", 0) + \
-		   bs.get("sp_attack", 0) + bs.get("sp_defense", 0) + bs.get("speed", 0)
+	var bs = sp.get("base", {})
+	return bs.get("hp", 0) + bs.get("atk", 0) + bs.get("def", 0) + \
+		   bs.get("sp_atk", 0) + bs.get("sp_def", 0) + bs.get("spd", 0)

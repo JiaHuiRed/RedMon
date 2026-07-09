@@ -421,7 +421,8 @@ func _on_confirm() -> void:
 		return
 	_confirmed = true
 	var mon = MonDB.create_mon(STARTERS[_selected], 5)
-	GameState.player_team.append(mon)
+	mon["met_location"] = "陈教授的研究所"
+	GameState.add_mon(mon)
 	GameState.has_starter = true
 	print("[STARTER] 选择了 ", STARTERS[_selected])
 	GameState.save_game()

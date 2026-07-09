@@ -599,9 +599,15 @@ func _on_use_item(item_id: String) -> void:
 		if success:
 			GameState.caught_count += 1
 			if GameState.player_team.size() < 6:
-				GameState.player_team.append(_enemy_mon)
+				GameState.add_mon(_enemy_mon)
 				await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
 			else:
+				# 260709 Red 仓库也记录相遇信息
+				if not _enemy_mon.has("met_date"):
+					var dt = Time.get_datetime_dict_from_system()
+					_enemy_mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
+				if not _enemy_mon.has("met_location"):
+					_enemy_mon["met_location"] = GameState.last_scene
 				GameState.pc_box.append(_enemy_mon)
 				await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
 			_busy = false
