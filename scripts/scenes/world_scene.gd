@@ -75,7 +75,7 @@ func _ready() -> void:
 
 # 260705 Red 复用 .tscn 中的 Ground，为空则代码生成
 func _setup_ground() -> void:
-	var ground = get_node_or_null("Ground")
+	var ground = get_node_or_null("地面")
 	if ground and ground is TileMapLayer:
 		_tilemap = ground
 	else:

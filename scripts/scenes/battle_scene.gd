@@ -50,7 +50,7 @@ var _mon_btns:     Array = []
 var _mon_close_btn: Button
 var _mon_flee_btn:  Button  # 260708 Red 强制换场时可逃跑（野生战斗）
 
-var _bg_path:         String = "res://assets/backgrounds/战斗背景_草原.png"
+var _bg_path:         String = "res://assets/backgrounds/草原.png"
 var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 var _evo_panel:       Control
@@ -106,11 +106,15 @@ const MENU_H  := 70
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
-	_player_mon     = GameState.first_mon()
+	# 260709 Red 选第一只活着的精灵出战
 	_player_mon_idx = 0
+	for i in range(GameState.player_team.size()):
+		if GameState.player_team[i].get("current_hp", 0) > 0:
+			_player_mon_idx = i; break
+	_player_mon = GameState.player_team[_player_mon_idx]
 	_return_scene   = data.get("return_scene", "world")
 	_return_pos     = data.get("player_pos", [])
-	_bg_path        = data.get("bg", "res://assets/backgrounds/战斗背景_草原.png")
+	_bg_path        = data.get("bg", "res://assets/backgrounds/草原.png")
 
 	var trainer_data = data.get("trainer", {})
 	if not trainer_data.is_empty():
@@ -147,11 +151,16 @@ func _build_battle_field() -> void:
 	# 战斗背景图（由调用方传入，默认草原）
 	var tex = load(_bg_path) if ResourceLoader.exists(_bg_path) else null
 	if tex:
-		var bg = TextureRect.new()
+		# 260709 Red 用 Sprite2D 手动缩放适配战场区域
+		var bg = Sprite2D.new()
 		bg.texture = tex
-		bg.position = Vector2(0, 0)
-		bg.size = Vector2(VW, FIELD_H)
-		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		bg.centered = false
+		var tex_size = tex.get_size()
+		var scale_x = float(VW) / tex_size.x
+		var scale_y = float(FIELD_H) / tex_size.y
+		var s = max(scale_x, scale_y)  # cover模式：取较大缩放
+		bg.scale = Vector2(s, s)
+		bg.position = Vector2((VW - tex_size.x * s) / 2.0, (FIELD_H - tex_size.y * s) / 2.0)
 		add_child(bg)
 	else:
 		# 回退：代码画天空
@@ -180,26 +189,27 @@ func _build_battle_field() -> void:
 		ground_light.color    = Color(0.38, 0.64, 0.27)
 		add_child(ground_light)
 
-	# Enemy platform (top-right)
-	var ep = _make_platform(Vector2(VW - 160, FIELD_H - 140), 100, 20, Color(0.45, 0.68, 0.32))
+	# 260709 Red 平台+精灵布局：近大远小透视
+	# Enemy platform (right side, mid-field — 接近地面)
+	var ep = _make_platform(Vector2(VW - 160, FIELD_H - 105), 110, 18, Color(0.42, 0.65, 0.30))
 	add_child(ep)
-
-	# Player platform (bottom-left)
-	var pp = _make_platform(Vector2(60, FIELD_H - 48), 100, 20, Color(0.42, 0.65, 0.30))
+	# Player platform (left side, bottom)
+	var pp = _make_platform(Vector2(60, FIELD_H - 48), 120, 22, Color(0.42, 0.65, 0.30))
 	add_child(pp)
 
-	# Enemy sprite (front-facing, right side of screen)
+	# 260709 Red 按素材实际尺寸归一化，统一显示大小
+	# Enemy sprite (front-facing, right side — 脚踩平台)
 	_enemy_spr = Sprite2D.new()
 	_enemy_spr.texture = _draw_enemy_sprite(_enemy_mon["species_id"])
-	_enemy_spr.position = Vector2(VW - 110, FIELD_H - 170)
-	_enemy_spr.scale = Vector2(0.2, 0.2)
+	_enemy_spr.position = Vector2(VW - 110, FIELD_H - 100)
+	_rescale_sprite(_enemy_spr, 80.0)
 	add_child(_enemy_spr)
 
-	# Player sprite (mon back-facing, left side)
+	# Player sprite (mon back-facing, left side — 近处略大)
 	_player_spr = Sprite2D.new()
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
-	_player_spr.position = Vector2(110, FIELD_H - 68)
-	_player_spr.scale = Vector2(0.4, 0.4)
+	_player_spr.position = Vector2(120, FIELD_H - 48)
+	_rescale_sprite(_player_spr, 120.0)
 	add_child(_player_spr)
 
 func _draw_cloud(pos: Vector2, w: float, h: float) -> void:
@@ -234,6 +244,12 @@ func _draw_cloud(pos: Vector2, w: float, h: float) -> void:
 	spr.z_index = 1
 	add_child(spr)
 
+# 260709 Red 按目标高度归一化精灵缩放
+func _rescale_sprite(spr: Sprite2D, target_h: float) -> void:
+	var tex_h := float(spr.texture.get_height()) if spr.texture else 384.0
+	var s := target_h / tex_h
+	spr.scale = Vector2(s, s)
+
 func _make_platform(pos: Vector2, w: float, h: float, color: Color) -> ColorRect:
 	var r = ColorRect.new()
 	r.size = Vector2(w, h)
@@ -245,79 +261,80 @@ func _make_platform(pos: Vector2, w: float, h: float, color: Color) -> ColorRect
 # BUILD – Info boxes
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_info_boxes() -> void:
-	# Enemy info box – top-left of field
-	var eb = _panel_rect(Vector2(8, 10), Vector2(200, 54))
-	add_child(eb)
-
-	_enemy_name_lbl = _label("", Vector2(14, 13), 13, Color(0.1, 0.1, 0.1))
-	add_child(_enemy_name_lbl)
-
-	_enemy_lv_lbl = _label("", Vector2(150, 13), 12, Color(0.2, 0.2, 0.5))
-	add_child(_enemy_lv_lbl)
-
-	# Enemy HP bar
-	var ehp_bg = ColorRect.new()
-	ehp_bg.size = Vector2(150, 8)
-	ehp_bg.position = Vector2(14, 32)
-	ehp_bg.color = Color(0.3, 0.3, 0.3)
-	add_child(ehp_bg)
-
-	_enemy_hp_bar = ColorRect.new()
-	_enemy_hp_bar.size = Vector2(150, 8)
-	_enemy_hp_bar.position = Vector2(14, 32)
-	_enemy_hp_bar.color = Color(0.2, 0.85, 0.3)
-	add_child(_enemy_hp_bar)
-
-	_enemy_hp_val = _label("", Vector2(14, 43), 10, Color(0.3, 0.3, 0.3))
-	add_child(_enemy_hp_val)
-
-	_enemy_status_lbl = _label("", Vector2(120, 14), 10, Color(0.9, 0.4, 0.1))
-	add_child(_enemy_status_lbl)
-
-	# Player info box – bottom-right of field
-	var pb = _panel_rect(Vector2(VW - 220, FIELD_H - 80), Vector2(212, 70))
+	# 260709 Red 信息框互换：我方左上，敌方右上
+	# Player info box – top-left
+	var pb = _panel_rect(Vector2(8, 10), Vector2(212, 70))
 	add_child(pb)
 
-	_player_name_lbl = _label("", Vector2(VW - 214, FIELD_H - 77), 13, Color(0.1, 0.1, 0.1))
+	_player_name_lbl = _label("", Vector2(14, 13), 13, Color(0.1, 0.1, 0.1))
 	add_child(_player_name_lbl)
 
-	_player_lv_lbl = _label("", Vector2(VW - 80, FIELD_H - 77), 12, Color(0.2, 0.2, 0.5))
+	_player_lv_lbl = _label("", Vector2(148, 13), 12, Color(0.2, 0.2, 0.5))
 	add_child(_player_lv_lbl)
 
+	_player_status_lbl = _label("", Vector2(138, 14), 10, Color(0.9, 0.4, 0.1))
+	add_child(_player_status_lbl)
+
 	# Player HP label
-	var hp_lbl_txt = _label("HP", Vector2(VW - 214, FIELD_H - 56), 10, Color(0.2, 0.2, 0.2))
+	var hp_lbl_txt = _label("HP", Vector2(14, 34), 10, Color(0.2, 0.2, 0.2))
 	add_child(hp_lbl_txt)
 
 	var php_bg = ColorRect.new()
 	php_bg.size = Vector2(150, 8)
-	php_bg.position = Vector2(VW - 198, FIELD_H - 53)
+	php_bg.position = Vector2(30, 37)
 	php_bg.color = Color(0.3, 0.3, 0.3)
 	add_child(php_bg)
 
 	_player_hp_bar = ColorRect.new()
 	_player_hp_bar.size = Vector2(150, 8)
-	_player_hp_bar.position = Vector2(VW - 198, FIELD_H - 53)
+	_player_hp_bar.position = Vector2(30, 37)
 	_player_hp_bar.color = Color(0.2, 0.85, 0.3)
 	add_child(_player_hp_bar)
 
-	_player_hp_val = _label("", Vector2(VW - 104, FIELD_H - 42), 11, Color(0.1, 0.1, 0.1))
+	_player_hp_val = _label("", Vector2(124, 48), 11, Color(0.1, 0.1, 0.1))
 	add_child(_player_hp_val)
 
-	_player_status_lbl = _label("", Vector2(VW - 90, FIELD_H - 77), 10, Color(0.9, 0.4, 0.1))
-	add_child(_player_status_lbl)
-
-	# XP bar (thin strip at very bottom of player info box)
+	# XP bar (thin strip at bottom of player info box)
 	var xp_bg = ColorRect.new()
 	xp_bg.size = Vector2(150, 4)
-	xp_bg.position = Vector2(VW - 198, FIELD_H - 18)
+	xp_bg.position = Vector2(30, 62)
 	xp_bg.color = Color(0.2, 0.2, 0.2)
 	add_child(xp_bg)
 
 	_player_xp_bar = ColorRect.new()
 	_player_xp_bar.size = Vector2(75, 4)  # 50% placeholder
-	_player_xp_bar.position = Vector2(VW - 198, FIELD_H - 18)
+	_player_xp_bar.position = Vector2(30, 62)
 	_player_xp_bar.color = Color(0.2, 0.4, 0.95)
 	add_child(_player_xp_bar)
+
+	# Enemy info box – top-right
+	var eb = _panel_rect(Vector2(VW - 208, 10), Vector2(200, 54))
+	add_child(eb)
+
+	_enemy_name_lbl = _label("", Vector2(VW - 202, 13), 13, Color(0.1, 0.1, 0.1))
+	add_child(_enemy_name_lbl)
+
+	_enemy_lv_lbl = _label("", Vector2(VW - 66, 13), 12, Color(0.2, 0.2, 0.5))
+	add_child(_enemy_lv_lbl)
+
+	# Enemy HP bar
+	var ehp_bg = ColorRect.new()
+	ehp_bg.size = Vector2(150, 8)
+	ehp_bg.position = Vector2(VW - 202, 32)
+	ehp_bg.color = Color(0.3, 0.3, 0.3)
+	add_child(ehp_bg)
+
+	_enemy_hp_bar = ColorRect.new()
+	_enemy_hp_bar.size = Vector2(150, 8)
+	_enemy_hp_bar.position = Vector2(VW - 202, 32)
+	_enemy_hp_bar.color = Color(0.2, 0.85, 0.3)
+	add_child(_enemy_hp_bar)
+
+	_enemy_hp_val = _label("", Vector2(VW - 202, 43), 10, Color(0.3, 0.3, 0.3))
+	add_child(_enemy_hp_val)
+
+	_enemy_status_lbl = _label("", Vector2(VW - 96, 14), 10, Color(0.9, 0.4, 0.1))
+	add_child(_enemy_status_lbl)
 
 	_refresh_info()
 
@@ -738,6 +755,7 @@ func _on_switch_mon(idx: int) -> void:
 	_player_mon_idx = idx
 	_player_mon = GameState.player_team[idx]
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
+	_rescale_sprite(_player_spr, 100.0)
 	_refresh_info()
 	_refresh_move_panel()
 	await _show_message_async("上吧！%s！" % MonDB.display_name(_player_mon))
@@ -1368,6 +1386,7 @@ func _handle_victory() -> void:
 			await _show_message_async("啊！\n%s 要进化了！" % old_name)
 			MonDB.evolve_to(_player_mon, chosen["into"])
 			_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
+			_rescale_sprite(_player_spr, 100.0)
 			_refresh_info()
 			_refresh_move_panel()
 			await _show_message_async("%s 进化成了%s！" % [old_name, MonDB.display_name(_player_mon)])
@@ -1381,6 +1400,7 @@ func _handle_victory() -> void:
 			# 训练师派出下一只
 			_enemy_mon = _trainer_team[_trainer_mon_idx]
 			_enemy_spr.texture = _draw_mon_front(_enemy_mon["species_id"])
+			_rescale_sprite(_enemy_spr, 80.0)
 			_enemy_spr.modulate = Color.WHITE
 			_refresh_info()
 			_busy = false
@@ -1946,7 +1966,7 @@ func _anim_throw_gourd(item_id: String, ball_bonus: float) -> bool:
 	else:
 		# 失败：葫芦消失，精灵复出
 		gourd_spr.queue_free()
-		_enemy_spr.scale      = Vector2(0.2, 0.2)
+		_rescale_sprite(_enemy_spr, 80.0)
 		_enemy_spr.modulate.a = 1.0
 
 	return success

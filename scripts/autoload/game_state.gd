@@ -16,6 +16,8 @@ var defeated_trainers: Array = []   # 已击败的训练师 id 列表
 var rival_done: bool = false       # 第一次劲敌战已结束（无论输赢）
 var cleared_gyms: Array = []       # 已通关的道馆 id 列表
 var last_scene: String = ""        # YYMMDD Red 最后所在场景，用于读档回跳
+var player_pos_x: float = 0.0     # 260709 Red 存档时玩家坐标
+var player_pos_y: float = 0.0
 var current_slot: int = 1          # 当前使用的存档槽位（1-3）
 var play_time: float = 0.0         # 260706 Red 已游玩秒数（读档后累计）
 var _play_timer_active: bool = false
@@ -140,6 +142,8 @@ func save_game() -> void:
 		"rival_done":        rival_done,
 		"cleared_gyms":      cleared_gyms,
 		"last_scene":        last_scene,
+		"player_pos_x":      player_pos_x,
+		"player_pos_y":      player_pos_y,
 		"play_time":         play_time,
 	}
 	var path = slot_path(current_slot)
@@ -184,6 +188,8 @@ func load_game(slot: int = 0) -> bool:
 	rival_done        = data.get("rival_done", false)
 	cleared_gyms      = data.get("cleared_gyms", [])
 	last_scene        = data.get("last_scene", "")
+	player_pos_x      = float(data.get("player_pos_x", 0))
+	player_pos_y      = float(data.get("player_pos_y", 0))
 	play_time         = float(data.get("play_time", 0))
 	_play_timer_active = true
 	print("[SAVE] 存档读取完成，上次场景：%s，队伍：%d 只精灵" % [last_scene, player_team.size()])

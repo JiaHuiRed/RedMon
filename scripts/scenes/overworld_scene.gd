@@ -49,6 +49,7 @@ var _npc_dialog_lines: Array   = []
 var _npc_dialog_idx:   int     = 0
 
 var _npc_nodes:   Array = []
+var _grass_tiles: Array = []
 var _water_tiles: Array = []
 var _in_encounter_zone: bool = false
 var _encounter_area_override: String = ""  # Area2D 元数据指定的遇敌区
@@ -114,8 +115,9 @@ func _ready() -> void:
 
 	# 260709 Red Area2D 遇敌区检测，取代 tile 坐标扫描
 	_connect_encounter_zones()
-	_scan_water_tiles()
+	_scan_tiles()
 	_build_water_colliders()
+	print("[overworld] grass tiles found: ", _grass_tiles.size())
 	print("[overworld] water tiles found: ", _water_tiles.size())
 
 	_build_border_walls()
@@ -155,7 +157,7 @@ func _load_trainer_data() -> void:
 # Area2D 可设 meta "encounter_area" 指定遇敌表（如"青木村"），否则按玩家位置自动判断
 func _connect_encounter_zones() -> void:
 	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
-		var zones = get_node_or_null(child_name + "/EncounterZones")
+		var zones = get_node_or_null(child_name + "/遇敌区")
 		if not zones: continue
 		for child in zones.get_children():
 			if child is Area2D:
@@ -176,7 +178,7 @@ func _on_encounter_zone_exited(_body: Node2D, _zone: Area2D) -> void:
 func _init_encounter_zone_state() -> void:
 	if not _player: return
 	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
-		var zones = get_node_or_null(child_name + "/EncounterZones")
+		var zones = get_node_or_null(child_name + "/遇敌区")
 		if not zones: continue
 		for child in zones.get_children():
 			if child is Area2D:
@@ -186,10 +188,11 @@ func _init_encounter_zone_state() -> void:
 						_encounter_area_override = str(child.get_meta("encounter_area", ""))
 						return
 
-# 260708 Red 水面瓦片扫描（仅扫水面，草丛已改 Area2D）
-func _scan_water_tiles() -> void:
+# 260709 Red 扫描草地+水面瓦片（草地作为 Area2D 的 fallback）
+func _scan_tiles() -> void:
+	var grass_atlas: Array[Vector2i] = [Vector2i(6, 1)]
 	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
-		var ground = get_node_or_null(child_name + "/Ground")
+		var ground = get_node_or_null(child_name + "/地面")
 		if not ground or not ground is TileMapLayer: continue
 		if _tilemap == null: _tilemap = ground
 		var parent_node = get_node_or_null(child_name)
@@ -199,16 +202,23 @@ func _scan_water_tiles() -> void:
 		if ground.tile_set: ts = ground.tile_set.tile_size
 		var use_custom := _has_terrain_layer(ground.tile_set)
 		for cell in ground.get_used_cells():
+			var terrain := ""
 			if use_custom:
 				var td = ground.get_cell_tile_data(cell)
-				if td and str(td.get_custom_data("terrain_type")) == "water":
-					var px_x: int = cell.x * ts.x + int(parent_px.x)
-					var px_y: int = cell.y * ts.y + int(parent_px.y)
-					var bx: int = px_x / TILE; var by: int = px_y / TILE
-					var sx: int = ts.x / TILE; var sy: int = ts.y / TILE
-					for dx in range(sx):
-						for dy in range(sy):
-							_water_tiles.append(Vector2i(bx + dx, by + dy))
+				if td: terrain = str(td.get_custom_data("terrain_type"))
+			if terrain.is_empty():
+				var ac = ground.get_cell_atlas_coords(cell)
+				if ac in grass_atlas: terrain = "grass"
+			if terrain == "grass" or terrain == "water":
+				var px_x: int = cell.x * ts.x + int(parent_px.x)
+				var px_y: int = cell.y * ts.y + int(parent_px.y)
+				var bx: int = px_x / TILE; var by: int = px_y / TILE
+				var sx: int = ts.x / TILE; var sy: int = ts.y / TILE
+				for dx in range(sx):
+					for dy in range(sy):
+						var v := Vector2i(bx + dx, by + dy)
+						if terrain == "grass": _grass_tiles.append(v)
+						else: _water_tiles.append(v)
 
 func _has_terrain_layer(ts: TileSet) -> bool:
 	if not ts: return false
@@ -288,6 +298,10 @@ func _build_npcs() -> void:
 	_add_npc(Vector2i(56, 18), "青年.png", "村民", "__guard_right__")
 	# 260708 Red 北出口守卫：常驻，集齐八徽章放行
 	_add_npc(Vector2i(30, 1), "青年.png", "守卫", "__guard_north__")
+	# 260709 Red 青木村告示牌
+	_add_npc(Vector2i(6, 6), "", "告示牌", "{player}的家")
+	_add_npc(Vector2i(25, 16), "", "告示牌", "{rival}的家")
+	_add_npc(Vector2i(21, 7), "", "告示牌", "陈教授的研究所\n精灵研究的最前沿")
 	# ── 华灵草原 NPC ──
 	_add_npc(Vector2i(85, 7),  "老爷爷.png", "驿站老伯", "老伯：旅人辛苦了，这里是草原驿站，可以稍作休息。\n近日黑风堂在草原西北一带出没，多加小心。")
 	_add_npc(Vector2i(90, 34), "", "路牌",    "← 青木村  碧溪镇 →\n前方高草丛遭遇率高，建议补足精灵葫芦再出发。")
@@ -409,6 +423,9 @@ func _build_player() -> void:
 	var saved_pos = data.get("player_pos", [])
 	if saved_pos.size() == 2:
 		_player.position = Vector2(saved_pos[0], saved_pos[1])
+	elif GameState.player_pos_x > 0 or GameState.player_pos_y > 0:
+		# 260709 Red 从存档恢复玩家坐标
+		_player.position = Vector2(GameState.player_pos_x, GameState.player_pos_y)
 	else:
 		match data.get("spawn", "village"):
 			"village":   _player.position = SPAWN_VILLAGE
@@ -459,8 +476,14 @@ func _current_area() -> String:
 	var px = _player.position.x
 	return "青木村" if px < VILLAGE_END else "华灵草原" if px < GRASSLAND_END else "碧溪镇"
 
+func get_player_pos() -> Vector2:
+	return _player.position if _player else Vector2.ZERO
+
 func _save_with_area() -> void:
 	GameState.last_scene = _current_area()
+	# 260709 Red 存档时记录玩家坐标
+	GameState.player_pos_x = _player.position.x
+	GameState.player_pos_y = _player.position.y
 	GameState.save_game()
 
 func _update_hud() -> void:
@@ -552,7 +575,7 @@ func _advance_dialog() -> void:
 
 # ── 移动 & 输入 ───────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _battling or _dialog_active or _menu_active or _shop_active or _pcbox_active: return
+	if _battling or _dialog_active or _shop_active or _pcbox_active: return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
@@ -602,28 +625,17 @@ func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
 	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_menu"):
-		get_viewport().set_input_as_handled()
-		if _dialog_active or _shop_active or _pcbox_active: return
-		if _menu_active:
-			if _menu_sub != "": _menu_sub = ""; _menu_cursor = 0; _refresh_menu()
-			else: _close_menu()
-		else: _open_menu()
-		return
+	# 260709 Red 菜单统一由 main.gd 全局暂停菜单处理，overworld 不再拦截 ui_menu
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		if _shop_active:  _close_shop(); return
 		if _pcbox_active: _close_pcbox(); return
 		if _dialog_active: return
-		if _menu_active:
-			if _menu_sub != "": _menu_sub = ""; _menu_cursor = 0; _refresh_menu()
-			else: _close_menu()
 		return
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled(); _advance_dialog()
 		return
-	if _menu_active:  _handle_menu_nav(event); return
 	if _shop_active:  _handle_shop_nav(event); return
 	if _pcbox_active: _handle_pcbox_nav(event); return
 	if event.is_action_pressed("ui_accept"):
@@ -729,8 +741,10 @@ func _check_shenhe_town() -> void:
 		_show_dialog("申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！", 600)
 
 func _check_encounter() -> void:
-	# 260709 Red Area2D 碰撞区检测，取代 tile 坐标比对
-	if not _in_encounter_zone: return
+	# 260709 Red 必须踩在草丛 tile 上才触发遇敌
+	var foot_y := _player.position.y + 8
+	var tile = Vector2i(int(_player.position.x / TILE), int(foot_y / TILE))
+	if tile not in _grass_tiles: return
 	# 260706 Red 首次踩草若无御三家 → 触发开场事件
 	if not GameState.has_starter:
 		_trigger_professor_event(); return
@@ -982,6 +996,11 @@ func _open_menu() -> void:
 	_menu_active = true; _menu_sub = ""; _menu_cursor = 0
 	_menu_panel.visible = true; _refresh_menu()
 func _close_menu() -> void: _menu_active = false; _menu_panel.visible = false
+func _open_party_ui() -> void:
+	_close_menu()
+	var party_ui = preload("res://scripts/ui/party_ui.gd").new()
+	add_child(party_ui)
+	party_ui.closed.connect(func(): _menu_active = false)
 
 func _refresh_menu() -> void:
 	for c in _menu_panel.get_children(): c.queue_free()
@@ -1085,7 +1104,7 @@ func _handle_menu_nav(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if _menu_sub == "":
 			match _menu_cursor:
-				0: _menu_sub = "party"; _refresh_menu()
+				0: _open_party_ui()
 				1: _menu_sub = "bag"; _refresh_menu()
 				2: _save_with_area(); _menu_sub = "saved"; _refresh_menu()
 				3: _save_with_area(); get_tree().quit()

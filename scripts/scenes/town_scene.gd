@@ -83,7 +83,7 @@ func _build_town() -> void:
 	_draw_fountain(14, 9)
 
 	# .tscn 未提供 Buildings 节点时用代码生成精灵堂+杂货铺
-	if not has_node("Buildings"):
+	if not has_node("建筑"):
 		_draw_house_sprite(3, 1, 5, 4, "res://assets/backgrounds/buildings/精灵堂.png")   # 精灵堂 (治疗+仓库, left)
 		_draw_house_sprite(20, 1, 5, 4, "res://assets/backgrounds/buildings/杂货铺.png")  # 杂货铺 (right)
 

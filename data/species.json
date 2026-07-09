@@ -1018,12 +1018,12 @@
     "evolutions": [
       {
         "into": "芙芙",
-        "level": 21,
+        "level": 35,
         "item": "月之晶核"
       }
     ],
     "evolves_into": "芙芙",
-    "evolve_level": 21,
+    "evolve_level": 35,
     "learnset": {
       "1": [
         "廣域戰力",
@@ -16313,9 +16313,9 @@
     "base": {
       "hp": 105,
       "atk": 40,
-      "def": 80,
-      "sp_atk": 118,
-      "sp_def": 110,
+      "def": 84,
+      "sp_atk": 131,
+      "sp_def": 112,
       "spd": 105
     },
     "catch_rate": 20,

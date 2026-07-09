@@ -64,17 +64,17 @@ func _ready() -> void:
 	elif GameState.rival_done:
 		_rival_done = true
 
-	# 260704 Red .tscn 已包含静态节点(Ground/Buildings/NPCs/Decorations)
+	# 260704 Red .tscn 已包含静态节点(地面/建筑/角色/装饰)
 	# 仅在纯脚本模式下创建（向后兼容）
 	# 260705 地图事件配置必须先加载，供 _build_npcs 使用
 	_map_config = _load_map_config("village")
-	if not has_node("Ground"):
+	if not has_node("地面"):
 		_build_ground()
-	if not has_node("Buildings"):
+	if not has_node("建筑"):
 		_build_buildings()
 	# 260705 NPC 交互数据始终从配置加载（即使 .tscn 有视觉节点）
 	_load_npc_config()
-	if not has_node("NPCs"):
+	if not has_node("角色"):
 		_build_npcs()
 		_build_labels()
 	# 260704 Red 研究所白底转透明（.tscn 和代码模式通用）
@@ -112,7 +112,7 @@ func _load_map_config(map_name: String) -> Dictionary:
 
 func _fix_lab_background() -> void:
 	# 260704 Red 使用裁剪好的透明版研究所图片
-	var lab_node = get_node_or_null("Buildings/Lab")
+	var lab_node = get_node_or_null("建筑/研究所")
 	if not lab_node:
 		return
 	var cropped = _load_tex("res://assets/backgrounds/buildings/研究所_cropped.png")
@@ -121,7 +121,7 @@ func _fix_lab_background() -> void:
 
 func _setup_encounters() -> void:
 	# 260708 用 EncounterZone Area2D 做像素级碰撞检测，取代 tile 坐标扫描
-	var zones = get_node_or_null("EncounterZones")
+	var zones = get_node_or_null("遇敌区")
 	if zones:
 		for child in zones.get_children():
 			if child is Area2D:
@@ -143,7 +143,7 @@ func _init_encounter_zone_state() -> void:
 	# 260708 玩家出生在草丛中时，body_entered 不会触发，手动检查初始重叠
 	if not _player:
 		return
-	var zones = get_node_or_null("EncounterZones")
+	var zones = get_node_or_null("遇敌区")
 	if zones:
 		for child in zones.get_children():
 			if child is Area2D and child.has_overlapping_bodies():
@@ -153,7 +153,7 @@ func _init_encounter_zone_state() -> void:
 
 func _build_tile_colliders() -> void:
 	# 260704 Red 给装饰性 tile（灌木/树/水）加碰撞，不含遇敌草丛
-	var ground = get_node_or_null("Ground")
+	var ground = get_node_or_null("地面")
 	if not ground or not ground is TileMapLayer:
 		return
 	var collision_tiles := [
@@ -338,7 +338,7 @@ func _load_npc_config() -> void:
 			"pos": nd.get("pos", [8, 12])
 		}
 	# 260705 如果 .tscn 有 NPCs 节点，用实际节点位置覆盖配置位置
-	var npcs_node = get_node_or_null("NPCs")
+	var npcs_node = get_node_or_null("角色")
 	if npcs_node:
 		for child in npcs_node.get_children():
 			if child is Sprite2D and child.name in _script_npcs:

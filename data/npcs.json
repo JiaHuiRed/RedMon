@@ -151,9 +151,18 @@
     "name": "苏漪漪",
     "title": "碧波馆馆主",
     "role": "gym_leader",
-    "sprite_front": "苏漪漪front.png",
+    "gender": "女",
     "desc": "水系道馆馆主",
-    "gender": "女"
+    "sprite_front": "苏漪漪front.png",
+    "trainer": {
+      "trainer_id": "su_yiyi",
+      "class": "道馆主",
+      "reward": 4800,
+      "iv_tier": 3,
+      "dialog_before": "你敢跟我对战，胆子倒不小。",
+      "dialog_win": "哼……还算有点意思。",
+      "team": []
+    }
   },
   "zhao_panshi": {
     "id": "zhao_panshi",
