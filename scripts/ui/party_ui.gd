@@ -521,26 +521,19 @@ func _draw_flavor_info(mon: Dictionary, sp: Dictionary) -> void:
 		var desc_lbl = Label.new()
 		desc_lbl.text = desc
 		desc_lbl.position = Vector2(fx + 12, fy + 8)
-		desc_lbl.custom_minimum_size = Vector2(fw * 0.55, fh - 16)
-		desc_lbl.size = Vector2(fw * 0.55, fh - 16)
+		desc_lbl.custom_minimum_size = Vector2(fw * 0.48, fh - 16)
+		desc_lbl.size = Vector2(fw * 0.48, fh - 16)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.add_theme_font_size_override("font_size", 10)
 		desc_lbl.add_theme_color_override("font_color", TEXT_SEC)
 		_root.add_child(desc_lbl)
 
-	# 右侧：身高体重 + 性别比 + 相遇信息
-	var rx := fx + int(fw * 0.60); var ry := fy + 10
+	# 右侧：身高体重 + 相遇信息
+	var rx := fx + int(fw * 0.62); var ry := fy + 10
 	var height_str = sp.get("height", "?")
 	var weight_str = sp.get("weight", "?")
 	_flavor_lbl("身高: %sm" % str(height_str), rx, ry)
 	_flavor_lbl("体重: %skg" % str(weight_str), rx, ry + 16)
-
-	# 性别比
-	var gr = sp.get("gender_ratio", "")
-	if gr != "":
-		var parts = str(gr).split("/")
-		if parts.size() == 2:
-			_flavor_lbl("♂%s%% ♀%s%%" % [parts[0], parts[1]], rx, ry + 32)
 
 	# 相遇信息
 	var met_date = mon.get("met_date", "")
@@ -599,7 +592,7 @@ func _draw_action_buttons() -> void:
 		_root.add_child(lbl)
 
 # ── 键盘导航 ──────────────────────────────────────────────────────────────────
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not visible: return
 	var team = GameState.player_team
 

@@ -70,15 +70,12 @@ func _ready() -> void:
 	_map_config = _load_map_config("village")
 	if not has_node("地面"):
 		_build_ground()
-	if not has_node("建筑"):
-		_build_buildings()
+
 	# 260705 NPC 交互数据始终从配置加载（即使 .tscn 有视觉节点）
 	_load_npc_config()
 	if not has_node("角色"):
 		_build_npcs()
 		_build_labels()
-	# 260704 Red 研究所白底转透明（.tscn 和代码模式通用）
-	_fix_lab_background()
 	# 260704 Red 初始化遇敌系统
 	_setup_encounters()
 	_setup_camera()
@@ -109,15 +106,6 @@ func _load_map_config(map_name: String) -> Dictionary:
 		return {}
 	var parsed = JSON.parse_string(file.get_as_text())
 	return parsed if parsed is Dictionary else {}
-
-func _fix_lab_background() -> void:
-	# 260704 Red 使用裁剪好的透明版研究所图片
-	var lab_node = get_node_or_null("建筑/研究所")
-	if not lab_node:
-		return
-	var cropped = _load_tex("res://assets/backgrounds/buildings/研究所_cropped.png")
-	if cropped:
-		lab_node.texture = cropped
 
 func _setup_encounters() -> void:
 	# 260708 用 EncounterZone Area2D 做像素级碰撞检测，取代 tile 坐标扫描
@@ -255,6 +243,16 @@ func _build_ground() -> void:
 				 [22, 16], [4, 18], [27, 8], [16, 12], [7, 17]]:
 		tm.set_cell(0, Vector2i(spot[0], spot[1]), 0, Vector2i(0, 4))  # bush
 
+func _load_tex(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path)
+	var abs_path = ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(path) or FileAccess.file_exists(abs_path):
+		var img = Image.new()
+		if img.load(abs_path) == OK:
+			return ImageTexture.create_from_image(img)
+	return null
+
 # ── Collision helper ────────────────────────────────────────────────────────────
 func _add_collider(pos: Vector2, size: Vector2) -> StaticBody2D:
 	var body = StaticBody2D.new()
@@ -266,66 +264,6 @@ func _add_collider(pos: Vector2, size: Vector2) -> StaticBody2D:
 	body.add_child(shape)
 	add_child(body)
 	return body
-
-# ── Buildings ─────────────────────────────────────────────────────────────────
-func _build_buildings() -> void:
-	# 普通小屋 (player's home, top-left) — 132×125, 原始大小
-	var home = Sprite2D.new()
-	home.texture = _load_tex("res://assets/backgrounds/buildings/普通小屋.png")
-	if home.texture:
-		home.position = Vector2(4 * TILE + 66, 3 * TILE + 62)
-		home.z_index = 2
-		add_child(home)
-		# 260703 Red 碰撞体上半部分，门口留空让玩家可以走到门前
-		_add_collider(home.position + Vector2(0, 0), Vector2(120, 60))
-
-	# 研究所 (professor's lab, top-right) — 274×384, 原始大小，去白底
-	var center = Sprite2D.new()
-	var lab_tex = _load_tex("res://assets/backgrounds/buildings/研究所.png")
-	if lab_tex:
-		# 去掉白色背景，转为透明
-		var img = lab_tex.get_image()
-		if img:
-			for y2 in img.get_height():
-				for x2 in img.get_width():
-					var c = img.get_pixel(x2, y2)
-					if c.r > 0.95 and c.g > 0.95 and c.b > 0.95:
-						img.set_pixel(x2, y2, Color(0, 0, 0, 0))
-			center.texture = ImageTexture.create_from_image(img)
-		else:
-			center.texture = lab_tex
-		center.position = Vector2(21 * TILE, 2 * TILE + 60)
-		center.z_index = 2
-		add_child(center)
-		# 260703 Red 碰撞体只覆盖建筑上部，门前可通行
-		_add_collider(center.position + Vector2(0, 30), Vector2(200, 160))
-
-	# 260703 Red 劲敌家 (右下区域)
-	var rival_home = Sprite2D.new()
-	rival_home.texture = _load_tex("res://assets/backgrounds/buildings/普通小屋.png")
-	if rival_home.texture:
-		rival_home.position = Vector2(22 * TILE + 66, 12 * TILE + 62)
-		rival_home.z_index = 2
-		add_child(rival_home)
-		_add_collider(rival_home.position + Vector2(0, 0), Vector2(120, 60))
-	# 劲敌家告示牌（小木牌）
-	var sign2 = ColorRect.new()
-	sign2.size = Vector2(14, 16)
-	sign2.position = Vector2(22 * TILE + 90, 12 * TILE + 62 + 60)
-	sign2.color = Color(0.55, 0.38, 0.18)
-	sign2.z_index = 7
-	add_child(sign2)
-
-func _load_tex(path: String) -> Texture2D:
-	if ResourceLoader.exists(path):
-		return load(path)
-	# 没有 .import 时直接读原始文件
-	var abs = ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(path) or FileAccess.file_exists(abs):
-		var img = Image.new()
-		if img.load(abs) == OK:
-			return ImageTexture.create_from_image(img)
-	return null
 
 # ── NPCs ──────────────────────────────────────────────────────────────────────
 func _load_npc_config() -> void:

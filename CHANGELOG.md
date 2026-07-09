@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.17.5] - 2026-07-09
+
+> 队伍 UI 交互修复 + tileset 碰撞系统搭建。
+
+#### 修复
+- **队伍界面无法退出**：`party_ui.gd` 用 `_unhandled_input` 被 `main.gd` 拦截，改为 `_input`（`party_ui.gd`）
+- **overworld 吃事件**：`overworld_scene.gd` 新增 `_party_active` 标志，队伍 UI 打开时 `_input` 提前 return（`overworld_scene.gd`）
+- **village/town 解析报错**：v0.17.4 删除 `_build_buildings()` 后残留调用 + `village_scene.gd`/`town_scene.gd` 缺少 `_load_tex()` 定义
+
+#### 变更
+- **队伍界面信息替换**：底部面板性别比例替换为身高显示（`party_ui.gd`）
+
+#### 新增
+- **TileSet 碰撞系统**：`world_tileset.tres` 添加 27 个碰撞多边形（水体/树木/灌木/围栏），TileMapLayer 启用 `collision_enabled = true`（`world_tileset.tres`、`village.tscn`、`grassland.tscn`、`town.tscn`）
+
+---
+
 ## [0.17.4] - 2026-07-09
 
 > 建筑系统重构：.tscn 编辑器搭建 + tileset，清理代码生成 dead code。

@@ -84,8 +84,16 @@ func _build_town() -> void:
 
 	# .tscn 未提供 Buildings 节点时用代码生成精灵堂+杂货铺
 	if not has_node("建筑"):
-		_draw_house_sprite(3, 1, 5, 4, "res://assets/backgrounds/buildings/精灵堂.png")   # 精灵堂 (治疗+仓库, left)
-		_draw_house_sprite(20, 1, 5, 4, "res://assets/backgrounds/buildings/杂货铺.png")  # 杂货铺 (right)
+		var clinic_tex = _load_tex("res://assets/backgrounds/buildings/精灵堂.png")
+		var shop_tex = _load_tex("res://assets/backgrounds/buildings/杂货铺.png")
+		# clinic sprite (left)
+		var cs = Sprite2D.new(); cs.texture = clinic_tex
+		cs.centered = false; cs.position = Vector2(3 * TILE, 1 * TILE); cs.z_index = 2
+		add_child(cs)
+		# shop sprite (right)
+		var ss = Sprite2D.new(); ss.texture = shop_tex
+		ss.centered = false; ss.position = Vector2(20 * TILE, 1 * TILE); ss.z_index = 2
+		add_child(ss)
 
 		# Signs on buildings
 		var clinic_sign = Label.new()
@@ -225,45 +233,6 @@ func _draw_house(tx: int, ty: int, w: int, h: int, wall_color: Color) -> void:
 
 	_add_collider(Vector2(tx * TILE + bw/2.0, ty * TILE + bh/2.0), Vector2(bw, bh))
 
-	# Roof (varied colors by position)
-	var roof_color = Color(0.65, 0.18, 0.16) if ty < 10 else Color(0.18, 0.40, 0.55)
-	var roof_img = Image.create(bw + 8, 16, false, Image.FORMAT_RGBA8)
-	roof_img.fill(Color(0, 0, 0, 0))
-	for i in range(8):
-		roof_img.fill_rect(Rect2i(i, i*2, bw+8-i*2, 2), roof_color)
-	roof_img.fill_rect(Rect2i(0, 14, bw+8, 2), Color(0.45, 0.08, 0.08) if ty < 10 else Color(0.10, 0.28, 0.40))
-	var roof_tex = ImageTexture.new(); roof_tex.set_image(roof_img)
-	var roof_spr = Sprite2D.new()
-	roof_spr.texture = roof_tex
-	roof_spr.offset = Vector2((bw+8)/2.0, 0)
-	roof_spr.position = Vector2(tx * TILE - 4, ty * TILE - 16)
-	roof_spr.z_index = 3; add_child(roof_spr)
-
-## 用真实建筑素材替代程序绘制的房子，占地/碰撞体积与原 _draw_house 保持一致
-func _draw_house_sprite(tx: int, ty: int, w: int, h: int, tex_path: String) -> void:
-	var bw = w * TILE; var bh = h * TILE
-	var tex: Texture2D = null
-	if ResourceLoader.exists(tex_path):
-		tex = load(tex_path)
-	else:
-		var abs = ProjectSettings.globalize_path(tex_path)
-		if FileAccess.file_exists(abs):
-			var img = Image.new()
-			if img.load(abs) == OK:
-				tex = ImageTexture.create_from_image(img)
-	if not tex:
-		_draw_house(tx, ty, w, h, Color(0.85, 0.82, 0.78))
-		return
-	var scale = float(bw) / tex.get_size().x
-	var final_h = tex.get_size().y * scale
-	var spr = Sprite2D.new()
-	spr.texture = tex
-	spr.scale = Vector2(scale, scale)
-	spr.position = Vector2(tx * TILE + bw / 2.0, ty * TILE + bh - final_h / 2.0)
-	spr.z_index = 2
-	add_child(spr)
-	_add_collider(Vector2(tx * TILE + bw / 2.0, ty * TILE + bh / 2.0), Vector2(bw, bh))
-
 func _draw_bush(col: int, row: int) -> void:
 	var img = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
@@ -314,6 +283,16 @@ func _draw_tree(col: int, row: int) -> void:
 	spr.texture = tex
 	spr.position = Vector2(col * TILE + TILE/2.0, row * TILE + TILE/2.0)
 	add_child(spr)
+
+func _load_tex(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		return load(path)
+	var abs_path = ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(path) or FileAccess.file_exists(abs_path):
+		var img = Image.new()
+		if img.load(abs_path) == OK:
+			return ImageTexture.create_from_image(img)
+	return null
 
 func _add_collider(pos: Vector2, size: Vector2) -> void:
 	var body = StaticBody2D.new()
