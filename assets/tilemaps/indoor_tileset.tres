@@ -1,0 +1,75 @@
+[gd_resource type="TileSet" format=3 uid="uid://01qc7vg5im35"]
+
+[ext_resource type="Texture2D" uid="uid://b4alq0sncejtk" path="res://assets/tilemaps/室内素材.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://dju41o0331aa0" path="res://assets/tilemaps/家具.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://ddh0e72pc2wop" path="res://assets/tilemaps/碰撞遮挡.png" id="3"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
+texture = ExtResource("1")
+texture_region_size = Vector2i(96, 96)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_furniture"]
+texture = ExtResource("2")
+texture_region_size = Vector2i(96, 96)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_obstacle"]
+texture = ExtResource("3")
+texture_region_size = Vector2i(96, 96)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[resource]
+tile_size = Vector2i(96, 96)
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 1
+custom_data_layer_0/name = "terrain_type"
+custom_data_layer_0/type = 4
+sources/0 = SubResource("TileSetAtlasSource_floor")
+sources/1 = SubResource("TileSetAtlasSource_furniture")
+sources/2 = SubResource("TileSetAtlasSource_obstacle")

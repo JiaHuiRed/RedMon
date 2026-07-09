@@ -68,7 +68,7 @@ func _load_tex(path: String) -> Texture2D:
 # ── 1F 客厅 ───────────────────────────────────────────────────────────────────
 func _build_floor1() -> void:
 	# 260706 Red 改为 .tscn，碰撞体积在编辑器中手动调整
-	var packed = load("res://scenes/buildings/home_floor1.tscn")
+	var packed = load("res://scenes/buildings/主角家一楼.tscn")
 	if packed:
 		_floor1 = packed.instantiate()
 	else:
@@ -127,7 +127,7 @@ func _draw_mom() -> ImageTexture:
 # ── 2F 卧室 ───────────────────────────────────────────────────────────────────
 func _build_floor2() -> void:
 	# 260706 Red 改为 .tscn，碰撞体积在编辑器中手动调整
-	var packed = load("res://scenes/buildings/home_floor2.tscn")
+	var packed = load("res://scenes/buildings/主角家卧室.tscn")
 	if packed:
 		_floor2 = packed.instantiate()
 	else:
