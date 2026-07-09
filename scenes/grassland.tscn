@@ -84,6 +84,7 @@ texture_region_size = Vector2i(32, 32)
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_trees")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wz1"]size = Vector2(256, 192)[sub_resource type="RectangleShape2D" id="RectangleShape2D_wz2"]size = Vector2(320, 128)[sub_resource type="RectangleShape2D" id="RectangleShape2D_wz3"]size = Vector2(192, 256)
 [node name="world" type="Node2D" unique_id=171178249]
 script = ExtResource("1_rwgxs")
 
@@ -170,3 +171,26 @@ metadata/npc_name = "黑风堂_堂众"
 metadata/trainer_id = "t_heifeng1"
 metadata/dir = "0,1"
 metadata/sight = "5"
+
+[node name="EncounterZones" type="Node2D" parent="."]
+
+[node name="GrassWest" type="Area2D" parent="EncounterZones"]
+position = Vector2(200, 400)
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/GrassWest"]
+shape = SubResource("RectangleShape2D_wz1")
+
+[node name="GrassCenter" type="Area2D" parent="EncounterZones"]
+position = Vector2(480, 300)
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/GrassCenter"]
+shape = SubResource("RectangleShape2D_wz2")
+
+[node name="GrassEast" type="Area2D" parent="EncounterZones"]
+position = Vector2(780, 500)
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/GrassEast"]
+shape = SubResource("RectangleShape2D_wz3")

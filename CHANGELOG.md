@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.17.0] - 2026-07-09
+
+### 新增
+- Area2D 遇敌区检测：取代 tile 坐标扫描，编辑器可视化拖放调整碰撞区
+- 华灵草原/碧溪镇 EncounterZones 节点（GrassWest/Center/East, GrassSouth/North）
+- maps.json 统一地图数据（29张地图，含类型/描述/道馆/场景/NPC关联）
+- 编辑器「地图编辑」tab：地图增删改、类型/描述/场景文件编辑、NPC关联管理
+
+### 修复
+- battle_result 字符串全面审计：starter_scene "capture"→"caught"，village_scene 补全 "caught"/"flee"
+- 编辑器遭遇地 LOCATIONS 从硬编码改为 maps.json 动态读取
+- "碧游镇"统一改回"碧溪镇"（编辑器+代码）
+
+### 变更
+- overworld_scene.gd 遇敌检测重构：_scan_grass_tiles→_connect_encounter_zones+Area2D信号
+- _scan_water_tiles 拆分独立（仅扫水面）
+- 编辑器 LOCATIONS 改为 @property，从 maps.json 读取
+
 ## [0.16.2] - 2026-07-09
 
 - 我方精灵 scale 0.2→0.4，小竹熊透明背景修复

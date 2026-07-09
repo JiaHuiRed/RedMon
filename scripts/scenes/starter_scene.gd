@@ -45,7 +45,7 @@ func _ready() -> void:
 	_build_confirm()
 
 	var data = get_meta("scene_data", {})
-	if data.get("battle_result", "") in ["win", "lose", "capture"]:
+	if data.get("battle_result", "") in ["win", "lose", "caught"]:
 		# 从"营救教授"战斗返回：精灵已在 _on_confirm() 中入队，直接进入后置对话
 		_threat_spr.visible = false
 		_start_outro()

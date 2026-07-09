@@ -96,6 +96,12 @@ size = Vector2(80, 64)
 [sub_resource type="RectangleShape2D" id="rect_house"]
 size = Vector2(64, 56)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tz1"]
+size = Vector2(192, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tz2"]
+size = Vector2(160, 160)
+
 [node name="town" type="Node2D" unique_id=2035275529]
 script = ExtResource("1")
 
@@ -193,3 +199,19 @@ position = Vector2(160, 48)
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1297895932]
 position = Vector2(240, 592)
+
+[node name="EncounterZones" type="Node2D" parent="."]
+
+[node name="GrassSouth" type="Area2D" parent="EncounterZones"]
+position = Vector2(300, 550)
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/GrassSouth"]
+shape = SubResource("RectangleShape2D_tz1")
+
+[node name="GrassNorth" type="Area2D" parent="EncounterZones"]
+position = Vector2(600, 200)
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="EncounterZones/GrassNorth"]
+shape = SubResource("RectangleShape2D_tz2")

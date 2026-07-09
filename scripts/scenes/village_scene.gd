@@ -58,7 +58,7 @@ const AMBIENT_AREA := Rect2(3 * 32, 10 * 32, 24 * 32, 8 * 32)  # 避开建筑/�
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
 	var battle_result = data.get("battle_result", "")
-	if battle_result in ["win", "lose"]:
+	if battle_result in ["win", "lose", "caught", "flee"]:
 		_rival_done = true
 		GameState.rival_done = true
 	elif GameState.rival_done:

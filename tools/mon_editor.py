@@ -6,7 +6,7 @@ RedMon 数据编辑器 — 精灵 & 技能 & 角色
 """
 
 import json, os, re, sys, tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, simpledialog
 
 try:
     from PIL import Image, ImageTk
@@ -25,6 +25,7 @@ DIALOGS_FILE  = os.path.join(ROOT, "data", "dialogs.json")
 ITEMS_FILE    = os.path.join(ROOT, "data", "items.json")
 ABILITIES_FILE = os.path.join(ROOT, "data", "abilities.json")  # 260702 Red 特性库
 NPCS_FILE = os.path.join(ROOT, "data", "npcs.json")  # 260702 NPC超集
+MAPS_FILE = os.path.join(ROOT, "data", "maps.json")  # 260709 Red 地图数据
 SPRITES_DIR   = os.path.join(ROOT, "assets", "sprites")
 ITEMS_UI_DIR  = os.path.join(ROOT, "assets", "ui", "items")
 
@@ -356,6 +357,7 @@ class App:
         self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
         self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}  # 260702 Red
         self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}  # NPC+角色合并
+        self.maps_data = load_json(MAPS_FILE) if os.path.exists(MAPS_FILE) else {"maps": {}}
 
         # 隐藏根窗口用于保留任务栏图标，实际 UI 在 Toplevel 上
         self._ghost = tk.Tk()
@@ -405,12 +407,14 @@ class App:
         self.item_tab    = ttk.Frame(self.notebook)
         self.ability_tab = ttk.Frame(self.notebook)  # 260702 Red
         self.npc_tab = ttk.Frame(self.notebook)  # NPC+角色合并
+        self.map_tab = ttk.Frame(self.notebook)  # 260709 Red 地图编辑
         self.notebook.add(self.mon_tab,     text="  精灵图鉴  ")
         self.notebook.add(self.move_tab,    text="  技能库  ")
         self.notebook.add(self.item_tab,    text="  道具编辑  ")
         self.notebook.add(self.ability_tab, text="  特性库  ")
         self.notebook.add(self.npc_tab,     text="  角色编辑  ")
         self.notebook.add(self.dialog_tab,  text="  剧情文本  ")
+        self.notebook.add(self.map_tab,    text="  地图编辑  ")
 
         self._build_mon_tab()
         self._build_move_tab()
@@ -418,6 +422,7 @@ class App:
         self._build_ability_tab()
         self._build_npc_tab()
         self._build_dialog_tab()
+        self._build_map_tab()
 
         self.status = tk.Label(self.root, anchor="w", bg=BG_SIDE, fg=TEXT_SEC,
                                font=(FONT_CJK, 8), padx=14)
@@ -510,11 +515,13 @@ class App:
             self.items    = load_json(ITEMS_FILE) if os.path.exists(ITEMS_FILE) else {}
             self.abilities = load_json(ABILITIES_FILE) if os.path.exists(ABILITIES_FILE) else {}
             self.npcs = load_json(NPCS_FILE) if os.path.exists(NPCS_FILE) else {}
+            self.maps_data = load_json(MAPS_FILE) if os.path.exists(MAPS_FILE) else {"maps": {}}
             self._mon_refresh_list()
             self._move_refresh_list()
             self._npc_refresh_list()
             self._item_refresh_list()
             self._ability_refresh_list()
+            self._map_refresh_list()
             self._mon_refresh_ability_choices()
             self._refresh_dlg_tree()
             messagebox.showinfo("", "数据已重新加载")
@@ -1512,8 +1519,12 @@ class App:
             ))
 
     # ── 遭遇地编辑 260630 Red ──────────────────────────────────────────────────
-    LOCATIONS = ["青木村", "华灵草原", "碧游镇", "翠竹馆", "炎心山道", "碧波湖畔",
-                 "磐石洞穴", "厚土荒原", "冰晶雪峰", "黑风堂据点"]
+    # 260709 Red 地图列表从 maps.json 动态读取
+    @property
+    def LOCATIONS(self):
+        if hasattr(self, "maps_data"):
+            return list(self.maps_data.get("maps", {}).keys())
+        return ["青木村", "华灵草原", "碧溪镇"]  # fallback
 
     def _center_dialog(self, dlg, w, h):
         dlg.update_idletasks()
@@ -3589,6 +3600,237 @@ class App:
 
     def run(self):
         self._ghost.mainloop()
+
+
+    # ── 地图编辑 Tab 260709 Red ──────────────────────────────────────────────────
+    MAP_TYPES = ["村庄", "城镇", "城市", "路线", "道馆", "据点", "联盟"]
+
+    def _build_map_tab(self):
+        if not hasattr(self, "maps_data"):
+            self.maps_data = load_json(MAPS_FILE) if os.path.exists(MAPS_FILE) else {"maps": {}}
+        self._current_map = None
+
+        left = tk.Frame(self.map_tab, bg=BG_SIDE, width=200)
+        left.pack(side="left", fill="y")
+        left.pack_propagate(False)
+
+        _lbl(left, "地图列表", bg=BG_SIDE, bold=True).pack(anchor="w", padx=12, pady=(12, 2))
+        self.map_search = ttk.Entry(left)
+        self.map_search.pack(fill="x", padx=10)
+        self.map_search.bind("<KeyRelease>", lambda _: self._map_refresh_list())
+
+        lf = tk.Frame(left, bg=BG_SIDE)
+        lf.pack(fill="both", expand=True, padx=10, pady=(6, 4))
+        sb = ttk.Scrollbar(lf, orient="vertical")
+        self.map_list = tk.Listbox(
+            lf, yscrollcommand=sb.set, font=(FONT_CJK, 10),
+            bg=BG_CARD, fg=TEXT_PRI,
+            selectbackground=ACCENT, selectforeground="white",
+            borderwidth=0, highlightthickness=0, relief="flat",
+            activestyle="none")
+        sb.config(command=self.map_list.yview)
+        sb.pack(side="right", fill="y")
+        self.map_list.pack(side="left", fill="both", expand=True)
+        self.map_list.bind("<<ListboxSelect>>", self._map_select)
+
+        bf = tk.Frame(left, bg=BG_SIDE)
+        bf.pack(fill="x", padx=10, pady=(0, 12))
+        ttk.Button(bf, text="+ 新增", command=self._map_add).pack(side="left", padx=(0, 4))
+        ttk.Button(bf, text="× 删除", command=self._map_del).pack(side="left")
+
+        self._map_placeholder = tk.Label(
+            self.map_tab, text="← 选择一张地图开始编辑",
+            bg=BG_MAIN, fg=TEXT_SEC, font=(FONT_CJK, 12))
+        self._map_placeholder.pack(side="right", fill="both", expand=True)
+
+        self._map_form = tk.Frame(self.map_tab, bg=BG_MAIN)
+        f = self._map_form
+        PAD = (10, 4)
+
+        hf = tk.Frame(f, bg=BG_MAIN)
+        hf.pack(fill="x", padx=12, pady=(14, 4))
+        _lbl(hf, "地图名称", bg=BG_MAIN).pack(side="left")
+        self.map_name = ttk.Entry(hf, width=18)
+        self.map_name.pack(side="left", padx=(4, 16))
+        ttk.Button(hf, text="💾 保存", command=self._map_save).pack(side="left")
+
+        grid = tk.Frame(f, bg=BG_MAIN)
+        grid.pack(fill="x", padx=12, pady=8)
+        r = 0
+
+        _lbl(grid, "类型").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.map_type = ttk.Combobox(grid, width=12, state="readonly", values=self.MAP_TYPES)
+        self.map_type.grid(row=r, column=1, sticky="w", pady=3)
+        r += 1
+
+        _lbl(grid, "道馆").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.map_gym = ttk.Entry(grid, width=20)
+        self.map_gym.grid(row=r, column=1, sticky="w", pady=3)
+        _lbl(grid, "（道馆名称，非道馆留空）").grid(row=r, column=2, sticky="w", padx=(8, 0), pady=3)
+        r += 1
+
+        _lbl(grid, "场景文件").grid(row=r, column=0, sticky="e", padx=PAD, pady=3)
+        self.map_scene = ttk.Entry(grid, width=25)
+        self.map_scene.grid(row=r, column=1, sticky="w", pady=3)
+        _lbl(grid, "（.tscn 文件名）").grid(row=r, column=2, sticky="w", padx=(8, 0), pady=3)
+        r += 1
+
+        _lbl(grid, "描述").grid(row=r, column=0, sticky="ne", padx=PAD, pady=3)
+        self.map_desc = tk.Text(grid, width=40, height=3, font=(FONT_CJK, 10),
+                                bg=BG_CARD, fg=TEXT_PRI, insertbackground=TEXT_PRI,
+                                borderwidth=1, relief="solid")
+        self.map_desc.grid(row=r, column=1, columnspan=2, sticky="w", pady=3)
+        r += 1
+
+        _sep(grid, bg=BG_MAIN, row=r, col=0, cols=3); r += 1
+
+        _lbl(grid, "关联NPC").grid(row=r, column=0, sticky="ne", padx=PAD, pady=3)
+        npc_frame = tk.Frame(grid, bg=BG_MAIN)
+        npc_frame.grid(row=r, column=1, columnspan=2, sticky="w", pady=3)
+
+        nsb = ttk.Scrollbar(npc_frame, orient="vertical")
+        self.map_npc_list = tk.Listbox(
+            npc_frame, yscrollcommand=nsb.set, font=(FONT_CJK, 10),
+            bg=BG_CARD, fg=TEXT_PRI, height=8, width=30,
+            borderwidth=1, relief="solid", activestyle="none")
+        nsb.config(command=self.map_npc_list.yview)
+        nsb.pack(side="right", fill="y")
+        self.map_npc_list.pack(side="left", fill="both")
+
+        npc_btn = tk.Frame(grid, bg=BG_MAIN)
+        npc_btn.grid(row=r+1, column=1, sticky="w", pady=4)
+        ttk.Button(npc_btn, text="+ 添加NPC", command=self._map_npc_add).pack(side="left", padx=(0, 4))
+        ttk.Button(npc_btn, text="- 移除", command=self._map_npc_remove).pack(side="left")
+
+        self._map_refresh_list()
+
+    def _map_refresh_list(self):
+        if not hasattr(self, "map_list"): return
+        self.map_list.delete(0, "end")
+        q = self.map_search.get().strip().lower() if hasattr(self, "map_search") else ""
+        maps = self.maps_data.get("maps", {})
+        for name in maps:
+            info = maps[name]
+            label = f"{name} ({info.get('type', '')})"
+            if not q or q in name.lower() or q in info.get("type", "").lower():
+                self.map_list.insert("end", label)
+
+    def _map_select(self, _=None):
+        sel = self.map_list.curselection()
+        if not sel: return
+        text = self.map_list.get(sel[0])
+        name = text.split(" (")[0]
+        maps = self.maps_data.get("maps", {})
+        if name not in maps: return
+        self._current_map = name
+        d = maps[name]
+
+        self._map_placeholder.pack_forget()
+        self._map_form.pack(side="right", fill="both", expand=True)
+
+        self.map_name.delete(0, "end"); self.map_name.insert(0, name)
+        self.map_type.set(d.get("type", ""))
+        self.map_gym.delete(0, "end"); self.map_gym.insert(0, d.get("gym", ""))
+        self.map_scene.delete(0, "end"); self.map_scene.insert(0, d.get("scene_file", ""))
+        self.map_desc.delete("1.0", "end"); self.map_desc.insert("1.0", d.get("desc", ""))
+
+        self.map_npc_list.delete(0, "end")
+        for npc in d.get("npcs", []):
+            self.map_npc_list.insert("end", npc)
+
+    def _map_save(self):
+        name = self.map_name.get().strip()
+        if not name:
+            messagebox.showwarning("", "地图名称不能为空"); return
+        maps = self.maps_data.setdefault("maps", {})
+        if self._current_map and self._current_map != name and self._current_map in maps:
+            maps[name] = maps.pop(self._current_map)
+        d = maps.setdefault(name, {})
+        d["type"] = self.map_type.get()
+        d["gym"] = self.map_gym.get().strip()
+        d["scene_file"] = self.map_scene.get().strip()
+        d["desc"] = self.map_desc.get("1.0", "end").strip()
+        npcs = []
+        for i in range(self.map_npc_list.size()):
+            npcs.append(self.map_npc_list.get(i))
+        d["npcs"] = npcs
+        self._current_map = name
+        save_json(MAPS_FILE, self.maps_data)
+        self._map_refresh_list()
+        self.status.config(text=f"地图 [{name}] 已保存")
+
+    def _map_add(self):
+        name = simpledialog.askstring("新增地图", "地图名称：", parent=self.root)
+        if not name or not name.strip(): return
+        name = name.strip()
+        maps = self.maps_data.setdefault("maps", {})
+        if name in maps:
+            messagebox.showwarning("", f"地图 [{name}] 已存在"); return
+        maps[name] = {"type": "路线", "desc": "", "gym": "", "scene_file": "", "npcs": []}
+        save_json(MAPS_FILE, self.maps_data)
+        self._map_refresh_list()
+
+    def _map_del(self):
+        sel = self.map_list.curselection()
+        if not sel: return
+        text = self.map_list.get(sel[0])
+        name = text.split(" (")[0]
+        if not messagebox.askyesno("确认", f"删除地图 [{name}]？"): return
+        maps = self.maps_data.get("maps", {})
+        maps.pop(name, None)
+        save_json(MAPS_FILE, self.maps_data)
+        self._current_map = None
+        self._map_form.pack_forget()
+        self._map_placeholder.pack(side="right", fill="both", expand=True)
+        self._map_refresh_list()
+
+    def _map_npc_add(self):
+        npc_names = sorted(self.npcs.keys()) if self.npcs else []
+        if not npc_names:
+            name = simpledialog.askstring("添加NPC", "NPC名称：", parent=self.root)
+        else:
+            dlg = tk.Toplevel(self.root)
+            dlg.title("选择NPC"); dlg.resizable(False, False)
+            self._center_dialog(dlg, 300, 400)
+            dlg.transient(self.root); dlg.grab_set()
+
+            sf = ttk.Entry(dlg)
+            sf.pack(fill="x", padx=10, pady=(10, 4))
+
+            lb = tk.Listbox(dlg, font=(FONT_CJK, 10), bg=BG_CARD, fg=TEXT_PRI,
+                            height=15, activestyle="none")
+            lb.pack(fill="both", expand=True, padx=10, pady=4)
+            for n in npc_names:
+                lb.insert("end", n)
+
+            name = [None]
+            def do_filter(_=None):
+                q = sf.get().strip().lower()
+                lb.delete(0, "end")
+                for n in npc_names:
+                    if not q or q in n.lower():
+                        lb.insert("end", n)
+            sf.bind("<KeyRelease>", do_filter)
+
+            def do_pick(_=None):
+                s = lb.curselection()
+                if s:
+                    name[0] = lb.get(s[0])
+                    dlg.destroy()
+            lb.bind("<Double-1>", do_pick)
+            ttk.Button(dlg, text="确定", command=do_pick).pack(pady=(0, 10))
+            dlg.wait_window()
+            name = name[0]
+
+        if name:
+            existing = [self.map_npc_list.get(i) for i in range(self.map_npc_list.size())]
+            if name not in existing:
+                self.map_npc_list.insert("end", name)
+
+    def _map_npc_remove(self):
+        sel = self.map_npc_list.curselection()
+        if sel:
+            self.map_npc_list.delete(sel[0])
 
 
 if __name__ == "__main__":

@@ -49,9 +49,9 @@ var _npc_dialog_lines: Array   = []
 var _npc_dialog_idx:   int     = 0
 
 var _npc_nodes:   Array = []
-var _grass_tiles: Array = []
 var _water_tiles: Array = []
-var _in_village_grass: bool = false
+var _in_encounter_zone: bool = false
+var _encounter_area_override: String = ""  # Area2D 元数据指定的遇敌区
 
 var _hud:        Control
 var _area_label: Label
@@ -112,9 +112,9 @@ func _ready() -> void:
 	_load_trainer_data()
 	_rival_done = "rival" in GameState.defeated_trainers
 
-	# 260708 Red 脚本已挂在 overworld 根节点，Ground 在子场景下
-	_scan_grass_tiles()
-	print("[overworld] grass tiles found: ", _grass_tiles.size())
+	# 260709 Red Area2D 遇敌区检测，取代 tile 坐标扫描
+	_connect_encounter_zones()
+	_scan_water_tiles()
 	_build_water_colliders()
 	print("[overworld] water tiles found: ", _water_tiles.size())
 
@@ -150,53 +150,65 @@ func _load_trainer_data() -> void:
 		TRAINERS.append(t)
 
 # ── TileMap ────────────────────────────────────────────────────────────────────
-# 260707 Red 地图现由 .tscn 编辑器搭建（Ground TileMapLayer 内建 tile_map_data），
-# 此处不再用代码生成地形，只扫描已有 Ground 找出高草丛/水面用于遇敌判定+碰撞。
-# 260708 Red TileSet custom_data_layer "terrain_type" 标记瓦片类型：
-#   "grass" → 遇敌触发，"water" → 自动碰撞（不可通行）
-#   编辑器拖入草丛/水面瓦片即自动生效，无需改代码
-func _scan_grass_tiles() -> void:
-	var grass_atlas: Array[Vector2i] = [Vector2i(6, 1)]  # fallback
-	# 260708 Red 水面只通过 TileSet custom_data "terrain_type"="water" 识别，
-	# 不做atlas fallback，避免误判。在编辑器 TileSet 里标记水面瓦片即可。
+# 260709 Red 遇敌改为 Area2D 碰撞区检测（编辑器可视化拖放调整）
+# 每个子场景下放 EncounterZones 节点，内含若干 Area2D + CollisionShape2D
+# Area2D 可设 meta "encounter_area" 指定遇敌表（如"青木村"），否则按玩家位置自动判断
+func _connect_encounter_zones() -> void:
+	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
+		var zones = get_node_or_null(child_name + "/EncounterZones")
+		if not zones: continue
+		for child in zones.get_children():
+			if child is Area2D:
+				child.body_entered.connect(_on_encounter_zone_entered.bind(child))
+				child.body_exited.connect(_on_encounter_zone_exited.bind(child))
+	# 延迟检查初始重叠（玩家出生在草丛中时 body_entered 不触发）
+	call_deferred("_init_encounter_zone_state")
+	print("[overworld] encounter zones connected")
+
+func _on_encounter_zone_entered(_body: Node2D, zone: Area2D) -> void:
+	_in_encounter_zone = true
+	_encounter_area_override = str(zone.get_meta("encounter_area", ""))
+
+func _on_encounter_zone_exited(_body: Node2D, _zone: Area2D) -> void:
+	_in_encounter_zone = false
+	_encounter_area_override = ""
+
+func _init_encounter_zone_state() -> void:
+	if not _player: return
+	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
+		var zones = get_node_or_null(child_name + "/EncounterZones")
+		if not zones: continue
+		for child in zones.get_children():
+			if child is Area2D:
+				for body in child.get_overlapping_bodies():
+					if body == _player:
+						_in_encounter_zone = true
+						_encounter_area_override = str(child.get_meta("encounter_area", ""))
+						return
+
+# 260708 Red 水面瓦片扫描（仅扫水面，草丛已改 Area2D）
+func _scan_water_tiles() -> void:
 	for child_name in ["青木村", "华灵草原", "碧溪镇"]:
 		var ground = get_node_or_null(child_name + "/Ground")
-		if not ground or not ground is TileMapLayer:
-			continue
-		if _tilemap == null:
-			_tilemap = ground
+		if not ground or not ground is TileMapLayer: continue
+		if _tilemap == null: _tilemap = ground
 		var parent_node = get_node_or_null(child_name)
 		var parent_px := Vector2.ZERO
-		if parent_node:
-			parent_px = parent_node.position
+		if parent_node: parent_px = parent_node.position
 		var ts := Vector2i(32, 32)
-		if ground.tile_set:
-			ts = ground.tile_set.tile_size
+		if ground.tile_set: ts = ground.tile_set.tile_size
 		var use_custom := _has_terrain_layer(ground.tile_set)
 		for cell in ground.get_used_cells():
-			var terrain := ""
 			if use_custom:
 				var td = ground.get_cell_tile_data(cell)
-				if td:
-					terrain = str(td.get_custom_data("terrain_type"))
-			if terrain.is_empty():
-				var ac = ground.get_cell_atlas_coords(cell)
-				if ac in grass_atlas:
-					terrain = "grass"
-			if terrain == "grass" or terrain == "water":
-				var px_x: int = cell.x * ts.x + int(parent_px.x)
-				var px_y: int = cell.y * ts.y + int(parent_px.y)
-				var bx: int = px_x / TILE
-				var by: int = px_y / TILE
-				var sx: int = ts.x / TILE
-				var sy: int = ts.y / TILE
-				for dx in range(sx):
-					for dy in range(sy):
-						var v := Vector2i(bx + dx, by + dy)
-						if terrain == "grass":
-							_grass_tiles.append(v)
-						else:
-							_water_tiles.append(v)
+				if td and str(td.get_custom_data("terrain_type")) == "water":
+					var px_x: int = cell.x * ts.x + int(parent_px.x)
+					var px_y: int = cell.y * ts.y + int(parent_px.y)
+					var bx: int = px_x / TILE; var by: int = px_y / TILE
+					var sx: int = ts.x / TILE; var sy: int = ts.y / TILE
+					for dx in range(sx):
+						for dy in range(sy):
+							_water_tiles.append(Vector2i(bx + dx, by + dy))
 
 func _has_terrain_layer(ts: TileSet) -> bool:
 	if not ts: return false
@@ -717,10 +729,8 @@ func _check_shenhe_town() -> void:
 		_show_dialog("申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！", 600)
 
 func _check_encounter() -> void:
-	# 260708 Red 用玩家脚底中心检测，避免站在草外也触发遭遇
-	var foot_y := _player.position.y + 8  # 脚底偏移（精灵图下半身）
-	var tile = Vector2i(int(_player.position.x / TILE), int(foot_y / TILE))
-	if tile not in _grass_tiles: return
+	# 260709 Red Area2D 碰撞区检测，取代 tile 坐标比对
+	if not _in_encounter_zone: return
 	# 260706 Red 首次踩草若无御三家 → 触发开场事件
 	if not GameState.has_starter:
 		_trigger_professor_event(); return
@@ -735,8 +745,10 @@ func _trigger_professor_event() -> void:
 
 func _trigger_encounter() -> void:
 	_battling = true
-	var area = ("青木村" if _player.position.x < VILLAGE_END else
-		"华灵草原" if _player.position.x < GRASSLAND_END else "碧溪镇")
+	var area := _encounter_area_override
+	if area.is_empty():
+		area = ("青木村" if _player.position.x < VILLAGE_END else
+			"华灵草原" if _player.position.x < GRASSLAND_END else "碧溪镇")
 	var entry = EncounterDB.pick_mon(area, "grass")
 	if entry.is_empty(): _battling = false; return
 	var lv = randi_range(entry.get("level_min", 3), entry.get("level_max", 6))
@@ -790,16 +802,15 @@ func _show_defeat_screen(gold_lost: int, wake_msg: String) -> void:
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.color = Color(0.0, 0.0, 0.0, 0.0)
 	cl.add_child(overlay)
-	# "菜" 大字
+	# "菜" 大字 — 全屏居中
 	var cai_label = Label.new()
 	cai_label.text = "菜"
 	cai_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	cai_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	cai_label.set_anchors_preset(Control.PRESET_CENTER)
+	cai_label.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cai_label.add_theme_font_size_override("font_size", 120)
 	cai_label.add_theme_color_override("font_color", Color(0.85, 0.12, 0.12, 0.0))
-	cai_label.pivot_offset = Vector2(60, 70)
-	cai_label.position = Vector2(VW / 2.0 - 60, VH / 2.0 - 80)
+	cai_label.pivot_offset = Vector2(VW / 2.0, VH / 2.0)
 	cl.add_child(cai_label)
 	# 金币扣除提示
 	var info_label = Label.new()
