@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.17.4] - 2026-07-09
+
+> 建筑系统重构：.tscn 编辑器搭建 + tileset，清理代码生成 dead code。
+
+#### 重构
+- **建筑视觉迁移**：家/劲敌家/精灵堂/杂货铺从代码生成 Sprite2D 迁移到 `.tscn` 编辑器搭建 + `world_tileset.tres` tileset atlas，删 `_build_buildings()` / `_draw_house_sprite()` / `_fix_lab_background()`（`village_scene.gd`、`town_scene.gd`、`overworld_scene.gd`）
+- **研究所恢复**：village.tscn 恢复研究所 Sprite2D 节点（`研究所.png` 透明背景）+ 碰撞体，补全 `RectangleShape2D_lab`
+- **清理 orphaned 资源**：village.tscn / town.tscn / buildings 目录清理无用 ext_resource 与 sub_resource（`Image`、`ImageTexture`、多余 `RectangleShape2D`）
+
+---
+
 ## [0.17.3] - 2026-07-09
 
 ### 新增
@@ -136,10 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GM测试道具** — `new_game()` 初始道具调整为测试用量
 
 #### 已知问题 / TODO
-- 草地遇敌范围仍有边缘误差，后续计划改为编辑器 Area2D 碰撞区方案
 - NPC可视化：从代码硬编码改为 .tscn Marker2D+metadata，编辑器可见可拖放
 - 申鹤三段出场台词需扩写+外部化到 dialogs.json
-- 战斗失败无 Game Over 画面/重试机制
 - MonDB.dlg() 返回空值时需 fallback 处理
 - 道馆杂兵击败后淡出动画
 - 美美初登场：翠竹馆通关后碧溪镇出口遇见
