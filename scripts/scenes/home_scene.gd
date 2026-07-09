@@ -20,6 +20,9 @@ var _dialog_panel: Control
 var _dialog_label: Label
 
 var _mom_spr: Sprite2D
+var _stair_hint_2f: Sprite2D  # 2F 下楼箭头
+var _stair_hint_1f: Sprite2D  # 1F 上楼箭头
+var _stair_hint_t: float = 0.0
 var _floor1: Node2D   # 1F 客厅
 var _floor2: Node2D   # 2F 卧室
 var _floor: int = 1   # 260703 Red 进门默认1楼客厅
@@ -75,6 +78,13 @@ func _build_floor1() -> void:
 		_floor1 = Node2D.new()
 	add_child(_floor1)
 	_build_mom()
+
+	# 260708 Red 上楼交互提示箭头
+	_stair_hint_1f = Sprite2D.new()
+	_stair_hint_1f.texture = _draw_up_arrow()
+	_stair_hint_1f.position = STAIRS1_POS + Vector2(6, -28)
+	_stair_hint_1f.z_index = 4
+	_floor1.add_child(_stair_hint_1f)
 
 func _build_mom() -> void:
 	var sheet_path = "res://assets/npc/npc_young_woman_walk_sheet.png"
@@ -134,6 +144,13 @@ func _build_floor2() -> void:
 		_floor2 = Node2D.new()
 	add_child(_floor2)
 
+	# 260708 Red 下楼交互提示箭头
+	_stair_hint_2f = Sprite2D.new()
+	_stair_hint_2f.texture = _draw_down_arrow()
+	_stair_hint_2f.position = STAIRS2_POS + Vector2(14, -12)
+	_stair_hint_2f.z_index = 4
+	_floor2.add_child(_stair_hint_2f)
+
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
 	_player.position = DOOR_CENTER + Vector2(0, -40)  # 260703 Red 从门口进入1楼
@@ -192,6 +209,34 @@ func _draw_player_spr() -> ImageTexture:
 	img.fill_rect(Rect2i(9, 16, 5, 4), black)
 	img.fill_rect(Rect2i(1, 18, 6, 2), red_dark)
 	img.fill_rect(Rect2i(9, 18, 6, 2), red_dark)
+	var tex = ImageTexture.new(); tex.set_image(img)
+	return tex
+
+func _draw_down_arrow() -> ImageTexture:
+	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c = Color(0.95, 0.95, 0.95)
+	img.fill_rect(Rect2i(2, 0, 12, 2), c)   # 箭头三角顶
+	img.fill_rect(Rect2i(3, 2, 10, 2), c)
+	img.fill_rect(Rect2i(4, 4, 8, 2), c)
+	img.fill_rect(Rect2i(5, 6, 6, 2), c)    # 三角尖
+	img.fill_rect(Rect2i(6, 8, 4, 6), c)    # 箭杆
+	img.fill_rect(Rect2i(4, 14, 8, 2), c)   # 底座
+	img.fill_rect(Rect2i(3, 16, 10, 2), c)
+	var tex = ImageTexture.new(); tex.set_image(img)
+	return tex
+
+func _draw_up_arrow() -> ImageTexture:
+	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var c = Color(0.95, 0.95, 0.95)
+	img.fill_rect(Rect2i(3, 0, 10, 2), c)   # 底座
+	img.fill_rect(Rect2i(4, 2, 8, 2), c)
+	img.fill_rect(Rect2i(6, 4, 4, 6), c)    # 箭杆
+	img.fill_rect(Rect2i(5, 10, 6, 2), c)   # 三角尖
+	img.fill_rect(Rect2i(4, 12, 8, 2), c)
+	img.fill_rect(Rect2i(3, 14, 10, 2), c)
+	img.fill_rect(Rect2i(2, 16, 12, 2), c)  # 箭头三角顶
 	var tex = ImageTexture.new(); tex.set_image(img)
 	return tex
 
@@ -312,6 +357,12 @@ func _physics_process(delta: float) -> void:
 		_player_spr.region_rect = Rect2(
 			col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H,
 			WALK_FRAME_W, WALK_FRAME_H)
+
+	# 260708 Red 楼梯提示箭头呼吸动画
+	_stair_hint_t += delta
+	var alpha = 0.4 + 0.6 * (0.5 + 0.5 * sin(_stair_hint_t * 2.5))
+	_stair_hint_2f.modulate = Color(1, 1, 1, alpha)
+	_stair_hint_1f.modulate = Color(1, 1, 1, alpha)
 
 func _input(event: InputEvent) -> void:
 	if _dialog_active:
