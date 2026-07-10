@@ -3,8 +3,8 @@ extends Node2D
 # 素材替换版：TileMap 地面 + 建筑 Sprite2D + walk_sheet NPC/玩家
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 960
-const VH := 640
+const VW := 1280
+const VH := 720
 const TILE  := 32
 const COLS  := 30
 const ROWS  := 20

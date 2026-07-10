@@ -8,8 +8,8 @@ extends Node2D
 signal request_scene(scene_name: String, data: Dictionary)
 signal _evo_choice_made
 
-const VW := 960
-const VH := 640
+const VW := 1280
+const VH := 720
 
 # ── State ────────────────────────────────────────────────────────────────────
 var _player_mon: Dictionary = {}
@@ -98,11 +98,11 @@ var _trainer_dialog_after:       String = ""
 var _trainer_dialog_player_lose: String = ""
 var _trainer_iv_tier:            int    = 0
 
-const FIELD_H := 510
-const MSG_Y   := 510
-const MSG_H   := 60
-const MENU_Y  := 570
-const MENU_H  := 70
+const FIELD_H := 575
+const MSG_Y   := 575
+const MSG_H   := 65
+const MENU_Y  := 640
+const MENU_H  := 80
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})

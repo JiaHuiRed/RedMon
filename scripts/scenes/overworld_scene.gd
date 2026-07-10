@@ -7,11 +7,11 @@ signal request_scene(scene_name: String, data: Dictionary)
 # ── 地图常量 ──────────────────────────────────────────────────────────────────
 const TILE := 16
 const COLS := 180        # 3区各60列
-const ROWS := 40
+const ROWS := 45
 const MAP_W := COLS * TILE   # 2880
 const MAP_H := ROWS * TILE   # 640
-const VW    := 960
-const VH    := 640
+const VW    := 1280
+const VH    := 720
 const SPEED := 100.0
 
 const VILLAGE_END   := 60  * TILE   # 960  村/草原分界

@@ -3,8 +3,8 @@ extends Node2D
 # 260709 Red 通用民宅模板：进门/出门/NPC对话
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 960
-const VH := 640
+const VW := 1280
+const VH := 720
 const SPEED := 150.0
 const FLOOR_MIN_Y := 96
 const WALK_FRAME_W := 96

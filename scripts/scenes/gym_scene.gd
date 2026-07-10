@@ -4,8 +4,8 @@ extends Node2D
 
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW    := 960
-const VH    := 640
+const VW    := 1280
+const VH    := 720
 const TILE  := 32
 const COLS  := 30
 const ROWS  := 20

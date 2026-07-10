@@ -5,7 +5,7 @@ extends CanvasLayer
 signal closed
 
 # ── 布局常量 ──────────────────────────────────────────────────────────────────
-const VW := 960; const VH := 640
+const VW := 1280; const VH := 720
 const LEFT_W := 280; const RIGHT_W := VW - LEFT_W - 30  # 650
 const CARD_H := 82; const CARD_GAP := 6
 const CARD_X := 12; const CARD_Y := 52

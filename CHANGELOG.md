@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.17.5] - 2026-07-10
+
+### 变更
+- 内部分辨率升级 960×640 → 1280×720（真720p渲染）
+- 所有场景 VW/VH 常量更新，overworld ROWS 40→45
+- battle_scene FIELD_H/MSG/MENU 比例同步调整
+- stretch mode 改为 canvas_items（消除放大模糊）
+- 纹理过滤确认 Nearest（pixel_snap 已启用）
+
 ## [0.17.4] - 2026-07-10
 
 ### 新增

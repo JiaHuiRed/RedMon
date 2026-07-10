@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 御三家选择场景（含前置剧情 + 后置对话）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 960
-const VH := 640
+const VW := 1280
+const VH := 720
 
 const STARTERS := ["炎喵", "蓝蛇", "小竹熊"]
 const STARTER_DESCS := [

@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 标题画面  260629 Red 背景铺满+底部横向菜单条
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 960
-const VH := 640
+const VW := 1280
+const VH := 720
 
 var _cursor: int = 0
 var _labels: Array = []

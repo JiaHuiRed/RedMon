@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 角色创建场景（性别选择 + 取名）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 960
-const VH := 640
+const VW := 1280
+const VH := 720
 
 # 阶段：0=教授开场白, 1=性别选择, 2=取名, 3=劲敌取名
 var _phase: int = 0
