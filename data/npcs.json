@@ -673,6 +673,7 @@
     "title": null,
     "role": "trainer",
     "gender": "男",
+    "sprite_front": "青年.png",
     "desc": "普通训练师",
     "trainer": {
       "trainer_id": "t_village1",

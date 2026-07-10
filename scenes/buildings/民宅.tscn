@@ -1,16 +1,9 @@
 [gd_scene format=3 uid="uid://bkn2c83g4okui"]
 
-[ext_resource type="Texture2D" uid="uid://ccgolre10q0iy" path="res://assets/backgrounds/buildings/普通小屋.png" id="1_87c0h"]
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sr1lu"]
 size = Vector2(132, 85)
 
 [node name="house" type="Node2D" unique_id=1290152222]
-
-[node name="Sprite" type="Sprite2D" parent="." unique_id=890397050]
-z_index = 2
-texture = ExtResource("1_87c0h")
-centered = false
 
 [node name="Collider" type="StaticBody2D" parent="." unique_id=52876635]
 position = Vector2(66, 42.5)

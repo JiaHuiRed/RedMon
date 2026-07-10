@@ -8,6 +8,7 @@
       "pos": [8, 12],
       "facing": "down",
       "sprite": "老奶奶.png",
+      "sprite_front": "老奶奶.png",
       "fallback": {"shirt": [0.15, 0.35, 0.85], "hair": [0.70, 0.68, 0.66]},
       "script": [
         {"type": "dialog", "key": "village.npc1"},
@@ -19,6 +20,7 @@
       "pos": [9, 15],
       "facing": "down",
       "sprite": "青年.png",
+      "sprite_front": "青年.png",
       "fallback": {"shirt": [0.40, 0.30, 0.50], "hair": [0.70, 0.68, 0.66]},
       "script": [
         {"type": "dialog", "key": "village.npc2"},
