@@ -305,14 +305,14 @@ func _draw_desc(mon: Dictionary, sp: Dictionary, rx: int, my: int) -> void:
 	var pw = VW - rx - 14; var ph = 214
 	var panel = _make_panel(Vector2(rx, my), Vector2(pw, ph), C_PANEL, C_DIVIDER, 10, 1)
 	_root.add_child(panel)
-	var desc = sp.get("description","")
+	var desc = sp.get("desc","")
 	if desc != "":
 		var dl = Label.new(); dl.text = desc
 		dl.position = Vector2(rx + 12, my + 12); dl.size = Vector2(pw - 24, 120)
 		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		dl.add_theme_font_size_override("font_size", 13)
 		dl.add_theme_color_override("font_color", C_TEXT); _root.add_child(dl)
-	var h = sp.get("height",0.0); var w = sp.get("weight",0.0)
+	var h = float(sp.get("height",0.0)); var w = float(sp.get("weight",0.0))
 	if h > 0 or w > 0:
 		var hw = Label.new(); hw.text = "身高 %.1fm   体重 %.1fkg" % [h, w]
 		hw.position = Vector2(rx + 12, my + 152)
