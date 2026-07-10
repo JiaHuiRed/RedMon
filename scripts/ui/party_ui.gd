@@ -25,14 +25,15 @@ const HP_Y := Color(0.961, 0.780, 0.216)
 const HP_R := Color(0.918, 0.267, 0.267)
 
 const TYPE_COLORS := {
-	"火":Color(0.93,0.37,0.18),"水":Color(0.22,0.58,0.95),"草":Color(0.28,0.75,0.32),
-	"木":Color(0.38,0.65,0.22),"电":Color(0.96,0.82,0.15),"冰":Color(0.38,0.82,0.90),
-	"格斗":Color(0.76,0.25,0.22),"毒":Color(0.62,0.25,0.72),"地面":Color(0.82,0.65,0.28),
-	"飞行":Color(0.55,0.65,0.90),"超能":Color(0.90,0.28,0.55),"虫":Color(0.62,0.72,0.12),
-	"岩石":Color(0.60,0.52,0.28),"幽灵":Color(0.38,0.28,0.62),"龙":Color(0.30,0.18,0.90),
-	"恶":Color(0.28,0.20,0.15),"钒":Color(0.60,0.62,0.68),"妖精":Color(0.92,0.58,0.72),
-	"光":Color(0.98,0.92,0.52),"风":Color(0.52,0.82,0.72),"正常":Color(0.68,0.68,0.62),
+	"火":Color(0.93,0.37,0.18),"水":Color(0.22,0.58,0.95),"木":Color(0.30,0.70,0.28),
+	"雷":Color(0.96,0.82,0.15),"电":Color(0.96,0.82,0.15),"冰":Color(0.38,0.82,0.90),
+	"格":Color(0.76,0.25,0.22),"毒":Color(0.62,0.25,0.72),"土":Color(0.82,0.65,0.28),
+	"风":Color(0.55,0.65,0.90),"灵":Color(0.90,0.28,0.55),"虫":Color(0.62,0.72,0.12),
+	"岩":Color(0.60,0.52,0.28),"鬼":Color(0.38,0.28,0.62),"龙":Color(0.30,0.18,0.90),
+	"暗":Color(0.28,0.20,0.15),"钢":Color(0.60,0.62,0.68),"仙":Color(0.92,0.58,0.72),
+	"光":Color(0.98,0.92,0.52),"空":Color(0.68,0.68,0.62),
 }
+const TYPE_KEYS := ["空","火","水","木","雷","冰","格","毒","土","风","灵","虫","岩","鬼","龙","暗","钢","仙","光"]
 const STAT_COLORS := [
 	Color(0.28,0.78,0.40), Color(0.92,0.35,0.28), Color(0.93,0.65,0.18),
 	Color(0.32,0.55,0.92), Color(0.82,0.32,0.52), Color(0.28,0.72,0.88),
@@ -89,7 +90,7 @@ func _draw_left() -> void:
 func _draw_card(idx: int, mon: Dictionary, cy: int) -> void:
 	var sel = (idx == _cursor and _focus == "party")
 	var sp = MonDB.species.get(mon.get("species_id",""), {})
-	var t1 = sp.get("type1","正常")
+	var t1 = sp.get("type1","空")
 	var tc = TYPE_COLORS.get(t1, C_ACCENT)
 	var cw = LEFT_W - CARD_X * 2
 	var panel = _make_panel(Vector2(CARD_X, cy), Vector2(cw, CARD_H),
@@ -114,6 +115,11 @@ func _draw_card(idx: int, mon: Dictionary, cy: int) -> void:
 	nl.text = MonDB.display_name(mon) + glyph; nl.position = Vector2(tx, cy + 10)
 	nl.add_theme_font_size_override("font_size", 16)
 	nl.add_theme_color_override("font_color", C_TEXT); _root.add_child(nl)
+	var no_lbl = Label.new()
+	no_lbl.text = "No.%03d" % sp.get("id",0)
+	no_lbl.position = Vector2(CARD_X + cw - 92, cy + 14)
+	no_lbl.add_theme_font_size_override("font_size", 10)
+	no_lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(no_lbl)
 	var lv = Label.new()
 	lv.text = "Lv.%d" % mon.get("level",1)
 	lv.position = Vector2(CARD_X + cw - 36, cy + 12)
@@ -154,16 +160,22 @@ func _draw_right() -> void:
 	_draw_stats(mon, sp, rx + 296)
 	_draw_moves(mon, rx, 330)
 	_draw_desc(mon, sp, rx + 612, 330)
+	_draw_type_chart(sp, rx + 612, 12)
 
 func _draw_portrait(mon: Dictionary, sp: Dictionary, rx: int) -> void:
 	var pw = 280; var ph = 300
-	var t1 = sp.get("type1","正常")
+	var t1 = sp.get("type1","空")
 	var tc = TYPE_COLORS.get(t1, C_ACCENT)
 	var panel = _make_panel(Vector2(rx, 12), Vector2(pw, ph), C_PANEL, C_DIVIDER, 14, 1)
 	_root.add_child(panel)
 	var top_bar = ColorRect.new()
 	top_bar.size = Vector2(pw, 5); top_bar.position = Vector2(rx, 12)
 	top_bar.color = tc; _root.add_child(top_bar)
+	var no_lbl = Label.new()
+	no_lbl.text = "No.%03d" % sp.get("id",0)
+	no_lbl.position = Vector2(rx + 12, 22)
+	no_lbl.add_theme_font_size_override("font_size", 12)
+	no_lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(no_lbl)
 	var icon_path = "res://assets/sprites/%sfront.png" % mon.get("species_id","")
 	if ResourceLoader.exists(icon_path):
 		var tex = TextureRect.new(); tex.texture = load(icon_path)
@@ -268,7 +280,7 @@ func _draw_moves(mon: Dictionary, rx: int, my: int) -> void:
 		var mv_entry = moves[i]
 		var move_id: String = mv_entry.get("id","") if typeof(mv_entry) == TYPE_DICTIONARY else str(mv_entry)
 		var mv = MonDB.moves.get(move_id, {})
-		var mt = mv.get("type","正常")
+		var mt = mv.get("type","空")
 		var tc = TYPE_COLORS.get(mt, C_ACCENT)
 		var stripe = ColorRect.new()
 		stripe.size = Vector2(5, mh); stripe.position = Vector2(mx, mmy)
@@ -307,11 +319,13 @@ func _draw_desc(mon: Dictionary, sp: Dictionary, rx: int, my: int) -> void:
 	_root.add_child(panel)
 	var desc = sp.get("desc","")
 	if desc != "":
-		var dl = Label.new(); dl.text = desc
-		dl.position = Vector2(rx + 12, my + 12); dl.size = Vector2(pw - 24, 120)
-		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		dl.add_theme_font_size_override("font_size", 13)
-		dl.add_theme_color_override("font_color", C_TEXT); _root.add_child(dl)
+		var dl = RichTextLabel.new()
+		dl.position = Vector2(rx + 12, my + 12)
+		dl.size = Vector2(pw - 24, 120); dl.custom_minimum_size = Vector2(pw - 24, 120)
+		dl.bbcode_enabled = false; dl.fit_content = false; dl.scroll_active = false
+		dl.text = desc
+		dl.add_theme_font_size_override("normal_font_size", 13)
+		dl.add_theme_color_override("default_color", C_TEXT); _root.add_child(dl)
 	var h = float(sp.get("height",0.0)); var w = float(sp.get("weight",0.0))
 	if h > 0 or w > 0:
 		var hw = Label.new(); hw.text = "身高 %.1fm   体重 %.1fkg" % [h, w]
@@ -325,6 +339,65 @@ func _draw_desc(mon: Dictionary, sp: Dictionary, rx: int, my: int) -> void:
 		met.position = Vector2(rx + 12, my + 180)
 		met.add_theme_font_size_override("font_size", 12)
 		met.add_theme_color_override("font_color", C_SUB); _root.add_child(met)
+
+func _draw_type_chart(sp: Dictionary, rx: int, my: int) -> void:
+	var pw = VW - rx - 14; var ph = 306
+	var t1 = sp.get("type1","空"); var t2 = sp.get("type2","")
+	var panel = _make_panel(Vector2(rx, my), Vector2(pw, ph), C_PANEL, C_DIVIDER, 10, 1)
+	_root.add_child(panel)
+	var title = Label.new(); title.text = "属性克制"
+	title.position = Vector2(rx + 12, my + 10)
+	title.add_theme_font_size_override("font_size", 14)
+	title.add_theme_color_override("font_color", C_SUB); _root.add_child(title)
+
+	var strong: Dictionary = {}
+	for chart_t in [t1, t2]:
+		if chart_t == "": continue
+		var chart = MonDB._type_chart.get(chart_t, {})
+		for def_t in chart:
+			if chart[def_t] > 1.0:
+				strong[def_t] = max(strong.get(def_t, 0.0), chart[def_t])
+
+	var weak: Dictionary = {}; var resist: Dictionary = {}; var immune: Dictionary = {}
+	for atk in TYPE_KEYS:
+		var mult = MonDB.get_effectiveness(atk, t1, t2)
+		if mult > 1.0: weak[atk] = mult
+		elif mult == 0.0: immune[atk] = mult
+		elif mult < 1.0: resist[atk] = mult
+
+	var rows = [["克制", strong], ["弱点", weak], ["抵抗", resist], ["免疫", immune]]
+	var ry = my + 42
+	var bh = 20; var bw = 56; var gap = 6
+	var label_w = 46
+	var row_w = pw - label_w - 24
+	for row in rows:
+		var lbl = Label.new(); lbl.text = row[0]
+		lbl.position = Vector2(rx + 12, ry + 2)
+		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(lbl)
+		var entries: Dictionary = row[1]
+		if entries.is_empty():
+			var em = Label.new(); em.text = "—"
+			em.position = Vector2(rx + 12 + label_w, ry + 2)
+			em.add_theme_font_size_override("font_size", 13)
+			em.add_theme_color_override("font_color", C_DIVIDER); _root.add_child(em)
+			ry += bh + 12
+			continue
+		var bx = rx + 12 + label_w; var by = ry
+		for t in entries:
+			var mult = entries[t]
+			var mult_str = "%gx" % mult
+			if bx + bw > rx + 12 + label_w + row_w:
+				bx = rx + 12 + label_w; by += bh + gap
+			var tc = TYPE_COLORS.get(t, C_ACCENT)
+			var badge = _make_panel(Vector2(bx, by), Vector2(bw, bh), tc, Color(tc.r*0.7,tc.g*0.7,tc.b*0.7,1.0), 8, 1)
+			_root.add_child(badge)
+			var bl = Label.new(); bl.text = "%s %s" % [t, mult_str]
+			bl.position = Vector2(bx + 4, by + 1)
+			bl.add_theme_font_size_override("font_size", 11)
+			bl.add_theme_color_override("font_color", Color.WHITE); _root.add_child(bl)
+			bx += bw + gap
+		ry = by + bh + 12
 
 func _draw_actions() -> void:
 	var bw = 130; var bh = 44; var gap = 16
