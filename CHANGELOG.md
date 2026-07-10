@@ -3,6 +3,18 @@
 ## [0.17.4] - 2026-07-10
 
 ### 新增
+- 劲敌家.tscn 碰撞体完善：四周8px薄边框防出界，门口留缺口
+- 劲敌家 楼梯交互点（Marker2D）：靠近按Z切换至二楼场景
+- overworld 劲敌家进门触发（RIVAL_DOOR tile 23,15）+ 返回落点
+- main.gd 路由 rival_home → 劲敌家.tscn
+- 劲敌家_scene.gd 支持楼梯/NPC/出门交互
+
+### 修复
+- 劲敌家.tscn 悬空 S_furn 引用导致加载报错
+
+## [0.17.4] - 2026-07-10
+
+### 新增
 - 翠竹馆.tscn：背景/GymSign/ExitLabel/Marker2D(玩家出生/出口/守卫位置/馆主)迁移到场景文件
 - 翠竹馆.tscn：Marker2D定位(玩家出生/出口/守卫g1,g2/馆主)
 

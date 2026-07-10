@@ -165,6 +165,12 @@ func _input(event: InputEvent) -> void:
 		if _player.position.distance_to(DOOR_POS) < 56:
 			request_scene.emit("overworld", {"spawn": "rival_home"})
 			return
+		# 楼梯交互
+		for child in $角色.get_children():
+			if child.has_meta("interact") and child.get_meta("interact") == "stairs_up":
+				if _player.position.distance_to(child.position) < 64:
+					request_scene.emit(child.get_meta("target_scene"), {"spawn": "stairs_down"})
+					return
 		# NPC交互
 		for npc in _npcs:
 			if _player.position.distance_to(npc["pos"]) < 40:

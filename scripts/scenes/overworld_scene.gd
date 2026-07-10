@@ -23,6 +23,7 @@ const SPAWN_TOWN      := Vector2(150 * TILE, 34 * TILE)
 
 # 260708 Red 建筑门（16px tile 坐标，对齐 .tscn 实际位置）
 const HOME_DOOR   := Vector2i(12, 14)   # village.tscn Home≈(194,218), global≈(193,215)
+const RIVAL_DOOR  := Vector2i(23, 15)   # village.tscn 劲敌家≈(739,383)
 const CLINIC_DOOR := Vector2i(125, 7)
 const SHOP_DOOR   := Vector2i(147, 7)
 
@@ -389,6 +390,7 @@ func _build_player() -> void:
 			"grassland": _player.position = SPAWN_GRASSLAND
 			"town":      _player.position = SPAWN_TOWN
 			"home":      _player.position = Vector2(HOME_DOOR.x * TILE + TILE/2.0, HOME_DOOR.y * TILE + TILE)
+			"rival_home": _player.position = Vector2(RIVAL_DOOR.x * TILE + TILE/2.0, RIVAL_DOOR.y * TILE + TILE)
 			"gym":       _player.position = SPAWN_TOWN
 			_:           _player.position = SPAWN_VILLAGE
 	add_child(_player)
@@ -608,6 +610,9 @@ func _try_interact() -> void:
 	# 杂货铺
 	if tile.x >= SHOP_DOOR.x and tile.x <= SHOP_DOOR.x + 3 and abs(tile.y - SHOP_DOOR.y) <= 1:
 		_open_shop(); return
+	# 劲敌家
+	if tile.x >= RIVAL_DOOR.x - 1 and tile.x <= RIVAL_DOOR.x + 3 and abs(tile.y - RIVAL_DOOR.y) <= 1:
+		request_scene.emit("rival_home", {"spawn": "overworld"}); return
 	# 主角家
 	if tile.x >= HOME_DOOR.x - 1 and tile.x <= HOME_DOOR.x + 3 and abs(tile.y - HOME_DOOR.y) <= 1:
 		GameState.last_scene = _current_area()
