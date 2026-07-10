@@ -1,42 +1,53 @@
-# 260709 Red 全屏精灵管理界面（现代卡片式 UI）
-# 独立 CanvasLayer，任何场景均可调用
+# 260710 Red party_ui v2
 extends CanvasLayer
-
 signal closed
 
-# ── 布局常量 ──────────────────────────────────────────────────────────────────
 const VW := 1280; const VH := 720
-const LEFT_W := 280; const RIGHT_W := VW - LEFT_W - 30  # 650
-const CARD_H := 82; const CARD_GAP := 6
-const CARD_X := 12; const CARD_Y := 52
-const DETAIL_X := LEFT_W + 18; const DETAIL_Y := 12
+const LEFT_W  := 300
+const CARD_H  := 96
+const CARD_GAP := 8
+const CARD_X  := 12
+const CARD_Y  := 56
 
-# ── 配色 ──────────────────────────────────────────────────────────────────────
-const BG_COLOR     := Color(1.0, 0.95, 0.77, 1.0)   # #FFF3C4 暖黄
-const CARD_COLOR   := Color(1.0, 1.0, 1.0, 1.0)      # 白色卡片
-const CARD_SEL     := Color(0.96, 0.65, 0.14, 1.0)   # #F5A623 选中橙
-const CARD_EMPTY   := Color(0.94, 0.94, 0.94, 1.0)   # 空槽灰
-const TEXT_PRI     := Color(0.15, 0.15, 0.18)         # 主文字
-const TEXT_SEC     := Color(0.50, 0.50, 0.55)         # 次要文字
-const HP_GREEN     := Color(0.30, 0.78, 0.35)
-const HP_YELLOW    := Color(0.92, 0.78, 0.15)
-const HP_RED       := Color(0.88, 0.22, 0.15)
-const MOVE_ACCENT  := Color(0.96, 0.65, 0.14, 1.0)   # 技能卡左侧条
-const BTN_COLOR    := Color(0.96, 0.96, 0.96, 1.0)   # 底部按钮背景
-const BTN_SEL      := Color(0.96, 0.65, 0.14, 1.0)   # 底部按钮选中
+const C_BG          := Color(0.075, 0.102, 0.157)
+const C_LEFT        := Color(0.090, 0.118, 0.176)
+const C_CARD        := Color(0.114, 0.149, 0.220)
+const C_CARD_SEL    := Color(0.204, 0.369, 0.631)
+const C_CARD_BORDER := Color(0.200, 0.260, 0.380)
+const C_SEL_BORDER  := Color(0.388, 0.588, 0.929)
+const C_TEXT        := Color(0.878, 0.906, 0.953)
+const C_SUB         := Color(0.439, 0.533, 0.639)
+const C_ACCENT      := Color(0.388, 0.588, 0.929)
+const C_PANEL       := Color(0.102, 0.133, 0.196)
+const C_DIVIDER     := Color(0.176, 0.224, 0.314)
+const HP_G := Color(0.278, 0.808, 0.408)
+const HP_Y := Color(0.961, 0.780, 0.216)
+const HP_R := Color(0.918, 0.267, 0.267)
 
-# ── 状态 ──────────────────────────────────────────────────────────────────────
+const TYPE_COLORS := {
+	"火":Color(0.93,0.37,0.18),"水":Color(0.22,0.58,0.95),"草":Color(0.28,0.75,0.32),
+	"木":Color(0.38,0.65,0.22),"电":Color(0.96,0.82,0.15),"冰":Color(0.38,0.82,0.90),
+	"格斗":Color(0.76,0.25,0.22),"毒":Color(0.62,0.25,0.72),"地面":Color(0.82,0.65,0.28),
+	"飞行":Color(0.55,0.65,0.90),"超能":Color(0.90,0.28,0.55),"虫":Color(0.62,0.72,0.12),
+	"岩石":Color(0.60,0.52,0.28),"幽灵":Color(0.38,0.28,0.62),"龙":Color(0.30,0.18,0.90),
+	"恶":Color(0.28,0.20,0.15),"钒":Color(0.60,0.62,0.68),"妖精":Color(0.92,0.58,0.72),
+	"光":Color(0.98,0.92,0.52),"风":Color(0.52,0.82,0.72),"正常":Color(0.68,0.68,0.62),
+}
+const STAT_COLORS := [
+	Color(0.28,0.78,0.40), Color(0.92,0.35,0.28), Color(0.93,0.65,0.18),
+	Color(0.32,0.55,0.92), Color(0.82,0.32,0.52), Color(0.28,0.72,0.88),
+]
+const STAT_KEYS  := ["hp","atk","def","sp_atk","sp_def","spd"]
+const STAT_NAMES := ["HP","攻击","防御","特攻","特防","速度"]
+const ACTIONS    := ["排序","替换","返回"]
+
 var _root: Control
-var _party_cursor: int = 0
-var _focus: String = "party"  # "party" | "info" | "moves" | "actions"
-var _info_cursor: int = 0
-var _move_cursor: int = 0
+var _cursor: int = 0
+var _focus: String = "party"
 var _action_cursor: int = 0
-const INFO_LABELS := ["属性", "特性", "等级", "性格", "基础数值"]
-const ACTION_LABELS := ["排序", "替换", "返回"]
 
 func _ready() -> void:
-	layer = 51  # 260709 Red 覆盖 map_label(layer=50)
+	layer = 51
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_ui()
 
@@ -48,637 +59,330 @@ func _build_ui() -> void:
 
 func _render() -> void:
 	for c in _root.get_children(): c.queue_free()
-	# 等一帧让 queue_free 生效后再绘制
 	await get_tree().process_frame
-	_draw_background()
-	_draw_left_panel()
-	_draw_right_panel()
+	_draw_bg()
+	_draw_left()
+	_draw_right()
+	_draw_actions()
+	_draw_close_btn()
 
-# ── 背景 ──────────────────────────────────────────────────────────────────────
-func _draw_background() -> void:
+func _draw_bg() -> void:
 	var bg = ColorRect.new()
-	bg.size = Vector2(VW, VH); bg.position = Vector2.ZERO
-	bg.color = BG_COLOR; _root.add_child(bg)
+	bg.size = Vector2(VW, VH); bg.color = C_BG; _root.add_child(bg)
+	var left_bg = ColorRect.new()
+	left_bg.size = Vector2(LEFT_W, VH); left_bg.color = C_LEFT; _root.add_child(left_bg)
+	var div = ColorRect.new()
+	div.size = Vector2(1, VH); div.position = Vector2(LEFT_W, 0)
+	div.color = C_DIVIDER; _root.add_child(div)
 
-# ── 左侧：队伍列表 ───────────────────────────────────────────────────────────
-func _draw_left_panel() -> void:
-	# 标题
+func _draw_left() -> void:
 	var title = Label.new()
-	title.text = "队伍管理"; title.position = Vector2(CARD_X + 8, 14)
-	title.add_theme_font_size_override("font_size", 16)
-	title.add_theme_color_override("font_color", TEXT_PRI)
-	_root.add_child(title)
-
+	title.text = "我的精灵"; title.position = Vector2(CARD_X + 6, 16)
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", C_TEXT); _root.add_child(title)
 	var team = GameState.player_team
 	for i in range(6):
 		var cy = CARD_Y + i * (CARD_H + CARD_GAP)
-		var is_sel = (i == _party_cursor and _focus == "party")
-		if i < team.size():
-			_draw_mon_card(i, team[i], CARD_X, cy, is_sel)
-		else:
-			_draw_empty_card(CARD_X, cy)
+		if i < team.size(): _draw_card(i, team[i], cy)
+		else: _draw_empty_card(cy)
 
-func _draw_mon_card(idx: int, mon: Dictionary, x: int, y: int, selected: bool) -> void:
+func _draw_card(idx: int, mon: Dictionary, cy: int) -> void:
+	var sel = (idx == _cursor and _focus == "party")
+	var sp = MonDB.species.get(mon.get("species_id",""), {})
+	var t1 = sp.get("type1","正常")
+	var tc = TYPE_COLORS.get(t1, C_ACCENT)
 	var cw = LEFT_W - CARD_X * 2
-	# 卡片背景（圆角模拟：用 StyleBoxFlat）
-	var panel = PanelContainer.new()
-	panel.position = Vector2(x, y)
-	panel.custom_minimum_size = Vector2(cw, CARD_H)
-	panel.size = Vector2(cw, CARD_H)
-	var style = StyleBoxFlat.new()
-	style.bg_color = CARD_COLOR
-	style.corner_radius_top_left = 12; style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12; style.corner_radius_bottom_right = 12
-	if selected:
-		style.border_color = CARD_SEL
-		style.border_width_left = 3; style.border_width_right = 3
-		style.border_width_top = 3; style.border_width_bottom = 3
-	style.content_margin_left = 8; style.content_margin_top = 6
-	style.content_margin_right = 8; style.content_margin_bottom = 6
-	panel.add_theme_stylebox_override("panel", style)
+	var panel = _make_panel(Vector2(CARD_X, cy), Vector2(cw, CARD_H),
+		C_CARD_SEL if sel else C_CARD,
+		C_SEL_BORDER if sel else C_CARD_BORDER, 12, 2 if sel else 1)
 	_root.add_child(panel)
-
-	var sp = MonDB.species.get(mon["species_id"], {})
-
-	# 头像
-	var icon_path = "res://assets/sprites/%sfront.png" % mon["species_id"]
+	var stripe = ColorRect.new()
+	stripe.size = Vector2(4, CARD_H - 16); stripe.position = Vector2(CARD_X + 6, cy + 8)
+	stripe.color = tc; _root.add_child(stripe)
+	var icon_path = "res://assets/sprites/%sfront.png" % mon.get("species_id","")
 	if ResourceLoader.exists(icon_path):
 		var icon = TextureRect.new(); icon.texture = load(icon_path)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.custom_minimum_size = Vector2(42, 42); icon.size = Vector2(42, 42)
+		icon.custom_minimum_size = Vector2(56, 56); icon.size = Vector2(56, 56)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.position = Vector2(x + 10, y + 8); _root.add_child(icon)
-
-	# 名称 + 性别 + 等级
-	var gender = mon.get("gender", "")
-	var gender_icon = " ♂" if gender == "male" else " ♀" if gender == "female" else ""
-	var name_lbl = Label.new()
-	name_lbl.text = MonDB.display_name(mon) + gender_icon
-	name_lbl.position = Vector2(x + 58, y + 8)
-	name_lbl.add_theme_font_size_override("font_size", 13)
-	name_lbl.add_theme_color_override("font_color", TEXT_PRI)
-	_root.add_child(name_lbl)
-	# 性别符号着色
-	if gender_icon != "":
-		var g_lbl = Label.new()
-		g_lbl.text = gender_icon.strip_edges()
-		g_lbl.position = Vector2(name_lbl.position.x + MonDB.display_name(mon).length() * 13 + 4, y + 8)
-		g_lbl.add_theme_font_size_override("font_size", 13)
-		g_lbl.add_theme_color_override("font_color", Color(0.30, 0.55, 0.90) if gender == "male" else Color(0.90, 0.40, 0.55))
-		_root.add_child(g_lbl)
-
-	var lv_lbl = Label.new()
-	lv_lbl.text = "Lv.%d" % mon["level"]
-	lv_lbl.position = Vector2(x + cw - 60, y + 8)
-	lv_lbl.add_theme_font_size_override("font_size", 12)
-	lv_lbl.add_theme_color_override("font_color", TEXT_SEC)
-	_root.add_child(lv_lbl)
-
-	# HP 条
-	var hp_ratio = float(mon["current_hp"]) / max(float(mon["max_hp"]), 1.0)
-	var bar_w = cw - 74; var bar_h = 8
-	var bar_x = x + 58; var bar_y = y + 32
-
+		icon.position = Vector2(CARD_X + 14, cy + (CARD_H - 56) / 2)
+		_root.add_child(icon)
+	var tx = CARD_X + 76
+	var gender = mon.get("gender","")
+	var glyph = " ♂" if gender == "male" else " ♀" if gender == "female" else ""
+	var nl = Label.new()
+	nl.text = MonDB.display_name(mon) + glyph; nl.position = Vector2(tx, cy + 10)
+	nl.add_theme_font_size_override("font_size", 16)
+	nl.add_theme_color_override("font_color", C_TEXT); _root.add_child(nl)
+	var lv = Label.new()
+	lv.text = "Lv.%d" % mon.get("level",1)
+	lv.position = Vector2(CARD_X + cw - 36, cy + 12)
+	lv.add_theme_font_size_override("font_size", 13)
+	lv.add_theme_color_override("font_color", tc if sel else C_SUB); _root.add_child(lv)
+	var hp_r = float(mon.get("current_hp",0)) / max(float(mon.get("max_hp",1)), 1.0)
+	var bw = cw - 80
 	var bar_bg = ColorRect.new()
-	bar_bg.size = Vector2(bar_w, bar_h); bar_bg.position = Vector2(bar_x, bar_y)
-	bar_bg.color = Color(0.88, 0.88, 0.88); _root.add_child(bar_bg)
-
-	var bar_fill = ColorRect.new()
-	bar_fill.size = Vector2(bar_w * hp_ratio, bar_h); bar_fill.position = Vector2(bar_x, bar_y)
-	bar_fill.color = HP_GREEN if hp_ratio > 0.5 else HP_YELLOW if hp_ratio > 0.2 else HP_RED
-	_root.add_child(bar_fill)
-
-	# HP 数值
+	bar_bg.size = Vector2(bw, 8); bar_bg.position = Vector2(tx, cy + 38)
+	bar_bg.color = Color(0.15, 0.19, 0.28); _root.add_child(bar_bg)
+	var bar = ColorRect.new()
+	bar.size = Vector2(bw * hp_r, 8); bar.position = Vector2(tx, cy + 38)
+	bar.color = HP_G if hp_r > 0.5 else HP_Y if hp_r > 0.2 else HP_R; _root.add_child(bar)
 	var hp_lbl = Label.new()
-	hp_lbl.text = "%d/%d" % [mon["current_hp"], mon["max_hp"]]
-	hp_lbl.position = Vector2(x + 58, y + 44)
-	hp_lbl.add_theme_font_size_override("font_size", 10)
-	hp_lbl.add_theme_color_override("font_color", TEXT_SEC)
-	_root.add_child(hp_lbl)
+	hp_lbl.text = "%d / %d" % [mon.get("current_hp",0), mon.get("max_hp",1)]
+	hp_lbl.position = Vector2(tx, cy + 52)
+	hp_lbl.add_theme_font_size_override("font_size", 12)
+	hp_lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(hp_lbl)
 
-	# 状态异常
-	var status = mon.get("status", "")
-	if status != "":
-		var st_lbl = Label.new()
-		st_lbl.text = status; st_lbl.position = Vector2(x + 130, y + 44)
-		st_lbl.add_theme_font_size_override("font_size", 10)
-		st_lbl.add_theme_color_override("font_color", Color(0.85, 0.3, 0.3))
-		_root.add_child(st_lbl)
-
-	# （已移除⊕占位符）
-
-func _draw_empty_card(x: int, y: int) -> void:
+func _draw_empty_card(cy: int) -> void:
 	var cw = LEFT_W - CARD_X * 2
-	var panel = PanelContainer.new()
-	panel.position = Vector2(x, y)
-	panel.custom_minimum_size = Vector2(cw, CARD_H)
-	panel.size = Vector2(cw, CARD_H)
-	var style = StyleBoxFlat.new()
-	style.bg_color = CARD_EMPTY
-	style.corner_radius_top_left = 12; style.corner_radius_top_right = 12
-	style.corner_radius_bottom_left = 12; style.corner_radius_bottom_right = 12
-	style.content_margin_left = 8
-	panel.add_theme_stylebox_override("panel", style)
+	var panel = _make_panel(Vector2(CARD_X, cy), Vector2(cw, CARD_H),
+		Color(C_CARD.r, C_CARD.g, C_CARD.b, 0.5), C_DIVIDER, 12, 1)
 	_root.add_child(panel)
+	var lbl = Label.new(); lbl.text = "— 空槽 —"
+	lbl.position = Vector2(CARD_X + cw/2 - 28, cy + CARD_H/2 - 9)
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", C_DIVIDER); _root.add_child(lbl)
 
-	var lbl = Label.new()
-	lbl.text = "— 空槽 —"; lbl.position = Vector2(x + cw/2 - 30, y + CARD_H/2 - 8)
-	lbl.add_theme_font_size_override("font_size", 11)
-	lbl.add_theme_color_override("font_color", Color(0.72, 0.72, 0.72))
-	_root.add_child(lbl)
-
-# ── 右侧：精灵详情 ───────────────────────────────────────────────────────────
-func _draw_right_panel() -> void:
+func _draw_right() -> void:
 	var team = GameState.player_team
-	if _party_cursor >= team.size():
-		var hint = Label.new()
-		hint.text = "← 选择一只精灵查看详情"
-		hint.position = Vector2(DETAIL_X + 160, VH / 2)
-		hint.add_theme_font_size_override("font_size", 14)
-		hint.add_theme_color_override("font_color", TEXT_SEC)
-		_root.add_child(hint)
-		return
+	if _cursor >= team.size(): return
+	var mon = team[_cursor]
+	var sp = MonDB.species.get(mon.get("species_id",""), {})
+	var rx = LEFT_W + 16
+	_draw_portrait(mon, sp, rx)
+	_draw_info(mon, sp, rx + 296)
+	_draw_stats(mon, sp, rx + 296)
+	_draw_moves(mon, rx, 330)
+	_draw_desc(mon, sp, rx + 612, 330)
 
-	var mon = team[_party_cursor]
-	var sp = MonDB.species.get(mon["species_id"], {})
-
-	# ── 立绘区 ──
-	_draw_portrait(mon, sp)
-
-	# ── 右侧标签按钮 ──
-	_draw_info_tags(mon, sp)
-
-	# ── 种族值 + 性格 + IV ──
-	_draw_base_stats(mon, sp)
-
-	# ── 技能卡片 ──
-	_draw_move_cards(mon)
-
-	# ── 描述/身高体重/相遇信息 ──
-	_draw_flavor_info(mon, sp)
-
-	# ── 底部操作按钮 ──
-	_draw_action_buttons()
-
-	# ── 关闭按钮 ──
-	var close_lbl = Label.new()
-	close_lbl.text = "✕"; close_lbl.position = Vector2(VW - 36, 10)
-	close_lbl.add_theme_font_size_override("font_size", 20)
-	close_lbl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.55))
-	_root.add_child(close_lbl)
-
-func _draw_portrait(mon: Dictionary, sp: Dictionary) -> void:
-	# 立绘白色卡片
-	var pw := 300; var ph := 260
-	var px := DETAIL_X; var py := DETAIL_Y + 10
-
-	var panel = PanelContainer.new()
-	panel.position = Vector2(px, py)
-	panel.custom_minimum_size = Vector2(pw, ph); panel.size = Vector2(pw, ph)
-	var style = StyleBoxFlat.new()
-	style.bg_color = CARD_COLOR
-	style.corner_radius_top_left = 16; style.corner_radius_top_right = 16
-	style.corner_radius_bottom_left = 16; style.corner_radius_bottom_right = 16
-	style.border_color = Color(0.88, 0.88, 0.88)
-	style.border_width_left = 1; style.border_width_right = 1
-	style.border_width_top = 1; style.border_width_bottom = 1
-	panel.add_theme_stylebox_override("panel", style)
+func _draw_portrait(mon: Dictionary, sp: Dictionary, rx: int) -> void:
+	var pw = 280; var ph = 300
+	var t1 = sp.get("type1","正常")
+	var tc = TYPE_COLORS.get(t1, C_ACCENT)
+	var panel = _make_panel(Vector2(rx, 12), Vector2(pw, ph), C_PANEL, C_DIVIDER, 14, 1)
 	_root.add_child(panel)
-
-	# 精灵图
-	var icon_path = "res://assets/sprites/%sfront.png" % mon["species_id"]
+	var top_bar = ColorRect.new()
+	top_bar.size = Vector2(pw, 5); top_bar.position = Vector2(rx, 12)
+	top_bar.color = tc; _root.add_child(top_bar)
+	var icon_path = "res://assets/sprites/%sfront.png" % mon.get("species_id","")
 	if ResourceLoader.exists(icon_path):
 		var tex = TextureRect.new(); tex.texture = load(icon_path)
 		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex.custom_minimum_size = Vector2(180, 180); tex.size = Vector2(180, 180)
+		tex.custom_minimum_size = Vector2(210, 210); tex.size = Vector2(210, 210)
 		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex.position = Vector2(px + pw/2 - 90, py + ph/2 - 100)
-		_root.add_child(tex)
-
-	# 名称
+		tex.position = Vector2(rx + pw/2 - 105, 28); _root.add_child(tex)
 	var name_lbl = Label.new()
 	name_lbl.text = MonDB.display_name(mon)
-	name_lbl.position = Vector2(px + pw/2 - 40, py + ph - 40)
-	name_lbl.add_theme_font_size_override("font_size", 14)
-	name_lbl.add_theme_color_override("font_color", TEXT_PRI)
-	_root.add_child(name_lbl)
+	name_lbl.position = Vector2(rx + pw/2 - 36, 252)
+	name_lbl.add_theme_font_size_override("font_size", 19)
+	name_lbl.add_theme_color_override("font_color", C_TEXT); _root.add_child(name_lbl)
 
-func _draw_info_tags(mon: Dictionary, sp: Dictionary) -> void:
-	var tx := DETAIL_X + 320; var ty := DETAIL_Y + 14
-	var tag_w := 72; var tag_h := 30; var gap := 6
-
-	var values := [
-		sp.get("type1", "—"),
-		sp.get("ability", sp.get("abilities", ["—"])[0] if sp.get("abilities", []).size() > 0 else "—"),
-		"Lv.%d" % mon["level"],
-		MonDB.natures.get(mon.get("nature", ""), {}).get("name", mon.get("nature", "—")),
-		"BST %d" % _calc_bst(mon),
+func _draw_info(mon: Dictionary, sp: Dictionary, rx: int) -> void:
+	var ty = 14
+	var bx = rx
+	for tkey in ["type1","type2"]:
+		var t = sp.get(tkey,"")
+		if t == "": continue
+		var tc = TYPE_COLORS.get(t, C_ACCENT)
+		var badge = _make_panel(Vector2(bx, ty), Vector2(60, 26),
+			tc, Color(tc.r*0.7,tc.g*0.7,tc.b*0.7,1.0), 13, 1)
+		_root.add_child(badge)
+		var bl = Label.new(); bl.text = t; bl.position = Vector2(bx + 6, ty + 4)
+		bl.add_theme_font_size_override("font_size", 14)
+		bl.add_theme_color_override("font_color", Color.WHITE); _root.add_child(bl)
+		bx += 68
+	var abilities = sp.get("abilities",[])
+	var ability_name = abilities[0] if abilities.size() > 0 else sp.get("ability","—")
+	var info_pairs = [
+		["等级", "Lv.%d" % mon.get("level",1)],
+		["性格", MonDB.natures.get(mon.get("nature",""),{}).get("name", mon.get("nature","—"))],
+		["特性", ability_name],
 	]
+	var col_w = 110
+	for i in range(info_pairs.size()):
+		var kx = rx + i * col_w
+		var k = Label.new(); k.text = info_pairs[i][0]; k.position = Vector2(kx, 52)
+		k.add_theme_font_size_override("font_size", 11)
+		k.add_theme_color_override("font_color", C_SUB); _root.add_child(k)
+		var v = Label.new(); v.text = info_pairs[i][1]; v.position = Vector2(kx, 68)
+		v.add_theme_font_size_override("font_size", 15)
+		v.add_theme_color_override("font_color", C_TEXT); _root.add_child(v)
 
-	for i in range(INFO_LABELS.size()):
-		var row = i / 2; var col = i % 2
-		var bx = tx + col * (tag_w + gap)
-		var by = ty + row * (tag_h + gap)
-
-		var is_sel = (_focus == "info" and _info_cursor == i)
-
-		var panel = PanelContainer.new()
-		panel.position = Vector2(bx, by)
-		panel.custom_minimum_size = Vector2(tag_w, tag_h)
-		panel.size = Vector2(tag_w, tag_h)
-		var style = StyleBoxFlat.new()
-		style.bg_color = BTN_SEL if is_sel else BTN_COLOR
-		style.corner_radius_top_left = 8; style.corner_radius_top_right = 8
-		style.corner_radius_bottom_left = 8; style.corner_radius_bottom_right = 8
-		panel.add_theme_stylebox_override("panel", style)
-		_root.add_child(panel)
-
-		# 标签名
-		var lbl = Label.new()
-		lbl.text = INFO_LABELS[i]
-		lbl.position = Vector2(bx + 4, by + 2)
-		lbl.add_theme_font_size_override("font_size", 8)
-		lbl.add_theme_color_override("font_color", TEXT_SEC if not is_sel else Color.WHITE)
-		_root.add_child(lbl)
-
-		# 值
-		var val_lbl = Label.new()
-		val_lbl.text = str(values[i])
-		val_lbl.position = Vector2(bx + 4, by + 14)
-		val_lbl.add_theme_font_size_override("font_size", 10)
-		val_lbl.add_theme_color_override("font_color", TEXT_PRI if not is_sel else Color.WHITE)
-		_root.add_child(val_lbl)
-
-func _draw_base_stats(mon: Dictionary, sp: Dictionary) -> void:
-	var bs = sp.get("base", {})
-	var nature_name = mon.get("nature", "")
-	var nature_data = MonDB.natures.get(nature_name, {})
-	var nature_up = nature_data.get("up", "")
-	var nature_down = nature_data.get("down", "")
-	var ivs = mon.get("ivs", {})
-
-	# 260709 Red 属性名映射（species.json用简写key）
-	var stat_keys := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
-	var stat_names := ["HP", "攻击", "防御", "特攻", "特防", "速度"]
-	var nature_keys := ["", "atk", "def", "sp_atk", "sp_def", "spd"]  # HP无性格影响
-	var bar_colors := [
-		Color(0.40, 0.82, 0.40),  # HP 绿
-		Color(0.90, 0.40, 0.30),  # 攻击 红
-		Color(0.90, 0.70, 0.20),  # 防御 黄
-		Color(0.35, 0.50, 0.85),  # 特攻 蓝
-		Color(0.85, 0.35, 0.45),  # 特防 粉红
-		Color(0.40, 0.65, 0.85),  # 速度 浅蓝
-	]
-
-	var sx := DETAIL_X + 320; var sy := DETAIL_Y + 130
-	var bar_w := 80; var bar_h := 6; var row_h := 20
-	var bst_total := 0
-
-	# 性格说明
-	if nature_up != "" and nature_down != "":
-		var up_name = _nature_stat_name(nature_up)
-		var down_name = _nature_stat_name(nature_down)
-		var nature_lbl = Label.new()
-		nature_lbl.text = "%s（+%s -%s）" % [nature_name, up_name, down_name]
-		nature_lbl.position = Vector2(sx, sy - 16)
-		nature_lbl.add_theme_font_size_override("font_size", 9)
-		nature_lbl.add_theme_color_override("font_color", TEXT_SEC)
-		_root.add_child(nature_lbl)
-
+func _draw_stats(mon: Dictionary, sp: Dictionary, rx: int) -> void:
+	var bs = sp.get("base",{})
+	var nd = MonDB.natures.get(mon.get("nature",""),{})
+	var nu = nd.get("up",""); var nd2 = nd.get("down","")
+	var nk = ["","atk","def","sp_atk","sp_def","spd"]
+	var ivs = mon.get("ivs",{})
+	var sy = 108; var rh = 31; var bw = 160; var bh = 10
+	var bst = 0
 	for i in range(6):
-		var val = bs.get(stat_keys[i], 0)
-		bst_total += val
-		var iv_val = ivs.get(stat_keys[i], 0)
-		var ry = sy + i * row_h
-
-		# 性格加减标识
-		var nature_mod = ""
-		if i > 0 and nature_keys[i] == nature_up: nature_mod = "↑"
-		elif i > 0 and nature_keys[i] == nature_down: nature_mod = "↓"
-
-		# 属性名
-		var nm = Label.new()
-		nm.text = stat_names[i]
-		nm.position = Vector2(sx, ry)
-		nm.add_theme_font_size_override("font_size", 9)
-		var nm_col = TEXT_PRI
-		if nature_mod == "↑": nm_col = Color(0.85, 0.30, 0.20)
-		elif nature_mod == "↓": nm_col = Color(0.20, 0.45, 0.85)
-		nm.add_theme_color_override("font_color", nm_col)
-		_root.add_child(nm)
-
-		# 数值
-		var v_lbl = Label.new()
-		v_lbl.text = str(val) + nature_mod
-		v_lbl.position = Vector2(sx + 32, ry)
-		v_lbl.add_theme_font_size_override("font_size", 9)
-		v_lbl.add_theme_color_override("font_color", nm_col)
-		_root.add_child(v_lbl)
-
-		# 条形图背景
-		var bg = ColorRect.new()
-		bg.size = Vector2(bar_w, bar_h); bg.position = Vector2(sx + 62, ry + 4)
-		bg.color = Color(0.90, 0.90, 0.88); _root.add_child(bg)
-
-		# 条形图填充 (max 255 为满格)
+		var val = bs.get(STAT_KEYS[i],0); bst += val
+		var iv_val = ivs.get(STAT_KEYS[i],0)
+		var ry = sy + i * rh
+		var nm_str = ""
+		if i > 0 and nk[i] == nu: nm_str = "↑"
+		elif i > 0 and nk[i] == nd2: nm_str = "↓"
+		var col = STAT_COLORS[i]
+		var nc = C_TEXT
+		if nm_str == "↑": nc = Color(0.95,0.40,0.35)
+		elif nm_str == "↓": nc = Color(0.40,0.60,0.95)
+		var nm = Label.new(); nm.text = STAT_NAMES[i]; nm.position = Vector2(rx, ry)
+		nm.add_theme_font_size_override("font_size", 13)
+		nm.add_theme_color_override("font_color", nc); _root.add_child(nm)
+		var vl = Label.new(); vl.text = "%d%s" % [val, nm_str]; vl.position = Vector2(rx + 42, ry)
+		vl.add_theme_font_size_override("font_size", 14)
+		vl.add_theme_color_override("font_color", nc); _root.add_child(vl)
+		var bg = ColorRect.new(); bg.size = Vector2(bw, bh)
+		bg.position = Vector2(rx + 86, ry + 2); bg.color = Color(0.12,0.16,0.24); _root.add_child(bg)
 		var fill = ColorRect.new()
-		var ratio = clampf(float(val) / 255.0, 0.0, 1.0)
-		fill.size = Vector2(bar_w * ratio, bar_h); fill.position = Vector2(sx + 62, ry + 4)
-		fill.color = bar_colors[i]; _root.add_child(fill)
+		fill.size = Vector2(bw * clampf(float(val)/255.0,0,1), bh)
+		fill.position = Vector2(rx + 86, ry + 2); fill.color = col; _root.add_child(fill)
+		var iv_lbl = Label.new(); iv_lbl.text = "IV.%d" % iv_val
+		iv_lbl.position = Vector2(rx + 252, ry)
+		iv_lbl.add_theme_font_size_override("font_size", 11)
+		iv_lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(iv_lbl)
+	var bst_lbl = Label.new(); bst_lbl.text = "BST  %d" % bst
+	bst_lbl.position = Vector2(rx, sy + 6 * rh + 2)
+	bst_lbl.add_theme_font_size_override("font_size", 12)
+	bst_lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(bst_lbl)
 
-		# IV值
-		var iv_lbl = Label.new()
-		iv_lbl.text = "IV:%d" % iv_val
-		iv_lbl.position = Vector2(sx + 146, ry)
-		iv_lbl.add_theme_font_size_override("font_size", 8)
-		iv_lbl.add_theme_color_override("font_color", TEXT_SEC)
-		_root.add_child(iv_lbl)
-
-	# BST 总和
-	var bst_lbl = Label.new()
-	bst_lbl.text = "BST: %d" % bst_total
-	bst_lbl.position = Vector2(sx, sy + 6 * row_h + 2)
-	bst_lbl.add_theme_font_size_override("font_size", 10)
-	bst_lbl.add_theme_color_override("font_color", TEXT_PRI)
-	_root.add_child(bst_lbl)
-
-func _nature_stat_name(key: String) -> String:
-	match key:
-		"atk": return "物攻"
-		"def": return "物防"
-		"sp_atk": return "特攻"
-		"sp_def": return "特防"
-		"spd": return "速度"
-		_: return key
-
-func _draw_move_cards(mon: Dictionary) -> void:
-	var moves = mon.get("moves", [])
-	var mx := DETAIL_X; var my := DETAIL_Y + 290
-	var mw := 152; var mh := 130; var gap := 8
-
+func _draw_moves(mon: Dictionary, rx: int, my: int) -> void:
+	var moves = mon.get("moves",[])
+	var mw = 295; var mh = 102; var gap = 10
+	var t = Label.new(); t.text = "技能"
+	t.position = Vector2(rx, my - 22)
+	t.add_theme_font_size_override("font_size", 14)
+	t.add_theme_color_override("font_color", C_SUB); _root.add_child(t)
 	for i in range(4):
-		var cx = mx + i * (mw + gap)
-		var is_sel = (_focus == "moves" and _move_cursor == i)
-
-		# 卡片背景
-		var panel = PanelContainer.new()
-		panel.position = Vector2(cx, my)
-		panel.custom_minimum_size = Vector2(mw, mh); panel.size = Vector2(mw, mh)
-		var style = StyleBoxFlat.new()
-		style.bg_color = CARD_COLOR
-		style.corner_radius_top_left = 10; style.corner_radius_top_right = 10
-		style.corner_radius_bottom_left = 10; style.corner_radius_bottom_right = 10
-		if is_sel:
-			style.border_color = CARD_SEL
-			style.border_width_left = 2; style.border_width_right = 2
-			style.border_width_top = 2; style.border_width_bottom = 2
-		panel.add_theme_stylebox_override("panel", style)
+		var col_i = i % 2; var row_i = i / 2
+		var mx = rx + col_i * (mw + gap)
+		var mmy = my + row_i * (mh + gap)
+		var panel = _make_panel(Vector2(mx, mmy), Vector2(mw, mh), C_PANEL, C_DIVIDER, 10, 1)
 		_root.add_child(panel)
+		if i >= moves.size():
+			var em = Label.new(); em.text = "— 空 —"
+			em.position = Vector2(mx + mw/2 - 22, mmy + mh/2 - 10)
+			em.add_theme_font_size_override("font_size", 14)
+			em.add_theme_color_override("font_color", C_DIVIDER); _root.add_child(em); continue
+		var mv_entry = moves[i]
+		var move_id: String = mv_entry.get("id","") if typeof(mv_entry) == TYPE_DICTIONARY else str(mv_entry)
+		var mv = MonDB.moves.get(move_id, {})
+		var mt = mv.get("type","正常")
+		var tc = TYPE_COLORS.get(mt, C_ACCENT)
+		var stripe = ColorRect.new()
+		stripe.size = Vector2(5, mh); stripe.position = Vector2(mx, mmy)
+		stripe.color = tc; _root.add_child(stripe)
+		var nl = Label.new(); nl.text = mv.get("name", move_id)
+		nl.position = Vector2(mx + 14, mmy + 10)
+		nl.add_theme_font_size_override("font_size", 16)
+		nl.add_theme_color_override("font_color", C_TEXT); _root.add_child(nl)
+		var bb = ColorRect.new()
+		bb.size = Vector2(44, 20); bb.position = Vector2(mx + mw - 52, mmy + 9)
+		bb.color = tc; _root.add_child(bb)
+		var bt = Label.new(); bt.text = mt; bt.position = Vector2(mx + mw - 50, mmy + 10)
+		bt.add_theme_font_size_override("font_size", 11)
+		bt.add_theme_color_override("font_color", Color.WHITE); _root.add_child(bt)
+		var pow_str = str(mv.get("power",0)) if mv.get("power",0) > 0 else "—"
+		var acc_str = str(mv.get("accuracy",100)) if mv.get("accuracy",0) > 0 else "—"
+		var pl = Label.new(); pl.text = "威力%s  命中%s" % [pow_str, acc_str]
+		pl.position = Vector2(mx + 14, mmy + 36)
+		pl.add_theme_font_size_override("font_size", 13)
+		pl.add_theme_color_override("font_color", C_SUB); _root.add_child(pl)
+		var pp_cur = mv_entry.get("pp", mv.get("pp",0)) if typeof(mv_entry) == TYPE_DICTIONARY else mv.get("pp",0)
+		var pp_max = mv_entry.get("max_pp", mv.get("pp",0)) if typeof(mv_entry) == TYPE_DICTIONARY else mv.get("pp",0)
+		var pp_lbl = Label.new(); pp_lbl.text = "PP  %d / %d" % [pp_cur, pp_max]
+		pp_lbl.position = Vector2(mx + 14, mmy + 56)
+		pp_lbl.add_theme_font_size_override("font_size", 13)
+		pp_lbl.add_theme_color_override("font_color", C_SUB); _root.add_child(pp_lbl)
+		var cat = mv.get("category","物理")
+		var cat_col = Color(0.92,0.42,0.28) if cat=="物理" else Color(0.42,0.55,0.90) if cat=="特殊" else Color(0.60,0.60,0.60)
+		var cl = Label.new(); cl.text = cat; cl.position = Vector2(mx + 14, mmy + 76)
+		cl.add_theme_font_size_override("font_size", 12)
+		cl.add_theme_color_override("font_color", cat_col); _root.add_child(cl)
 
-		# 左侧属性色条
-		var bar = ColorRect.new()
-		bar.size = Vector2(6, mh - 20); bar.position = Vector2(cx + 4, my + 10)
-		if i < moves.size():
-			var move_data = MonDB.moves.get(moves[i].get("id", ""), {})
-			var move_type = move_data.get("type", "普通")
-			bar.color = MonDB.type_colors.get(move_type, MOVE_ACCENT)
-		else:
-			bar.color = Color(0.85, 0.85, 0.85)
-		_root.add_child(bar)
-
-		if i < moves.size():
-			var move = moves[i]
-			var move_data = MonDB.moves.get(move.get("id", ""), {})
-
-			# 技能名
-			var nm = Label.new()
-			nm.text = move.get("id", "???")
-			nm.position = Vector2(cx + 16, my + 8)
-			nm.add_theme_font_size_override("font_size", 12)
-			nm.add_theme_color_override("font_color", TEXT_PRI)
-			_root.add_child(nm)
-
-			# 属性
-			var tp = Label.new()
-			tp.text = move_data.get("type", "")
-			tp.position = Vector2(cx + 16, my + 30)
-			tp.add_theme_font_size_override("font_size", 10)
-			tp.add_theme_color_override("font_color", MonDB.type_colors.get(move_data.get("type", ""), TEXT_SEC))
-			_root.add_child(tp)
-
-			# 威力/命中
-			var pw_lbl = Label.new()
-			var power = move_data.get("power", 0)
-			var acc = move_data.get("accuracy", 100)
-			pw_lbl.text = "威力%s 命中%s" % [str(power) if power > 0 else "—", str(acc)]
-			pw_lbl.position = Vector2(cx + 16, my + 50)
-			pw_lbl.add_theme_font_size_override("font_size", 9)
-			pw_lbl.add_theme_color_override("font_color", TEXT_SEC)
-			_root.add_child(pw_lbl)
-
-			# PP
-			var pp = Label.new()
-			var cur_pp = move.get("pp", move_data.get("pp", 0))
-			var max_pp = move_data.get("pp", 0)
-			pp.text = "PP %d/%d" % [cur_pp, max_pp]
-			pp.position = Vector2(cx + 16, my + 76)
-			pp.add_theme_font_size_override("font_size", 11)
-			pp.add_theme_color_override("font_color", TEXT_PRI)
-			_root.add_child(pp)
-
-			# 分类
-			var cat = Label.new()
-			cat.text = move_data.get("category", "")
-			cat.position = Vector2(cx + 16, my + 96)
-			cat.add_theme_font_size_override("font_size", 9)
-			cat.add_theme_color_override("font_color", TEXT_SEC)
-			_root.add_child(cat)
-		else:
-			var empty = Label.new()
-			empty.text = "— 空 —"
-			empty.position = Vector2(cx + mw/2 - 20, my + mh/2 - 6)
-			empty.add_theme_font_size_override("font_size", 11)
-			empty.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75))
-			_root.add_child(empty)
-
-func _draw_flavor_info(mon: Dictionary, sp: Dictionary) -> void:
-	var fx := DETAIL_X; var fy := DETAIL_Y + 430
-	var fw := RIGHT_W; var fh := 140
-
-	# 背景卡片
-	var panel = PanelContainer.new()
-	panel.position = Vector2(fx, fy)
-	panel.custom_minimum_size = Vector2(fw, fh); panel.size = Vector2(fw, fh)
-	var style = StyleBoxFlat.new()
-	style.bg_color = CARD_COLOR
-	style.set_corner_radius_all(10)
-	panel.add_theme_stylebox_override("panel", style)
+func _draw_desc(mon: Dictionary, sp: Dictionary, rx: int, my: int) -> void:
+	var pw = VW - rx - 14; var ph = 214
+	var panel = _make_panel(Vector2(rx, my), Vector2(pw, ph), C_PANEL, C_DIVIDER, 10, 1)
 	_root.add_child(panel)
-
-	# 左侧：描述文案
-	var desc = sp.get("desc", "")
+	var desc = sp.get("description","")
 	if desc != "":
-		var desc_lbl = Label.new()
-		desc_lbl.text = desc
-		desc_lbl.position = Vector2(fx + 12, fy + 8)
-		desc_lbl.custom_minimum_size = Vector2(fw * 0.48, fh - 16)
-		desc_lbl.size = Vector2(fw * 0.48, fh - 16)
-		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc_lbl.add_theme_font_size_override("font_size", 10)
-		desc_lbl.add_theme_color_override("font_color", TEXT_SEC)
-		_root.add_child(desc_lbl)
-
-	# 右侧：身高体重 + 相遇信息
-	var rx := fx + int(fw * 0.62); var ry := fy + 10
-	var height_str = sp.get("height", "?")
-	var weight_str = sp.get("weight", "?")
-	_flavor_lbl("身高: %sm" % str(height_str), rx, ry)
-	_flavor_lbl("体重: %skg" % str(weight_str), rx, ry + 16)
-
-	# 相遇信息
-	var met_date = mon.get("met_date", "")
-	var met_loc = mon.get("met_location", "")
+		var dl = Label.new(); dl.text = desc
+		dl.position = Vector2(rx + 12, my + 12); dl.size = Vector2(pw - 24, 120)
+		dl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dl.add_theme_font_size_override("font_size", 13)
+		dl.add_theme_color_override("font_color", C_TEXT); _root.add_child(dl)
+	var h = sp.get("height",0.0); var w = sp.get("weight",0.0)
+	if h > 0 or w > 0:
+		var hw = Label.new(); hw.text = "身高 %.1fm   体重 %.1fkg" % [h, w]
+		hw.position = Vector2(rx + 12, my + 152)
+		hw.add_theme_font_size_override("font_size", 13)
+		hw.add_theme_color_override("font_color", C_SUB); _root.add_child(hw)
+	var met_date = mon.get("met_date",""); var met_loc = mon.get("met_location","")
 	if met_date != "" or met_loc != "":
-		var met_text = ""
-		if met_date != "" and met_loc != "":
-			met_text = "%s\n在「%s」相遇" % [met_date, met_loc]
-		elif met_loc != "":
-			met_text = "在「%s」相遇" % met_loc
-		else:
-			met_text = met_date
-		var met_lbl = Label.new()
-		met_lbl.text = met_text
-		met_lbl.position = Vector2(rx, ry + 56)
-		met_lbl.custom_minimum_size = Vector2(fw * 0.38, 40)
-		met_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		met_lbl.add_theme_font_size_override("font_size", 9)
-		met_lbl.add_theme_color_override("font_color", Color(0.55, 0.50, 0.40))
-		_root.add_child(met_lbl)
-	else:
-		# 旧存档精灵没有相遇信息
-		_flavor_lbl("初始的伙伴", rx, ry + 56)
+		var met = Label.new()
+		met.text = ("%s  在「%s」相遇" % [met_date, met_loc]) if met_date != "" else ("在「%s」相遇" % met_loc)
+		met.position = Vector2(rx + 12, my + 180)
+		met.add_theme_font_size_override("font_size", 12)
+		met.add_theme_color_override("font_color", C_SUB); _root.add_child(met)
 
-func _flavor_lbl(text: String, x: int, y: int) -> void:
-	var lbl = Label.new()
-	lbl.text = text; lbl.position = Vector2(x, y)
-	lbl.add_theme_font_size_override("font_size", 9)
-	lbl.add_theme_color_override("font_color", TEXT_SEC)
-	_root.add_child(lbl)
-
-func _draw_action_buttons() -> void:
-	var by := VH - 56; var bw := 120; var bh := 38; var gap := 12
-	var total_w = ACTION_LABELS.size() * bw + (ACTION_LABELS.size()-1) * gap
-	var start_x = DETAIL_X + (RIGHT_W - total_w) / 2
-
-	for i in range(ACTION_LABELS.size()):
-		var bx = start_x + i * (bw + gap)
-		var is_sel = (_focus == "actions" and _action_cursor == i)
-
-		var panel = PanelContainer.new()
-		panel.position = Vector2(bx, by)
-		panel.custom_minimum_size = Vector2(bw, bh); panel.size = Vector2(bw, bh)
-		var style = StyleBoxFlat.new()
-		style.bg_color = BTN_SEL if is_sel else BTN_COLOR
-		style.corner_radius_top_left = 10; style.corner_radius_top_right = 10
-		style.corner_radius_bottom_left = 10; style.corner_radius_bottom_right = 10
-		panel.add_theme_stylebox_override("panel", style)
-		_root.add_child(panel)
-
-		var lbl = Label.new()
-		lbl.text = ACTION_LABELS[i]
-		lbl.position = Vector2(bx + bw/2 - 12, by + bh/2 - 8)
-		lbl.add_theme_font_size_override("font_size", 13)
-		lbl.add_theme_color_override("font_color", Color.WHITE if is_sel else TEXT_PRI)
+func _draw_actions() -> void:
+	var bw = 130; var bh = 44; var gap = 16
+	var total_w = 3 * bw + 2 * gap
+	var bx = VW/2 - total_w/2; var by = VH - bh - 12
+	for i in range(ACTIONS.size()):
+		var sel = (_focus == "actions" and _action_cursor == i)
+		var bxi = bx + i * (bw + gap)
+		var btn = _make_panel(Vector2(bxi, by), Vector2(bw, bh),
+			C_ACCENT if sel else C_PANEL,
+			C_SEL_BORDER if sel else C_DIVIDER, 10, 2 if sel else 1)
+		_root.add_child(btn)
+		var lbl = Label.new(); lbl.text = ACTIONS[i]
+		lbl.position = Vector2(bxi + bw/2 - 20, by + 10)
+		lbl.add_theme_font_size_override("font_size", 17)
+		lbl.add_theme_color_override("font_color", Color.WHITE if sel else C_TEXT)
 		_root.add_child(lbl)
 
-# ── 键盘导航 ──────────────────────────────────────────────────────────────────
-func _input(event: InputEvent) -> void:
-	if not visible: return
-	var team = GameState.player_team
+func _draw_close_btn() -> void:
+	var cl = Label.new(); cl.text = "✕  [Esc]"
+	cl.position = Vector2(VW - 84, 16)
+	cl.add_theme_font_size_override("font_size", 14)
+	cl.add_theme_color_override("font_color", C_SUB); _root.add_child(cl)
 
-	# X / Esc 关闭
+func _make_panel(pos: Vector2, size: Vector2, bg: Color, border: Color, radius: int, bw: int) -> PanelContainer:
+	var p = PanelContainer.new()
+	p.position = pos; p.custom_minimum_size = size; p.size = size
+	var s = StyleBoxFlat.new(); s.bg_color = bg
+	s.corner_radius_top_left = radius; s.corner_radius_top_right = radius
+	s.corner_radius_bottom_left = radius; s.corner_radius_bottom_right = radius
+	s.border_color = border
+	s.border_width_left = bw; s.border_width_right = bw
+	s.border_width_top = bw; s.border_width_bottom = bw
+	p.add_theme_stylebox_override("panel", s); return p
+
+func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
-		_close(); return
-
-	match _focus:
-		"party":
-			if event.is_action_pressed("ui_up"):
-				get_viewport().set_input_as_handled()
-				_party_cursor = (_party_cursor - 1 + max(team.size(), 1)) % max(team.size(), 1)
-				_render()
-			elif event.is_action_pressed("ui_down"):
-				get_viewport().set_input_as_handled()
-				_party_cursor = (_party_cursor + 1) % max(team.size(), 1)
-				_render()
-			elif event.is_action_pressed("ui_right") or event.is_action_pressed("ui_accept"):
-				get_viewport().set_input_as_handled()
-				if _party_cursor < team.size():
-					_focus = "moves"; _move_cursor = 0; _render()
-		"moves":
-			if event.is_action_pressed("ui_left"):
-				get_viewport().set_input_as_handled()
-				if _move_cursor == 0:
-					_focus = "party"; _render()
-				else:
-					_move_cursor -= 1; _render()
-			elif event.is_action_pressed("ui_right"):
-				get_viewport().set_input_as_handled()
-				var move_count = team[_party_cursor].get("moves", []).size()
-				if _move_cursor < min(move_count, 4) - 1:
-					_move_cursor += 1; _render()
-			elif event.is_action_pressed("ui_down"):
-				get_viewport().set_input_as_handled()
-				_focus = "actions"; _action_cursor = 0; _render()
-			elif event.is_action_pressed("ui_up"):
-				get_viewport().set_input_as_handled()
-				_focus = "info"; _info_cursor = 0; _render()
-		"info":
-			if event.is_action_pressed("ui_left"):
-				get_viewport().set_input_as_handled()
-				if _info_cursor % 2 == 1: _info_cursor -= 1; _render()
-				else: _focus = "party"; _render()
-			elif event.is_action_pressed("ui_right"):
-				get_viewport().set_input_as_handled()
-				if _info_cursor % 2 == 0 and _info_cursor + 1 < INFO_LABELS.size():
-					_info_cursor += 1; _render()
-			elif event.is_action_pressed("ui_up"):
-				get_viewport().set_input_as_handled()
-				if _info_cursor >= 2: _info_cursor -= 2; _render()
-			elif event.is_action_pressed("ui_down"):
-				get_viewport().set_input_as_handled()
-				if _info_cursor + 2 < INFO_LABELS.size():
-					_info_cursor += 2; _render()
-				else:
-					_focus = "moves"; _move_cursor = 0; _render()
-		"actions":
-			if event.is_action_pressed("ui_left"):
-				get_viewport().set_input_as_handled()
-				_action_cursor = max(_action_cursor - 1, 0); _render()
-			elif event.is_action_pressed("ui_right"):
-				get_viewport().set_input_as_handled()
-				_action_cursor = min(_action_cursor + 1, ACTION_LABELS.size() - 1); _render()
-			elif event.is_action_pressed("ui_up"):
-				get_viewport().set_input_as_handled()
-				_focus = "moves"; _render()
-			elif event.is_action_pressed("ui_accept"):
-				get_viewport().set_input_as_handled()
-				_handle_action(ACTION_LABELS[_action_cursor])
-
-func _handle_action(action: String) -> void:
-	match action:
-		"返回": _close()
-		"排序": pass  # TODO: 排序逻辑
-		"替换": pass  # TODO: 仓库替换
-
-func _close() -> void:
-	closed.emit()
-	queue_free()
-
-# ── 工具 ──────────────────────────────────────────────────────────────────────
-func _calc_bst(mon: Dictionary) -> int:
-	# 260709 Red 读种族值base，不是个体战斗属性
-	var sp = MonDB.species.get(mon.get("species_id", ""), {})
-	var bs = sp.get("base", {})
-	return bs.get("hp", 0) + bs.get("atk", 0) + bs.get("def", 0) + \
-		   bs.get("sp_atk", 0) + bs.get("sp_def", 0) + bs.get("spd", 0)
+		closed.emit(); queue_free(); return
+	if _focus == "party":
+		if event.is_action_pressed("ui_down"):
+			_cursor = (_cursor + 1) % max(GameState.player_team.size(), 1)
+			get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_up"):
+			_cursor = (_cursor - 1 + max(GameState.player_team.size(),1)) % max(GameState.player_team.size(),1)
+			get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_accept"):
+			_focus = "actions"; get_viewport().set_input_as_handled(); _render()
+	elif _focus == "actions":
+		if event.is_action_pressed("ui_left"):
+			_action_cursor = (_action_cursor - 1 + ACTIONS.size()) % ACTIONS.size()
+			get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_right"):
+			_action_cursor = (_action_cursor + 1) % ACTIONS.size()
+			get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_cancel"):
+			_focus = "party"; get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_accept"):
+			if _action_cursor == 2:
+				closed.emit(); queue_free()
+			get_viewport().set_input_as_handled()
