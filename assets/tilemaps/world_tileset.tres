@@ -1,9 +1,9 @@
 [gd_resource type="TileSet" format=3 uid="uid://dmmc27tsay1lw"]
 
 [ext_resource type="Texture2D" uid="uid://bo6fcp13t1klp" path="res://assets/tilemaps/world_tiles32.png" id="1"]
-[ext_resource type="Texture2D" uid="uid://bjpmtcknnchoi" path="res://assets/backgrounds/buildings/普通小屋.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://c722d61brdwx7" path="res://assets/backgrounds/buildings/杂货铺.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://di8yuk07qr4tf" path="res://assets/backgrounds/buildings/精灵堂.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://ccgolre10q0iy" path="res://assets/backgrounds/buildings/普通小屋.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://y3xbmprnb5ry" path="res://assets/backgrounds/buildings/杂货铺.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://3auh75afekc5" path="res://assets/backgrounds/buildings/精灵堂.png" id="4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_main"]
 texture = ExtResource("1")

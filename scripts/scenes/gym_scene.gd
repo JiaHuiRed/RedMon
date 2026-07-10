@@ -90,48 +90,8 @@ func _load_trainer_data() -> void:
 
 # ── 室内绘制 ──────────────────────────────────────────────────────────────────
 func _build_room() -> void:
-	if has_node("Room"):
-		_build_floor()
-		return
-
-	# 260630 Red 翠竹馆内背景（有图用图，无图用纯色）
-	var bg_path = "res://assets/backgrounds/翠竹馆内.png"
-	if ResourceLoader.exists(bg_path):
-		var tr := TextureRect.new()
-		tr.size = Vector2(VW, VH)
-		tr.texture = load(bg_path)
-		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		add_child(tr)
-	else:
-		var wall = ColorRect.new()
-		wall.size = Vector2(VW, VH)
-		wall.color = Color(0.18, 0.28, 0.14)
-		add_child(wall)
-
+	# 260710 Red 视觉内容已迁移到 翠竹馆.tscn，此处只生成地板
 	_build_floor()
-
-	# 出口（底部中央）
-	var exit_lbl = Label.new()
-	exit_lbl.text = "▼ 出口"
-	exit_lbl.position = Vector2(13 * TILE, (ROWS - 1) * TILE + 2)
-	exit_lbl.add_theme_color_override("font_color", Color(1, 1, 0.6))
-	exit_lbl.add_theme_font_size_override("font_size", 11)
-	add_child(exit_lbl)
-
-	# 馆主站台（顶部平台）
-	var podium = ColorRect.new()
-	podium.size     = Vector2(5 * TILE, 2 * TILE)
-	podium.position = Vector2(12 * TILE, 2 * TILE)
-	podium.color    = Color(0.28, 0.48, 0.20)
-	add_child(podium)
-
-	var gym_sign = Label.new()
-	gym_sign.text = "翠 竹 馆"
-	gym_sign.position = Vector2(12 * TILE + 20, 8)
-	gym_sign.add_theme_color_override("font_color", Color(0.9, 1.0, 0.7))
-	gym_sign.add_theme_font_size_override("font_size", 14)
-	add_child(gym_sign)
 
 func _build_floor() -> void:
 	for r in range(2, ROWS - 1):
@@ -222,7 +182,10 @@ func _make_leader_sprite() -> ImageTexture:
 # ── 玩家 ─────────────────────────────────────────────────────────────────────
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
-	_player.position = Vector2(TILE * 14, TILE * (ROWS - 2))
+	if has_node("玩家出生"):
+		_player.position = get_node("玩家出生").position
+	else:
+		_player.position = Vector2(TILE * 14, TILE * (ROWS - 2))
 	add_child(_player)
 	_player_spr = Sprite2D.new()
 	_player_spr.z_index = 6

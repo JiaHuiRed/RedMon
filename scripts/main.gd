@@ -72,8 +72,8 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 	# 260704 Red .tscn 场景优先，纯脚本场景 fallback
 	# 260708 Red village/world/town 不再独立加载，统一走 overworld
 	var _TSCN_SCENES := {
-		"gym":     "res://scenes/gym.tscn",
-		"overworld": "res://scenes/overworld.tscn",
+		"gym":     "res://scenes/翠竹馆.tscn",
+		"overworld": "res://scenes/大世界.tscn",
 	}
 	if _TSCN_SCENES.has(scene_name):
 		_current = load(_TSCN_SCENES[scene_name]).instantiate()

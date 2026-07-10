@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://gym_tscn"]
+[gd_scene format=4]
 
 [ext_resource type="Script" path="res://scripts/scenes/gym_scene.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/翠竹馆内.png" id="2"]
@@ -14,19 +14,29 @@ size = Vector2(960, 640)
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Podium" type="ColorRect" parent="Room"]
-position = Vector2(384, 64)
-size = Vector2(160, 64)
-color = Color(0.28, 0.48, 0.20)
-
 [node name="GymSign" type="Label" parent="Room"]
 position = Vector2(404, 8)
 text = "翠 竹 馆"
-theme_override_colors/font_color = Color(0.9, 1.0, 0.7)
 theme_override_font_sizes/font_size = 14
 
 [node name="ExitLabel" type="Label" parent="Room"]
 position = Vector2(416, 610)
 text = "▼ 出口"
-theme_override_colors/font_color = Color(1, 1, 0.6)
 theme_override_font_sizes/font_size = 11
+
+[node name="玩家出生" type="Marker2D" parent="."]
+position = Vector2(464, 576)
+
+[node name="出口" type="Marker2D" parent="."]
+position = Vector2(448, 608)
+
+[node name="守卫位置" type="Node2D" parent="."]
+
+[node name="g1" type="Marker2D" parent="守卫位置"]
+position = Vector2(288, 384)
+
+[node name="g2" type="Marker2D" parent="守卫位置"]
+position = Vector2(640, 384)
+
+[node name="馆主" type="Marker2D" parent="."]
+position = Vector2(448, 128)

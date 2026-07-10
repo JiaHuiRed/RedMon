@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.4] - 2026-07-10
+
+### 新增
+- 翠竹馆.tscn：背景/GymSign/ExitLabel/Marker2D(玩家出生/出口/守卫位置/馆主)迁移到场景文件
+- 翠竹馆.tscn：Marker2D定位(玩家出生/出口/守卫g1,g2/馆主)
+
+### 修复
+- gym_scene.gd：删除死代码(_build_room视觉生成逻辑)，改由.tscn提供
+- gym_scene.gd：玩家出生位置优先读Marker2D节点
+- main.gd：场景路径更新(翠竹馆.tscn/大世界.tscn)
+- Color三分量→四分量(Godot 4.7兼容)，修复翠竹馆解析错误
+- 删除调试产生的乱码临时文件
+
 ## [0.17.5] - 2026-07-09
 
 > 队伍 UI 交互修复 + tileset 碰撞系统搭建。
