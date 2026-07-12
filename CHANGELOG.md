@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.18.0] - 2026-07-12
+
+> 154 只新精灵 + 队伍扩容至 7 + 精灵命名系统
+
+### 新增
+- **154 只新精灵**（id 238-391）：全新设计的精灵，含完整种族值/特性/技能池/描述（`data/species.json`）
+- **精灵命名系统**：捕获后弹出取名对话框，队伍菜单可改名一次（`scripts/ui/name_dialog.gd`、`scripts/scenes/battle_scene.gd`、`scripts/ui/party_ui.gd`）
+- **队伍上限扩容至 7**：`GameState.PARTY_MAX` 常量统一管理，捕获/战斗/菜单/道具全部适配（`scripts/autoload/game_state.gd`、`scripts/scenes/battle_scene.gd`、`scripts/ui/party_ui.gd`、`scripts/scenes/overworld_scene.gd`、`scripts/scenes/world_scene.gd`、`scripts/main.gd`）
+
+### 修复
+- **战斗精灵缩放不一致**：改用实际内容高度（去除透明边距）计算缩放比例，人形精灵不再过小（`scripts/scenes/battle_scene.gd` `_rescale_sprite`）
+
+---
+
 ## [0.17.8] - 2026-07-12
 
 ### 修复

@@ -347,7 +347,7 @@ func _draw_pause_bag_target() -> void:
 	_m_div(42)
 	var team = GameState.player_team
 	var cw = _PW - 32; var ch = 44
-	for i in range(min(team.size(), 6)):
+	for i in range(min(team.size(), GameState.PARTY_MAX)):
 		var mon = team[i]
 		var sel = i == _target_cursor
 		var cy = 50 + i * (ch + 6)

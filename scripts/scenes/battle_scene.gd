@@ -269,10 +269,23 @@ func _draw_cloud(pos: Vector2, w: float, h: float) -> void:
 	spr.z_index = 1
 	add_child(spr)
 
-# 260709 Red 按目标高度归一化精灵缩放
+# 260712 Red 按精灵实际内容高度归一化，消除透明边距差异
 func _rescale_sprite(spr: Sprite2D, target_h: float) -> void:
-	var tex_h := float(spr.texture.get_height()) if spr.texture else 384.0
-	var s := target_h / tex_h
+	if not spr.texture: return
+	var img: Image = spr.texture.get_image()
+	if not img: return
+	# 扫描非透明像素的实际边界
+	var tex_w: int = img.get_width(); var tex_h: int = img.get_height()
+	var top: int = tex_h; var bottom: int = 0
+	for y in range(tex_h):
+		for x in range(tex_w):
+			if img.get_pixel(x, y).a > 0.1:
+				if y < top: top = y
+				if y > bottom: bottom = y
+				break  # 这一行已有非透明像素，跳到下一行
+	var content_h = float(bottom - top + 1)
+	if content_h < 1.0: content_h = float(tex_h)  # fallback
+	var s = target_h / content_h
 	spr.scale = Vector2(s, s)
 
 func _make_platform(pos: Vector2, w: float, h: float, color: Color) -> ColorRect:
@@ -623,9 +636,19 @@ func _on_use_item(item_id: String) -> void:
 		var success = await _anim_throw_gourd(item_id, catch_mult)
 		if success:
 			GameState.caught_count += 1
-			if GameState.player_team.size() < 6:
+			# 260712 Red 捕获后取名
+			var dialog = preload("res://scripts/ui/name_dialog.gd").new()
+			add_child(dialog)
+			dialog.open(MonDB.species[_enemy_mon["species_id"]]["name"])
+			var chosen_name: String = await dialog.name_chosen
+			if chosen_name != "":
+				_enemy_mon["nickname"] = chosen_name
+			if GameState.player_team.size() < GameState.PARTY_MAX:
 				GameState.add_mon(_enemy_mon)
-				await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
+				if chosen_name != "":
+					await _show_message_async("%s 加入了队伍！\n给它取名叫「%s」！" % [MonDB.display_name(_enemy_mon), chosen_name])
+				else:
+					await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
 			else:
 				# 260709 Red 仓库也记录相遇信息
 				if not _enemy_mon.has("met_date"):
@@ -634,7 +657,10 @@ func _on_use_item(item_id: String) -> void:
 				if not _enemy_mon.has("met_location"):
 					_enemy_mon["met_location"] = GameState.last_scene
 				GameState.pc_box.append(_enemy_mon)
-				await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
+				if chosen_name != "":
+					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。\n给它取名叫「%s」！" % [MonDB.display_name(_enemy_mon), chosen_name])
+				else:
+					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
 			_busy = false
 			GameState.save_game()
 			_end_battle("caught")
@@ -734,7 +760,7 @@ func _build_mon_panel() -> void:
 	_mon_panel.add_child(_mon_flee_btn)
 
 	_mon_btns = []
-	for i in range(6):
+	for i in range(GameState.PARTY_MAX):
 		var btn = Button.new()
 		btn.size = Vector2(VW - 20, 40)
 		btn.position = Vector2(10, 32 + i * 44)
@@ -752,7 +778,7 @@ func _build_mon_panel() -> void:
 func _refresh_mon_panel() -> void:
 	_mon_close_btn.visible = not _force_switch
 	_mon_flee_btn.visible = _force_switch and not _is_trainer  # 260708 Red 野生战可逃
-	for i in range(6):
+	for i in range(GameState.PARTY_MAX):
 		var btn: Button = _mon_btns[i]
 		if i < GameState.player_team.size():
 			var m       = GameState.player_team[i]

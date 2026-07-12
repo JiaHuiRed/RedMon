@@ -1,5 +1,7 @@
 extends Node
 
+const PARTY_MAX := 7  # 队伍最大精灵数
+
 var player_name: String = "小明"
 var player_gender: String = "男"
 var rival_name: String = "小敏"   # 劲敌名字，角色创建时设定
@@ -8,7 +10,7 @@ var has_starter: bool = false
 var badges: int = 0
 var money: int = 500
 var items: Dictionary = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
-var pc_box: Array = []              # 精灵堂仓库（队伍满6时捕捉的精灵送到这里）
+var pc_box: Array = []              # 精灵堂仓库（队伍满时捕捉的精灵送到这里）
 var caught_count: int = 0           # 260630 Red 累计捕捉数（林薇奖励用）
 var linwei_reward_tier: int = 0     # 260630 Red 林薇已发放的奖励阶段（每10只+1）
 var has_running_shoes: bool = false  # 260630 Red 跑步鞋（林薇赠送）

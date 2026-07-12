@@ -785,7 +785,7 @@ func _menu_draw_party() -> void:
 	if team.is_empty():
 		_menu_lbl("队伍为空", 14, 50, 11, Color(0.55, 0.55, 0.60))
 	else:
-		for i in range(min(team.size(), 6)):
+		for i in range(min(team.size(), GameState.PARTY_MAX)):
 			var mon = team[i]
 			var ry = 34 + i * 48
 			var sp = MonDB.species[mon["species_id"]]

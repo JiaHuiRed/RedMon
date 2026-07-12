@@ -4,7 +4,7 @@ signal closed
 
 const VW := 1280; const VH := 720
 const LEFT_W  := 300
-const CARD_H  := 96
+const CARD_H  := 80
 const CARD_GAP := 8
 const CARD_X  := 12
 const CARD_Y  := 56
@@ -40,7 +40,7 @@ const STAT_COLORS := [
 ]
 const STAT_KEYS  := ["hp","atk","def","sp_atk","sp_def","spd"]
 const STAT_NAMES := ["HP","攻击","防御","特攻","特防","速度"]
-const ACTIONS    := ["排序","替换","返回"]
+const ACTIONS    := ["排序","替换","改名","返回"]
 const TIER_COLORS := {
 	"普通": Color(0.878, 0.906, 0.953),  # 白
 	"精英": Color(0.278, 0.808, 0.408),  # 绿
@@ -52,6 +52,8 @@ var _root: Control
 var _cursor: int = 0
 var _focus: String = "party"
 var _action_cursor: int = 0
+var _swap_idx: int = -1  # -1 = 不在替换模式, >=0 = 待交换的目标位
+var _busy: bool = false  # 260712 Red 取名对话框打开时锁输入
 
 func _ready() -> void:
 	layer = 51
@@ -84,11 +86,12 @@ func _draw_bg() -> void:
 
 func _draw_left() -> void:
 	var title = Label.new()
-	title.text = "我的精灵"; title.position = Vector2(CARD_X + 6, 16)
+	title.text = "替换 - 选择要交换的精灵" if _swap_idx >= 0 else "我的精灵"
+	title.position = Vector2(CARD_X + 6, 16)
 	title.add_theme_font_size_override("font_size", 20)
 	title.add_theme_color_override("font_color", C_TEXT); _root.add_child(title)
 	var team = GameState.player_team
-	for i in range(6):
+	for i in range(GameState.PARTY_MAX):
 		var cy = CARD_Y + i * (CARD_H + CARD_GAP)
 		if i < team.size(): _draw_card(i, team[i], cy)
 		else: _draw_empty_card(cy)
@@ -99,9 +102,10 @@ func _draw_card(idx: int, mon: Dictionary, cy: int) -> void:
 	var t1 = sp.get("type1","空")
 	var tc = TYPE_COLORS.get(t1, C_ACCENT)
 	var cw = LEFT_W - CARD_X * 2
+	var swap_target = (_swap_idx >= 0 and idx == _swap_idx)
 	var panel = _make_panel(Vector2(CARD_X, cy), Vector2(cw, CARD_H),
 		C_CARD_SEL if sel else C_CARD,
-		C_SEL_BORDER if sel else C_CARD_BORDER, 12, 2 if sel else 1)
+		C_ACCENT if swap_target else (C_SEL_BORDER if sel else C_CARD_BORDER), 12, 3 if swap_target else (2 if sel else 1))
 	_root.add_child(panel)
 	var stripe = ColorRect.new()
 	stripe.size = Vector2(4, CARD_H - 16); stripe.position = Vector2(CARD_X + 6, cy + 8)
@@ -294,7 +298,7 @@ func _draw_moves(mon: Dictionary, rx: int, my: int) -> void:
 		var nl = Label.new(); nl.text = mv.get("name", move_id)
 		nl.position = Vector2(mx + 14, mmy + 10)
 		nl.add_theme_font_size_override("font_size", 16)
-	nl.add_theme_color_override("font_color", TIER_COLORS.get(mon.get("wild_tier","普通"), C_TEXT)); _root.add_child(nl)
+		nl.add_theme_color_override("font_color", TIER_COLORS.get(mon.get("wild_tier","普通"), C_TEXT)); _root.add_child(nl)
 		var bb = ColorRect.new()
 		bb.size = Vector2(44, 20); bb.position = Vector2(mx + mw - 52, mmy + 9)
 		bb.color = tc; _root.add_child(bb)
@@ -439,9 +443,26 @@ func _make_panel(pos: Vector2, size: Vector2, bg: Color, border: Color, radius: 
 	s.border_width_top = bw; s.border_width_bottom = bw
 	p.add_theme_stylebox_override("panel", s); return p
 
+func _show_rename_dialog() -> void:
+	var team = GameState.player_team
+	if _cursor >= team.size(): return
+	var mon = team[_cursor]
+	_busy = true
+	var dialog = preload("res://scripts/ui/name_dialog.gd").new()
+	get_tree().current_scene.add_child(dialog)
+	dialog.open(MonDB.species[mon["species_id"]]["name"])
+	var chosen_name: String = await dialog.name_chosen
+	if chosen_name != "":
+		mon["nickname"] = chosen_name
+	_busy = false
+	_focus = "party"; _render()
+
 func _input(event: InputEvent) -> void:
+	if _busy: return
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
+		if _swap_idx >= 0:
+			_swap_idx = -1; _render(); return
 		closed.emit(); queue_free(); return
 	if _focus == "party":
 		if event.is_action_pressed("ui_down"):
@@ -451,7 +472,14 @@ func _input(event: InputEvent) -> void:
 			_cursor = (_cursor - 1 + max(GameState.player_team.size(),1)) % max(GameState.player_team.size(),1)
 			get_viewport().set_input_as_handled(); _render()
 		elif event.is_action_pressed("ui_accept"):
-			_focus = "actions"; get_viewport().set_input_as_handled(); _render()
+			if _swap_idx >= 0:  # 替换模式：交换两只精灵
+				if _swap_idx != _cursor:
+					var team = GameState.player_team
+					var tmp = team[_swap_idx]; team[_swap_idx] = team[_cursor]; team[_cursor] = tmp
+				_swap_idx = -1; _focus = "party"; _render()
+			else:
+				_focus = "actions"; _render()
+			get_viewport().set_input_as_handled()
 	elif _focus == "actions":
 		if event.is_action_pressed("ui_left"):
 			_action_cursor = (_action_cursor - 1 + ACTIONS.size()) % ACTIONS.size()
@@ -462,6 +490,18 @@ func _input(event: InputEvent) -> void:
 		elif event.is_action_pressed("ui_cancel"):
 			_focus = "party"; get_viewport().set_input_as_handled(); _render()
 		elif event.is_action_pressed("ui_accept"):
-			if _action_cursor == 2:
+			if _action_cursor == 0:  # 排序
+				var team = GameState.player_team
+				team.sort_custom(func(a,b):
+					var sa = MonDB.species.get(a.get("species_id",""),{})
+					var sb = MonDB.species.get(b.get("species_id",""),{})
+					return sa.get("id",999) < sb.get("id",999)
+				)
+				_focus = "party"; _cursor = 0; _render()
+			elif _action_cursor == 1:  # 替换
+				_swap_idx = _cursor; _focus = "party"; _render()
+			elif _action_cursor == 2:  # 改名
+				_show_rename_dialog()
+			elif _action_cursor == 3:  # 返回
 				closed.emit(); queue_free()
 			get_viewport().set_input_as_handled()

@@ -103,6 +103,29 @@ var _shop_qty_label:    Label
 
 # 精灵仓库
 const PCBOX_ROWS  := 8
+
+# ── PCBox 详情颜色 ──────────────────────────────────────────────────────────────
+const PC_TYPE_COLORS := {
+	"火":Color(0.93,0.37,0.18),"水":Color(0.22,0.58,0.95),"木":Color(0.30,0.70,0.28),
+	"雷":Color(0.96,0.82,0.15),"电":Color(0.96,0.82,0.15),"冰":Color(0.38,0.82,0.90),
+	"格":Color(0.76,0.25,0.22),"毒":Color(0.62,0.25,0.72),"土":Color(0.82,0.65,0.28),
+	"风":Color(0.55,0.65,0.90),"灵":Color(0.90,0.28,0.55),"虫":Color(0.62,0.72,0.12),
+	"岩":Color(0.60,0.52,0.28),"鬼":Color(0.38,0.28,0.62),"龙":Color(0.30,0.18,0.90),
+	"暗":Color(0.28,0.20,0.15),"钢":Color(0.60,0.62,0.68),"仙":Color(0.92,0.58,0.72),
+	"光":Color(0.98,0.92,0.52),"空":Color(0.68,0.68,0.62),
+}
+const PC_TIER_COLORS := {
+	"普通": Color(0.878, 0.906, 0.953),
+	"精英": Color(0.278, 0.808, 0.408),
+	"头目": Color(0.961, 0.780, 0.216),
+	"首领": Color(0.718, 0.400, 1.000),
+}
+const PC_STAT_COLORS := [
+	Color(0.28,0.78,0.40), Color(0.92,0.35,0.28), Color(0.93,0.65,0.18),
+	Color(0.32,0.55,0.92), Color(0.82,0.32,0.52), Color(0.28,0.72,0.88),
+]
+const PC_STAT_KEYS  := ["hp","atk","def","sp_atk","sp_def","spd"]
+const PC_STAT_NAMES := ["HP","攻击","防御","特攻","特防","速度"]
 var _pcbox_active: bool = false
 var _pcbox_cursor: int  = 0
 var _pcbox_scroll: int  = 0
@@ -379,13 +402,12 @@ func _build_player() -> void:
 	_player = CharacterBody2D.new()
 	var data = get_meta("scene_data", {})
 	var saved_pos = data.get("player_pos", [])
+	var spawn = data.get("spawn", "")
 	if saved_pos.size() == 2:
 		_player.position = Vector2(saved_pos[0], saved_pos[1])
-	elif GameState.player_pos_x > 0 or GameState.player_pos_y > 0:
-		# 260709 Red 从存档恢复玩家坐标
-		_player.position = Vector2(GameState.player_pos_x, GameState.player_pos_y)
-	else:
-		match data.get("spawn", "village"):
+	elif spawn != "":
+		# 260712 场景切换的 spawn 优先于存档位置（如从家里出来→门口）
+		match spawn:
 			"village":   _player.position = SPAWN_VILLAGE
 			"grassland": _player.position = SPAWN_GRASSLAND
 			"town":      _player.position = SPAWN_TOWN
@@ -393,6 +415,11 @@ func _build_player() -> void:
 			"rival_home": _player.position = Vector2(RIVAL_DOOR.x * TILE + TILE/2.0, RIVAL_DOOR.y * TILE + TILE)
 			"gym":       _player.position = SPAWN_TOWN
 			_:           _player.position = SPAWN_VILLAGE
+	elif GameState.player_pos_x > 0 or GameState.player_pos_y > 0:
+		# 260709 Red 从存档恢复玩家坐标
+		_player.position = Vector2(GameState.player_pos_x, GameState.player_pos_y)
+	else:
+		_player.position = SPAWN_VILLAGE
 	add_child(_player)
 
 	_player_spr = Sprite2D.new(); _player_spr.z_index = 5
@@ -545,7 +572,7 @@ func _advance_dialog() -> void:
 
 # ── 移动 & 输入 ───────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _battling or _dialog_active or _shop_active or _pcbox_active: return
+	if _battling or _dialog_active or _shop_active or _pcbox_active or _menu_active or _party_active: return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
@@ -924,24 +951,127 @@ func _handle_shop_nav(event: InputEvent) -> void:
 func _build_pcbox_panel() -> void:
 	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
 	_pcbox_panel = Control.new(); _pcbox_panel.visible = false; cl.add_child(_pcbox_panel)
-	var bg = ColorRect.new(); bg.size = Vector2(260, 240); bg.position = Vector2(350, 60)
-	bg.color = Color(0.04, 0.06, 0.18, 0.96); _pcbox_panel.add_child(bg)
-	var bd = ColorRect.new(); bd.size = Vector2(260, 2); bd.position = Vector2(350, 60)
-	bd.color = Color(0.50, 0.70, 1.0); _pcbox_panel.add_child(bd)
-	var tl = Label.new(); tl.text = "■ 精灵仓库"; tl.position = Vector2(362, 66)
+	# ── 列表面板 ──
+	var bg = ColorRect.new(); bg.size = Vector2(280, 260); bg.position = Vector2(340, 55)
+	bg.color = Color(0.075, 0.102, 0.157); _pcbox_panel.add_child(bg)
+	var bd = ColorRect.new(); bd.size = Vector2(280, 2); bd.position = Vector2(340, 55)
+	bd.color = Color(0.388, 0.588, 0.929); _pcbox_panel.add_child(bd)
+	var tl = Label.new(); tl.text = "■ 精灵仓库"; tl.position = Vector2(352, 62)
 	tl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
 	tl.add_theme_font_size_override("font_size", 12); _pcbox_panel.add_child(tl)
 	for i in range(PCBOX_ROWS):
-		var rl = Label.new(); rl.name = "PcRow%d" % i; rl.position = Vector2(362, 90 + i * 20)
+		var rl = Label.new(); rl.name = "PcRow%d" % i; rl.position = Vector2(352, 88 + i * 20)
 		rl.add_theme_font_size_override("font_size", 10); _pcbox_panel.add_child(rl)
-	var hl = Label.new(); hl.text = "↑↓选择  Esc/X 离开"; hl.position = Vector2(362, 284)
+	# ── 详情面板 ──
+	var CX = 230; var CY = 22; var CW = 600; var CH = 380
+	var dbg = ColorRect.new(); dbg.name = "PcDetailBg"
+	dbg.size = Vector2(CW, CH); dbg.position = Vector2(CX, CY)
+	dbg.color = Color(0.075, 0.102, 0.157); dbg.hide(); _pcbox_panel.add_child(dbg)
+	# 顶部色条
+	var tb = ColorRect.new(); tb.name = "PcD_TopBar"
+	tb.size = Vector2(CW, 3); tb.position = Vector2(CX, CY); tb.hide(); _pcbox_panel.add_child(tb)
+	# 精灵肖像区
+	var sbg = ColorRect.new(); sbg.name = "PcD_SpriteBg"
+	sbg.size = Vector2(174, 174); sbg.position = Vector2(CX+16, CY+14)
+	sbg.color = Color(0.102, 0.133, 0.196); sbg.hide(); _pcbox_panel.add_child(sbg)
+	var spr = TextureRect.new(); spr.name = "PcD_Sprite"
+	spr.size = Vector2(174, 174); spr.position = Vector2(CX+16, CY+14)
+	spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	spr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	spr.hide(); _pcbox_panel.add_child(spr)
+	# 右侧信息区
+	var rx = CX + 206
+	var name_l = Label.new(); name_l.name = "PcD_Name"
+	name_l.position = Vector2(rx, CY+12); name_l.hide(); _pcbox_panel.add_child(name_l)
+	var lv_l = Label.new(); lv_l.name = "PcD_Lv"
+	lv_l.position = Vector2(rx, CY+38); lv_l.hide(); _pcbox_panel.add_child(lv_l)
+	# 属性徽章
+	var tx = rx; var ty = CY+62
+	for j in range(2):
+		var tbg = ColorRect.new(); tbg.name = "PcD_TBadge%d" % j
+		tbg.size = Vector2(56, 22); tbg.position = Vector2(tx + j*62, ty)
+		tbg.hide(); _pcbox_panel.add_child(tbg)
+		var tl2 = Label.new(); tl2.name = "PcD_TLabel%d" % j
+		tl2.position = Vector2(tx + j*62 + 6, ty+2); tl2.hide()
+		tl2.add_theme_font_size_override("font_size", 12)
+		tl2.add_theme_color_override("font_color", Color.WHITE)
+		_pcbox_panel.add_child(tl2)
+	var ab_l = Label.new(); ab_l.name = "PcD_Ability"
+	ab_l.position = Vector2(rx, CY+90); ab_l.hide(); _pcbox_panel.add_child(ab_l)
+	var no_l = Label.new(); no_l.name = "PcD_No"
+	no_l.position = Vector2(rx, CY+112); no_l.hide(); _pcbox_panel.add_child(no_l)
+	# 性格
+	var nat_l = Label.new(); nat_l.name = "PcD_Nature"
+	nat_l.position = Vector2(rx, CY+124); nat_l.hide()
+	nat_l.add_theme_font_size_override("font_size", 11)
+	nat_l.add_theme_color_override("font_color", Color(0.60, 0.70, 0.85))
+	_pcbox_panel.add_child(nat_l)
+	# 六围条（6 行）
+	for si in range(6):
+		var sy = CY + 138 + si * 22
+		var sn = Label.new(); sn.name = "PcD_SName%d" % si
+		sn.position = Vector2(rx, sy); sn.hide()
+		sn.add_theme_font_size_override("font_size", 11); _pcbox_panel.add_child(sn)
+		var sv = Label.new(); sv.name = "PcD_SVal%d" % si
+		sv.position = Vector2(rx + 38, sy); sv.hide()
+		sv.add_theme_font_size_override("font_size", 11); _pcbox_panel.add_child(sv)
+		var sb = ColorRect.new(); sb.name = "PcD_SBar%d" % si
+		sb.size = Vector2(210, 8); sb.position = Vector2(rx + 80, sy + 2)
+		sb.color = Color(0.12, 0.16, 0.24); sb.hide(); _pcbox_panel.add_child(sb)
+		var sf = ColorRect.new(); sf.name = "PcD_SFill%d" % si
+		sf.size = Vector2(0, 8); sf.position = Vector2(rx + 80, sy + 2)
+		sf.hide(); _pcbox_panel.add_child(sf)
+		var si_l = Label.new(); si_l.name = "PcD_SIv%d" % si
+		si_l.position = Vector2(rx + 296, sy); si_l.hide()
+		si_l.add_theme_font_size_override("font_size", 9)
+		si_l.add_theme_color_override("font_color", Color(0.44, 0.53, 0.64))
+		_pcbox_panel.add_child(si_l)
+	# 技能
+	var mv_l = Label.new(); mv_l.name = "PcD_Moves"
+	mv_l.position = Vector2(CX+16, CY+210); mv_l.hide(); _pcbox_panel.add_child(mv_l)
+	# 身高体重
+	var hw_l = Label.new(); hw_l.name = "PcD_HW"
+	hw_l.position = Vector2(CX+16, CY+240); hw_l.hide(); _pcbox_panel.add_child(hw_l)
+	# 描述
+	var dc_l = RichTextLabel.new(); dc_l.name = "PcD_Desc"
+	dc_l.position = Vector2(CX+16, CY+260); dc_l.size = Vector2(CW-32, 80)
+	dc_l.custom_minimum_size = Vector2(CW-32, 80)
+	dc_l.bbcode_enabled = false; dc_l.fit_content = false; dc_l.scroll_active = false
+	dc_l.hide(); _pcbox_panel.add_child(dc_l)
+	# 底部提示
+	var ht_l = Label.new(); ht_l.name = "PcD_Hint"
+	ht_l.position = Vector2(CX+16, CY+356); ht_l.hide(); _pcbox_panel.add_child(ht_l)
+	# 列表底部提示
+	var hl = Label.new(); hl.text = "↑↓选择  Z查看  Esc离开"; hl.position = Vector2(352, 300)
 	hl.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
 	hl.add_theme_font_size_override("font_size", 9); _pcbox_panel.add_child(hl)
 
 func _open_pcbox() -> void:
 	_pcbox_active = true; _pcbox_cursor = 0; _pcbox_scroll = 0
-	_pcbox_panel.visible = true; _refresh_pcbox()
+	_pcbox_panel.visible = true; _refresh_pcbox(); _pcbox_show_list()
 func _close_pcbox() -> void: _pcbox_active = false; _pcbox_panel.visible = false
+
+var _pcbox_viewing: bool = false
+
+func _pcbox_show_list() -> void:
+	_pcbox_viewing = false
+	var pn = _pcbox_panel
+	for c in [pn.get_node("PcDetailBg"), pn.get_node("PcD_TopBar"),
+			pn.get_node("PcD_SpriteBg"), pn.get_node("PcD_Sprite"),
+			pn.get_node("PcD_Name"), pn.get_node("PcD_Lv"),
+			pn.get_node("PcD_Ability"), pn.get_node("PcD_No"), pn.get_node("PcD_Nature"),
+			pn.get_node("PcD_Moves"), pn.get_node("PcD_HW"),
+			pn.get_node("PcD_Desc"), pn.get_node("PcD_Hint")]:
+		c.hide()
+	for j in range(2):
+		pn.get_node("PcD_TBadge%d" % j).hide(); pn.get_node("PcD_TLabel%d" % j).hide()
+	for si in range(6):
+		pn.get_node("PcD_SName%d" % si).hide(); pn.get_node("PcD_SVal%d" % si).hide()
+		pn.get_node("PcD_SBar%d" % si).hide(); pn.get_node("PcD_SFill%d" % si).hide()
+		pn.get_node("PcD_SIv%d" % si).hide()
+	for i in range(PCBOX_ROWS):
+		var r = pn.get_node_or_null("PcRow%d" % i)
+		if r: r.show()
 
 func _refresh_pcbox() -> void:
 	var box = GameState.pc_box
@@ -958,17 +1088,141 @@ func _refresh_pcbox() -> void:
 		if idx >= box.size(): if row: row.text = ""; continue
 		var mon = box[idx]; var sel = (idx == _pcbox_cursor)
 		if row:
-			row.text = "%s%s  Lv.%d" % ["▶ " if sel else "  ", MonDB.display_name(mon), mon["level"]]
+			row.text = "%s%s  Lv.%2d" % ["▶ " if sel else "  ", MonDB.display_name(mon), mon["level"]]
 			row.add_theme_color_override("font_color", Color.WHITE if sel else Color(0.70, 0.70, 0.85))
 
+func _show_pcbox_detail(mon: Dictionary) -> void:
+	_pcbox_viewing = true
+	for i in range(PCBOX_ROWS):
+		var r = _pcbox_panel.get_node_or_null("PcRow%d" % i)
+		if r: r.hide()
+	var pn = _pcbox_panel
+	var sp = MonDB.species.get(mon.get("species_id",""), {})
+	var t1 = sp.get("type1","空"); var t2 = sp.get("type2","")
+	var tc = PC_TYPE_COLORS.get(t1, Color(0.50,0.50,0.50))
+	var tier = mon.get("wild_tier","普通")
+	var gender = mon.get("gender","")
+	var glyph = " ♂" if gender == "male" else " ♀" if gender == "female" else ""
+	var bs = sp.get("base",{})
+	var ability_name = sp.get("abilities",["—"])[0]
+	var h = float(sp.get("height",0.0)); var w = float(sp.get("weight",0.0))
+	# 显示背景+色条
+	pn.get_node("PcDetailBg").show()
+	pn.get_node("PcD_TopBar").color = tc; pn.get_node("PcD_TopBar").show()
+	# 精灵图
+	var icon_path = "res://assets/sprites/%sfront.png" % mon.get("species_id","")
+	if ResourceLoader.exists(icon_path):
+		pn.get_node("PcD_Sprite").texture = load(icon_path)
+		pn.get_node("PcD_SpriteBg").show(); pn.get_node("PcD_Sprite").show()
+	else:
+		pn.get_node("PcD_SpriteBg").show()
+	# 名称+性别
+	var nl = pn.get_node("PcD_Name")
+	nl.text = MonDB.display_name(mon) + glyph
+	nl.add_theme_color_override("font_color", PC_TIER_COLORS.get(tier, Color(0.88,0.91,0.95)))
+	nl.add_theme_font_size_override("font_size", 20); nl.show()
+	# 等级
+	var ll = pn.get_node("PcD_Lv")
+	ll.text = "Lv.%d" % mon.get("level",1)
+	ll.add_theme_color_override("font_color", Color(0.44, 0.53, 0.64))
+	ll.add_theme_font_size_override("font_size", 14); ll.show()
+	# 属性徽章
+	for j in range(2):
+		var t = [t1, t2][j]; var bg = pn.get_node("PcD_TBadge%d" % j)
+		var lb = pn.get_node("PcD_TLabel%d" % j)
+		if t == "" or t == null: bg.hide(); lb.hide(); continue
+		var tc2 = PC_TYPE_COLORS.get(t, tc)
+		bg.color = tc2; bg.show(); lb.text = t; lb.show()
+	# 特性
+	var al = pn.get_node("PcD_Ability")
+	al.text = "特性 " + ability_name
+	al.add_theme_color_override("font_color", Color(0.60, 0.70, 0.85))
+	al.add_theme_font_size_override("font_size", 12); al.show()
+	# 编号
+	var nol = pn.get_node("PcD_No")
+	nol.text = "No.%03d" % sp.get("id",0)
+	nol.add_theme_color_override("font_color", Color(0.44, 0.53, 0.64))
+	nol.add_theme_font_size_override("font_size", 11); nol.show()
+	# 性格
+	var nat_id = mon.get("nature","")
+	var nat_data = MonDB.natures.get(nat_id, {})
+	var nat_up = nat_data.get("up",""); var nat_down = nat_data.get("down","")
+	var nat_name = nat_data.get("name", nat_id)
+	var nl2 = pn.get_node("PcD_Nature")
+	nl2.text = "性格 " + nat_name
+	nl2.add_theme_color_override("font_color", Color(0.60, 0.70, 0.85))
+	nl2.add_theme_font_size_override("font_size", 11); nl2.show()
+	# 六围条
+	for si in range(6):
+		var val = bs.get(PC_STAT_KEYS[si], 0)
+		var col = PC_STAT_COLORS[si]
+		var nm = ""
+		if si > 0 and PC_STAT_KEYS[si] == nat_up: nm = "↑"
+		elif si > 0 and PC_STAT_KEYS[si] == nat_down: nm = "↓"
+		var nc = col
+		if nm == "↑": nc = Color(0.95, 0.40, 0.35)
+		elif nm == "↓": nc = Color(0.40, 0.60, 0.95)
+		pn.get_node("PcD_SName%d" % si).text = PC_STAT_NAMES[si]
+		pn.get_node("PcD_SName%d" % si).add_theme_color_override("font_color", nc)
+		pn.get_node("PcD_SName%d" % si).show()
+		pn.get_node("PcD_SVal%d" % si).text = "%d%s" % [val, nm]
+		pn.get_node("PcD_SVal%d" % si).add_theme_color_override("font_color", nc)
+		pn.get_node("PcD_SVal%d" % si).show()
+		pn.get_node("PcD_SBar%d" % si).show()
+		var fill = pn.get_node("PcD_SFill%d" % si)
+		fill.color = col; fill.size.x = 210 * clampf(float(val)/255.0, 0, 1)
+		fill.show()
+		var iv = mon.get("ivs",{}).get(PC_STAT_KEYS[si], 0)
+		pn.get_node("PcD_SIv%d" % si).text = "IV.%d" % iv
+		pn.get_node("PcD_SIv%d" % si).show()
+	# 技能
+	var moves = mon.get("moves",[])
+	var moves_list = []
+	for i in range(min(4, moves.size())):
+		var mv_entry = moves[i]
+		var move_id = mv_entry.get("id","") if typeof(mv_entry) == TYPE_DICTIONARY else str(mv_entry)
+		var mv = MonDB.moves.get(move_id, {})
+		moves_list.append(mv.get("name", move_id))
+	var mv_txt = "技能: " + ("  ".join(moves_list) if moves_list.size() > 0 else "—")
+	var ml = pn.get_node("PcD_Moves")
+	ml.text = mv_txt
+	ml.add_theme_color_override("font_color", Color(0.60, 0.70, 0.85))
+	ml.add_theme_font_size_override("font_size", 11); ml.show()
+	# 身高体重
+	var hw_l = pn.get_node("PcD_HW")
+	if h > 0 or w > 0:
+		hw_l.text = "身高 %.1fm  体重 %.1fkg" % [h, w]
+		hw_l.add_theme_color_override("font_color", Color(0.44, 0.53, 0.64))
+		hw_l.add_theme_font_size_override("font_size", 11); hw_l.show()
+	# 描述
+	var desc = sp.get("desc","")
+	if desc != "":
+		var dl = pn.get_node("PcD_Desc")
+		dl.text = desc
+		dl.add_theme_font_size_override("normal_font_size", 11)
+		dl.add_theme_color_override("default_color", Color(0.52, 0.52, 0.66))
+		dl.show()
+	# 底部提示
+	var ht = pn.get_node("PcD_Hint")
+	ht.text = "Z/X返回列表  Esc离开"
+	ht.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
+	ht.add_theme_font_size_override("font_size", 9); ht.show()
+
 func _handle_pcbox_nav(event: InputEvent) -> void:
+	if _pcbox_viewing:
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
+			get_viewport().set_input_as_handled(); _pcbox_show_list(); return
+		return
 	if event.is_action_pressed("ui_up"):
 		get_viewport().set_input_as_handled(); _pcbox_cursor = max(0, _pcbox_cursor-1); _refresh_pcbox()
 	elif event.is_action_pressed("ui_down"):
 		get_viewport().set_input_as_handled()
 		_pcbox_cursor = min(max(0, GameState.pc_box.size()-1), _pcbox_cursor+1); _refresh_pcbox()
 	elif event.is_action_pressed("ui_accept"):
-		get_viewport().set_input_as_handled(); _close_pcbox()
+		get_viewport().set_input_as_handled()
+		var box = GameState.pc_box
+		if _pcbox_cursor < box.size():
+			_show_pcbox_detail(box[_pcbox_cursor])
 
 # ── 菜单 ──────────────────────────────────────────────────────────────────────
 func _build_menu() -> void:
@@ -1024,7 +1278,7 @@ func _mdraw_party() -> void:
 	var team = GameState.player_team
 	if team.is_empty(): _mlbl("队伍为空", 14, 50, 11, Color(0.55, 0.55, 0.60))
 	else:
-		for i in range(min(team.size(), 6)):
+		for i in range(min(team.size(), GameState.PARTY_MAX)):
 			var mon = team[i]; var ry = 34 + i*48
 			var sp = MonDB.species[mon["species_id"]]
 			var icon_path = "res://assets/sprites/%sfront.png" % mon["species_id"]
