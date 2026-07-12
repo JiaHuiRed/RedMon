@@ -201,6 +201,40 @@ func dlg_sub(text: String, vars: Dictionary) -> String:
 
 # ── 公共 API ─────────────────────────────────────────────────────────────────
 
+# 野生精灵品级系统（260712 Red）
+# 四档品级 + IV 范围：普通(0-15) 精英(10-20) 头目(20-25) 首领(26-31)
+# 概率：普通72% 精英18% 头目8% 首领2%
+# 神/天品级物种强制 头目80% 首领20%
+func roll_wild_tier_ivs(species_id: String) -> Dictionary:
+	var sp = species.get(species_id, {})
+	var sp_tier: String = sp.get("tier", "")
+	var tier: String
+	var roll: int = randi() % 100
+
+	if sp_tier == "神" or sp_tier == "天":
+		tier = "头目" if roll < 80 else "首领"
+	else:
+		if roll < 72:
+			tier = "普通"
+		elif roll < 90:
+			tier = "精英"
+		elif roll < 98:
+			tier = "头目"
+		else:
+			tier = "首领"
+
+	var iv_ranges := {
+		"普通": [0, 15],
+		"精英": [10, 20],
+		"头目": [20, 25],
+		"首领": [26, 31],
+	}
+	var r = iv_ranges[tier]
+	var ivs := {}
+	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
+		ivs[stat] = randi_range(r[0], r[1])
+	return {"tier": tier, "ivs": ivs}
+
 func get_effectiveness(atk_type: String, def_type1: String, def_type2: String = "") -> float:
 	var mult = 1.0
 	if _type_chart.has(atk_type):
@@ -210,6 +244,16 @@ func get_effectiveness(atk_type: String, def_type1: String, def_type2: String = 
 		if def_type2 != "" and chart.has(def_type2):
 			mult *= chart[def_type2]
 	return mult
+
+# 创建野生精灵实例（带品级系统）
+# 自动 roll 品级（普通/精英/头目/首领）和对应 IV
+# 神/天品级物种强制头目或首领
+# 以后所有野生遭遇场景都用这个，不要直接调 create_mon
+func create_wild_mon(species_id: String, level: int) -> Dictionary:
+	var tier_ivs = roll_wild_tier_ivs(species_id)
+	var mon = create_mon(species_id, level, tier_ivs["ivs"])
+	mon["wild_tier"] = tier_ivs["tier"]
+	return mon
 
 # 创建精灵实例
 # ivs 可选传入（升级时复用），不传则随机生成

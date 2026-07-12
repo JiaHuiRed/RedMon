@@ -11499,8 +11499,8 @@
     "type2": "",
     "base": {
       "hp": 45,
-      "atk": 55,
-      "def": 30,
+      "atk": 71,
+      "def": 60,
       "sp_atk": 35,
       "sp_def": 30,
       "spd": 70
@@ -11513,6 +11513,10 @@
     "gender_ratio": "50/50",
     "height": "0.5",
     "weight": "8.0",
+    "abilities": [
+      "不屈之心",
+      "硬壳盔甲"
+    ],
     "evolutions": [
       {
         "into": "持棍猿",
@@ -11540,11 +11544,7 @@
       "19": [
         "流星突击"
       ]
-    },
-    "abilities": [
-      "不屈之心",
-      "硬壳盔甲"
-    ]
+    }
   },
   "持棍猿": {
     "id": 189,
@@ -11552,9 +11552,9 @@
     "type1": "格",
     "type2": "",
     "base": {
-      "hp": 65,
-      "atk": 82,
-      "def": 50,
+      "hp": 80,
+      "atk": 94,
+      "def": 88,
       "sp_atk": 48,
       "sp_def": 50,
       "spd": 90
@@ -11563,10 +11563,14 @@
     "exp_yield": 142,
     "growth_rate": "中速",
     "desc": "悟得棍术的战猿，手持石棍如风车般旋转攻击。身法灵活以速制敌，已有武者之姿。它曾在古寺中跟扫地老僧切磋三日不分胜负。",
-    "tier": "灵",
+    "tier": "玄",
     "gender_ratio": "50/50",
     "height": "1.2",
     "weight": "32.0",
+    "abilities": [
+      "硬壳盔甲",
+      "悠游自如"
+    ],
     "evolutions": [
       {
         "into": "猿圣",
@@ -11577,10 +11581,10 @@
     "evolve_level": 38,
     "learnset": {
       "1": [
-        "猛推",
-        "山岚摔",
         "冲天拳",
-        "流星突击"
+        "山岚摔",
+        "流星突击",
+        "猛推"
       ],
       "4": [
         "碎岩"
@@ -11597,42 +11601,42 @@
       "37": [
         "真气拳"
       ]
-    },
-    "abilities": [
-      "硬壳盔甲",
-      "悠游自如"
-    ]
+    }
   },
   "猿圣": {
     "id": 190,
     "name": "猿圣",
     "type1": "格",
-    "type2": "龙",
+    "type2": "仙",
     "base": {
-      "hp": 90,
-      "atk": 120,
-      "def": 75,
+      "hp": 107,
+      "atk": 137,
+      "def": 110,
       "sp_atk": 65,
       "sp_def": 70,
-      "spd": 115
+      "spd": 131
     },
     "catch_rate": 45,
     "exp_yield": 252,
     "growth_rate": "中速",
     "desc": "修炼成圣的齐天大猿，金棍横扫可碎山裂地。龙血觉醒后获得不灭战意，被尊为武道至尊。",
-    "tier": "地",
-    "gender_ratio": "87.5/12.5",
+    "tier": "神",
+    "gender_ratio": "90/10",
     "height": "1.8",
     "weight": "72.0",
+    "abilities": [
+      "铁拳",
+      "加速"
+    ],
     "learnset": {
       "1": [
-        "猛推",
-        "山岚摔",
         "冲天拳",
-        "流星突击",
+        "山岚摔",
         "巴投",
-        "神秘之剑",
-        "真气拳"
+        "流星突击",
+        "猛推",
+        "真气拳",
+        "神秘之剑"
       ],
       "4": [
         "碎岩"
@@ -11667,11 +11671,7 @@
       "97": [
         "飞膝踢"
       ]
-    },
-    "abilities": [
-      "铁拳",
-      "加速"
-    ]
+    }
   },
   "炎凰": {
     "id": 191,
@@ -20820,12 +20820,12 @@
     "type1": "土",
     "type2": "钢",
     "base": {
-      "hp": 50,
-      "atk": 50,
-      "def": 50,
-      "sp_atk": 50,
+      "hp": 108,
+      "atk": 103,
+      "def": 100,
+      "sp_atk": 59,
       "sp_def": 50,
-      "spd": 50
+      "spd": 85
     },
     "catch_rate": 45,
     "exp_yield": 64,
@@ -20845,6 +20845,564 @@
     "id": 341,
     "name": "雏田",
     "type1": "灵",
+    "type2": "",
+    "base": {
+      "hp": 88,
+      "atk": 76,
+      "def": 72,
+      "sp_atk": 51,
+      "sp_def": 75,
+      "spd": 80
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "gender_ratio": "0/100",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "纲手",
+        "level": 31
+      }
+    ],
+    "evolves_into": "纲手",
+    "evolve_level": 31,
+    "learnset": {}
+  },
+  "纲手": {
+    "id": 342,
+    "name": "纲手",
+    "type1": "灵",
+    "type2": "格",
+    "base": {
+      "hp": 120,
+      "atk": 108,
+      "def": 100,
+      "sp_atk": 57,
+      "sp_def": 106,
+      "spd": 98
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "0/100",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "纯子": {
+    "id": 343,
+    "name": "纯子",
+    "type1": "空",
+    "type2": "",
+    "base": {
+      "hp": 56,
+      "atk": 55,
+      "def": 48,
+      "sp_atk": 61,
+      "sp_def": 37,
+      "spd": 45
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "凡",
+    "gender_ratio": "0/100",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "居居",
+        "level": 25
+      }
+    ],
+    "evolves_into": "居居",
+    "evolve_level": 25,
+    "learnset": {}
+  },
+  "居居": {
+    "id": 344,
+    "name": "居居",
+    "type1": "空",
+    "type2": "鬼",
+    "base": {
+      "hp": 95,
+      "atk": 70,
+      "def": 74,
+      "sp_atk": 90,
+      "sp_def": 65,
+      "spd": 80
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "玄",
+    "gender_ratio": "0/100",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "李瑶铃": {
+    "id": 345,
+    "name": "李瑶铃",
+    "type1": "火",
+    "type2": "",
+    "base": {
+      "hp": 61,
+      "atk": 79,
+      "def": 70,
+      "sp_atk": 70,
+      "sp_def": 73,
+      "spd": 71
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "gender_ratio": "0/100",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "朱娜",
+        "level": 25
+      }
+    ],
+    "evolves_into": "朱娜",
+    "evolve_level": 25,
+    "learnset": {}
+  },
+  "朱娜": {
+    "id": 346,
+    "name": "朱娜",
+    "type1": "火",
+    "type2": "灵",
+    "base": {
+      "hp": 89,
+      "atk": 101,
+      "def": 87,
+      "sp_atk": 98,
+      "sp_def": 91,
+      "spd": 94
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "0/100",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "小八": {
+    "id": 347,
+    "name": "小八",
+    "type1": "空",
+    "type2": "",
+    "base": {
+      "hp": 75,
+      "atk": 50,
+      "def": 66,
+      "sp_atk": 40,
+      "sp_def": 66,
+      "spd": 47
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "凡",
+    "gender_ratio": "80/20",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "刚鬣",
+        "level": 27
+      }
+    ],
+    "evolves_into": "刚鬣",
+    "evolve_level": 27,
+    "learnset": {}
+  },
+  "刚鬣": {
+    "id": 348,
+    "name": "刚鬣",
+    "type1": "空",
+    "type2": "土",
+    "base": {
+      "hp": 100,
+      "atk": 72,
+      "def": 99,
+      "sp_atk": 68,
+      "sp_def": 99,
+      "spd": 88
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "玄",
+    "gender_ratio": "80/20",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "天蓬",
+        "level": 45
+      }
+    ],
+    "evolves_into": "天蓬",
+    "evolve_level": 45,
+    "learnset": {}
+  },
+  "天蓬": {
+    "id": 349,
+    "name": "天蓬",
+    "type1": "暗",
+    "type2": "土",
+    "base": {
+      "hp": 130,
+      "atk": 89,
+      "def": 125,
+      "sp_atk": 51,
+      "sp_def": 125,
+      "spd": 100
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "神",
+    "gender_ratio": "80/20",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "光伊": {
+    "id": 350,
+    "name": "光伊",
+    "type1": "光",
+    "type2": "",
+    "base": {
+      "hp": 88,
+      "atk": 110,
+      "def": 81,
+      "sp_atk": 110,
+      "sp_def": 81,
+      "spd": 110
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "弦音灵鹿": {
+    "id": 351,
+    "name": "弦音灵鹿",
+    "type1": "灵",
+    "type2": "",
+    "base": {
+      "hp": 72,
+      "atk": 48,
+      "def": 59,
+      "sp_atk": 74,
+      "sp_def": 62,
+      "spd": 58
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "gender_ratio": "40/60",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "持国",
+        "level": 40
+      }
+    ],
+    "evolves_into": "持国",
+    "evolve_level": 40,
+    "learnset": {}
+  },
+  "持国": {
+    "id": 352,
+    "name": "持国",
+    "type1": "灵",
+    "type2": "仙",
+    "base": {
+      "hp": 98,
+      "atk": 72,
+      "def": 90,
+      "sp_atk": 110,
+      "sp_def": 94,
+      "spd": 116
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "蜃鳞赤蛇": {
+    "id": 353,
+    "name": "蜃鳞赤蛇",
+    "type1": "火",
+    "type2": "",
+    "base": {
+      "hp": 49,
+      "atk": 70,
+      "def": 55,
+      "sp_atk": 65,
+      "sp_def": 60,
+      "spd": 70
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "gender_ratio": "70/30",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "广目",
+        "level": 40
+      }
+    ],
+    "evolves_into": "广目",
+    "evolve_level": 40,
+    "learnset": {}
+  },
+  "广目": {
+    "id": 354,
+    "name": "广目",
+    "type1": "火",
+    "type2": "仙",
+    "base": {
+      "hp": 88,
+      "atk": 112,
+      "def": 91,
+      "sp_atk": 107,
+      "sp_def": 96,
+      "spd": 86
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "70/30",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "宝伞塔鼩": {
+    "id": 355,
+    "name": "宝伞塔鼩",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 78,
+      "atk": 67,
+      "def": 80,
+      "sp_atk": 40,
+      "sp_def": 55,
+      "spd": 41
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "多闻",
+        "level": 40
+      }
+    ],
+    "evolves_into": "多闻",
+    "evolve_level": 40,
+    "learnset": {}
+  },
+  "多闻": {
+    "id": 356,
+    "name": "多闻",
+    "type1": "土",
+    "type2": "仙",
+    "base": {
+      "hp": 120,
+      "atk": 99,
+      "def": 124,
+      "sp_atk": 51,
+      "sp_def": 92,
+      "spd": 94
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "锋刃山兽": {
+    "id": 357,
+    "name": "锋刃山兽",
+    "type1": "钢",
+    "type2": "",
+    "base": {
+      "hp": 47,
+      "atk": 80,
+      "def": 52,
+      "sp_atk": 55,
+      "sp_def": 52,
+      "spd": 78
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "灵",
+    "gender_ratio": "80/20",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "evolutions": [
+      {
+        "into": "增长",
+        "level": 40
+      }
+    ],
+    "evolves_into": "增长",
+    "evolve_level": 40,
+    "learnset": {}
+  },
+  "增长": {
+    "id": 358,
+    "name": "增长",
+    "type1": "钢",
+    "type2": "仙",
+    "base": {
+      "hp": 85,
+      "atk": 137,
+      "def": 84,
+      "sp_atk": 60,
+      "sp_def": 86,
+      "spd": 128
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "地",
+    "gender_ratio": "80/20",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "叶跃鱼": {
+    "id": 359,
+    "name": "叶跃鱼",
+    "type1": "木",
     "type2": "",
     "base": {
       "hp": 50,
@@ -20868,10 +21426,253 @@
     ],
     "learnset": {}
   },
-  "纲手": {
-    "id": 342,
-    "name": "纲手",
-    "type1": "仙",
+  "木跃鱼": {
+    "id": 360,
+    "name": "木跃鱼",
+    "type1": "木",
+    "type2": "水",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "木跃王": {
+    "id": 361,
+    "name": "木跃王",
+    "type1": "木",
+    "type2": "水",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "椰蛋": {
+    "id": 362,
+    "name": "椰蛋",
+    "type1": "木",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "大椰怪": {
+    "id": 363,
+    "name": "大椰怪",
+    "type1": "木",
+    "type2": "格",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "田野鼠": {
+    "id": 364,
+    "name": "田野鼠",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "稻叶君": {
+    "id": 365,
+    "name": "稻叶君",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "鲟": {
+    "id": 366,
+    "name": "鲟",
+    "type1": "水",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "蓝鲟": {
+    "id": 367,
+    "name": "蓝鲟",
+    "type1": "水",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "吕小鹅": {
+    "id": 368,
+    "name": "吕小鹅",
+    "type1": "格",
+    "type2": "",
+    "base": {
+      "hp": 50,
+      "atk": 50,
+      "def": 50,
+      "sp_atk": 50,
+      "sp_def": 50,
+      "spd": 50
+    },
+    "catch_rate": 45,
+    "exp_yield": 64,
+    "growth_rate": "中速",
+    "desc": "",
+    "tier": "",
+    "gender_ratio": "50/50",
+    "height": "0.5",
+    "weight": "5.0",
+    "abilities": [
+      "",
+      ""
+    ],
+    "learnset": {}
+  },
+  "鸣沙": {
+    "id": 369,
+    "name": "鸣沙",
+    "type1": "光",
     "type2": "",
     "base": {
       "hp": 50,

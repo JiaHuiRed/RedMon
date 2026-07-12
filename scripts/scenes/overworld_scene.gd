@@ -499,6 +499,17 @@ func _advance_dialog() -> void:
 			else:
 				_dialog_active = false; _dialog_panel.visible = false
 				_npc_dialog_lines = []; _npc_dialog_idx = 0
+		210:  # 阿婆对话 → 仓库引导
+			_npc_dialog_idx += 1
+			if _npc_dialog_idx < _npc_dialog_lines.size():
+				_dialog_label.text = _npc_dialog_lines[_npc_dialog_idx]
+			else:
+				_dialog_active = false; _dialog_panel.visible = false
+				_npc_dialog_lines = []; _npc_dialog_idx = 0
+				_show_dialog("阿婆：仓库里的精灵们也都精神着呢！要看看吗？", 211)
+		211:  # 阿婆仓库
+			_dialog_active = false; _dialog_panel.visible = false
+			_open_pcbox()
 		300:  # 劲敌确认 → 开战
 			_dialog_active = false; _dialog_panel.visible = false; _battling = true
 			_rival_leave()
@@ -632,6 +643,8 @@ func _try_talk_npc(tile: Vector2i) -> void:
 		if nt == face or nt == tile:
 			if spr.get_meta("npc_name", "") == "林薇":
 				_handle_linwei(); return
+			if spr.get_meta("npc_name", "") == "阿婆":
+				_handle_granny(); return
 			var dlg: String = spr.get_meta("npc_dialog", "…")
 			# 260706 Red 申鹤专属逻辑
 			if dlg == "__guard_north__":
@@ -654,6 +667,11 @@ func _handle_linwei() -> void:
 		_show_dialog("林薇：%s，等等！这是陈教授叫我转交的跑步鞋，穿上它你能跑得更快！" % GameState.player_name, -1)
 		return
 	_show_dialog("林薇：加油！每捕获10只精灵我就给你奖励！", -1)
+
+func _handle_granny() -> void:
+	_npc_dialog_lines = ["阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！"]
+	_npc_dialog_idx = 0
+	_show_dialog(_npc_dialog_lines[0], 210)
 
 func _handle_north_guard() -> void:
 	var n := GameState.badges
@@ -730,10 +748,11 @@ func _trigger_encounter() -> void:
 	var entry = EncounterDB.pick_mon(area, "grass")
 	if entry.is_empty(): _battling = false; return
 	var lv = randi_range(entry.get("level_min", 3), entry.get("level_max", 6))
-	var wild_mon = MonDB.create_mon(entry.get("species", "小雉鸡"), lv)
+	var wild_mon = MonDB.create_wild_mon(entry.get("species", "小雉鸡"), lv)
 	request_scene.emit("battle", {
 		"wild_mon": wild_mon, "from_scene": "overworld",
-		"player_pos": [_player.position.x, _player.position.y]
+		"player_pos": [_player.position.x, _player.position.y],
+		"encounter_area": area
 	})
 
 func _check_trainer_sight() -> void:

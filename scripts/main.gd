@@ -12,7 +12,7 @@ var _pause_active: bool = false
 var _map_label: Label
 
 const _MAP_NAMES := {
-	"home": "家", "village": "青木村", "town": "碧游镇",
+	"home": "家", "village": "青木村", "town": "碧溪镇",
 	"world": "华灵草原", "gym": "翠竹馆", "overworld": "华灵大陆"
 }
 var _pause_cursor: int = 0

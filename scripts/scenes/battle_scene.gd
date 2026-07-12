@@ -18,6 +18,7 @@ var _player_turn: bool = true
 var _busy: bool = false          # Blocks input while animations/await run
 var _return_scene: String = "world"   # Which scene to return to after battle
 var _return_pos:   Array  = []       # 260703 Red 战前玩家坐标 [x, y]
+var _encounter_area: String = ""
 
 # ── UI references ─────────────────────────────────────────────────────────────
 var _msg_label:        Label
@@ -55,6 +56,26 @@ var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 var _evo_panel:       Control
 var _evo_result:      Dictionary = {}
+
+# ── 野生精灵品级显示 ──────────────────────────────────────────────────────────
+const WILD_TIER_COLORS := {
+	"普通": Color(0.65, 0.65, 0.65),
+	"精英": Color(0.2, 0.75, 0.55),
+	"头目": Color(0.90, 0.30, 0.15),
+	"首领": Color(0.95, 0.80, 0.20),
+}
+const WILD_TIER_PREFIX := {
+	"普通": "",
+	"精英": "精英·",
+	"头目": "头目·",
+	"首领": "首领·",
+}
+
+func _wild_tier_prefix(mon: Dictionary) -> String:
+	return WILD_TIER_PREFIX.get(mon.get("wild_tier", ""), "")
+
+func _wild_tier_color(mon: Dictionary) -> Color:
+	return WILD_TIER_COLORS.get(mon.get("wild_tier", ""), Color(0.1, 0.1, 0.1))
 
 # ── 键盘 / 手柄导航 ────────────────────────────────────────────────────────────
 var _active_panel:      String = "none"  # "action"|"move"|"bag"|"mon"|"none"
@@ -115,6 +136,7 @@ func _ready() -> void:
 	_return_scene   = data.get("return_scene", "world")
 	_return_pos     = data.get("player_pos", [])
 	_bg_path        = data.get("bg", "res://assets/backgrounds/草原.png")
+	_encounter_area = data.get("encounter_area", "")
 
 	var trainer_data = data.get("trainer", {})
 	if not trainer_data.is_empty():
@@ -130,6 +152,8 @@ func _ready() -> void:
 		_enemy_mon = _trainer_team[0]
 	else:
 		_enemy_mon = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))
+		if _encounter_area != "" and not _enemy_mon.has("met_location"):
+			_enemy_mon["met_location"] = _encounter_area
 
 	_build_battle_field()
 	_build_info_boxes()
@@ -142,7 +166,8 @@ func _ready() -> void:
 	if _is_trainer:
 		await _show_message("训练师%s\n想要对战！" % _trainer_name, func(): _show_action_panel())
 	else:
-		await _show_message("野生的 %s 出现了！" % MonDB.display_name(_enemy_mon), func(): _show_action_panel())
+		var wt = _wild_tier_prefix(_enemy_mon)
+		await _show_message("野生的%s%s 出现了！" % [wt, MonDB.display_name(_enemy_mon)], func(): _show_action_panel())
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Battle field
@@ -910,7 +935,9 @@ func _gender_symbol(mon: Dictionary) -> String:
 
 func _refresh_info(animate: bool = false) -> void:
 	# Enemy
-	_enemy_name_lbl.text = MonDB.display_name(_enemy_mon) + _gender_symbol(_enemy_mon)
+	var e_tier = _wild_tier_prefix(_enemy_mon)
+	_enemy_name_lbl.text = e_tier + MonDB.display_name(_enemy_mon) + _gender_symbol(_enemy_mon)
+	_enemy_name_lbl.add_theme_color_override("font_color", _wild_tier_color(_enemy_mon))
 	_enemy_lv_lbl.text   = "Lv.%d" % _enemy_mon["level"]
 	var e_st = _enemy_mon.get("status", "")
 	_enemy_status_lbl.text  = "[%s]" % e_st if e_st != "" else ""

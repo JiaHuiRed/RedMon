@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.8] - 2026-07-12
+
+### 修复
+- **属性克制表 `%gx` 格式符报错**：Godot 4 不支持 `%g`，改用 `%s` trim_suffix 处理（`scripts/ui/party_ui.gd`）
+- **相遇地显示"overworld"而非具体区域名**：overworld 遇敌时未传区域名到战斗场景，改用 encounter_area 替代 last_scene（`scripts/scenes/overworld_scene.gd`、`battle_scene.gd`）
+
+### 新增
+- **阿婆仓库入口**：大世界青木村阿婆对话后弹仓库选项 — 跟精灵堂同理（`scripts/scenes/overworld_scene.gd`）
+- **精灵品级颜色**：精灵背包名字按品级着色 — 普通白/精英绿/头目金/首领紫（`scripts/ui/party_ui.gd`）
+- **特殊相遇地文本**：御三家→"命中注定的相遇"，BST≥600神兽自动识别同样处理；存单也补了已有5只的相遇记录（`scripts/autoload/game_state.gd`、`scripts/scenes/starter_scene.gd`）
+
+---
+
 ## [0.17.7] - 2026-07-10
 
 ### 修复

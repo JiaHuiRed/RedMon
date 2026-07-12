@@ -42,7 +42,7 @@
         {"type": "end"}
       ],
       "script": [
-        {"type": "dialog", "text": "前方是碧游镇，要出发吗？\n【Z 确认 / X 返回】"},
+        {"type": "dialog", "text": "前方是碧溪镇，要出发吗？\n【Z 确认 / X 返回】"},
         {"type": "end"}
       ]
     },

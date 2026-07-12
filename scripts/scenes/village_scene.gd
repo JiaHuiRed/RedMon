@@ -49,6 +49,14 @@ var _script_npcs: Dictionary = {}  # npc_id → {"sprite": Sprite2D, "collider":
 var _in_encounter_zone: bool = false
 const ENCOUNTER_RATE := 0.12  # 12% per step
 
+# ── PC Box ─────────────────────────────────────────────────────────────────────
+const PCBOX_ROWS := 8
+var _pcbox_active: bool = false
+var _pcbox_panel: Control
+var _pcbox_cursor: int = 0
+var _pcbox_scroll: int = 0
+var _pending_pcbox: bool = false
+
 # ── 环境过场精灵（丰富画面，全程慢速游走，不参与战斗） ──────────────────────
 var _ambient_mons: Array = []  # [{node: Sprite2D, target: Vector2}]
 const AMBIENT_SPEED := 18.0
@@ -84,6 +92,7 @@ func _ready() -> void:
 	_build_player()
 	call_deferred("_init_encounter_zone_state")
 	_build_dialog()
+	_build_pcbox_panel()
 	if GameState.rival_name.is_empty():
 		GameState.rival_name = "小敏"
 
@@ -578,6 +587,57 @@ func _draw_player_fallback() -> ImageTexture:
 	tex.set_image(img)
 	return tex
 
+# ── PC Box ─────────────────────────────────────────────────────────────────────
+func _build_pcbox_panel() -> void:
+	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
+	_pcbox_panel = Control.new(); _pcbox_panel.visible = false; cl.add_child(_pcbox_panel)
+	var bg = ColorRect.new(); bg.size = Vector2(260, 240); bg.position = Vector2(350, 60)
+	bg.color = Color(0.04, 0.06, 0.18, 0.96); _pcbox_panel.add_child(bg)
+	var bd = ColorRect.new(); bd.size = Vector2(260, 2); bd.position = Vector2(350, 60)
+	bd.color = Color(0.50, 0.70, 1.0); _pcbox_panel.add_child(bd)
+	var tl = Label.new(); tl.text = "■ 精灵仓库"; tl.position = Vector2(362, 66)
+	tl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	tl.add_theme_font_size_override("font_size", 12); _pcbox_panel.add_child(tl)
+	for i in range(PCBOX_ROWS):
+		var rl = Label.new(); rl.name = "PcRow%d" % i; rl.position = Vector2(362, 90 + i * 20)
+		rl.add_theme_font_size_override("font_size", 10); _pcbox_panel.add_child(rl)
+	var hl = Label.new(); hl.text = "↑↓选择  Esc/X 离开"; hl.position = Vector2(362, 284)
+	hl.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
+	hl.add_theme_font_size_override("font_size", 9); _pcbox_panel.add_child(hl)
+
+func _open_pcbox() -> void:
+	_pcbox_active = true; _pcbox_cursor = 0; _pcbox_scroll = 0
+	_pcbox_panel.visible = true; _refresh_pcbox()
+
+func _close_pcbox() -> void:
+	_pcbox_active = false; _pcbox_panel.visible = false
+
+func _refresh_pcbox() -> void:
+	var box = GameState.pc_box
+	if box.is_empty():
+		for i in range(PCBOX_ROWS):
+			var r = _pcbox_panel.get_node_or_null("PcRow%d" % i)
+			if r: r.text = ("仓库里还没有精灵" if i == 0 else "")
+		return
+	if _pcbox_cursor < _pcbox_scroll: _pcbox_scroll = _pcbox_cursor
+	elif _pcbox_cursor > _pcbox_scroll + PCBOX_ROWS - 1: _pcbox_scroll = _pcbox_cursor - PCBOX_ROWS + 1
+	_pcbox_scroll = clampi(_pcbox_scroll, 0, max(0, box.size() - PCBOX_ROWS))
+	for i in range(PCBOX_ROWS):
+		var row = _pcbox_panel.get_node_or_null("PcRow%d" % i); var idx = _pcbox_scroll + i
+		if idx >= box.size(): if row: row.text = ""; continue
+		var mon = box[idx]; var sel = (idx == _pcbox_cursor)
+		if row:
+			row.text = "%s%s  Lv.%d" % ["▶ " if sel else "  ", MonDB.display_name(mon), mon["level"]]
+			row.add_theme_color_override("font_color", Color.WHITE if sel else Color(0.70, 0.70, 0.85))
+
+func _handle_pcbox_nav(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_up"):
+		get_viewport().set_input_as_handled(); _pcbox_cursor = max(0, _pcbox_cursor-1); _refresh_pcbox()
+	elif event.is_action_pressed("ui_down"):
+		get_viewport().set_input_as_handled(); _pcbox_cursor = min(max(0, GameState.pc_box.size()-1), _pcbox_cursor+1); _refresh_pcbox()
+	elif event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_accept"):
+		get_viewport().set_input_as_handled(); _close_pcbox()
+
 # ── 地图事件处理（从配置读取 NPC/告示牌） ──────────────────────────────────────
 func _handle_map_event(tile: Vector2i) -> void:
 	# 检查 bg_events（告示牌等）
@@ -597,6 +657,8 @@ func _handle_map_event(tile: Vector2i) -> void:
 		if pos_arr.size() >= 2 and tile.distance_to(Vector2i(pos_arr[0], pos_arr[1])) < 3:
 			var script = nd.get("script", [])
 			if not script.is_empty():
+				if nid == "grandma":
+					_pending_pcbox = true
 				ScriptEngine.run(script)
 				# 引擎会通过 dialog_requested 信号触发对话
 			return
@@ -625,6 +687,9 @@ func _on_script_dialog(text: String) -> void:
 func _on_script_end() -> void:
 	_dialog_active = false
 	_dialog_panel.visible = false
+	if _pending_pcbox:
+		_pending_pcbox = false
+		_show_dialog(MonDB.dlg("village", "grandma_warehouse"), 400)
 
 # ── Dialog ────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
@@ -671,7 +736,7 @@ func _show_dialog(text: String, phase: int) -> void:
 
 # ── Movement & input ─────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _dialog_active or _battling:
+	if _dialog_active or _battling or _pcbox_active:
 		return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
@@ -751,6 +816,9 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			_close_lab()
 		return
+	if _pcbox_active:
+		_handle_pcbox_nav(event)
+		return
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
@@ -758,7 +826,7 @@ func _input(event: InputEvent) -> void:
 				ScriptEngine.advance()
 			else:
 				_advance_dialog()
-		elif event.is_action_pressed("ui_cancel") and _dialog_phase in [200, 201]:
+		elif event.is_action_pressed("ui_cancel") and _dialog_phase in [200, 201, 400]:
 			# 260706 Red 出口确认对话按X取消
 			get_viewport().set_input_as_handled()
 			_dialog_active = false
@@ -821,6 +889,10 @@ func _advance_dialog() -> void:
 			_dialog_panel.visible = false
 			GameState.last_scene = "village"
 			request_scene.emit("world", {"spawn": "village"})
+		400:  # 260710 Red 阿婆仓库 → 打开精灵仓库
+			_dialog_active = false
+			_dialog_panel.visible = false
+			_open_pcbox()
 		201:  # 260706 Red 右出口确认 → 跳转碧溪镇
 			_dialog_active = false
 			_dialog_panel.visible = false

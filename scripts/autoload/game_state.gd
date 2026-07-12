@@ -235,6 +235,15 @@ func add_mon(mon: Dictionary) -> void:
 		mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
 	if not mon.has("met_location"):
 		mon["met_location"] = last_scene if last_scene != "" else "未知"
+	# 260712 Red 神兽/御三家特殊相遇地
+	if mon.has("species_id") and not mon.has("_encounter_patched"):
+		var sp = MonDB.species.get(mon["species_id"], {})
+		var bs = sp.get("base", {})
+		var total = int(bs.get("hp",0)) + int(bs.get("atk",0)) + int(bs.get("def",0)) + int(bs.get("sp_atk",0)) + int(bs.get("sp_def",0)) + int(bs.get("spd",0))
+		if total >= 600:
+			mon["met_location"] = "命中注定的相遇"
+		# 防重复计算
+		mon["_encounter_patched"] = true
 	player_team.append(mon)
 
 func first_mon() -> Dictionary:

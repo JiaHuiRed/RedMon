@@ -967,7 +967,7 @@ func _trigger_encounter() -> void:
 		return
 	var chosen_species = entry.get("species", "小雉鸡")
 	var wild_lv = randi_range(entry.get("level_min", 3), entry.get("level_max", 6))
-	var wild_mon = MonDB.create_mon(chosen_species, wild_lv)
+	var wild_mon = MonDB.create_wild_mon(chosen_species, wild_lv)
 
 	print("[WORLD] 野生 %s Lv.%d 出现！" % [chosen_species, wild_lv])
 	# 260703 Red 记录战前位置，战斗结束后恢复

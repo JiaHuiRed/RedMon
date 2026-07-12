@@ -41,6 +41,12 @@ const STAT_COLORS := [
 const STAT_KEYS  := ["hp","atk","def","sp_atk","sp_def","spd"]
 const STAT_NAMES := ["HP","攻击","防御","特攻","特防","速度"]
 const ACTIONS    := ["排序","替换","返回"]
+const TIER_COLORS := {
+	"普通": Color(0.878, 0.906, 0.953),  # 白
+	"精英": Color(0.278, 0.808, 0.408),  # 绿
+	"头目": Color(0.961, 0.780, 0.216),  # 金
+	"首领": Color(0.718, 0.400, 1.000),  # 紫
+}
 
 var _root: Control
 var _cursor: int = 0
@@ -114,7 +120,7 @@ func _draw_card(idx: int, mon: Dictionary, cy: int) -> void:
 	var nl = Label.new()
 	nl.text = MonDB.display_name(mon) + glyph; nl.position = Vector2(tx, cy + 10)
 	nl.add_theme_font_size_override("font_size", 16)
-	nl.add_theme_color_override("font_color", C_TEXT); _root.add_child(nl)
+	nl.add_theme_color_override("font_color", TIER_COLORS.get(mon.get("wild_tier","普通"), C_TEXT)); _root.add_child(nl)
 	var no_lbl = Label.new()
 	no_lbl.text = "No.%03d" % sp.get("id",0)
 	no_lbl.position = Vector2(CARD_X + cw - 92, cy + 14)
@@ -187,7 +193,7 @@ func _draw_portrait(mon: Dictionary, sp: Dictionary, rx: int) -> void:
 	name_lbl.text = MonDB.display_name(mon)
 	name_lbl.position = Vector2(rx + pw/2 - 36, 252)
 	name_lbl.add_theme_font_size_override("font_size", 19)
-	name_lbl.add_theme_color_override("font_color", C_TEXT); _root.add_child(name_lbl)
+	name_lbl.add_theme_color_override("font_color", TIER_COLORS.get(mon.get("wild_tier","普通"), C_TEXT)); _root.add_child(name_lbl)
 
 func _draw_info(mon: Dictionary, sp: Dictionary, rx: int) -> void:
 	var ty = 14
@@ -288,7 +294,7 @@ func _draw_moves(mon: Dictionary, rx: int, my: int) -> void:
 		var nl = Label.new(); nl.text = mv.get("name", move_id)
 		nl.position = Vector2(mx + 14, mmy + 10)
 		nl.add_theme_font_size_override("font_size", 16)
-		nl.add_theme_color_override("font_color", C_TEXT); _root.add_child(nl)
+	nl.add_theme_color_override("font_color", TIER_COLORS.get(mon.get("wild_tier","普通"), C_TEXT)); _root.add_child(nl)
 		var bb = ColorRect.new()
 		bb.size = Vector2(44, 20); bb.position = Vector2(mx + mw - 52, mmy + 9)
 		bb.color = tc; _root.add_child(bb)
@@ -386,7 +392,7 @@ func _draw_type_chart(sp: Dictionary, rx: int, my: int) -> void:
 		var bx = rx + 12 + label_w; var by = ry
 		for t in entries:
 			var mult = entries[t]
-			var mult_str = "%gx" % mult
+			var mult_str = ("%s" % mult).trim_suffix(".0") + "x"
 			if bx + bw > rx + 12 + label_w + row_w:
 				bx = rx + 12 + label_w; by += bh + gap
 			var tc = TYPE_COLORS.get(t, C_ACCENT)
