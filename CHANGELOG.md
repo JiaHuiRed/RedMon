@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.21.0] - 2026-07-14
+
+> Tauri 桌面编辑器 — 精灵/技能/道具/地图/NPC 可视化编辑
+
+### 新增
+- **Tauri 桌面编辑器**：基于 Tauri + Vite 的独立桌面应用，支持物种（`species.json`）、技能（`moves.json`）、道具（`items.json`）、特性（`abilities.json`）、地图（`maps.json`）、NPC（`npcs.json`）数据可视化编辑，构建脚本（`tools/editor/`、`tools/build_tauri_editor.bat`、`tools/run_tauri_editor.bat`）
+
+---
+
 ## [0.20.0] - 2026-07-14
 
 > 遇敌系统重构 + 世界场景统一 + PlayerController 提取 + 数据修复

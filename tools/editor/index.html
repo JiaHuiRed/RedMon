@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RedMon Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Top Bar -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <span class="logo">🎮 RedMon Editor</span>
+      </div>
+      <div class="topbar-center">
+        <button class="btn-icon" id="btn-open-project" title="打开项目文件夹">📂</button>
+        <span id="project-path">未打开项目</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-icon" id="btn-save-all" title="保存全部 (Ctrl+S)">💾</button>
+        <button class="btn-icon" id="btn-theme" title="切换主题">🌙</button>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div id="main">
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-tabs" id="sidebar-tabs">
+          <button class="tab-btn active" data-tab="species">精灵图鉴</button>
+          <button class="tab-btn" data-tab="moves">技能库</button>
+          <button class="tab-btn" data-tab="items">道具</button>
+          <button class="tab-btn" data-tab="abilities">特性</button>
+          <button class="tab-btn" data-tab="npcs">角色</button>
+          <button class="tab-btn" data-tab="dialogs">剧情文本</button>
+          <button class="tab-btn" data-tab="maps">地图</button>
+        </div>
+        <div class="sidebar-search" id="sidebar-search">
+          <input type="text" id="search-input" placeholder="搜索..." />
+        </div>
+        <div class="sidebar-actions" id="sidebar-actions" style="display:none">
+          <button class="btn btn-sm" id="btn-add-entry">+ 新增</button>
+          <button class="btn btn-sm btn-danger" id="btn-delete-entry" style="display:none">× 删除</button>
+        </div>
+        <div class="sidebar-list" id="sidebar-list">
+          <div class="placeholder">请打开项目</div>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <main id="content">
+        <div id="tab-species" class="tab-content active"></div>
+        <div id="tab-moves" class="tab-content"></div>
+        <div id="tab-items" class="tab-content"></div>
+        <div id="tab-abilities" class="tab-content"></div>
+        <div id="tab-npcs" class="tab-content"></div>
+        <div id="tab-dialogs" class="tab-content"></div>
+        <div id="tab-maps" class="tab-content"></div>
+      </main>
+    </div>
+
+    <!-- Status Bar -->
+    <footer id="statusbar">
+      <span id="status-text">就绪</span>
+    </footer>
+  </div>
+
+  <!-- Auto Depend On All Tabs -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
