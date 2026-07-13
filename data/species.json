@@ -21064,8 +21064,8 @@
     "desc": "小巧的蟋蟀精灵，头顶一对细长触须灵敏如弦。后腿强壮，一蹦能跳出自己身长二十倍的距离，叫声清脆悦耳。",
     "tier": "凡",
     "gender_ratio": "50/50",
-    "height": "0.3",
-    "weight": "2.5",
+    "height": 0.3,
+    "weight": 2.5,
     "design_origin": "蟋蟀 + 跳跃 + 弦鸣",
     "role": "快攻手",
     "abilities": [
@@ -21075,8 +21075,10 @@
     "evolves_into": "鸣武者",
     "evolve_level": 16,
     "evolutions": [
-      "鸣武者",
-      "铁甲蛩"
+      {
+        "into": "鸣武者",
+        "level": 16
+      }
     ],
     "learnset": {
       "1": [
@@ -21116,8 +21118,8 @@
     "desc": "蟋蟀精灵直立如斗士，双颚坚硬如铜钳。翅翼摩擦发出铿锵鸣声震慑对手，后腿肌肉虬结，踢击力道惊人。",
     "tier": "灵",
     "gender_ratio": "50/50",
-    "height": "0.6",
-    "weight": "8.0",
+    "height": 0.6,
+    "weight": 8.0,
     "design_origin": "斗蟋蟀 + 武者 + 铜颚",
     "role": "快攻手",
     "abilities": [
@@ -21175,8 +21177,8 @@
     "desc": "巨大的蟋蟀武将，全身覆盖铁甲般的外骨骼。双颚一张一合如铁闸，振翅声如战鼓擂响。纵跃间碎青石、断铁器。",
     "tier": "玄",
     "gender_ratio": "50/50",
-    "height": "1.3",
-    "weight": "42.0",
+    "height": 1.3,
+    "weight": 42.0,
     "design_origin": "斗蟋蟀 + 铁甲武士 + 战鼓",
     "role": "物攻手",
     "abilities": [
@@ -21241,8 +21243,8 @@
     "desc": "一团紫绿色毒雾凝聚成的小精灵，身体半透明如烟岚。中心两点黄光闪烁如眼，飘忽不定。",
     "tier": "灵",
     "gender_ratio": "无性别",
-    "height": "0.4",
-    "weight": "0.5",
+    "height": 0.4,
+    "weight": 0.5,
     "design_origin": "毒雾 + 瘴气 + 风岚",
     "role": "特攻手",
     "abilities": [
@@ -21252,7 +21254,10 @@
     "evolves_into": "瘴风煞",
     "evolve_level": 30,
     "evolutions": [
-      "瘴风煞"
+      {
+        "into": "瘴风煞",
+        "level": 30
+      }
     ],
     "learnset": {
       "1": [
@@ -21295,8 +21300,8 @@
     "desc": "剧毒风暴中孕育的邪煞，身形扭曲如狂风漩涡。墨绿色瘴气裹挟暗紫色电光缭绕周身，双目如鬼火森然。",
     "tier": "玄",
     "gender_ratio": "无性别",
-    "height": "1.5",
-    "weight": "0.8",
+    "height": 1.5,
+    "weight": 0.8,
     "design_origin": "毒雾 + 台风 + 邪煞",
     "role": "特攻手",
     "abilities": [
@@ -21360,8 +21365,8 @@
     "desc": "古代战魂寄宿在破损铠甲中的亡灵精灵。铠甲悬空而立，关节缝隙中透出幽蓝鬼火。头盔内亮着凶狠的红光，锈戟挥动间阴风阵阵。",
     "tier": "玄",
     "gender_ratio": "无性别",
-    "height": "1.8",
-    "weight": "85.0",
+    "height": 1.8,
+    "weight": 85.0,
     "design_origin": "古代铠甲 + 战魂 + 鬼火",
     "role": "物攻手",
     "abilities": [
@@ -21421,12 +21426,9 @@
     "desc": "",
     "tier": "凡",
     "gender_ratio": "无性别",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [
-      "",
-      ""
-    ],
+    "height": 0.5,
+    "weight": 5.0,
+    "abilities": [],
     "evolutions": [
       {
         "into": "戈娅",
@@ -21456,12 +21458,9 @@
     "desc": "",
     "tier": "玄",
     "gender_ratio": "0/100",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [
-      "",
-      ""
-    ],
+    "height": 0.5,
+    "weight": 5.0,
+    "abilities": [],
     "evolutions": [
       {
         "into": "祝融",
@@ -21491,8 +21490,8 @@
     "desc": "",
     "tier": "神",
     "gender_ratio": "0/100",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": 0.5,
+    "weight": 5.0,
     "abilities": [
       "引火",
       "天恩"
@@ -21518,12 +21517,9 @@
     "desc": "",
     "tier": "灵",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [
-      "",
-      ""
-    ],
+    "height": 0.5,
+    "weight": 5.0,
+    "abilities": [],
     "evolutions": [
       {
         "into": "盖亚",
@@ -21553,8 +21549,8 @@
     "desc": "",
     "tier": "神",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": 0.5,
+    "weight": 5.0,
     "abilities": [
       "铁拳",
       "恒净之躯"
@@ -21580,8 +21576,8 @@
     "desc": "三圣兽之福。金甲野猪形神兽，獠牙贯日，鬃如金焰，踏元宝纹大地而行，所过之处万物丰饶。",
     "tier": "神",
     "gender_ratio": "无性别",
-    "height": "2.1",
-    "weight": "280.0",
+    "height": 2.1,
+    "weight": 280.0,
     "abilities": [
       "坚硬脑袋",
       "重装甲"
@@ -21635,8 +21631,8 @@
     "desc": "三圣兽之禄。盘角祥云神羊，螺旋巨角缠玉如意，踏云飞驰九天之上，主宰世间气运兴衰。",
     "tier": "神",
     "gender_ratio": "无性别",
-    "height": "1.8",
-    "weight": "95.0",
+    "height": 1.8,
+    "weight": 95.0,
     "abilities": [
       "超幸运",
       "天恩"
@@ -21690,8 +21686,8 @@
     "desc": "三圣兽之寿。独角独足夔牛神兽，身披万年苔岩甲，角通天雷，一吼山河震颤，万寿无疆。",
     "tier": "神",
     "gender_ratio": "无性别",
-    "height": "3.5",
-    "weight": "680.0",
+    "height": 3.5,
+    "weight": 680.0,
     "abilities": [
       "坚硬脑袋",
       "硬壳盔甲"
@@ -21745,12 +21741,9 @@
     "desc": "",
     "tier": "灵",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [
-      "",
-      ""
-    ],
+    "height": 0.5,
+    "weight": 5.0,
+    "abilities": [],
     "evolutions": [
       {
         "into": "暗蛙宗",
@@ -21780,8 +21773,8 @@
     "desc": "",
     "tier": "神",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": 0.5,
+    "weight": 5.0,
     "abilities": [
       "威吓",
       "毒手"
@@ -21807,11 +21800,10 @@
     "desc": "",
     "tier": "玄",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": 0.5,
+    "weight": 5.0,
     "abilities": [
-      "天恩",
-      ""
+      "天恩"
     ],
     "evolutions": [
       {
@@ -21843,8 +21835,8 @@
     "desc": "",
     "tier": "神",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": 0.5,
+    "weight": 5.0,
     "abilities": [
       "天恩",
       "预知眼"
@@ -21870,8 +21862,8 @@
     "desc": "寒月之灵，天香本应在瑶台。通体冰晶剔透，由月光与寒霜凝聚而成，周身笼罩永不散去的冰蓝色暗香雾气。性情清冷孤高，不与凡尘为伍。",
     "tier": "天",
     "gender_ratio": "0/0",
-    "height": "2.0",
-    "weight": "85",
+    "height": 2.0,
+    "weight": 85.0,
     "learnset": {
       "1": [
         "冰锥"
@@ -21934,8 +21926,8 @@
     "desc": "牡丹花皇，唯有牡丹真国色。花开时节动华灵。身后盛开巨大牡丹花瓣如披风，朱砂红与粉金渐变，花蕊作灵光。雍容华贵，王者之花。",
     "tier": "天",
     "gender_ratio": "0/0",
-    "height": "1.8",
-    "weight": "55",
+    "height": 1.8,
+    "weight": 55.0,
     "learnset": {
       "1": [
         "种子机关枪"
@@ -21998,8 +21990,8 @@
     "desc": "天界战神，乾为天，刚健中正。白金色长发如瀑布垂泻，金白渐变的耀阳瞳，身披白金战甲肩作飞翼状。身后金色天光圆环悬浮，至刚至阳，神圣不可侵犯。",
     "tier": "天",
     "gender_ratio": "0/0",
-    "height": "2.2",
-    "weight": "120",
+    "height": 2.2,
+    "weight": 120.0,
     "learnset": {
       "1": [
         "猛推"
@@ -22062,8 +22054,8 @@
     "desc": "地母神，坤为地，厚德载物。深棕褐长发大地般沉厚，琥珀金瞳有星河流转。岩石晶石披肩层层叠叠如大地断层，胸前大地晶核脉动。至柔至厚，万物的怀抱。",
     "tier": "天",
     "gender_ratio": "0/0",
-    "height": "2.4",
-    "weight": "280",
+    "height": 2.4,
+    "weight": 280.0,
     "learnset": {
       "1": [
         "骨棒乱打"
