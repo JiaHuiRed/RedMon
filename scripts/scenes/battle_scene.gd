@@ -16,7 +16,7 @@ var _player_mon: Dictionary = {}
 var _enemy_mon:  Dictionary = {}
 var _player_turn: bool = true
 var _busy: bool = false          # Blocks input while animations/await run
-var _return_scene: String = "world"   # Which scene to return to after battle
+var _return_scene: String = "overworld"   # Which scene to return to after battle
 var _return_pos:   Array  = []       # 260703 Red 战前玩家坐标 [x, y]
 var _encounter_area: String = ""
 
@@ -133,7 +133,7 @@ func _ready() -> void:
 		if GameState.player_team[i].get("current_hp", 0) > 0:
 			_player_mon_idx = i; break
 	_player_mon = GameState.player_team[_player_mon_idx]
-	_return_scene   = data.get("return_scene", "world")
+	_return_scene   = data.get("return_scene", "overworld")
 	_return_pos     = data.get("player_pos", [])
 	_bg_path        = data.get("bg", "res://assets/backgrounds/草原.png")
 	_encounter_area = data.get("encounter_area", "")

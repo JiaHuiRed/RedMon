@@ -13,7 +13,7 @@ var _map_label: Label
 
 const _MAP_NAMES := {
 	"home": "家", "village": "青木村", "town": "碧溪镇",
-	"world": "华灵草原", "gym": "翠竹馆", "overworld": "华灵大陆"
+	"gym": "翠竹馆", "overworld": "华灵大陆"
 }
 var _pause_cursor: int = 0
 var _pause_sub: String = ""
@@ -86,10 +86,9 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 			"starter":     script = load("res://scripts/scenes/starter_scene.gd")
 			"home":        script = load("res://scripts/scenes/home_scene.gd")
 			"town":        script = load("res://scripts/scenes/town_scene.gd")
-			"gym":         script = load("res://scripts/scenes/gym_scene.gd")
-			"world":       script = load("res://scripts/scenes/world_scene.gd")
-			"battle":      script = load("res://scripts/scenes/battle_scene.gd")
-			"overworld":   script = load("res://scripts/scenes/overworld_scene.gd")
+		"gym":         script = load("res://scripts/scenes/gym_scene.gd")
+		"battle":      script = load("res://scripts/scenes/battle_scene.gd")
+		"overworld":   script = load("res://scripts/scenes/overworld_scene.gd")
 			_:
 				push_error("Unknown scene: " + scene_name)
 				return
@@ -449,9 +448,6 @@ func _on_request_scene(scene_name: String, data: Dictionary) -> void:
 	match scene_name:
 		"village", "青木村":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "village")
-			switch_to("overworld", d)
-		"world", "grassland", "华灵草原":
-			var d = data.duplicate(); d["spawn"] = d.get("spawn", "grassland")
 			switch_to("overworld", d)
 		"town", "碧溪镇":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "town")

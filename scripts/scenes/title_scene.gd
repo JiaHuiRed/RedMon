@@ -113,7 +113,7 @@ func _route_load_scene() -> String:
 		return GameState.last_scene
 	if not GameState.has_starter:
 		return "char_create"
-	return "world"
+	return "overworld"
 
 func _refresh() -> void:
 	var has_any = GameState.has_save()
@@ -163,7 +163,7 @@ func _draw_slot_picker() -> void:
 	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.18))
 	_slot_panel.add_child(title_lbl)
 
-	var scene_names := {"home":"家", "village":"青木村", "overworld":"大世界", "town":"碧溪镇", "gym":"翠竹馆", "world":"华灵草原", "grassland":"华灵草原", "battle":"战斗中", "":""}
+	var scene_names := {"home":"家", "village":"青木村", "overworld":"大世界", "town":"碧溪镇", "gym":"翠竹馆", "battle":"战斗中", "":""}
 	for i in range(3):
 		var slot = i + 1
 		var summary = GameState.get_slot_summary(slot)

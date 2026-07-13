@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.20.0] - 2026-07-14
+
+> 遇敌系统重构 + 世界场景统一 + PlayerController 提取 + 数据修复
+
+### 新增
+- **遇敌系统重构**：encounters.json 改为按 map_id 索引的中央遇敌表，species.json 的 encounters 字段降级为数据源之一；maps.json 给 29 张地图加了 id；EncounterDB 实现等级公式（`data/encounters.json`、`data/maps.json`、`scripts/autoload/encounter_db.gd`）
+- **PlayerController 提取**：统一输入处理逻辑，从 overworld_scene 中抽出独立控制器（`scripts/controllers/player_controller.gd`）
+- **菜单美化启动**：以 party_ui.gd 为 polished 参考，开始统一 overworld 菜单 UI（`scripts/scenes/overworld_scene.gd`）
+
+### 修复
+- **编辑器 species 数据修复**：370/373 evolutions 格式错误（字符串列表→字典列表）、370-391 height/weight 类型统一为数值（`data/species.json`）
+- **世界场景统一**：删除废弃 `world_scene.gd`，所有 `"world"`/`"grassland"` 路由重定向到 `overworld`（`main.gd`、`battle_scene.gd`、`title_scene.gd`、`village_scene.gd`、`town_scene.gd`）
+- **移除 MCPRuntimeProbe**：正式发布版不再依赖 MCP 调试探针（`project.godot`）
+
+### 重构
+- **场景路由简化**：`main.gd` 移除 `world` 独立路由，`battle_scene.gd` 默认返回场景改为 `overworld`，`title_scene.gd` 默认场景改为 `overworld`
+
+---
+
 ## [0.19.0] - 2026-07-12
 
 > 6 只新精灵 + BST≥600 精灵能力审查修正
