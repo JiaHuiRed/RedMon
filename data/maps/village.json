@@ -1,5 +1,5 @@
 {
-  "encounter_map": "青木村",
+  "encounter_map_id": 1,
   "encounter_rate": 12,
 
   "npc_data": [

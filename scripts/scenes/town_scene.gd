@@ -626,12 +626,12 @@ func _check_encounter() -> void:
 
 func _trigger_encounter() -> void:
 	_battling = true
-	var entry = EncounterDB.pick_mon("华灵草原", "grass")
+	var entry = EncounterDB.pick_mon(2, "grass")
 	if entry.is_empty():
 		_battling = false
 		return
 	var chosen_species = entry.get("species", "芙芙")
-	var wild_lv = randi_range(entry.get("level_min", 5), entry.get("level_max", 8))
+	var wild_lv = EncounterDB.random_level(2, "grass")
 	var wild_mon = MonDB.create_wild_mon(chosen_species, wild_lv)
 	request_scene.emit("battle", {"wild_mon": wild_mon, "from_scene": "town", "return_scene": "town"})
 
@@ -703,7 +703,7 @@ func _input(event: InputEvent) -> void:
 		# Bottom exit → 华灵草原
 		if tile.y >= ROWS - 1 and tile.x >= 12 and tile.x <= 17:
 			GameState.last_scene = "town"  # YYMMDD Red
-			request_scene.emit("world", {})
+			request_scene.emit("overworld", {})
 
 		# 精灵堂 door
 		if tile == CLINIC_DOOR_TILE:

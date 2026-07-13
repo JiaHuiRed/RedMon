@@ -193,11 +193,11 @@ func _check_encounter() -> void:
 	_trigger_encounter()
 
 func _trigger_encounter() -> void:
-	var entry = EncounterDB.pick_mon("青木村", "grass")
+	var entry = EncounterDB.pick_mon(1, "grass")
 	if entry.is_empty():
 		return
 	var species_id = entry.get("species", "小雉鸡")
-	var lv = randi_range(entry.get("level_min", 2), entry.get("level_max", 4))
+	var lv = EncounterDB.random_level(1, "grass")
 	var wild = MonDB.make_mon(species_id, lv)
 	_battling = true
 	request_scene.emit("battle", {
@@ -338,7 +338,7 @@ func _build_npcs() -> void:
 	_add_collider(well.position + well.size / 2, well.size)
 
 func _build_ambient_mons() -> void:
-	var method = EncounterDB.get_method("青木村", "grass")
+	var method = EncounterDB.get_method(1, "grass")
 	var encounters = method.get("mons", [])
 	if encounters.is_empty():
 		return
@@ -509,7 +509,7 @@ func _build_player() -> void:
 	_player = CharacterBody2D.new()
 	var data = get_meta("scene_data", {})
 	match data.get("spawn", ""):
-		"world":  # 260704 Red 从华灵草原回来，出生在北边出口
+		"overworld":  # 260712 Red 从华灵草原回来，出生在北边出口
 			_player.position = Vector2(15 * TILE, TILE * 2)
 		"home":   # 260704 Red 从家出门，出生在家门前
 			_player.position = Vector2(HOME_DOOR_TILE.x * TILE + TILE / 2, HOME_DOOR_TILE.y * TILE + TILE + 8)
@@ -888,7 +888,7 @@ func _advance_dialog() -> void:
 			_dialog_active = false
 			_dialog_panel.visible = false
 			GameState.last_scene = "village"
-			request_scene.emit("world", {"spawn": "village"})
+			request_scene.emit("overworld", {"spawn": "village"})
 		400:  # 260710 Red 阿婆仓库 → 打开精灵仓库
 			_dialog_active = false
 			_dialog_panel.visible = false

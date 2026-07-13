@@ -1,42 +1,33 @@
 {
-  "_comment": "⚠ 此文件已废弃（2026-07-08）。实际遇敌表由 species.json 的 encounters 字段驱动，EncounterDB 优先读取它。本文件仅作为 species.json 无 encounters 数据时的 fallback，未在编辑器（mon_editor.py）中维护，内容可能过期。",
+  "_comment": "中央遇敌表——按 map_id 索引，EncounterDB 优先读取此文件。每条记录含 encounter_rate（踩雷率）和 mons（遭遇池，weight=遭遇率，level_min/max 可选覆盖公式默认值）。",
   "maps": {
-    "青木村": {
-      "methods": {
-        "grass": {
-          "encounter_rate": 15,
-          "mons": [
-            { "species": "小雉鸡", "weight": 8, "level_min": 2, "level_max": 4 },
-            { "species": "绿肥虫", "weight": 40, "level_min": 2, "level_max": 4 },
-            { "species": "眀灯鼠", "weight": 27, "level_min": 2, "level_max": 4 },
-            { "species": "蓬蓬丘", "weight": 10, "level_min": 2, "level_max": 4 }
-          ]
-        }
-      }
+    "1": {
+      "encounter_rate": 12,
+      "mons": [
+        { "species": "绿肥虫", "weight": 40 },
+        { "species": "小灯鼠", "weight": 25 },
+        { "species": "岩灵",   "weight": 15 },
+        { "species": "粉粉丘", "weight": 15 },
+        { "species": "小魔女", "weight": 8  },
+        { "species": "舒华",   "weight": 5  },
+        { "species": "梵天",   "weight": 5  }
+      ]
     },
-    "华灵草原": {
-      "methods": {
-        "grass": {
-          "encounter_rate": 15,
-          "mons": [
-            { "species": "小雉鸡", "weight": 8, "level_min": 3, "level_max": 6 },
-            { "species": "绵绵虫", "weight": 40, "level_min": 3, "level_max": 5 },
-            { "species": "眀灯鼠", "weight": 27, "level_min": 3, "level_max": 6 },
-            { "species": "露比", "weight": 2, "level_min": 3, "level_max": 5 },
-            { "species": "蓬蓬丘", "weight": 10, "level_min": 4, "level_max": 6 }
-          ]
-        }
-      }
+    "2": {
+      "encounter_rate": 15,
+      "mons": [
+        { "species": "小雉鸡", "weight": 8  },
+        { "species": "绵绵虫", "weight": 40 },
+        { "species": "眀灯鼠", "weight": 27 },
+        { "species": "露比",   "weight": 2  },
+        { "species": "蓬蓬丘", "weight": 10 }
+      ]
     },
-    "碧溪镇": {
-      "methods": {
-        "grass": {
-          "encounter_rate": 10,
-          "mons": [
-            { "species": "芙芙", "weight": 10, "level_min": 5, "level_max": 8 }
-          ]
-        }
-      }
+    "3": {
+      "encounter_rate": 10,
+      "mons": [
+        { "species": "芙芙", "weight": 100 }
+      ]
     }
   }
 }
