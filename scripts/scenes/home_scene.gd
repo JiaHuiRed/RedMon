@@ -298,6 +298,7 @@ func _start_mom_dialog() -> void:
 		# 260708 Red 已有精灵：直接治疗
 		for mon in GameState.player_team:
 			mon["current_hp"] = mon["max_hp"]
+		AudioManager.play_me(AudioManager.ME_HEAL)
 		_dialog_label.text = "妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。"
 
 func _advance_dialog() -> void:

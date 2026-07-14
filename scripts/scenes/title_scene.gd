@@ -25,6 +25,7 @@ func _ready() -> void:
 	_build_bg()
 	_build_options()
 	_build_slot_panel()
+	AudioManager.play_bgm(AudioManager.BGM_TITLE)
 
 # ── 背景（TextureRect 自动铺满） ─────────────────────────────────────────────
 func _build_bg() -> void:
