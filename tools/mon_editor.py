@@ -912,7 +912,7 @@ class App:
         _lbl(f, "", bg=BG_MAIN).grid(row=row, column=1)
         _lbl(f, "", bg=BG_MAIN).grid(row=row, column=2)
         _lbl(f, "Lv 50", bg=BG_MAIN, fg=TEXT_SEC).grid(row=row, column=3, padx=(4, 2))
-        _lbl(f, "Lv100", bg=BG_MAIN, fg=TEXT_SEC).grid(row=row, column=4, padx=(2, 10))
+        _lbl(f, "Lv120", bg=BG_MAIN, fg=TEXT_SEC).grid(row=row, column=4, padx=(2, 10))
         row += 1
 
         self.mon_stat_entries = {}

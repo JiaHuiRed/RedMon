@@ -228,7 +228,7 @@ export class SpeciesTab {
 
         <div class="form-section-stack">
           <div class="form-section">
-            <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv50 / Lv100 实际数值，个体值/努力值均取满）</span></div>
+            <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv50 / Lv120 实际数值，个体值/努力值均取满）</span></div>
             <div class="form-grid" style="margin-bottom:12px">
               <div class="form-group"><label>体力 <span class="stat-label-en">HP</span></label><input type="number" id="stat-hp" value="${hp}" min="0" max="255" /></div>
               <div class="form-group"><label>物攻 <span class="stat-label-en">ATK</span></label><input type="number" id="stat-atk" value="${atk}" min="0" max="255" /></div>
@@ -532,7 +532,7 @@ export class SpeciesTab {
         </div>
         <div class="form-group">
           <label>等级（留空则不限等级）</label>
-          <input type="number" id="evo-level-input" min="1" max="100" value="${draft.level}" />
+          <input type="number" id="evo-level-input" min="1" max="120" value="${draft.level}" />
         </div>
         <div class="form-group">
           <label>进化道具（留空则无）</label>
@@ -579,7 +579,7 @@ export class SpeciesTab {
       bodyHtml: `
         <div class="form-group">
           <label>等级</label>
-          <input type="number" id="learn-level-input" min="0" max="100" value="1" />
+          <input type="number" id="learn-level-input" min="0" max="120" value="1" />
         </div>
         <div class="form-group">
           <label>属性筛选</label>

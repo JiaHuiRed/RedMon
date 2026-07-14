@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.23.0-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.23.1-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -107,7 +107,7 @@
 
 项目附带可视化编辑器 `tools/mon_editor.py`（tkinter），支持：
 
-- **精灵图鉴**：种族值条形图（含 Lv50/Lv100 预估）、BST 色阶、属性克制面板、遭遇地编辑
+- **精灵图鉴**：种族值条形图（含 Lv50/Lv120 预估）、BST 色阶、属性克制面板、遭遇地编辑
 - **属性/性别/体型/描述**：可视化编辑所有字段
 - **特性分配**：主特性/隐藏特性下拉框，支持搜索过滤
 - **图鉴预览**：右侧实时显示正面 + 背面 PNG 精灵图

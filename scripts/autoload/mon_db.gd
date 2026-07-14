@@ -1,5 +1,7 @@
 extends Node
 
+const MAX_LEVEL := 120
+
 # ── 运行时数据（从 JSON 加载） ────────────────────────────────────────────────
 var moves:   Dictionary = {}
 var species: Dictionary = {}
@@ -583,7 +585,7 @@ func gain_exp(mon: Dictionary, amount: int) -> Array:
 	var events: Array = []
 	var sp = species[mon["species_id"]]
 	var gr = sp.get("growth_rate", "中速")
-	while mon["level"] < 100:
+	while mon["level"] < MAX_LEVEL:
 		if mon["exp"] < exp_for_level(gr, mon["level"] + 1):
 			break
 		var new_moves = level_up(mon)

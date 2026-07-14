@@ -262,5 +262,12 @@
     "price": 2100,
     "description": "轻如鸿毛的仙羽，附着风之灵力。可让特定精灵进化。",
     "training_stat": ""
+  },
+  "玄铁精魄": {
+    "name": "玄铁精魄",
+    "category": "进化",
+    "price": 2100,
+    "description": "千年玄铁凝出的核心精华，坚不可摧。可让特定精灵进化。",
+    "training_stat": ""
   }
 }
