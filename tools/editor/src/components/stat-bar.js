@@ -45,4 +45,4 @@ export function renderTotalBar(total) {
   `;
 }
 
-export { STAT_LABELS, MAX_STAT };
+export { STAT_LABELS, STAT_COLORS, MAX_STAT };

@@ -29,16 +29,6 @@
     "effect": "",
     "description": "以草木之力攻击对手。"
   },
-  "三旋擊": {
-    "name": "三旋擊",
-    "type": "冰",
-    "category": "物理",
-    "power": 20,
-    "accuracy": 90,
-    "max_pp": 10,
-    "effect": "",
-    "description": "发出微弱的寒冰之力攻击对手。"
-  },
   "三连踢": {
     "name": "三连踢",
     "type": "格",
@@ -8374,5 +8364,15 @@
     "max_pp": 10,
     "effect": "lower_acc",
     "description": "释放刺目强光，大幅降低对方命中率。"
+  },
+  "三旋击": {
+    "accuracy": 90,
+    "category": "物理",
+    "description": "发出微弱的寒冰之力攻击对手。",
+    "effect": "",
+    "max_pp": 10,
+    "name": "三旋击",
+    "power": 20,
+    "type": "冰"
   }
 }

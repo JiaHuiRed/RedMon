@@ -287,6 +287,19 @@ input, select, textarea, button {
   font-size: 13px;
 }
 
+.sidebar-filter-bar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-filter-bar select {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+}
+
 .sidebar-item {
   padding: 8px 12px;
   cursor: pointer;
@@ -347,6 +360,11 @@ input, select, textarea, button {
   padding: 16px;
   margin-bottom: 16px;
   box-shadow: var(--shadow-card);
+}
+
+.form-section-tall {
+  padding-top: 22px;
+  padding-bottom: 22px;
 }
 
 .form-section-title {
@@ -522,10 +540,36 @@ input, select, textarea, button {
   gap: 4px;
 }
 
+/* NPC 角色 tab 的人物立绘预览是单张大图（不像精灵图鉴那样前后两张并排的小缩略图），
+   让图片撑满预览框高度，而不是被 160px 上限卡住、框里剩一大片空白 */
+#npc-sprite-preview {
+  min-height: 280px;
+  padding: 8px;
+}
+
+#npc-sprite-preview img {
+  max-height: 100%;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+}
+
 .auto-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+
+.form-section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stat-label-en {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 /* ===== Learnset / List Tables ===== */
@@ -566,6 +610,67 @@ input, select, textarea, button {
   opacity: 1;
 }
 
+/* ===== Learnset Grid ===== */
+.learn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.learn-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.learn-card:hover {
+  background: var(--bg-hover);
+}
+
+.learn-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.learn-card-main input,
+.learn-card-main .ss-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.learn-move-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.learn-move-badge-unknown {
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+}
+
+.learn-card .remove-btn {
+  opacity: 0.4;
+  cursor: pointer;
+  font-size: 14px;
+  border: none;
+  background: none;
+  color: var(--danger);
+  flex-shrink: 0;
+}
+
+.learn-card .remove-btn:hover {
+  opacity: 1;
+}
+
 /* ===== Evolution Chain ===== */
 .evo-chain {
   display: flex;
@@ -574,36 +679,118 @@ input, select, textarea, button {
   flex-wrap: wrap;
 }
 
-.evo-node {
+
+.evo-arrow-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 8px 12px;
-  background: var(--bg-input);
-  border-radius: var(--radius-md);
-  min-width: 70px;
-  cursor: pointer;
-  transition: background 0.15s;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
-.evo-node:hover {
+.evo-arrow-label::before {
+  content: "→";
+  font-size: 16px;
+  line-height: 1;
+}
+
+.evo-arrow-label.editable {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.evo-arrow-label.editable:hover {
+  text-decoration: underline;
+}
+
+.evo-branch-sep {
+  align-self: stretch;
+  width: 1px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.evo-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 11px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  min-width: 154px;
+}
+
+.evo-stat-card:not(.current) {
+  cursor: pointer;
+}
+
+.evo-stat-card:not(.current):hover {
   background: var(--bg-hover);
 }
 
-.evo-node .evo-name {
-  font-size: 12px;
-  font-weight: 500;
+.evo-stat-card.current {
+  border-color: var(--accent);
+  background: var(--bg-hover);
 }
 
-.evo-node .evo-condition {
+.evo-card-name {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.evo-stat-card.current .evo-card-name {
+  color: var(--accent);
+}
+
+.evo-card-type {
   font-size: 10px;
   color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 3px;
 }
 
-.evo-arrow {
+.evo-card-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.evo-card-stat-label {
+  width: 26px;
+  font-size: 9px;
   color: var(--text-muted);
-  font-size: 18px;
+  text-align: right;
+}
+
+.evo-card-stat-value {
+  width: 22px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.evo-card-stat-track {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.evo-card-stat-fill {
+  height: 100%;
+}
+
+.evo-card-total {
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px solid var(--border-light);
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
 }
 
 /* ===== Status Bar ===== */

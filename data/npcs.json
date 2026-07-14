@@ -180,7 +180,10 @@
     "role": "gym_leader",
     "sprite_front": "陈赭云front.png",
     "desc": "土系道馆馆主",
-    "gender": "女"
+    "gender": "女",
+    "trainer": {
+      "class": "道馆主"
+    }
   },
   "lu_chengyang": {
     "id": "lu_chengyang",

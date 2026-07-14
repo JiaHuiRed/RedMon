@@ -43,8 +43,8 @@
       ]
     },
     "abilities": [
-      "叶绿素",
-      "茂盛"
+      "茂盛",
+      "叶绿素"
     ]
   },
   "武道熊": {
@@ -7940,11 +7940,13 @@
     "evolutions": [
       {
         "into": "奔雷露比",
-        "level": 18
+        "level": 18,
+        "item": "雷霆石"
       },
       {
         "into": "骑侠露比",
-        "level": 18
+        "level": 18,
+        "item": "格斗卷轴"
       },
       {
         "into": "潜游露比",
@@ -7969,7 +7971,7 @@
       {
         "into": "幻念露比",
         "level": 18,
-        "item": "月之晶核"
+        "item": "念力晶"
       },
       {
         "into": "古灵露比",
@@ -7978,11 +7980,13 @@
       },
       {
         "into": "恶龙露比",
-        "level": 18
+        "level": 18,
+        "item": "龙鳞玉"
       },
       {
         "into": "翱翔露比",
-        "level": 18
+        "level": 18,
+        "item": "翔风羽"
       },
       {
         "into": "自然露比",
@@ -21119,7 +21123,7 @@
     "tier": "灵",
     "gender_ratio": "50/50",
     "height": 0.6,
-    "weight": 8.0,
+    "weight": 8,
     "design_origin": "斗蟋蟀 + 武者 + 铜颚",
     "role": "快攻手",
     "abilities": [
@@ -21178,7 +21182,7 @@
     "tier": "玄",
     "gender_ratio": "50/50",
     "height": 1.3,
-    "weight": 42.0,
+    "weight": 42,
     "design_origin": "斗蟋蟀 + 铁甲武士 + 战鼓",
     "role": "物攻手",
     "abilities": [
@@ -21366,7 +21370,7 @@
     "tier": "玄",
     "gender_ratio": "无性别",
     "height": 1.8,
-    "weight": 85.0,
+    "weight": 85,
     "design_origin": "古代铠甲 + 战魂 + 鬼火",
     "role": "物攻手",
     "abilities": [
@@ -21427,7 +21431,7 @@
     "tier": "凡",
     "gender_ratio": "无性别",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [],
     "evolutions": [
       {
@@ -21459,7 +21463,7 @@
     "tier": "玄",
     "gender_ratio": "0/100",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [],
     "evolutions": [
       {
@@ -21491,7 +21495,7 @@
     "tier": "神",
     "gender_ratio": "0/100",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [
       "引火",
       "天恩"
@@ -21518,7 +21522,7 @@
     "tier": "灵",
     "gender_ratio": "50/50",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [],
     "evolutions": [
       {
@@ -21550,7 +21554,7 @@
     "tier": "神",
     "gender_ratio": "50/50",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [
       "铁拳",
       "恒净之躯"
@@ -21577,7 +21581,7 @@
     "tier": "神",
     "gender_ratio": "无性别",
     "height": 2.1,
-    "weight": 280.0,
+    "weight": 280,
     "abilities": [
       "坚硬脑袋",
       "重装甲"
@@ -21632,7 +21636,7 @@
     "tier": "神",
     "gender_ratio": "无性别",
     "height": 1.8,
-    "weight": 95.0,
+    "weight": 95,
     "abilities": [
       "超幸运",
       "天恩"
@@ -21687,7 +21691,7 @@
     "tier": "神",
     "gender_ratio": "无性别",
     "height": 3.5,
-    "weight": 680.0,
+    "weight": 680,
     "abilities": [
       "坚硬脑袋",
       "硬壳盔甲"
@@ -21742,7 +21746,7 @@
     "tier": "灵",
     "gender_ratio": "50/50",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [],
     "evolutions": [
       {
@@ -21774,7 +21778,7 @@
     "tier": "神",
     "gender_ratio": "50/50",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [
       "威吓",
       "毒手"
@@ -21801,7 +21805,7 @@
     "tier": "玄",
     "gender_ratio": "50/50",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [
       "天恩"
     ],
@@ -21836,7 +21840,7 @@
     "tier": "神",
     "gender_ratio": "50/50",
     "height": 0.5,
-    "weight": 5.0,
+    "weight": 5,
     "abilities": [
       "天恩",
       "预知眼"
@@ -21862,8 +21866,8 @@
     "desc": "寒月之灵，天香本应在瑶台。通体冰晶剔透，由月光与寒霜凝聚而成，周身笼罩永不散去的冰蓝色暗香雾气。性情清冷孤高，不与凡尘为伍。",
     "tier": "天",
     "gender_ratio": "0/0",
-    "height": 2.0,
-    "weight": 85.0,
+    "height": 2,
+    "weight": 85,
     "learnset": {
       "1": [
         "冰锥"
@@ -21927,7 +21931,7 @@
     "tier": "天",
     "gender_ratio": "0/0",
     "height": 1.8,
-    "weight": 55.0,
+    "weight": 55,
     "learnset": {
       "1": [
         "种子机关枪"
@@ -21991,7 +21995,7 @@
     "tier": "天",
     "gender_ratio": "0/0",
     "height": 2.2,
-    "weight": 120.0,
+    "weight": 120,
     "learnset": {
       "1": [
         "猛推"
@@ -22055,7 +22059,7 @@
     "tier": "天",
     "gender_ratio": "0/0",
     "height": 2.4,
-    "weight": 280.0,
+    "weight": 280,
     "learnset": {
       "1": [
         "骨棒乱打"

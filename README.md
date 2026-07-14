@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.22.1-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.23.0-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -28,7 +28,7 @@
 - **食疗式努力值** — 通过滋补食物（中国食补主题）提升精灵属性，取代传统刷怪练努力值
 - **状态异常** — 烧伤、中毒、麻痹、睡眠、冰冻，含回合效果
 - **经验与升级** — 3 种成长速度（快速/中速/缓慢），升级自动习得技能
-- **进化系统** — 等级进化 + 道具分支进化（如露比 5 条分支），战斗中弹出选择
+- **进化系统** — 等级进化 + 道具分支进化（露比为代表的多分支形态），战斗中弹出选择
 - **捕捉系统** — 精灵葫芦投掷动画，基于 HP、状态、种族捕获率的概率公式
 - **道具背包** — 精灵葫芦、回复丹药、进化道具、滋补食物等 35 种道具
 - **键盘全套映射** — Z 确认 / X 取消 / Enter 菜单 / Space 跑步，Godot input map 统一管理

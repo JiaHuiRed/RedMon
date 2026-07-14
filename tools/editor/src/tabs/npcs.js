@@ -110,14 +110,6 @@ export class NpcsTab {
       </tr>`
     ).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">无队伍</td></tr>';
 
-    const partyHtml = (npc.party || []).map((p, i) =>
-      `<tr>
-        <td><input type="text" value="${p.id||""}" class="np-party-id" data-idx="${i}" style="width:60px" /></td>
-        <td><input type="number" value="${p.level||1}" class="np-party-level" data-idx="${i}" style="width:50px" min="1" /></td>
-        <td><button class="remove-btn np-party-remove" data-idx="${i}">✕</button></td>
-      </tr>`
-    ).join("") || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">无队伍</td></tr>';
-
     this.container.innerHTML = `
       <div class="auto-grid">
         <div class="form-section">
@@ -217,16 +209,6 @@ export class NpcsTab {
           <div id="team-mon-preview-body"><div class="placeholder">点击/编辑上方队伍中的精灵名称查看预览</div></div>
         </div>
       </details>
-      <div class="form-section">
-        <div class="section-header">
-          <span class="form-section-title">NPC队伍（旧格式，建议用训练师队伍）</span>
-          <button class="btn btn-sm" id="np-add-party">+ 添加</button>
-        </div>
-        <table class="list-table">
-          <thead><tr><th style="width:70px">精灵ID</th><th style="width:60px">等级</th><th style="width:40px"></th></tr></thead>
-          <tbody>${partyHtml}</tbody>
-        </table>
-      </div>
     `;
 
     document.getElementById("np-id")?.addEventListener("change", (e) => { npc.id = e.target.value; this.callbacks.onModified(this.fileKey); });
@@ -282,31 +264,6 @@ export class NpcsTab {
       });
     });
 
-    document.getElementById("np-add-party")?.addEventListener("click", () => {
-      if (!npc.party) npc.party = [];
-      npc.party.push({ id: "", level: 5 });
-      this.callbacks.onModified(this.fileKey);
-      this.renderDetail(npc);
-    });
-
-    document.querySelectorAll(".np-party-id").forEach(el => {
-      el.addEventListener("change", () => {
-        const idx = parseInt(el.dataset.idx);
-        if (npc.party[idx]) { npc.party[idx].id = el.value; this.callbacks.onModified(this.fileKey); }
-      });
-    });
-    document.querySelectorAll(".np-party-level").forEach(el => {
-      el.addEventListener("change", () => {
-        const idx = parseInt(el.dataset.idx);
-        if (npc.party[idx]) { npc.party[idx].level = parseInt(el.value)||1; this.callbacks.onModified(this.fileKey); }
-      });
-    });
-    document.querySelectorAll(".np-party-remove").forEach(el => {
-      el.addEventListener("click", () => {
-        const idx = parseInt(el.dataset.idx);
-        if (npc.party) { npc.party.splice(idx, 1); this.callbacks.onModified(this.fileKey); this.renderDetail(npc); }
-      });
-    });
 
     this._loadNpcSprite(npc);
   }
@@ -384,7 +341,6 @@ export class NpcsTab {
       desc: "",
       dialog: "",
       sprite_front: "",
-      party: [],
     };
     this.data.push(newNpc);
     this.callbacks.onModified(this.fileKey);

@@ -255,5 +255,12 @@
     "price": 2100,
     "description": "散发永恒光辉的琥珀。可让特定精灵进化。",
     "training_stat": ""
+  },
+  "翔风羽": {
+    "name": "翔风羽",
+    "category": "进化",
+    "price": 2100,
+    "description": "轻如鸿毛的仙羽，附着风之灵力。可让特定精灵进化。",
+    "training_stat": ""
   }
 }

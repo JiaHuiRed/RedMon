@@ -1,5 +1,5 @@
-import { TYPE_COLORS } from "../components/type-badge.js";
-import { renderStatBar, renderTotalBar } from "../components/stat-bar.js";
+import { TYPE_COLORS, contrastTextColor } from "../components/type-badge.js";
+import { renderStatBar, renderTotalBar, STAT_LABELS, STAT_COLORS } from "../components/stat-bar.js";
 import { readSprite } from "../utils/api.js";
 import { openModal } from "../components/modal.js";
 import { attachSearchableSelect } from "../components/searchable-select.js";
@@ -19,6 +19,8 @@ export class SpeciesTab {
     this.data = state.data.species || [];
     this.filteredData = this.data;
     this.spritesDir = state.dataPaths?.sprites_dir?.path || "";
+    this.typeFilter = "全部";
+    this.tierFilter = "全部";
   }
 
   getData() {
@@ -28,28 +30,45 @@ export class SpeciesTab {
   // ===== Sidebar List =====
   renderList(filter) {
     this.data = this.state.data.species || [];
-    this.filteredData = (filter
-      ? this.data.filter(m => this._matchFilter(m, filter))
-      : this.data
-    ).sort((a, b) => a.id - b.id);
+    const q = filter !== undefined ? filter : (document.getElementById("search-input")?.value || "");
+
+    this.filteredData = this.data
+      .filter(m => (!q || this._matchFilter(m, q)) && this._matchTypeTier(m))
+      .sort((a, b) => a.id - b.id);
 
     const list = document.getElementById("sidebar-list");
-    if (!this.filteredData.length) {
-      list.innerHTML = '<div class="placeholder">没有精灵数据</div>';
-      return;
-    }
 
-    list.innerHTML = this.filteredData.map(m =>
-      `<div class="sidebar-item ${m.id === this.currentId ? "active" : ""}" data-id="${m.id}">
-        <span class="item-id">#${String(m.id).padStart(3, "0")}</span>
-        <span class="item-name">${m.name}</span>
-        <span class="type-badge type-badge-sm" style="background:${TYPE_COLORS[m.type1]||"#999"}22; color:${TYPE_COLORS[m.type1]||"#999"}">${m.type1}</span>
-        ${m.type2 ? `<span class="type-badge type-badge-sm" style="background:${TYPE_COLORS[m.type2]||"#999"}22; color:${TYPE_COLORS[m.type2]||"#999"}">${m.type2}</span>` : ""}
-      </div>`
-    ).join("");
+    const typeOptions = ["全部", ...Object.keys(TYPE_COLORS)];
+    const tierOptions = ["全部", ...TIERS];
+    const filterHtml = `
+      <div class="sidebar-filter-bar">
+        <select id="species-type-filter">${typeOptions.map(t => `<option value="${t}" ${this.typeFilter === t ? "selected" : ""}>${t === "全部" ? "全部属性" : t}</option>`).join("")}</select>
+        <select id="species-tier-filter">${tierOptions.map(t => `<option value="${t}" ${this.tierFilter === t ? "selected" : ""}>${t === "全部" ? "全部品阶" : t}</option>`).join("")}</select>
+      </div>`;
+
+    const itemsHtml = this.filteredData.length
+      ? this.filteredData.map(m =>
+          `<div class="sidebar-item ${m.id === this.currentId ? "active" : ""}" data-id="${m.id}">
+            <span class="item-id">#${String(m.id).padStart(3, "0")}</span>
+            <span class="item-name">${m.name}</span>
+            <span class="type-badge type-badge-sm" style="background:${TYPE_COLORS[m.type1]||"#999"}; color:${contrastTextColor(TYPE_COLORS[m.type1]||"#999")}">${m.type1}</span>
+            ${m.type2 ? `<span class="type-badge type-badge-sm" style="background:${TYPE_COLORS[m.type2]||"#999"}; color:${contrastTextColor(TYPE_COLORS[m.type2]||"#999")}">${m.type2}</span>` : ""}
+          </div>`
+        ).join("")
+      : '<div class="placeholder">没有精灵数据</div>';
+
+    list.innerHTML = filterHtml + itemsHtml;
 
     list.querySelectorAll(".sidebar-item").forEach(el => {
       el.addEventListener("click", () => this._selectMon(parseInt(el.dataset.id)));
+    });
+    document.getElementById("species-type-filter")?.addEventListener("change", (e) => {
+      this.typeFilter = e.target.value;
+      this.renderList(q);
+    });
+    document.getElementById("species-tier-filter")?.addEventListener("change", (e) => {
+      this.tierFilter = e.target.value;
+      this.renderList(q);
     });
   }
 
@@ -63,6 +82,12 @@ export class SpeciesTab {
            String(m.id).includes(q) ||
            (m.type1 && m.type1.includes(q)) ||
            (m.type2 && m.type2.includes(q));
+  }
+
+  _matchTypeTier(m) {
+    if (this.typeFilter !== "全部" && m.type1 !== this.typeFilter && m.type2 !== this.typeFilter) return false;
+    if (this.tierFilter !== "全部" && m.tier !== this.tierFilter) return false;
+    return true;
   }
 
   // ===== Species Selection =====
@@ -111,132 +136,135 @@ export class SpeciesTab {
     const bst = hp + atk + def + spatk + spdef + spd;
 
     this.container.innerHTML = `
-      <!-- Top: Sprites + Basic Info -->
+      <!-- Top: Sprites + Basic Info (left) / Stats (right) -->
       <div class="auto-grid">
-        <div class="form-section">
-          <div style="display:flex;gap:12px">
-            <div class="sprite-preview" id="sprite-preview">
-              <div class="sprite-placeholder">加载中...</div>
-            </div>
-            <div class="sprite-preview" id="sprite-back-preview">
-              <div class="sprite-placeholder">背面</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <div class="form-section-title">基本信息</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>ID</label>
-              <input type="number" id="field-id" value="${mon.id}" min="1" />
-            </div>
-            <div class="form-group">
-              <label>名称</label>
-              <input type="text" id="field-name" value="${mon.name}" />
-            </div>
-            <div class="form-group">
-              <label>属性 1</label>
-              <select id="field-type1">${this._typeOptions(mon.type1)}</select>
-            </div>
-            <div class="form-group">
-              <label>属性 2</label>
-              <select id="field-type2"><option value="">无</option>${this._typeOptions(mon.type2)}</select>
-            </div>
-            <div class="form-group">
-              <label>品阶
-                <button type="button" class="btn btn-sm" id="btn-suggest-tier"
-                        style="margin-left:6px;padding:1px 6px;font-size:11px"
-                        title="根据当前种族值总和自动推荐品阶">⚡推荐</button>
-              </label>
-              <select id="field-tier">${TIERS.map(t =>
-                `<option value="${t}" ${mon.tier === t ? "selected" : ""}>${t}</option>`
-              ).join("")}</select>
-            </div>
-            <div class="form-group">
-              <label>捕获率</label>
-              <input type="number" id="field-catch" value="${mon.catch_rate || 45}" min="0" max="255" />
-            </div>
-            <div class="form-group">
-              <label>经验值</label>
-              <input type="number" id="field-exp" value="${mon.exp_yield || 100}" min="0" />
-            </div>
-            <div class="form-group">
-              <label>成长率</label>
-              <select id="field-growth">${GROWTH_RATES.map(g =>
-                `<option value="${g}" ${mon.growth_rate === g ? "selected" : ""}>${g}</option>`
-              ).join("")}</select>
-            </div>
-            <div class="form-group">
-              <label>性别比例（雌性 %）</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <input type="range" id="field-gender-slider" min="0" max="100" step="10"
-                       value="${this._parseGenderRatio(mon.gender_ratio).femalePct}"
-                       ${this._parseGenderRatio(mon.gender_ratio).isAsexual ? "disabled" : ""}
-                       style="flex:1" />
-                <span id="field-gender-value" style="width:34px;text-align:right;font-size:12px">${this._parseGenderRatio(mon.gender_ratio).femalePct}%</span>
+        <div class="form-section-stack">
+          <div class="form-section">
+            <div style="display:flex;gap:12px">
+              <div class="sprite-preview" id="sprite-preview">
+                <div class="sprite-placeholder">加载中...</div>
               </div>
-              <label style="display:flex;align-items:center;gap:4px;font-size:12px">
-                <input type="checkbox" id="field-gender-asexual" ${this._parseGenderRatio(mon.gender_ratio).isAsexual ? "checked" : ""} /> 无性别
-              </label>
+              <div class="sprite-preview" id="sprite-back-preview">
+                <div class="sprite-placeholder">背面</div>
+              </div>
             </div>
-            <div class="form-group">
-              <label>身高 (m)</label>
-              <input type="text" id="field-height" value="${mon.height || ""}" />
-            </div>
-            <div class="form-group">
-              <label>体重 (kg)</label>
-              <input type="text" id="field-weight" value="${mon.weight || ""}" />
-            </div>
-            <div class="form-group">
-              <label>特性 1</label>
-              <select id="field-ability1">${this._abilityOptions(mon.abilities?.[0] || "")}</select>
-            </div>
-            <div class="form-group">
-              <label>特性 2</label>
-              <select id="field-ability2">${this._abilityOptions(mon.abilities?.[1] || "")}</select>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">基本信息</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>ID</label>
+                <input type="number" id="field-id" value="${mon.id}" min="1" />
+              </div>
+              <div class="form-group">
+                <label>名称</label>
+                <input type="text" id="field-name" value="${mon.name}" />
+              </div>
+              <div class="form-group">
+                <label>属性 1</label>
+                <select id="field-type1">${this._typeOptions(mon.type1)}</select>
+              </div>
+              <div class="form-group">
+                <label>属性 2</label>
+                <select id="field-type2"><option value="">无</option>${this._typeOptions(mon.type2)}</select>
+              </div>
+              <div class="form-group">
+                <label>品阶
+                  <button type="button" class="btn btn-sm" id="btn-suggest-tier"
+                          style="margin-left:6px;padding:1px 6px;font-size:11px"
+                          title="根据当前种族值总和自动推荐品阶">⚡推荐</button>
+                </label>
+                <select id="field-tier">${TIERS.map(t =>
+                  `<option value="${t}" ${mon.tier === t ? "selected" : ""}>${t}</option>`
+                ).join("")}</select>
+              </div>
+              <div class="form-group">
+                <label>捕获率</label>
+                <input type="number" id="field-catch" value="${mon.catch_rate || 45}" min="0" max="255" />
+              </div>
+              <div class="form-group">
+                <label>经验值</label>
+                <input type="number" id="field-exp" value="${mon.exp_yield || 100}" min="0" />
+              </div>
+              <div class="form-group">
+                <label>成长率</label>
+                <select id="field-growth">${GROWTH_RATES.map(g =>
+                  `<option value="${g}" ${mon.growth_rate === g ? "selected" : ""}>${g}</option>`
+                ).join("")}</select>
+              </div>
+              <div class="form-group">
+                <label>性别比例（雌性 %）</label>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <input type="range" id="field-gender-slider" min="0" max="100" step="10"
+                         value="${this._parseGenderRatio(mon.gender_ratio).femalePct}"
+                         ${this._parseGenderRatio(mon.gender_ratio).isAsexual ? "disabled" : ""}
+                         style="flex:1" />
+                  <span id="field-gender-value" style="width:34px;text-align:right;font-size:12px">${this._parseGenderRatio(mon.gender_ratio).femalePct}%</span>
+                </div>
+                <label style="display:flex;align-items:center;gap:4px;font-size:12px">
+                  <input type="checkbox" id="field-gender-asexual" ${this._parseGenderRatio(mon.gender_ratio).isAsexual ? "checked" : ""} /> 无性别
+                </label>
+              </div>
+              <div class="form-group">
+                <label>身高 (m)</label>
+                <input type="text" id="field-height" value="${mon.height || ""}" />
+              </div>
+              <div class="form-group">
+                <label>体重 (kg)</label>
+                <input type="text" id="field-weight" value="${mon.weight || ""}" />
+              </div>
+              <div class="form-group">
+                <label>特性 1</label>
+                <input type="text" id="field-ability1" value="${mon.abilities?.[0] || ""}" />
+              </div>
+              <div class="form-group">
+                <label>特性 2</label>
+                <input type="text" id="field-ability2" value="${mon.abilities?.[1] || ""}" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Stats -->
-      <div class="form-section">
-        <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv50 / Lv100 实际数值，个体值/努力值均取满）</span></div>
-        <div class="form-grid" style="margin-bottom:12px">
-          <div class="form-group"><label>HP</label><input type="number" id="stat-hp" value="${hp}" min="0" max="255" /></div>
-          <div class="form-group"><label>ATK</label><input type="number" id="stat-atk" value="${atk}" min="0" max="255" /></div>
-          <div class="form-group"><label>DEF</label><input type="number" id="stat-def" value="${def}" min="0" max="255" /></div>
-          <div class="form-group"><label>SP.ATK</label><input type="number" id="stat-spatk" value="${spatk}" min="0" max="255" /></div>
-          <div class="form-group"><label>SP.DEF</label><input type="number" id="stat-spdef" value="${spdef}" min="0" max="255" /></div>
-          <div class="form-group"><label>SPD</label><input type="number" id="stat-spd" value="${spd}" min="0" max="255" /></div>
-        </div>
-        <div class="stat-group">
-          ${renderStatBar("hp", hp)}
-          ${renderStatBar("atk", atk)}
-          ${renderStatBar("def", def)}
-          ${renderStatBar("spatk", spatk)}
-          ${renderStatBar("spdef", spdef)}
-          ${renderStatBar("spd", spd)}
-          ${renderTotalBar(bst)}
-        </div>
-      </div>
-
-      <!-- Encounters -->
-      <div class="form-section">
-        <div class="section-header">
-          <span class="form-section-title">遭遇地</span>
-          <div>
-            <button class="btn btn-sm" id="btn-add-enc">+ 添加地点</button>
+        <div class="form-section-stack">
+          <div class="form-section">
+            <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv50 / Lv100 实际数值，个体值/努力值均取满）</span></div>
+            <div class="form-grid" style="margin-bottom:12px">
+              <div class="form-group"><label>体力 <span class="stat-label-en">HP</span></label><input type="number" id="stat-hp" value="${hp}" min="0" max="255" /></div>
+              <div class="form-group"><label>物攻 <span class="stat-label-en">ATK</span></label><input type="number" id="stat-atk" value="${atk}" min="0" max="255" /></div>
+              <div class="form-group"><label>物防 <span class="stat-label-en">DEF</span></label><input type="number" id="stat-def" value="${def}" min="0" max="255" /></div>
+              <div class="form-group"><label>特攻 <span class="stat-label-en">SP.ATK</span></label><input type="number" id="stat-spatk" value="${spatk}" min="0" max="255" /></div>
+              <div class="form-group"><label>特防 <span class="stat-label-en">SP.DEF</span></label><input type="number" id="stat-spdef" value="${spdef}" min="0" max="255" /></div>
+              <div class="form-group"><label>速度 <span class="stat-label-en">SPD</span></label><input type="number" id="stat-spd" value="${spd}" min="0" max="255" /></div>
+            </div>
+            <div class="stat-group">
+              ${renderStatBar("hp", hp)}
+              ${renderStatBar("atk", atk)}
+              ${renderStatBar("def", def)}
+              ${renderStatBar("spatk", spatk)}
+              ${renderStatBar("spdef", spdef)}
+              ${renderStatBar("spd", spd)}
+              ${renderTotalBar(bst)}
+            </div>
           </div>
-        </div>
-        <div id="enc-container">
-          ${this._renderEncounters(mon)}
+
+          <!-- Encounters -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="form-section-title">遭遇地</span>
+              <div>
+                <button class="btn btn-sm" id="btn-add-enc">+ 添加地点</button>
+              </div>
+            </div>
+            <div id="enc-container">
+              ${this._renderEncounters(mon)}
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Evolution -->
-      <div class="form-section">
+      <div class="form-section form-section-tall">
         <div class="section-header">
           <span class="form-section-title">进化链</span>
           <div>
@@ -256,39 +284,31 @@ export class SpeciesTab {
             <button class="btn btn-sm" id="btn-add-learn">+ 添加技能</button>
           </div>
         </div>
-        <table class="list-table" id="learnset-table">
-          <thead>
-            <tr>
-              <th style="width:50px">等级</th>
-              <th>技能名称</th>
-              <th style="width:40px"></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${this._renderLearnset(mon)}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Description -->
-      <div class="form-section">
-        <div class="form-section-title">图鉴描述</div>
-        <div class="form-grid">
-          <div class="form-group full-width">
-            <textarea id="field-desc" rows="3">${mon.desc || ""}</textarea>
-          </div>
-          <div class="form-group full-width">
-            <label>设计灵感来源</label>
-            <input type="text" id="field-design-origin" value="${mon.design_origin || ""}" placeholder="例：瑞兽火猫 + 祥云纹" />
-          </div>
+        <div id="learnset-table">
+          ${this._renderLearnset(mon)}
         </div>
       </div>
 
-      <!-- Type Matchup -->
-      <div class="form-section">
-        <div class="form-section-title">属性克制</div>
-        <div id="matchup-container">
-          ${this._renderMatchup(mon)}
+      <!-- Description + Type Matchup -->
+      <div class="auto-grid">
+        <div class="form-section">
+          <div class="form-section-title">图鉴描述</div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <textarea id="field-desc" rows="3">${mon.desc || ""}</textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>设计灵感来源</label>
+              <input type="text" id="field-design-origin" value="${mon.design_origin || ""}" placeholder="例：瑞兽火猫 + 祥云纹" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">属性克制</div>
+          <div id="matchup-container">
+            ${this._renderMatchup(mon)}
+          </div>
         </div>
       </div>
     `;
@@ -342,13 +362,6 @@ export class SpeciesTab {
     return abData.map(a => a.name).filter(Boolean);
   }
 
-  _abilityOptions(selected) {
-    const list = this._getAbilitiesList();
-    return `<option value="">无</option>${
-      list.map(a => `<option value="${a}" ${a === selected ? "selected" : ""}>${a}</option>`).join("")
-    }`;
-  }
-
   _typeOptions(selected) {
     return Object.keys(TYPE_COLORS).map(t =>
       `<option value="${t}" ${t === selected ? "selected" : ""}>${t}</option>`
@@ -387,27 +400,120 @@ export class SpeciesTab {
     });
   }
 
+  _speciesByName(name) {
+    return this.data.find(s => s.name === name);
+  }
+
+  // 精灵自身的进化分支：优先用 evolutions 数组，为空时兜底旧版 evolves_into/evolve_level 单分支字段
+  // （现存数据里两者常常并存，但也有极少数精灵只有旧字段，如"鸣武者"）
+  _ownEvoBranches(sp) {
+    let branches = Array.isArray(sp.evolutions) ? sp.evolutions : [];
+    if (branches.length === 0 && sp.evolves_into) {
+      branches = [{ into: sp.evolves_into, level: sp.evolve_level }];
+    }
+    return branches.filter(b => b && b.into && this._speciesByName(b.into));
+  }
+
+  _evoCondLabel(evo) {
+    if (evo.level) return `Lv${evo.level}`;
+    if (evo.item) return evo.item;
+    return "?";
+  }
+
+  // 沿 evolutions/evolves_into 向上找祖先链，对齐 mon_editor.py 的 _refresh_evo_compare
+  _findAncestorChain(mon) {
+    const chain = [];
+    let cur = mon.name;
+    const visited = new Set([mon.name]);
+    while (true) {
+      const pre = this.data.find(s => this._ownEvoBranches(s).some(e => e.into === cur));
+      if (!pre || visited.has(pre.name)) break;
+      visited.add(pre.name);
+      const evo = this._ownEvoBranches(pre).find(e => e.into === cur);
+      chain.push({ sp: pre, cond: this._evoCondLabel(evo) });
+      cur = pre.name;
+    }
+    chain.reverse();
+    return chain;
+  }
+
+  // 进化家族里的一张精灵卡片：属性 + 六维种族值迷你条，方便设计时直观对比上一形态
+  _evoCardHtml(sp, isCurrent) {
+    const t2 = sp.type2 ? `/${sp.type2}` : "";
+    const base = sp.base || {};
+    let total = 0;
+    const statRows = Object.keys(STAT_LABELS).map(key => {
+      const dataKey = key === "spatk" ? "sp_atk" : key === "spdef" ? "sp_def" : key;
+      const v = base[dataKey] || 0;
+      total += v;
+      const pct = Math.min(100, (v / 255) * 100);
+      return `<div class="evo-card-stat-row">
+        <span class="evo-card-stat-label">${STAT_LABELS[key].slice(0, 3)}</span>
+        <div class="evo-card-stat-track"><div class="evo-card-stat-fill" style="width:${pct}%;background:${STAT_COLORS[key]}"></div></div>
+        <span class="evo-card-stat-value">${v}</span>
+      </div>`;
+    }).join("");
+    return `<div class="evo-stat-card ${isCurrent ? "current" : ""}" ${!isCurrent ? `data-evo-goto="${sp.id}"` : ""}>
+      <div class="evo-card-name">${sp.name}</div>
+      <div class="evo-card-type">${sp.type1}${t2}</div>
+      ${statRows}
+      <div class="evo-card-total">总计 ${total}</div>
+    </div>`;
+  }
+
   _renderEvoChain(mon) {
-    if (!mon.evolutions || mon.evolutions.length === 0) {
+    const ancestors = this._findAncestorChain(mon);
+    const branches = this._ownEvoBranches(mon);
+
+    if (ancestors.length === 0 && branches.length === 0) {
       return '<div style="color:var(--text-muted);padding:8px">无进化</div>';
     }
 
-    // 真实 species.json 里进化目标是精灵名字符串 `into`，不是数字 id
-    return `<div class="evo-chain">
-      <div class="evo-node">
-        <span class="evo-name">${mon.name}</span>
-      </div>
-      ${mon.evolutions.map((evo, i) => `
-        <span class="evo-arrow">→</span>
-        <div class="evo-node" data-evo-idx="${i}">
-          <span class="evo-name">${evo.into || "?"}</span>
-          <span class="evo-condition">${[
-            evo.level ? `Lv.${evo.level}` : "",
-            evo.item ? `「${evo.item}」` : "",
-          ].filter(Boolean).join(" ")}</span>
-        </div>
-      `).join("")}
-    </div>`;
+    let html = '<div class="evo-chain">';
+
+    ancestors.forEach(({ sp, cond }) => {
+      html += this._evoCardHtml(sp, false);
+      html += `<span class="evo-arrow-label">${cond}</span>`;
+    });
+
+    html += this._evoCardHtml(mon, true);
+
+    branches.forEach((evo, i) => {
+      if (i > 0) html += '<div class="evo-branch-sep"></div>';
+      html += `<span class="evo-arrow-label editable" data-evo-idx="${i}" title="点击编辑">${this._evoCondLabel(evo)} ✎</span>`;
+      let curSp = this._speciesByName(evo.into);
+      if (!curSp) return;
+      html += this._evoCardHtml(curSp, false);
+
+      // 单一分支时自动往下延伸整条链；出现分叉（同一精灵有多个未见过的下一形态）就停在这里
+      const seenFwd = new Set([mon.name, curSp.name]);
+      while (true) {
+        const fe = this._ownEvoBranches(curSp).filter(e => !seenFwd.has(e.into));
+        if (fe.length !== 1) break;
+        const next = fe[0];
+        const nextSp = this._speciesByName(next.into);
+        if (!nextSp) break;
+        html += `<span class="evo-arrow-label">${this._evoCondLabel(next)}</span>`;
+        html += this._evoCardHtml(nextSp, false);
+        seenFwd.add(nextSp.name);
+        curSp = nextSp;
+      }
+    });
+
+    html += '</div>';
+    return html;
+  }
+
+  // 首次编辑时，把只存在于旧版 evolves_into/evolve_level 字段的分支迁移进 evolutions 数组
+  _ensureOwnEvolutionsArray(mon) {
+    if (!Array.isArray(mon.evolutions) || mon.evolutions.length === 0) {
+      mon.evolutions = this._ownEvoBranches(mon).map(b => {
+        const out = { into: b.into };
+        if (b.level) out.level = b.level;
+        if (b.item) out.item = b.item;
+        return out;
+      });
+    }
   }
 
   // 添加/编辑进化分支：目标精灵(可搜索下拉)+等级+进化道具(可搜索下拉)
@@ -493,8 +599,8 @@ export class SpeciesTab {
         const updateInfo = () => {
           const m = moves.find(mv => mv.name === draft.name);
           if (!m) { infoBox.textContent = "（未找到该技能）"; return; }
-          let txt = `属性: ${m.type || "?"}   分类: ${m.category || "?"}   威力: ${m.power ?? "-"}   命中: ${m.accuracy ?? "-"}   PP: ${m.pp ?? "-"}`;
-          if (m.desc) txt += `\n${m.desc}`;
+          let txt = `属性: ${m.type || "?"}   分类: ${m.category || "?"}   威力: ${m.power ?? "-"}   命中: ${m.accuracy ?? "-"}   PP: ${m.max_pp ?? "-"}`;
+          if (m.description) txt += `\n${m.description}`;
           infoBox.textContent = txt;
         };
 
@@ -528,17 +634,33 @@ export class SpeciesTab {
 
   _renderLearnset(mon) {
     if (!mon.learnset || mon.learnset.length === 0) {
-      return '<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">无技能</td></tr>';
+      return '<div style="color:var(--text-muted);padding:8px">无技能</div>';
     }
 
-    const sorted = [...mon.learnset].sort((a, b) => (a.level || 999) - (b.level || 999));
-    return sorted.map((l, i) =>
-      `<tr>
-        <td><input type="number" value="${l.level || 0}" class="learn-level" data-idx="${i}" style="width:50px" /></td>
-        <td><input type="text" value="${l.name || ""}" class="learn-name" data-idx="${i}" style="width:100%" /></td>
-        <td><button class="remove-btn learn-remove" data-idx="${i}">✕</button></td>
-      </tr>`
-    ).join("");
+    const CAT_LABEL = { "物理": "物", "特殊": "特", "变化": "变" };
+    const moves = this.state.data.moves || [];
+
+    // 保留在 mon.learnset 里的原始下标（存储顺序），展示时再按等级排序，
+    // 避免排序后下标错位导致编辑/删除改到别的技能
+    const withIdx = mon.learnset.map((l, idx) => ({ ...l, _idx: idx }));
+    const sorted = withIdx.sort((a, b) => (a.level || 0) - (b.level || 0));
+
+    return `<div class="learn-grid">
+      ${sorted.map(l => {
+        const info = moves.find(m => m.name === l.name);
+        const badge = info
+          ? `<span class="learn-move-badge" style="background:${(TYPE_COLORS[info.type] || "#999")};color:${contrastTextColor(TYPE_COLORS[info.type] || "#999")}">${info.type || "?"}·${CAT_LABEL[info.category] || info.category || "?"}${info.category !== "变化" ? `·威力${info.power ?? "-"}` : ""}</span>`
+          : '<span class="learn-move-badge learn-move-badge-unknown">未知技能</span>';
+        return `<div class="learn-card">
+          <input type="number" value="${l.level || 0}" class="learn-level" data-idx="${l._idx}" style="width:40px" />
+          <div class="learn-card-main">
+            <input type="text" value="${l.name || ""}" class="learn-name" data-idx="${l._idx}" />
+            ${badge}
+          </div>
+          <button class="remove-btn learn-remove" data-idx="${l._idx}">✕</button>
+        </div>`;
+      }).join("")}
+    </div>`;
   }
 
   _renderEncounters(mon) {
@@ -562,7 +684,7 @@ export class SpeciesTab {
 
     const chip = (typ, val) => {
       const bg = TYPE_COLORS[typ] || "#999";
-      return `<span class="type-badge type-badge-sm" style="background:${bg}22;color:${bg};border:1px solid ${bg}44">${typ} ${val}</span>`;
+      return `<span class="type-badge type-badge-sm" style="background:${bg};color:${contrastTextColor(bg)}">${typ} ${val}</span>`;
     };
     const section = (title, entries) => entries.length ? `
       <div style="margin-bottom:8px">
@@ -656,16 +778,30 @@ export class SpeciesTab {
     bindStr("field-weight", "weight");
     bindStr("field-desc", "desc");
     bindStr("field-design-origin", "design_origin");
-    bind("field-ability1", "abilities", v => {
-      const a1 = v || "", a2 = mon.abilities?.[1] || "";
-      if (!v && !a2) { mon.abilities = []; return; }
-      mon.abilities = [a1, a2].filter(Boolean);
-    });
-    bind("field-ability2", "abilities", v => {
-      const a1 = mon.abilities?.[0] || "", a2 = v || "";
-      if (!a1 && !v) { mon.abilities = []; return; }
-      mon.abilities = [a1, a2].filter(Boolean);
-    });
+    // 特性下拉改成可搜索输入框（原生 select 逐条滚动选特性太慢，对齐旧编辑器的自动补全体验）
+    const abilityNames = this._getAbilitiesList();
+    const setAbilities = (a1, a2) => {
+      // 保留槽位顺序：只有 a2 有值而 a1 为空时，用空字符串占住槽位 0，避免 a2 的值错位挪到 abilities[0]
+      if (!a1 && !a2) mon.abilities = [];
+      else if (!a1) mon.abilities = ["", a2];
+      else if (!a2) mon.abilities = [a1];
+      else mon.abilities = [a1, a2];
+      this.callbacks.onModified(this.fileKey);
+    };
+    const ability1Input = document.getElementById("field-ability1");
+    const ability2Input = document.getElementById("field-ability2");
+    if (ability1Input) {
+      attachSearchableSelect(ability1Input, {
+        items: abilityNames, value: mon.abilities?.[0] || "",
+        onChange: (v) => setAbilities(v, ability2Input?.value.trim() || mon.abilities?.[1] || ""),
+      });
+    }
+    if (ability2Input) {
+      attachSearchableSelect(ability2Input, {
+        items: abilityNames, value: mon.abilities?.[1] || "",
+        onChange: (v) => setAbilities(ability1Input?.value.trim() || mon.abilities?.[0] || "", v),
+      });
+    }
 
     // Base stats
     const bindStat = (id, field) => {
@@ -711,19 +847,25 @@ export class SpeciesTab {
     const addEvoBtn = document.getElementById("btn-add-evo");
     if (addEvoBtn) {
       addEvoBtn.addEventListener("click", () => {
-        if (!mon.evolutions) mon.evolutions = [];
+        this._ensureOwnEvolutionsArray(mon);
         this._openEvoModal({ into: "", level: 16 }, (evo) => mon.evolutions.push(evo), mon);
       });
     }
 
-    // Evolution nodes — click to edit target name / level / item
+    // Evolution arrows — click to edit target name / level / item (only this mon's own branches)
     document.querySelectorAll("[data-evo-idx]").forEach(el => {
       const idx = parseInt(el.dataset.evoIdx);
       el.addEventListener("click", () => {
-        const evo = mon.evolutions?.[idx];
+        this._ensureOwnEvolutionsArray(mon);
+        const evo = mon.evolutions[idx];
         if (!evo) return;
         this._openEvoModal(evo, (updated) => { mon.evolutions[idx] = updated; }, mon);
       });
+    });
+
+    // Ancestor/descendant cards — click to jump to that species for stat comparison
+    document.querySelectorAll("[data-evo-goto]").forEach(el => {
+      el.addEventListener("click", () => this._selectMon(parseInt(el.dataset.evoGoto)));
     });
 
     // Learnset
@@ -758,13 +900,20 @@ export class SpeciesTab {
       });
     });
 
+    // 技能名改成可搜索输入框，改完重新渲染以刷新旁边的属性/分类/威力标签
+    const learnMoveNames = (this.state.data.moves || []).map(m => m.name).sort();
     document.querySelectorAll(".learn-name").forEach(input => {
-      input.addEventListener("change", () => {
-        const idx = parseInt(input.dataset.idx);
-        if (mon.learnset && mon.learnset[idx]) {
-          mon.learnset[idx].name = input.value;
-          this.callbacks.onModified(this.fileKey);
-        }
+      const idx = parseInt(input.dataset.idx);
+      attachSearchableSelect(input, {
+        items: learnMoveNames,
+        value: input.value,
+        onChange: (v) => {
+          if (mon.learnset && mon.learnset[idx]) {
+            mon.learnset[idx].name = v;
+            this.callbacks.onModified(this.fileKey);
+            this.renderDetail(mon.id);
+          }
+        },
       });
     });
 
