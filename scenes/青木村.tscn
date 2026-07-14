@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bs3i2ydp03x2t" path="res://assets/npc/青年.png" id="21_youth"]
 [ext_resource type="Texture2D" uid="uid://bc5kjbkksh4t3" path="res://assets/npc/劲敌walk_sheet.png" id="22_rival"]
 [ext_resource type="Texture2D" uid="uid://c6lkuidaqkfnm" path="res://assets/npc/城镇训练师.png" id="23_towntrainer"]
+[ext_resource type="Texture2D" uid="uid://c4lbecd8jtgwl" path="res://assets/npc/劲敌front.png" id="24_rivalportrait"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gktdk"]
 size = Vector2(113, 122)
@@ -101,10 +102,11 @@ metadata/npc_dialog = "【华灵草原】→ 前方草丛危险，请带足补�
 [node name="阿婆" type="Sprite2D" parent="角色" unique_id=150225919]
 position = Vector2(296, 360)
 z_index = 5
+texture_filter = 4
 centered = true
 region_enabled = true
-region_rect = Rect2(48, 0, 48, 48)
-scale = Vector2(1.2, 1.2)
+region_rect = Rect2(256, 0, 256, 256)
+scale = Vector2(0.225, 0.225)
 texture = ExtResource("20_granny")
 metadata/npc_type = "npc"
 metadata/npc_name = "阿婆"
@@ -113,10 +115,11 @@ metadata/npc_dialog = "阿婆：这孩子，出门在外要照顾好自己，野
 [node name="训练师_村1" type="Sprite2D" parent="角色" unique_id=829320325]
 position = Vector2(648, 488)
 z_index = 5
+texture_filter = 4
 centered = true
 region_enabled = true
-region_rect = Rect2(0, 1024, 683, 1024)
-scale = Vector2(0.094, 0.094)
+region_rect = Rect2(0, 512, 341.5, 512)
+scale = Vector2(0.188, 0.188)
 texture = ExtResource("23_towntrainer")
 metadata/npc_type = "trainer"
 metadata/npc_name = "训练师_村1"
@@ -151,11 +154,10 @@ metadata/npc_dialog = "__guard_right__"
 [node name="劲敌" type="Sprite2D" parent="角色"]
 position = Vector2(856, 360)
 z_index = 5
+texture_filter = 4
 centered = true
-region_enabled = true
-region_rect = Rect2(0, 0, 96, 160)
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("22_rival")
+scale = Vector2(0.09375, 0.09375)
+texture = ExtResource("24_rivalportrait")
 metadata/npc_type = "rival"
 metadata/npc_name = "劲敌"
 metadata/npc_dialog = "__rival__"
