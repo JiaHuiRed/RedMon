@@ -1018,31 +1018,21 @@ func _build_player() -> void:
 
 	_player.position = Vector2(15 * TILE, 18 * TILE)   # Start at bottom (arriving from village)
 
-add_child(_player)
+	add_child(_player)
 
 	var controller = PlayerController.new()
 	controller.name = "PlayerController"
 	_player.add_child(controller)
 
-
 	_player_spr = Sprite2D.new()
-
 	_player_spr.texture = _draw_player_spr()
-
 	_player_spr.z_index = 5
-
 	_player.add_child(_player_spr)
 
-
-
 	var col = CollisionShape2D.new()
-
 	var sh  = CircleShape2D.new(); sh.radius = 8.0
-
 	col.shape = sh
-
 	col.position = Vector2(0, 12)  # YYMMDD Red 碰撞点下移贴近脚底，避免视觉穿模
-
 	_player.add_child(col)
 
 
