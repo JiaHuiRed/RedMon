@@ -1,6 +1,21 @@
 import { readSprite } from "../utils/api.js";
+import { renderStatBar, renderTotalBar } from "../components/stat-bar.js";
 
-const NPC_TRAINER_TYPES = ["教授", "劲敌", "普通NPC", "家人", "村民", "道馆主", "四天王", "反派", "训练师"];
+// 与 mon_editor.py 的 NPC_ROLE_MAP 保持一致（npcs.json 里 role 字段的真实取值是这些英文 key）
+// 额外补了 "champion"（真实数据里存在，但旧编辑器的映射表里也没有）
+const NPC_ROLE_MAP = {
+  "": "（未设置）",
+  professor: "教授",
+  rival: "劲敌",
+  npc: "普通NPC",
+  family: "家人",
+  villager: "村民",
+  gym_leader: "道馆主",
+  elite_four: "四天王",
+  villain: "反派",
+  champion: "冠军",
+  trainer: "训练师",
+};
 
 const TRAINER_CLASSES = ["普通训练师", "精英训练师", "道馆学徒", "道馆主", "四天王", "冠军", "反派干部", "反派首领", "劲敌", "路人", "商人", "研究员", "武者", "渔夫", "虫师"];
 
@@ -21,28 +36,59 @@ export class NpcsTab {
     this.currentId = null;
     this.data = state.data.npcs || [];
     this.spritesDir = state.dataPaths?.npc_sprites_dir?.path || "";
+    this.speciesSpritesDir = state.dataPaths?.sprites_dir?.path || "";
+    this.roleFilter = "全部";
   }
 
   getData() { return this.data; }
 
   renderList(filter) {
     this.data = this.state.data.npcs || [];
-    const items = filter ? this.data.filter(m => this._match(m, filter)) : this.data;
+    const q = filter !== undefined ? filter : (document.getElementById("search-input")?.value || "");
+    const items = this.data.filter(m => {
+      if (q && !this._match(m, q)) return false;
+      return this._matchRoleFilter(m);
+    });
     const list = document.getElementById("sidebar-list");
-    if (!items.length) { list.innerHTML = '<div class="placeholder">无角色数据</div>'; return; }
-    list.innerHTML = items.map(m =>
-      `<div class="sidebar-item ${m.id === this.currentId ? 'active' : ''}" data-id="${m.id}">
-        <span class="item-name">${m.name}</span>
-        <span style="font-size:11px;color:var(--text-muted)">${m.trainer_type||""}</span>
-      </div>`
-    ).join("");
+
+    const roleOptions = ["全部", "训练师", "非训练师", ...Object.entries(NPC_ROLE_MAP).filter(([k]) => k).map(([, v]) => v)];
+    const filterHtml = `
+      <div style="padding:6px 10px;border-bottom:1px solid var(--border)">
+        <select id="npc-role-filter" style="width:100%;font-size:12px">
+          ${roleOptions.map(o => `<option value="${o}" ${this.roleFilter === o ? "selected" : ""}>${o}</option>`).join("")}
+        </select>
+      </div>`;
+
+    const itemsHtml = items.length
+      ? items.map(m => {
+          const isTrainer = !!m.trainer;
+          return `<div class="sidebar-item ${m.id === this.currentId ? 'active' : ''}" data-id="${m.id}">
+            <span class="item-name">${isTrainer ? "⚔ " : ""}${m.name}</span>
+            <span style="font-size:11px;color:var(--text-muted)">${NPC_ROLE_MAP[m.role || ""] || m.role || ""}</span>
+          </div>`;
+        }).join("")
+      : '<div class="placeholder">无角色数据</div>';
+
+    list.innerHTML = filterHtml + itemsHtml;
+
     list.querySelectorAll("[data-id]").forEach(el => {
       el.addEventListener("click", () => this._select(el.dataset.id));
+    });
+    document.getElementById("npc-role-filter")?.addEventListener("change", (e) => {
+      this.roleFilter = e.target.value;
+      this.renderList(q);
     });
   }
 
   filterList(q) { this.renderList(q); }
-  _match(m, q) { const ql=q.toLowerCase(); return m.name.toLowerCase().includes(ql) || (m.trainer_type||"").toLowerCase().includes(ql); }
+  _match(m, q) { const ql=q.toLowerCase(); return m.name.toLowerCase().includes(ql) || (NPC_ROLE_MAP[m.role || ""] || "").toLowerCase().includes(ql); }
+  _matchRoleFilter(m) {
+    if (this.roleFilter === "全部") return true;
+    const isTrainer = !!m.trainer;
+    if (this.roleFilter === "训练师") return isTrainer;
+    if (this.roleFilter === "非训练师") return !isTrainer;
+    return (NPC_ROLE_MAP[m.role || ""] || "") === this.roleFilter;
+  }
 
   async _select(id) {
     this.currentId = id;
@@ -92,9 +138,9 @@ export class NpcsTab {
               <label>称号</label><input type="text" id="np-title" value="${npc.title||""}" placeholder="如「青木村的守护者」" />
             </div>
             <div class="form-group">
-              <label>训练师类型</label>
-              <select id="np-type">${NPC_TRAINER_TYPES.map(tp =>
-                `<option value="${tp}" ${npc.trainer_type === tp ? "selected" : ""}>${tp}</option>`
+              <label>角色类型</label>
+              <select id="np-type">${Object.entries(NPC_ROLE_MAP).map(([key, label]) =>
+                `<option value="${key}" ${(npc.role || "") === key ? "selected" : ""}>${label}</option>`
               ).join("")}</select>
             </div>
             <div class="form-group">
@@ -166,6 +212,10 @@ export class NpcsTab {
           <thead><tr><th style="width:90px">精灵</th><th style="width:60px">等级</th><th style="width:130px">技能</th><th style="width:70px">携带道具</th><th style="width:40px"></th></tr></thead>
           <tbody>${teamHtml}</tbody>
         </table>
+        <div class="form-section" style="margin-top:10px">
+          <div class="form-section-title">选中精灵预览</div>
+          <div id="team-mon-preview-body"><div class="placeholder">点击/编辑上方队伍中的精灵名称查看预览</div></div>
+        </div>
       </details>
       <div class="form-section">
         <div class="section-header">
@@ -182,7 +232,7 @@ export class NpcsTab {
     document.getElementById("np-id")?.addEventListener("change", (e) => { npc.id = e.target.value; this.callbacks.onModified(this.fileKey); });
     document.getElementById("np-name")?.addEventListener("change", (e) => { npc.name = e.target.value; this.callbacks.onModified(this.fileKey); });
     document.getElementById("np-title")?.addEventListener("change", (e) => { npc.title = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-type")?.addEventListener("change", (e) => { npc.trainer_type = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-type")?.addEventListener("change", (e) => { npc.role = e.target.value; this.callbacks.onModified(this.fileKey); });
     document.getElementById("np-gender")?.addEventListener("change", (e) => { npc.gender = e.target.value; this.callbacks.onModified(this.fileKey); });
     document.getElementById("np-desc")?.addEventListener("change", (e) => { npc.desc = e.target.value; this.callbacks.onModified(this.fileKey); });
     document.getElementById("np-dialog")?.addEventListener("change", (e) => { npc.dialog = e.target.value; this.callbacks.onModified(this.fileKey); });
@@ -219,6 +269,10 @@ export class NpcsTab {
         else if (el.classList.contains("tr-team-item")) t.team[idx].item = el.value;
         this.callbacks.onModified(this.fileKey);
       });
+    });
+    document.querySelectorAll(".tr-team-species").forEach(el => {
+      el.addEventListener("focus", () => this._renderTeamPreview(el.value));
+      el.addEventListener("input", () => this._renderTeamPreview(el.value));
     });
     document.querySelectorAll(".tr-team-remove").forEach(el => {
       el.addEventListener("click", () => {
@@ -257,6 +311,50 @@ export class NpcsTab {
     this._loadNpcSprite(npc);
   }
 
+  async _renderTeamPreview(speciesName) {
+    const body = document.getElementById("team-mon-preview-body");
+    if (!body) return;
+    if (!speciesName) {
+      body.innerHTML = '<div class="placeholder">点击/编辑上方队伍中的精灵名称查看预览</div>';
+      return;
+    }
+    const sp = (this.state.data.species || []).find(s => s.name === speciesName);
+    if (!sp) {
+      body.innerHTML = `<div class="placeholder">未找到精灵「${speciesName}」</div>`;
+      return;
+    }
+    const base = sp.base || {};
+    const bst = ["hp", "atk", "def", "sp_atk", "sp_def", "spd"].reduce((s, k) => s + (base[k] || 0), 0);
+    body.innerHTML = `
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="sprite-preview" id="team-preview-sprite" style="width:80px;height:80px;flex-shrink:0">
+          <div class="sprite-placeholder">加载中...</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600">${sp.name} <span style="font-weight:400;color:var(--text-muted);font-size:12px">${sp.type1}${sp.type2 ? "/" + sp.type2 : ""}</span></div>
+          <div class="stat-group" style="margin-top:6px">
+            ${renderStatBar("hp", base.hp || 0)}
+            ${renderStatBar("atk", base.atk || 0)}
+            ${renderStatBar("def", base.def || 0)}
+            ${renderStatBar("spatk", base.sp_atk || 0)}
+            ${renderStatBar("spdef", base.sp_def || 0)}
+            ${renderStatBar("spd", base.spd || 0)}
+            ${renderTotalBar(bst)}
+          </div>
+        </div>
+      </div>
+    `;
+    const sprContainer = document.getElementById("team-preview-sprite");
+    if (sprContainer && this.speciesSpritesDir) {
+      try {
+        const dataUrl = await readSprite(`${this.speciesSpritesDir}/${sp.name}front.png`);
+        sprContainer.innerHTML = `<img src="${dataUrl}" alt="${sp.name}" />`;
+      } catch {
+        sprContainer.innerHTML = '<div class="sprite-placeholder">无精灵图</div>';
+      }
+    }
+  }
+
   async _loadNpcSprite(npc) {
     const container = document.getElementById("npc-sprite-preview");
     if (!container) return;
@@ -280,7 +378,7 @@ export class NpcsTab {
     const newNpc = {
       id: `npc_${Date.now()}`,
       name: "新角色",
-      trainer_type: "普通NPC",
+      role: "npc",
       title: "",
       gender: "",
       desc: "",

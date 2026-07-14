@@ -464,6 +464,14 @@ input, select, textarea, button {
   color: var(--accent);
 }
 
+.stat-row .stat-lv {
+  width: 76px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-align: right;
+}
+
 /* ===== Type Badges ===== */
 .type-badge {
   display: inline-flex;
@@ -668,6 +676,94 @@ input, select, textarea, button {
 
 .section-header .btn {
   font-size: 12px;
+}
+
+/* ===== Searchable Select (SearchableCombo equivalent) ===== */
+.ss-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.ss-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  margin-top: 2px;
+}
+
+.ss-item {
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ss-item:hover,
+.ss-item.hl {
+  background: var(--accent-soft);
+}
+
+.ss-empty {
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  min-width: 340px;
+  max-width: 480px;
+  padding: 18px;
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.modal-body .form-group {
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.modal-info-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 /* ===== Type Matchup Table ===== */

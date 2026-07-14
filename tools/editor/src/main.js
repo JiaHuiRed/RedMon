@@ -141,12 +141,17 @@ async function loadAllData() {
         state.data[def.file] = Object.entries(raw).map(([k, v], idx) => {
           if (!v.name) v.name = k; // add name from key when missing
           if (v.id === undefined) v.id = idx + 1; // ensure numeric id
-          // Normalize learnset from dict {"lv":"name"} to array [{level, name}]
+          // Normalize learnset from dict {"lv": ["name", ...]} to flat array [{level, name}, ...]
+          // (a single level can teach multiple moves, so each name becomes its own entry)
           if (key === "species" && v.learnset && !Array.isArray(v.learnset)) {
-            v.learnset = Object.entries(v.learnset).map(([lvl, nm]) => ({
-              level: parseInt(lvl) || 1,
-              name: nm,
-            }));
+            const flat = [];
+            for (const [lvl, names] of Object.entries(v.learnset)) {
+              const nameList = Array.isArray(names) ? names : [names];
+              for (const nm of nameList) {
+                flat.push({ level: parseInt(lvl) || 1, name: nm });
+              }
+            }
+            v.learnset = flat;
           }
           return v;
         });
@@ -160,6 +165,11 @@ async function loadAllData() {
   }
 }
 
+// Files whose on-disk schema has no native "id" field — the loader assigns a
+// synthetic id=index+1 purely so the UI has a stable selection key, but that
+// synthetic value must never be written back into the JSON.
+const NO_NATIVE_ID = new Set(["abilities", "items", "moves"]);
+
 // Convert editor array data back to file object format for saving
 function dataForSave(fileKey, data) {
   if (fileKey === "dialogs") return data;
@@ -172,8 +182,32 @@ function dataForSave(fileKey, data) {
 
   const keyField = fileKey === "npcs" ? "id" : "name";
   const obj = {};
-  for (const item of data) obj[item[keyField]] = item;
+  for (const item of data) {
+    let toSave = fileKey === "species" ? speciesForSave(item) : item;
+    if (NO_NATIVE_ID.has(fileKey)) {
+      const { id, ...rest } = toSave;
+      toSave = rest;
+    }
+    obj[item[keyField]] = toSave;
+  }
   return obj;
+}
+
+// Convert an in-memory species item (learnset as flat [{level,name}] array, for editing)
+// back to the on-disk schema (learnset as {"level": ["move1", "move2", ...]} dict).
+// Returns a shallow copy — does not mutate the live item still used by the UI.
+function speciesForSave(item) {
+  const out = { ...item };
+  if (Array.isArray(item.learnset)) {
+    const dict = {};
+    for (const entry of item.learnset) {
+      if (!entry || !entry.name) continue;
+      const lvl = String(entry.level ?? 1);
+      (dict[lvl] ||= []).push(entry.name);
+    }
+    out.learnset = dict;
+  }
+  return out;
 }
 
 async function handleSaveOne(fileKey, jsonData) {

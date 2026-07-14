@@ -1,3 +1,5 @@
+import { readJson, writeJson } from "../utils/api.js";
+
 const MAP_TYPES = ["野外", "城市", "室内", "道馆", "洞穴", "水域", "特殊"];
 
 export class MapsTab {
@@ -8,6 +10,35 @@ export class MapsTab {
     this.callbacks = callbacks;
     this.currentId = null;
     this.data = state.data.maps || [];
+    // 遇效表 data/encounters.json（按 map_id 索引）独立于 maps.json 加载/保存，
+    // 因为它不属于 main.js 的 TAB_DEFS 注册表
+    this.encountersPath = state.projectRoot ? `${state.projectRoot}/data/encounters.json` : null;
+    this.encountersData = null;
+    this.encModified = false;
+  }
+
+  async _ensureEncounters() {
+    if (this.encountersData || !this.encountersPath) return this.encountersData;
+    try {
+      this.encountersData = await readJson(this.encountersPath);
+    } catch {
+      this.encountersData = { "_comment": "遇效表——按 map_id 索引", "maps": {} };
+    }
+    if (!this.encountersData.maps) this.encountersData.maps = {};
+    return this.encountersData;
+  }
+
+  async _saveEncounters() {
+    if (!this.encountersPath) return;
+    await writeJson(this.encountersPath, this.encountersData);
+    this.encModified = false;
+    this.callbacks.onStatus("已保存 encounters.json");
+    this._renderEncSaveState();
+  }
+
+  _renderEncSaveState() {
+    const btn = document.getElementById("enc-save-btn");
+    if (btn) btn.style.opacity = this.encModified ? "1" : "0.4";
   }
 
   getData() { return this.data; }
@@ -57,7 +88,7 @@ export class MapsTab {
             ).join("")}</select>
           </div>
           <div class="form-group">
-            <label>场景文件</label><input type="text" id="mp-scene" value="${map.scene||""}" />
+            <label>场景文件</label><input type="text" id="mp-scene" value="${map.scene_file||""}" />
           </div>
           <div class="form-group full-width">
             <label>描述</label>
@@ -73,6 +104,15 @@ export class MapsTab {
           </div>
         </div>
       </div>
+      <div class="form-section" id="enc-section">
+        <div class="section-header">
+          <span class="form-section-title">遇效表（data/encounters.json，按 map_id 索引，游戏实际读取的数据源）</span>
+          <div>
+            <button class="btn btn-sm" id="enc-save-btn" style="opacity:0.4">💾 保存遇效表</button>
+          </div>
+        </div>
+        <div id="enc-body">加载中...</div>
+      </div>
     `;
     const bind = (id, field) => {
       document.getElementById(id)?.addEventListener("change", () => {
@@ -81,16 +121,83 @@ export class MapsTab {
       });
     };
     bind("mp-id", "id"); bind("mp-name", "name"); bind("mp-type", "type");
-    bind("mp-scene", "scene"); bind("mp-desc", "desc"); bind("mp-gym", "gym");
+    bind("mp-scene", "scene_file"); bind("mp-desc", "desc"); bind("mp-gym", "gym");
     document.getElementById("mp-npcs")?.addEventListener("change", (e) => {
       map.npcs = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
       this.callbacks.onModified(this.fileKey);
+    });
+    document.getElementById("enc-save-btn")?.addEventListener("click", () => this._saveEncounters());
+
+    this._renderEncSection(map);
+  }
+
+  async _renderEncSection(map) {
+    await this._ensureEncounters();
+    const body = document.getElementById("enc-body");
+    if (!body) return; // user navigated away before load finished
+
+    const mapKey = String(map.id);
+    const entry = this.encountersData.maps[mapKey] || { encounter_rate: 0, mons: [] };
+    this.encountersData.maps[mapKey] = entry; // ensure it exists so edits have somewhere to land
+
+    const speciesNames = (this.state.data.species || []).map(s => s.name).sort();
+
+    body.innerHTML = `
+      <datalist id="enc-species-list">${speciesNames.map(n => `<option value="${n}">`).join("")}</datalist>
+      <div class="form-group" style="max-width:200px">
+        <label>草丛遇敌率 %</label>
+        <input type="number" id="enc-rate" value="${entry.encounter_rate || 0}" min="0" max="100" />
+      </div>
+      <table class="list-table" id="enc-mons-table">
+        <thead><tr><th>精灵</th><th style="width:80px">权重</th><th style="width:40px"></th></tr></thead>
+        <tbody>
+          ${entry.mons.map((m, i) => `
+            <tr>
+              <td><input type="text" list="enc-species-list" class="enc-mon-species" data-idx="${i}" value="${m.species||""}" /></td>
+              <td><input type="number" class="enc-mon-weight" data-idx="${i}" value="${m.weight||0}" min="0" /></td>
+              <td><button class="remove-btn enc-mon-remove" data-idx="${i}">✕</button></td>
+            </tr>
+          `).join("") || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted)">无遇敌精灵，点下方添加</td></tr>'}
+        </tbody>
+      </table>
+      <button class="btn btn-sm" id="enc-add-mon">+ 添加精灵</button>
+    `;
+
+    const markEncModified = () => { this.encModified = true; this._renderEncSaveState(); };
+
+    document.getElementById("enc-rate")?.addEventListener("change", (e) => {
+      entry.encounter_rate = parseInt(e.target.value) || 0;
+      markEncModified();
+    });
+    document.getElementById("enc-add-mon")?.addEventListener("click", () => {
+      entry.mons.push({ species: "", weight: 10 });
+      markEncModified();
+      this._renderEncSection(map);
+    });
+    body.querySelectorAll(".enc-mon-species").forEach(el => {
+      el.addEventListener("change", () => {
+        entry.mons[parseInt(el.dataset.idx)].species = el.value;
+        markEncModified();
+      });
+    });
+    body.querySelectorAll(".enc-mon-weight").forEach(el => {
+      el.addEventListener("change", () => {
+        entry.mons[parseInt(el.dataset.idx)].weight = parseInt(el.value) || 0;
+        markEncModified();
+      });
+    });
+    body.querySelectorAll(".enc-mon-remove").forEach(el => {
+      el.addEventListener("click", () => {
+        entry.mons.splice(parseInt(el.dataset.idx), 1);
+        markEncModified();
+        this._renderEncSection(map);
+      });
     });
   }
 
   onAdd() {
     const maxId = this.data.reduce((max, m) => Math.max(max, parseInt(m.id) || 0), 0);
-    this.data.push({ id: maxId + 1, name: "新地图", type: "野外", scene: "", npcs: [] });
+    this.data.push({ id: maxId + 1, name: "新地图", type: "野外", scene_file: "", npcs: [] });
     this.callbacks.onModified(this.fileKey);
     this._select(maxId + 1);
   }

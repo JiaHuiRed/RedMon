@@ -1,6 +1,9 @@
 import { TYPE_COLORS } from "../components/type-badge.js";
 import { renderStatBar, renderTotalBar } from "../components/stat-bar.js";
 import { readSprite } from "../utils/api.js";
+import { openModal } from "../components/modal.js";
+import { attachSearchableSelect } from "../components/searchable-select.js";
+import { computeMatchup } from "../components/type-chart.js";
 
 const GROWTH_RATES = ["慢", "中慢", "中", "中快", "快"];
 
@@ -80,11 +83,6 @@ export class SpeciesTab {
     return this.data.find(m => m.id == id);
   }
 
-  // Normalise stat names (data uses sp_atk/sp_def but code uses spatk/spdef)
-  _stat(base, key) {
-    return base[key] || base[key.replace("atk", "_atk").replace("def", "_def")] || 0;
-  }
-
   // ===== Detail View =====
   async renderDetail(id) {
     try {
@@ -107,8 +105,8 @@ export class SpeciesTab {
 
     const base = mon.base || {};
     const hp = base.hp || 0, atk = base.atk || 0, def = base.def || 0;
-    const spatk = this._stat(base, "spatk");
-    const spdef = this._stat(base, "spdef");
+    const spatk = base.sp_atk || 0;
+    const spdef = base.sp_def || 0;
     const spd = base.spd || 0;
     const bst = hp + atk + def + spatk + spdef + spd;
 
@@ -146,7 +144,11 @@ export class SpeciesTab {
               <select id="field-type2"><option value="">无</option>${this._typeOptions(mon.type2)}</select>
             </div>
             <div class="form-group">
-              <label>品阶</label>
+              <label>品阶
+                <button type="button" class="btn btn-sm" id="btn-suggest-tier"
+                        style="margin-left:6px;padding:1px 6px;font-size:11px"
+                        title="根据当前种族值总和自动推荐品阶">⚡推荐</button>
+              </label>
               <select id="field-tier">${TIERS.map(t =>
                 `<option value="${t}" ${mon.tier === t ? "selected" : ""}>${t}</option>`
               ).join("")}</select>
@@ -166,8 +168,17 @@ export class SpeciesTab {
               ).join("")}</select>
             </div>
             <div class="form-group">
-              <label>性别比例</label>
-              <input type="text" id="field-gender" value="${mon.gender_ratio || ""}" placeholder="如 1:1" />
+              <label>性别比例（雌性 %）</label>
+              <div style="display:flex;align-items:center;gap:8px">
+                <input type="range" id="field-gender-slider" min="0" max="100" step="10"
+                       value="${this._parseGenderRatio(mon.gender_ratio).femalePct}"
+                       ${this._parseGenderRatio(mon.gender_ratio).isAsexual ? "disabled" : ""}
+                       style="flex:1" />
+                <span id="field-gender-value" style="width:34px;text-align:right;font-size:12px">${this._parseGenderRatio(mon.gender_ratio).femalePct}%</span>
+              </div>
+              <label style="display:flex;align-items:center;gap:4px;font-size:12px">
+                <input type="checkbox" id="field-gender-asexual" ${this._parseGenderRatio(mon.gender_ratio).isAsexual ? "checked" : ""} /> 无性别
+              </label>
             </div>
             <div class="form-group">
               <label>身高 (m)</label>
@@ -191,7 +202,7 @@ export class SpeciesTab {
 
       <!-- Stats -->
       <div class="form-section">
-        <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">Lv50: ${Math.floor(bst * 0.5 + 60)} | Lv100: ${bst + 60}</span></div>
+        <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv50 / Lv100 实际数值，个体值/努力值均取满）</span></div>
         <div class="form-grid" style="margin-bottom:12px">
           <div class="form-group"><label>HP</label><input type="number" id="stat-hp" value="${hp}" min="0" max="255" /></div>
           <div class="form-group"><label>ATK</label><input type="number" id="stat-atk" value="${atk}" min="0" max="255" /></div>
@@ -266,6 +277,10 @@ export class SpeciesTab {
           <div class="form-group full-width">
             <textarea id="field-desc" rows="3">${mon.desc || ""}</textarea>
           </div>
+          <div class="form-group full-width">
+            <label>设计灵感来源</label>
+            <input type="text" id="field-design-origin" value="${mon.design_origin || ""}" placeholder="例：瑞兽火猫 + 祥云纹" />
+          </div>
         </div>
       </div>
 
@@ -290,7 +305,7 @@ export class SpeciesTab {
       name: "新精灵",
       type1: "木",
       type2: "",
-      base: { hp: 50, atk: 50, def: 50, spatk: 50, spdef: 50, spd: 50 },
+      base: { hp: 50, atk: 50, def: 50, sp_atk: 50, sp_def: 50, spd: 50 },
       tier: "凡",
       catch_rate: 45,
       exp_yield: 100,
@@ -298,7 +313,7 @@ export class SpeciesTab {
       desc: "",
       height: "",
       weight: "",
-      gender_ratio: "",
+      gender_ratio: "50/50",
       evolutions: [],
       learnset: [],
       abilities: [],
@@ -340,34 +355,175 @@ export class SpeciesTab {
     ).join("");
   }
 
+  // 性别比例："87.5/12.5"(雄/雌) 或 "无性别"；滑动条代表雌性% 每10%一档，对齐原编辑器
+  _parseGenderRatio(val) {
+    if (val === "无性别") return { isAsexual: true, femalePct: 0 };
+    const parts = String(val || "").split("/");
+    const f = parts.length === 2 ? Math.round((parseFloat(parts[1]) || 0) / 10) * 10 : 50;
+    return { isAsexual: false, femalePct: f };
+  }
+
+  _bindGenderRatio(mon) {
+    const slider = document.getElementById("field-gender-slider");
+    const valueLbl = document.getElementById("field-gender-value");
+    const asexualChk = document.getElementById("field-gender-asexual");
+    if (!slider || !asexualChk) return;
+
+    const applyRatio = () => {
+      if (asexualChk.checked) {
+        mon.gender_ratio = "无性别";
+      } else {
+        const f = parseInt(slider.value) || 0;
+        mon.gender_ratio = `${100 - f}/${f}`;
+      }
+      this.callbacks.onModified(this.fileKey);
+    };
+
+    slider.addEventListener("input", () => { if (valueLbl) valueLbl.textContent = `${slider.value}%`; });
+    slider.addEventListener("change", applyRatio);
+    asexualChk.addEventListener("change", () => {
+      slider.disabled = asexualChk.checked;
+      applyRatio();
+    });
+  }
+
   _renderEvoChain(mon) {
     if (!mon.evolutions || mon.evolutions.length === 0) {
       return '<div style="color:var(--text-muted);padding:8px">无进化</div>';
     }
 
-    const species = this.data;
-    // Support both `id` (number) and `into` (name) fields in evolution data
-    const resolveEvoName = (evo) => {
-      if (evo.id) {
-        const m = species.find(s => s.id == evo.id);
-        return m ? m.name : `#${evo.id}`;
-      }
-      if (evo.into) return evo.into;
-      return "?";
-    };
-
+    // 真实 species.json 里进化目标是精灵名字符串 `into`，不是数字 id
     return `<div class="evo-chain">
       <div class="evo-node">
         <span class="evo-name">${mon.name}</span>
       </div>
-      ${mon.evolutions.map(evo => `
+      ${mon.evolutions.map((evo, i) => `
         <span class="evo-arrow">→</span>
-        <div class="evo-node" data-evo-id="${evo.id || ""}">
-          <span class="evo-name">${resolveEvoName(evo)}</span>
-          <span class="evo-condition">${evo.level ? `Lv.${evo.level}` : evo.condition || ""}</span>
+        <div class="evo-node" data-evo-idx="${i}">
+          <span class="evo-name">${evo.into || "?"}</span>
+          <span class="evo-condition">${[
+            evo.level ? `Lv.${evo.level}` : "",
+            evo.item ? `「${evo.item}」` : "",
+          ].filter(Boolean).join(" ")}</span>
         </div>
       `).join("")}
     </div>`;
+  }
+
+  // 添加/编辑进化分支：目标精灵(可搜索下拉)+等级+进化道具(可搜索下拉)
+  _openEvoModal(evo, onSave, mon) {
+    const speciesNames = this.data.map(s => s.name).filter(n => n !== mon.name).sort();
+    const itemNames = (this.state.data.items || []).map(it => it.name).sort();
+
+    const draft = { into: evo.into || "", level: evo.level ?? "", item: evo.item || "" };
+
+    openModal({
+      title: "进化分支",
+      bodyHtml: `
+        <div class="form-group">
+          <label>进化为</label>
+          <input type="text" id="evo-into-input" />
+        </div>
+        <div class="form-group">
+          <label>等级（留空则不限等级）</label>
+          <input type="number" id="evo-level-input" min="1" max="100" value="${draft.level}" />
+        </div>
+        <div class="form-group">
+          <label>进化道具（留空则无）</label>
+          <input type="text" id="evo-item-input" />
+        </div>
+      `,
+      onMount: (body) => {
+        attachSearchableSelect(body.querySelector("#evo-into-input"), { items: speciesNames, value: draft.into });
+        attachSearchableSelect(body.querySelector("#evo-item-input"), { items: itemNames, value: draft.item });
+      },
+      onConfirm: (body) => {
+        // 直接读输入框的实时 value，而不是靠 onChange 回调的 draft
+        // （searchable-select 的 blur→onChange 有意延迟，点确定按钮时可能还没触发）
+        const into = body.querySelector("#evo-into-input").value.trim();
+        const level = body.querySelector("#evo-level-input").value;
+        const item = body.querySelector("#evo-item-input").value.trim();
+        if (!into) {
+          this.callbacks.onStatus("请填写进化目标精灵");
+          return false;
+        }
+        const updated = { into };
+        if (String(level).trim()) updated.level = parseInt(level) || 0;
+        if (item) updated.item = item;
+        onSave(updated);
+        this.callbacks.onModified(this.fileKey);
+        this.renderDetail(mon.id);
+      },
+    });
+  }
+
+  // 添加学习技能：等级 + 属性筛选(先缩小范围) + 技能名可搜索下拉(按属性过滤) + 实时预览
+  _openAddLearnModal(mon) {
+    const moves = this.state.data.moves || [];
+    const types = ["全部", ...Object.keys(TYPE_COLORS)];
+    let currentType = "全部";
+    const namesForType = (t) => moves
+      .filter(m => t === "全部" || m.type === t)
+      .map(m => m.name).sort();
+
+    let ss; // searchable-select handle for the move-name input, rebuilt when type filter changes
+
+    openModal({
+      title: "添加学习技能",
+      bodyHtml: `
+        <div class="form-group">
+          <label>等级</label>
+          <input type="number" id="learn-level-input" min="0" max="100" value="1" />
+        </div>
+        <div class="form-group">
+          <label>属性筛选</label>
+          <select id="learn-type-filter">${types.map(t => `<option value="${t}">${t}</option>`).join("")}</select>
+        </div>
+        <div class="form-group">
+          <label>技能</label>
+          <input type="text" id="learn-name-input" />
+        </div>
+        <div class="modal-info-box" id="learn-move-info">选择技能查看详情</div>
+      `,
+      onMount: (body) => {
+        const nameInput = body.querySelector("#learn-name-input");
+        const infoBox = body.querySelector("#learn-move-info");
+        const draft = { name: "" };
+
+        const updateInfo = () => {
+          const m = moves.find(mv => mv.name === draft.name);
+          if (!m) { infoBox.textContent = "（未找到该技能）"; return; }
+          let txt = `属性: ${m.type || "?"}   分类: ${m.category || "?"}   威力: ${m.power ?? "-"}   命中: ${m.accuracy ?? "-"}   PP: ${m.pp ?? "-"}`;
+          if (m.desc) txt += `\n${m.desc}`;
+          infoBox.textContent = txt;
+        };
+
+        ss = attachSearchableSelect(nameInput, {
+          items: namesForType(currentType),
+          onChange: (v) => { draft.name = v; updateInfo(); },
+        });
+
+        body.querySelector("#learn-type-filter").addEventListener("change", (e) => {
+          currentType = e.target.value;
+          ss.setItems(namesForType(currentType));
+          ss.setValue("");
+          draft.name = "";
+          updateInfo();
+        });
+      },
+      onConfirm: (body) => {
+        // 直接读输入框实时 value，避免 searchable-select 的延迟 onChange 在点确定时还没触发
+        const level = parseInt(body.querySelector("#learn-level-input").value) || 0;
+        const name = body.querySelector("#learn-name-input").value.trim();
+        if (!name) {
+          this.callbacks.onStatus("请选择技能");
+          return false;
+        }
+        mon.learnset.push({ level, name });
+        this.callbacks.onModified(this.fileKey);
+        this.renderDetail(mon.id);
+      },
+    });
   }
 
   _renderLearnset(mon) {
@@ -399,65 +555,51 @@ export class SpeciesTab {
   }
 
   _renderMatchup(mon) {
-    const types = Object.keys(TYPE_COLORS);
     const t1 = mon.type1, t2 = mon.type2;
-    const chart = {
-      "空":{"岩":0.6,"钢":0.6,"鬼":0.0},
-      "火":{"木":1.5,"冰":1.5,"虫":1.5,"钢":1.5,"火":0.6,"水":0.6,"岩":0.6,"龙":0.6},
-      "水":{"火":1.5,"土":1.5,"岩":1.5,"水":0.6,"木":0.6,"龙":0.6},
-      "木":{"水":1.5,"土":1.5,"岩":1.5,"火":0.6,"木":0.6,"毒":0.6,"风":0.6,"虫":0.6,"龙":0.6,"钢":0.6},
-      "雷":{"水":1.5,"风":1.5,"雷":0.6,"木":0.6,"龙":0.6,"土":0.0},
-      "冰":{"木":1.5,"土":1.5,"风":1.5,"龙":1.5,"火":0.6,"水":0.6,"冰":0.6,"钢":0.6},
-      "格":{"空":1.5,"冰":1.5,"岩":1.5,"暗":1.5,"钢":1.5,"毒":0.6,"风":0.6,"灵":0.6,"虫":0.6,"仙":0.6,"鬼":0.0},
-      "毒":{"木":1.5,"仙":1.5,"毒":0.6,"土":0.6,"岩":0.6,"鬼":0.6,"钢":0.0},
-      "土":{"火":1.5,"雷":1.5,"毒":1.5,"岩":1.5,"钢":1.5,"木":0.6,"虫":0.6,"风":0.0},
-      "风":{"木":1.5,"格":1.5,"虫":1.5,"雷":0.6,"岩":0.6,"钢":0.6},
-      "灵":{"格":1.5,"毒":1.5,"灵":0.6,"钢":0.6},
-      "虫":{"木":1.5,"灵":1.5,"暗":1.5,"仙":1.5,"火":0.6,"格":0.6,"风":0.6,"鬼":0.6,"钢":0.6},
-      "岩":{"火":1.5,"冰":1.5,"风":1.5,"虫":1.5,"格":0.6,"土":0.6,"钢":0.6},
-      "鬼":{"灵":1.5,"鬼":1.5,"暗":0.6,"空":0.0},
-      "龙":{"龙":1.5,"钢":0.6,"仙":0.0},
-      "暗":{"灵":1.5,"鬼":1.5,"光":1.5,"格":0.6,"暗":0.6,"仙":0.6},
-      "钢":{"冰":1.5,"岩":1.5,"仙":1.5,"火":0.6,"水":0.6,"雷":0.6,"钢":0.6},
-      "仙":{"格":1.5,"龙":1.5,"暗":1.5,"火":0.6,"毒":0.6,"钢":0.6},
-      "光":{"鬼":1.5,"虫":1.5,"冰":1.5,"暗":1.5,"火":0.6,"钢":0.6,"光":0.6,"水":0.6,"木":0.0},
-    };
+    if (!t1) return '<div style="color:var(--text-muted)">请先选择属性</div>';
 
-    return `<table class="matchup-table">
-      <thead><tr><th>攻击属性</th><th>${t1}${t2 ? " / "+t2 : ""}</th></tr></thead>
-      <tbody>
-      ${types.filter(atk => atk).map(atk => {
-        const eff1 = chart[atk]?.[t1] ?? 1;
-        const v = t2 ? eff1 * (chart[atk]?.[t2] ?? 1) : eff1;
-        const label = v === 0 ? "免" : v < 1 ? `×${v}` : v > 1 ? `×${v}` : "—";
-        const cls = v === 0 ? "immune" : v < 1 ? "resist" : v > 1 ? "weak" : "normal";
-        const bg = TYPE_COLORS[atk];
-        return `<tr class="${cls}">
-          <td><span class="type-badge type-badge-sm" style="background:${bg||"#999"}">${atk}</span></td>
-          <td class="matchup-val">${label}</td>
-        </tr>`;
-      }).join("")}
-      </tbody>
-    </table>`;
+    const { offense, defense } = computeMatchup(t1, t2);
+
+    const chip = (typ, val) => {
+      const bg = TYPE_COLORS[typ] || "#999";
+      return `<span class="type-badge type-badge-sm" style="background:${bg}22;color:${bg};border:1px solid ${bg}44">${typ} ${val}</span>`;
+    };
+    const section = (title, entries) => entries.length ? `
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">${title}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${entries.map(([t, v]) => chip(t, v)).join("")}</div>
+      </div>` : "";
+
+    return `
+      ${section("克制（主动攻击时效果拔群）", offense.superEffective)}
+      ${section("弱点（被攻击时效果拔群）", defense.weak)}
+      ${section("抵抗（被攻击时效果不佳）", defense.resist)}
+      ${section("免疫", defense.immune)}
+      ${!offense.superEffective.length && !defense.weak.length && !defense.resist.length && !defense.immune.length
+        ? '<div style="color:var(--text-muted)">无特殊克制关系</div>' : ""}
+    `;
   }
 
   // ===== Sprite Loading =====
+  // 命名约定：{精灵名}front.png / {精灵名}back.png（不是数字ID），见 README「添加自定义精灵图片」
   async _loadSprite(id) {
     const container = document.getElementById("sprite-preview");
     if (!container) return;
+    const mon = this._getSpecies(id);
+    const name = mon?.name || "";
 
-    const path = `${this.spritesDir}/${String(id).padStart(3, "0")}.png`;
+    const path = `${this.spritesDir}/${name}front.png`;
     try {
       const dataUrl = await readSprite(path);
       container.innerHTML = `
-        <img src="${dataUrl}" alt="Sprite #${id}" />
+        <img src="${dataUrl}" alt="${name} 正面" />
         <div class="sprite-controls">
           <button class="btn btn-sm" id="btn-toggle-shiny" title="闪光预览">✨</button>
         </div>
       `;
       const shinyBtn = document.getElementById("btn-toggle-shiny");
       if (shinyBtn) {
-        const shinyPath = path.replace(".png", "_shiny.png");
+        const shinyPath = `${this.spritesDir}/${name}front_shiny.png`;
         shinyBtn.addEventListener("click", async () => {
           try {
             const shinyDataUrl = await readSprite(shinyPath);
@@ -470,16 +612,16 @@ export class SpeciesTab {
       }
     } catch {
       container.innerHTML = '<div class="sprite-placeholder">无精灵图</div>';
-      console.warn("[species] front sprite load failed for", id);
+      console.warn("[species] front sprite load failed for", name);
     }
 
     // Back sprite
     const backContainer = document.getElementById("sprite-back-preview");
     if (backContainer) {
-      const backPath = `${this.spritesDir}/${String(id).padStart(3, "0")}_back.png`;
+      const backPath = `${this.spritesDir}/${name}back.png`;
       try {
         const backDataUrl = await readSprite(backPath);
-        backContainer.innerHTML = `<img src="${backDataUrl}" alt="Back #${id}" />`;
+        backContainer.innerHTML = `<img src="${backDataUrl}" alt="${name} 背面" />`;
       } catch {
         backContainer.innerHTML = '<div class="sprite-placeholder">无背面图</div>';
       }
@@ -509,10 +651,11 @@ export class SpeciesTab {
     bindNumeric("field-catch", "catch_rate");
     bindNumeric("field-exp", "exp_yield");
     bind("field-growth", "growth_rate");
-    bindStr("field-gender", "gender_ratio");
+    this._bindGenderRatio(mon);
     bindStr("field-height", "height");
     bindStr("field-weight", "weight");
     bindStr("field-desc", "desc");
+    bindStr("field-design-origin", "design_origin");
     bind("field-ability1", "abilities", v => {
       const a1 = v || "", a2 = mon.abilities?.[1] || "";
       if (!v && !a2) { mon.abilities = []; return; }
@@ -540,35 +683,46 @@ export class SpeciesTab {
     bindStat("stat-hp", "hp");
     bindStat("stat-atk", "atk");
     bindStat("stat-def", "def");
-    bindStat("stat-spatk", "spatk");
-    bindStat("stat-spdef", "spdef");
+    bindStat("stat-spatk", "sp_atk");
+    bindStat("stat-spdef", "sp_def");
     bindStat("stat-spd", "spd");
+
+    // Tier auto-suggest — 与 mon_editor.py 的 _suggest_tier_role 阈值一致
+    const suggestTierBtn = document.getElementById("btn-suggest-tier");
+    if (suggestTierBtn) {
+      suggestTierBtn.addEventListener("click", () => {
+        const statIds = ["stat-hp", "stat-atk", "stat-def", "stat-spatk", "stat-spdef", "stat-spd"];
+        const total = statIds.reduce((sum, id) => sum + (parseInt(document.getElementById(id)?.value) || 0), 0);
+        let tier;
+        if (total >= 670) tier = "天";
+        else if (total >= 600) tier = "神";
+        else if (total >= 535) tier = "地";
+        else if (total >= 450) tier = "玄";
+        else if (total >= 360) tier = "灵";
+        else tier = "凡";
+        const sel = document.getElementById("field-tier");
+        sel.value = tier;
+        mon.tier = tier;
+        this.callbacks.onModified(this.fileKey);
+      });
+    }
 
     // Evolution
     const addEvoBtn = document.getElementById("btn-add-evo");
     if (addEvoBtn) {
       addEvoBtn.addEventListener("click", () => {
         if (!mon.evolutions) mon.evolutions = [];
-        mon.evolutions.push({ id: 0, level: 16, condition: "" });
-        this.callbacks.onModified(this.fileKey);
-        this.renderDetail(mon.id);
+        this._openEvoModal({ into: "", level: 16 }, (evo) => mon.evolutions.push(evo), mon);
       });
     }
 
-    // Evolution nodes
-    document.querySelectorAll("[data-evo-id]").forEach(el => {
-      const evoId = parseInt(el.dataset.evoId);
-      // Click to edit: select the evolved species
+    // Evolution nodes — click to edit target name / level / item
+    document.querySelectorAll("[data-evo-idx]").forEach(el => {
+      const idx = parseInt(el.dataset.evoIdx);
       el.addEventListener("click", () => {
-        const evo = mon.evolutions?.find(e => e.id === evoId);
-        if (evo) {
-          const newId = prompt("进化目标 ID:", evo.id);
-          if (newId) {
-            evo.id = parseInt(newId) || 0;
-            this.callbacks.onModified(this.fileKey);
-            this.renderDetail(mon.id);
-          }
-        }
+        const evo = mon.evolutions?.[idx];
+        if (!evo) return;
+        this._openEvoModal(evo, (updated) => { mon.evolutions[idx] = updated; }, mon);
       });
     });
 
@@ -577,9 +731,7 @@ export class SpeciesTab {
     if (addLearnBtn) {
       addLearnBtn.addEventListener("click", () => {
         if (!mon.learnset) mon.learnset = [];
-        mon.learnset.push({ level: 1, name: "" });
-        this.callbacks.onModified(this.fileKey);
-        this.renderDetail(mon.id);
+        this._openAddLearnModal(mon);
       });
     }
 

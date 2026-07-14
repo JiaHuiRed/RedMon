@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.21.0-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.22.0-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -131,6 +131,16 @@
 | 技能池 → 编辑等级 | 修改选中技能的习得等级 |
 | 技能池 → 删除技能 | 移除选中行 |
 
+#### Tauri 桌面编辑器（UI 美化版）
+
+`tools/editor/`（Tauri + Vite）是 `mon_editor.py` 的 UI 美化版本，功能与旧编辑器保持一致（含种族值真实数值公式、属性克制面板、进化/学习技能弹窗、性别比例滑动条、地图遇效表、剧情文本结构化编辑等），额外补充了 NPC 队伍精灵预览面板、角色筛选、品阶一键推荐等增强功能。
+
+```bash
+cd tools/editor
+npm install
+npm run tauri dev   # 开发模式
+```
+
 ---
 
 ## 技术栈
@@ -180,8 +190,9 @@ RPG_Demo/
 │       ├── gym_scene.gd      # 翠竹馆
 │       └── battle_scene.gd   # 战斗系统
 ├── tools/
-│   ├── mon_editor.py     # 可视化编辑器
-│   └── build_editor.bat  # 编辑器打包脚本
+│   ├── mon_editor.py     # 可视化编辑器（tkinter）
+│   ├── build_editor.bat  # 编辑器打包脚本
+│   └── editor/           # 可视化编辑器（Tauri + Vite，UI 美化版）
 ├── README.md
 ├── CHANGELOG.md
 ├── design_guide.md
