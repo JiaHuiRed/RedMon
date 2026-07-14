@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://cr8qavbl618fw" path="res://scripts/scenes/overworld_scene.gd" id="1_rwgxs"]
 [ext_resource type="Texture2D" uid="uid://bo6fcp13t1klp" path="res://assets/tilemaps/world_tiles32.png" id="3"]
 [ext_resource type="TileSet" path="res://assets/tilemaps/world_tileset.tres" id="10_ts"]
+[ext_resource type="Texture2D" uid="uid://cluqw7ktsgn0e" path="res://assets/npc/老爷爷.png" id="20_elder"]
+[ext_resource type="Texture2D" uid="uid://bs3i2ydp03x2t" path="res://assets/npc/青年.png" id="21_youth"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_trees"]
 texture = ExtResource("3")
@@ -97,29 +99,45 @@ tile_set = ExtResource("10_ts")
 [node name="装饰" type="Node2D" parent="." unique_id=845621334]
 
 
-[node name="驿站老伯" type="Marker2D" parent="装饰"]
+[node name="驿站老伯" type="Sprite2D" parent="装饰"]
 position = Vector2(400, 112)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(48, 0, 48, 48)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("20_elder")
 metadata/npc_type = "npc"
 metadata/npc_name = "驿站老伯"
-metadata/dialog = "dlg:world:innkeeper"
+metadata/npc_dialog = "老伯：旅人辛苦了，这里是草原驿站，可以稍作休息。
+近日黑风堂在草原西北一带出没，多加小心。"
 
 [node name="路牌_草原" type="Marker2D" parent="装饰"]
 position = Vector2(480, 544)
 metadata/npc_type = "sign"
 metadata/npc_name = "路牌_草原"
-metadata/dialog = "dlg:world:signpost_grassland"
+metadata/npc_dialog = "← 青木村  碧溪镇 →
+前方高草丛遭遇率高，建议补足精灵葫芦再出发。"
 
-[node name="旅行者" type="Marker2D" parent="装饰"]
+[node name="旅行者" type="Sprite2D" parent="装饰"]
 position = Vector2(752, 352)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(48, 0, 48, 48)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("21_youth")
 metadata/npc_type = "npc"
 metadata/npc_name = "旅行者"
-metadata/dialog = "dlg:world:traveler"
+metadata/npc_dialog = "旅行者：我刚从碧溪镇过来，翠竹馆的林青松馆主功力深厚。
+他擅用木系精灵，火系或虫系技能克制效果翻倍！"
 
 [node name="路标_碧溪" type="Marker2D" parent="装饰"]
 position = Vector2(928, 128)
 metadata/npc_type = "sign"
 metadata/npc_name = "路标_碧溪"
-metadata/dialog = "dlg:world:signpost_town"
+metadata/npc_dialog = "← 华灵草原  碧溪镇 →
+翠竹馆（木系）开放中。"
 
 [node name="训练师_小敏" type="Marker2D" parent="装饰"]
 position = Vector2(128, 288)

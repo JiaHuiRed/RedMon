@@ -86,9 +86,9 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 			"starter":     script = load("res://scripts/scenes/starter_scene.gd")
 			"home":        script = load("res://scripts/scenes/home_scene.gd")
 			"town":        script = load("res://scripts/scenes/town_scene.gd")
-		"gym":         script = load("res://scripts/scenes/gym_scene.gd")
-		"battle":      script = load("res://scripts/scenes/battle_scene.gd")
-		"overworld":   script = load("res://scripts/scenes/overworld_scene.gd")
+			"gym":         script = load("res://scripts/scenes/gym_scene.gd")
+			"battle":      script = load("res://scripts/scenes/battle_scene.gd")
+			"overworld":   script = load("res://scripts/scenes/overworld_scene.gd")
 			_:
 				push_error("Unknown scene: " + scene_name)
 				return

@@ -4,6 +4,10 @@
 [ext_resource type="Texture2D" uid="uid://bjpmtcknnchoi" path="res://assets/backgrounds/buildings/普通小屋.png" id="2_mv8fa"]
 [ext_resource type="Texture2D" uid="uid://c616wuqer5cfb" path="res://assets/backgrounds/buildings/研究所.png" id="6_lab"]
 [ext_resource type="TileSet" uid="uid://dmmc27tsay1lw" path="res://assets/tilemaps/world_tileset.tres" id="10_ts"]
+[ext_resource type="Texture2D" uid="uid://dlbcdj2rke5eh" path="res://assets/npc/老奶奶.png" id="20_granny"]
+[ext_resource type="Texture2D" uid="uid://bs3i2ydp03x2t" path="res://assets/npc/青年.png" id="21_youth"]
+[ext_resource type="Texture2D" uid="uid://bc5kjbkksh4t3" path="res://assets/npc/劲敌walk_sheet.png" id="22_rival"]
+[ext_resource type="Texture2D" uid="uid://c6lkuidaqkfnm" path="res://assets/npc/城镇训练师.png" id="23_towntrainer"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gktdk"]
 size = Vector2(113, 122)
@@ -70,41 +74,90 @@ position = Vector2(364, 180)
 position = Vector2(274, 214)
 metadata/npc_type = "sign"
 metadata/npc_name = "告示牌"
-metadata/dialog = "{player}的家"
+metadata/npc_dialog = "{player}的家"
 
 [node name="路标_劲敌" type="Marker2D" parent="装饰" unique_id=1009831808]
 position = Vector2(827, 539)
 metadata/npc_type = "sign"
 metadata/npc_name = "告示牌"
-metadata/dialog = "{rival}的家"
+metadata/npc_dialog = "{rival}的家"
 
 [node name="路标_研究所" type="Marker2D" parent="装饰" unique_id=349051269]
 position = Vector2(702, 244)
 metadata/npc_type = "sign"
 metadata/npc_name = "告示牌"
-metadata/dialog = "陈教授的研究所
+metadata/npc_dialog = "陈教授的研究所
 精灵研究的最前沿"
+
+[node name="告示牌_黑风堂预警" type="Marker2D" parent="装饰"]
+position = Vector2(888, 248)
+metadata/npc_type = "sign"
+metadata/npc_name = "告示牌"
+metadata/npc_dialog = "【华灵草原】→ 前方草丛危险，请带足补给再出发。
+黑风堂出没，请市民提高警惕。"
 
 [node name="角色" type="Node2D" parent="." unique_id=1285328644]
 
-[node name="阿婆" type="Marker2D" parent="角色" unique_id=150225919]
+[node name="阿婆" type="Sprite2D" parent="角色" unique_id=150225919]
 position = Vector2(296, 360)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(48, 0, 48, 48)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("20_granny")
 metadata/npc_type = "npc"
 metadata/npc_name = "阿婆"
-metadata/dialog = "dlg:village:grandma"
+metadata/npc_dialog = "阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！"
 
-[node name="训练师_村1" type="Marker2D" parent="角色" unique_id=829320325]
+[node name="训练师_村1" type="Sprite2D" parent="角色" unique_id=829320325]
 position = Vector2(648, 488)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(0, 1024, 683, 1024)
+scale = Vector2(0.094, 0.094)
+texture = ExtResource("23_towntrainer")
 metadata/npc_type = "trainer"
 metadata/npc_name = "训练师_村1"
 metadata/trainer_id = "t_village1"
 metadata/dir = "1,0"
 metadata/sight = "3"
 
-[node name="守卫_北出口" type="Marker2D" parent="角色" unique_id=1921060534]
+[node name="守卫_北出口" type="Sprite2D" parent="角色" unique_id=1921060534]
 position = Vector2(480, -61)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(48, 0, 48, 48)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("21_youth")
 metadata/npc_type = "guard"
 metadata/npc_name = "守卫"
-metadata/dialog = "__guard_north__"
+metadata/npc_dialog = "__guard_north__"
+
+[node name="村民_右出口" type="Sprite2D" parent="角色"]
+position = Vector2(904, 296)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(48, 0, 48, 48)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("21_youth")
+metadata/npc_type = "guard"
+metadata/npc_name = "村民"
+metadata/npc_dialog = "__guard_right__"
+
+[node name="劲敌" type="Sprite2D" parent="角色"]
+position = Vector2(856, 360)
+z_index = 5
+centered = true
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 160)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("22_rival")
+metadata/npc_type = "rival"
+metadata/npc_name = "劲敌"
+metadata/npc_dialog = "__rival__"
 
 [node name="背景" type="Sprite2D" parent="." unique_id=959645119]
