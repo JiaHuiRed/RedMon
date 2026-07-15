@@ -134,6 +134,17 @@ const MSG_H   := 65
 const MENU_Y  := 640
 const MENU_H  := 80
 
+# 战斗菜单图标
+const ACTION_ICONS := {
+	0: preload("res://assets/ui/战斗图标.png"),  # 战斗
+}
+const ACTION_ICON_RECTS := {
+	0: Rect2(0, 0, 100, 100),      # 战斗
+	1: Rect2(100, 0, 100, 100),    # 宝可梦
+	2: Rect2(200, 0, 100, 100),    # 包包
+	3: Rect2(300, 0, 100, 100),    # 逃走
+}
+
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
 	# 260709 Red 选第一只活着的精灵出战
@@ -315,80 +326,101 @@ func _make_platform(pos: Vector2, w: float, h: float, color: Color) -> ColorRect
 # BUILD – Info boxes
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_info_boxes() -> void:
-	# 260709 Red 信息框互换：我方左上，敌方右上
-	# Player info box – top-left
-	var pb = _panel_rect(Vector2(8, 10), Vector2(212, 70))
-	add_child(pb)
+	# ── Enemy info – top-right (white bg, frosted glass) ─────────────────────
+	var ebg = Panel.new()
+	ebg.position = Vector2(VW - 210, 8)
+	ebg.size = Vector2(200, 52)
+	var e_style := StyleBoxFlat.new()
+	e_style.bg_color = Color(1, 1, 1, 0.92)
+	e_style.corner_radius_top_left = 12
+	e_style.corner_radius_top_right = 12
+	e_style.corner_radius_bottom_left = 12
+	e_style.corner_radius_bottom_right = 12
+	e_style.border_color = Color(0.85, 0.85, 0.85, 0.6)
+	e_style.border_width_left = 1
+	e_style.border_width_right = 1
+	e_style.border_width_top = 1
+	e_style.border_width_bottom = 1
+	ebg.add_theme_stylebox_override("panel", e_style)
+	add_child(ebg)
 
-	_player_name_lbl = _label("", Vector2(14, 13), 13, Color(0.1, 0.1, 0.1))
+	_enemy_name_lbl = _label("", Vector2(VW - 200, 14), 13, Color(0.1, 0.1, 0.1))
+	add_child(_enemy_name_lbl)
+
+	_enemy_lv_lbl = _label("", Vector2(VW - 60, 14), 12, Color(0.2, 0.2, 0.5))
+	add_child(_enemy_lv_lbl)
+
+	_enemy_status_lbl = _label("", Vector2(VW - 96, 15), 10, Color(0.9, 0.4, 0.1))
+	add_child(_enemy_status_lbl)
+
+	var ehp_bg = ColorRect.new()
+	ehp_bg.size = Vector2(150, 6)
+	ehp_bg.position = Vector2(VW - 200, 34)
+	ehp_bg.color = Color(0.75, 0.75, 0.75)
+	add_child(ehp_bg)
+
+	_enemy_hp_bar = ColorRect.new()
+	_enemy_hp_bar.size = Vector2(150, 6)
+	_enemy_hp_bar.position = Vector2(VW - 200, 34)
+	_enemy_hp_bar.color = Color(0.2, 0.85, 0.3)
+	add_child(_enemy_hp_bar)
+
+	_enemy_hp_val = _label("", Vector2(VW - 200, 42), 9, Color(0.35, 0.35, 0.35))
+	add_child(_enemy_hp_val)
+
+	# ── Player info – bottom-left (frosted glass + red accent) ───────────────
+	var pbg = Panel.new()
+	pbg.position = Vector2(8, VH - 90)
+	pbg.size = Vector2(220, 78)
+	var p_style := StyleBoxFlat.new()
+	p_style.bg_color = Color(0.12, 0.18, 0.28, 0.88)
+	p_style.corner_radius_top_left = 14
+	p_style.corner_radius_top_right = 14
+	p_style.corner_radius_bottom_left = 14
+	p_style.corner_radius_bottom_right = 14
+	p_style.border_color = Color(0.85, 0.25, 0.25, 0.85)
+	p_style.border_width_left = 3
+	p_style.border_width_right = 3
+	p_style.border_width_top = 3
+	p_style.border_width_bottom = 3
+	pbg.add_theme_stylebox_override("panel", p_style)
+	add_child(pbg)
+
+	_player_name_lbl = _label("", Vector2(18, VH - 78), 13, Color.WHITE)
 	add_child(_player_name_lbl)
 
-	_player_lv_lbl = _label("", Vector2(148, 13), 12, Color(0.2, 0.2, 0.5))
+	_player_lv_lbl = _label("", Vector2(160, VH - 78), 12, Color(0.75, 0.85, 1.0))
 	add_child(_player_lv_lbl)
 
-	_player_status_lbl = _label("", Vector2(138, 14), 10, Color(0.9, 0.4, 0.1))
+	_player_status_lbl = _label("", Vector2(140, VH - 77), 10, Color(1.0, 0.7, 0.3))
 	add_child(_player_status_lbl)
 
-	# Player HP label
-	var hp_lbl_txt = _label("HP", Vector2(14, 34), 10, Color(0.2, 0.2, 0.2))
-	add_child(hp_lbl_txt)
-
 	var php_bg = ColorRect.new()
-	php_bg.size = Vector2(150, 8)
-	php_bg.position = Vector2(30, 37)
+	php_bg.size = Vector2(150, 6)
+	php_bg.position = Vector2(18, VH - 58)
 	php_bg.color = Color(0.3, 0.3, 0.3)
 	add_child(php_bg)
 
 	_player_hp_bar = ColorRect.new()
-	_player_hp_bar.size = Vector2(150, 8)
-	_player_hp_bar.position = Vector2(30, 37)
+	_player_hp_bar.size = Vector2(150, 6)
+	_player_hp_bar.position = Vector2(18, VH - 58)
 	_player_hp_bar.color = Color(0.2, 0.85, 0.3)
 	add_child(_player_hp_bar)
 
-	_player_hp_val = _label("", Vector2(124, 48), 11, Color(0.1, 0.1, 0.1))
+	_player_hp_val = _label("", Vector2(18, VH - 50), 11, Color.WHITE)
 	add_child(_player_hp_val)
 
-	# XP bar (thin strip at bottom of player info box)
 	var xp_bg = ColorRect.new()
 	xp_bg.size = Vector2(150, 4)
-	xp_bg.position = Vector2(30, 62)
-	xp_bg.color = Color(0.2, 0.2, 0.2)
+	xp_bg.position = Vector2(18, VH - 36)
+	xp_bg.color = Color(0.25, 0.25, 0.35)
 	add_child(xp_bg)
 
 	_player_xp_bar = ColorRect.new()
-	_player_xp_bar.size = Vector2(75, 4)  # 50% placeholder
-	_player_xp_bar.position = Vector2(30, 62)
+	_player_xp_bar.size = Vector2(75, 4)
+	_player_xp_bar.position = Vector2(18, VH - 36)
 	_player_xp_bar.color = Color(0.2, 0.4, 0.95)
 	add_child(_player_xp_bar)
-
-	# Enemy info box – top-right
-	var eb = _panel_rect(Vector2(VW - 208, 10), Vector2(200, 54))
-	add_child(eb)
-
-	_enemy_name_lbl = _label("", Vector2(VW - 202, 13), 13, Color(0.1, 0.1, 0.1))
-	add_child(_enemy_name_lbl)
-
-	_enemy_lv_lbl = _label("", Vector2(VW - 66, 13), 12, Color(0.2, 0.2, 0.5))
-	add_child(_enemy_lv_lbl)
-
-	# Enemy HP bar
-	var ehp_bg = ColorRect.new()
-	ehp_bg.size = Vector2(150, 8)
-	ehp_bg.position = Vector2(VW - 202, 32)
-	ehp_bg.color = Color(0.3, 0.3, 0.3)
-	add_child(ehp_bg)
-
-	_enemy_hp_bar = ColorRect.new()
-	_enemy_hp_bar.size = Vector2(150, 8)
-	_enemy_hp_bar.position = Vector2(VW - 202, 32)
-	_enemy_hp_bar.color = Color(0.2, 0.85, 0.3)
-	add_child(_enemy_hp_bar)
-
-	_enemy_hp_val = _label("", Vector2(VW - 202, 43), 10, Color(0.3, 0.3, 0.3))
-	add_child(_enemy_hp_val)
-
-	_enemy_status_lbl = _label("", Vector2(VW - 96, 14), 10, Color(0.9, 0.4, 0.1))
-	add_child(_enemy_status_lbl)
 
 	_refresh_info()
 
@@ -434,66 +466,58 @@ func _build_action_panel() -> void:
 	_action_panel.size = Vector2(VW, MENU_H)
 	add_child(_action_panel)
 
-	var bg = Panel.new()
-	bg.size = Vector2(VW, MENU_H)
-	var bg_style = StyleBoxFlat.new()
-	bg_style.bg_color = Color(0.08, 0.10, 0.18)
-	bg.add_theme_stylebox_override("panel", bg_style)
-	_action_panel.add_child(bg)
-
-	# Top border line (gold accent)
-	var accent = ColorRect.new()
-	accent.size = Vector2(VW, 2)
-	accent.color = Color(0.85, 0.70, 0.20)
-	_action_panel.add_child(accent)
-
-	var prompt = Label.new()
-	prompt.text = "该怎么做？"
-	prompt.position = Vector2(14, 12)
-	prompt.add_theme_color_override("font_color", Color(0.95, 0.92, 0.75))
-	prompt.add_theme_font_size_override("font_size", 13)
-	_action_panel.add_child(prompt)
-
-	# 键盘操作提示（左侧提示区）
-	var kb_hint = Label.new()
-	kb_hint.text = "Z/Enter 确定\n↑↓←→ 移动"
-	kb_hint.position = Vector2(14, 36)
-	kb_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
-	kb_hint.add_theme_font_size_override("font_size", 9)
-	_action_panel.add_child(kb_hint)
-
-	# 2×2 button grid
-	var labels    = ["⚔  战  斗", "🎒  背  包", "♟  精  灵", "🏃  逃  跑"]
+	# Vertical command menu on the right (SV-style)
+	var labels = ["战  斗", "宝可梦", "背  包", "逃  走"]
 	var callbacks = [_on_fight, _on_bag, _on_mon, _on_run]
-	var btn_colors = [
-		Color(0.75, 0.20, 0.15), Color(0.20, 0.50, 0.20),
-		Color(0.18, 0.35, 0.75), Color(0.45, 0.45, 0.45),
+	_action_btn_colors = [
+		Color(0.75, 0.20, 0.15),
+		Color(0.20, 0.50, 0.20),
+		Color(0.18, 0.35, 0.75),
+		Color(0.45, 0.45, 0.45),
 	]
-	_action_btn_colors = btn_colors.duplicate()
-	var btn_w = 108
-	var btn_h = 28
-	var grid_x = VW - 238
+	var menu_x = VW - 196
+	var menu_y = 382
+	var btn_w = 180
+	var btn_h = 50
+	var gap = 8
 	_action_btns = []
 	for i in range(4):
-		var col = i % 2
-		var row: int = i / 2
 		var btn = Button.new()
 		btn.text = labels[i]
 		btn.size = Vector2(btn_w, btn_h)
-		btn.position = Vector2(grid_x + col * (btn_w + 10), 8 + row * (btn_h + 5))
+		btn.position = Vector2(menu_x, menu_y + i * (btn_h + gap))
 		btn.pressed.connect(callbacks[i])
 		var s = StyleBoxFlat.new()
-		s.bg_color    = btn_colors[i]
-		s.border_color = btn_colors[i].lightened(0.3)
-		s.set_border_width_all(1)
-		s.set_corner_radius_all(4)
+		s.bg_color = Color(1, 1, 1, 0.88)
+		s.corner_radius_top_left = 10
+		s.corner_radius_top_right = 10
+		s.corner_radius_bottom_left = 10
+		s.corner_radius_bottom_right = 10
+		s.border_color = Color(0.7, 0.7, 0.75, 0.5)
+		s.border_width_left = 1
+		s.border_width_right = 1
+		s.border_width_top = 1
+		s.border_width_bottom = 1
 		btn.add_theme_stylebox_override("normal", s)
-		var sh = s.duplicate(); sh.bg_color = btn_colors[i].lightened(0.15)
+		var sh = s.duplicate(); sh.bg_color = Color(0.15, 0.15, 0.22, 0.95)
 		btn.add_theme_stylebox_override("hover", sh)
-		btn.add_theme_color_override("font_color", Color.WHITE)
-		btn.add_theme_font_size_override("font_size", 12)
+		btn.add_theme_color_override("font_color", Color(0.15, 0.15, 0.2))
+		btn.add_theme_font_size_override("font_size", 16)
 		_action_panel.add_child(btn)
 		_action_btns.append(btn)
+
+		# Icon on the right side of each button
+		var icon_spr = Sprite2D.new()
+		var tex = ACTION_ICONS.get(i, null)
+		if tex:
+			var atlas = AtlasTexture.new()
+			atlas.atlas = tex
+			atlas.region = ACTION_ICON_RECTS.get(i, Rect2(i * 100, 0, 100, 100))
+			icon_spr.texture = atlas
+			icon_spr.centered = false
+			icon_spr.position = Vector2(menu_x + btn_w - 56, menu_y + i * (btn_h + gap) + 6)
+			icon_spr.scale = Vector2(0.38, 0.38)
+			_action_panel.add_child(icon_spr)
 
 	# 光标高亮框
 	_action_hl = _make_hl_panel(_action_panel)
@@ -1682,12 +1706,12 @@ func _make_hl_panel(parent: Control) -> Panel:
 # ── 各面板光标刷新 ────────────────────────────────────────────────────────────
 func _refresh_action_cursor() -> void:
 	if not _action_hl: return
-	var btn_w := 108; var btn_h := 28
-	var grid_x := VW - 238
-	var col := _action_cursor % 2
-	var row := _action_cursor / 2
-	_action_hl.position = Vector2(grid_x + col * (btn_w + 10) - 2, 8 + row * (btn_h + 5) - 2)
-	_action_hl.size     = Vector2(btn_w + 4, btn_h + 4)
+	var btn_w := 180; var btn_h := 50
+	var menu_x := VW - 196
+	var menu_y := 382
+	var gap := 8
+	_action_hl.position = Vector2(menu_x - 3, menu_y + _action_cursor * (btn_h + gap) - 3)
+	_action_hl.size     = Vector2(btn_w + 6, btn_h + 6)
 
 func _refresh_move_cursor() -> void:
 	if not _move_hl: return
