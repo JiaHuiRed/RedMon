@@ -136,9 +136,7 @@ const MENU_Y  := 640
 const MENU_H  := 80
 
 # 战斗菜单图标
-const ACTION_ICONS := {
-	0: preload("res://assets/ui/战斗图标.png"),  # 战斗
-}
+const ACTION_ICON_TEX := preload("res://assets/ui/战斗图标.png")  # 单纹理，4 宫格 100×100
 const ACTION_ICON_RECTS := {
 	0: Rect2(0, 0, 100, 100),      # 战斗
 	1: Rect2(100, 0, 100, 100),    # 宝可梦
@@ -486,15 +484,16 @@ func _build_action_panel() -> void:
 	_cmd_menu = Control.new()
 	_cmd_menu.position = Vector2(0, 0)
 	_cmd_menu.size = Vector2(VW, VH)
+	_cmd_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_cmd_menu)
 
 	var labels = ["战  斗", "宝可梦", "背  包", "逃  走"]
 	var callbacks = [_on_fight, _on_bag, _on_mon, _on_run]
-	var menu_x = VW - 196
-	var menu_y = 382
-	var btn_w = 180
-	var btn_h = 50
-	var gap = 8
+	var menu_x = VW - 200
+	var menu_y = 646
+	var btn_w = 175
+	var btn_h = 16
+	var gap = 3
 	_action_btns = []
 	for i in range(4):
 		var btn = Button.new()
@@ -517,22 +516,19 @@ func _build_action_panel() -> void:
 		var sh = s.duplicate(); sh.bg_color = Color(0.15, 0.15, 0.22, 0.95)
 		btn.add_theme_stylebox_override("hover", sh)
 		btn.add_theme_color_override("font_color", Color(0.15, 0.15, 0.2))
-		btn.add_theme_font_size_override("font_size", 16)
+		btn.add_theme_font_size_override("font_size", 11)
 		_cmd_menu.add_child(btn)
 		_action_btns.append(btn)
 
 		# Icon on the right side of each button
-		var icon_spr = Sprite2D.new()
-		var tex = ACTION_ICONS.get(i, null)
-		if tex:
-			var atlas = AtlasTexture.new()
-			atlas.atlas = tex
-			atlas.region = ACTION_ICON_RECTS.get(i, Rect2(i * 100, 0, 100, 100))
-			icon_spr.texture = atlas
-			icon_spr.centered = false
-			icon_spr.position = Vector2(menu_x + btn_w - 56, menu_y + i * (btn_h + gap) + 6)
-			icon_spr.scale = Vector2(0.38, 0.38)
-			_cmd_menu.add_child(icon_spr)
+		var atlas = AtlasTexture.new()
+		atlas.atlas = ACTION_ICON_TEX
+		atlas.region = ACTION_ICON_RECTS.get(i, Rect2(i * 100, 0, 100, 100))
+		var icon_rect = TextureRect.new()
+		icon_rect.texture = atlas
+		icon_rect.position = Vector2(btn_w - 40, 1)
+		icon_rect.size = Vector2(14, 14)
+		btn.add_child(icon_rect)
 
 	# 光标高亮框
 	_action_hl = _make_hl_panel(_cmd_menu)
