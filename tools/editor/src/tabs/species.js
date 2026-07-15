@@ -319,6 +319,7 @@ export class SpeciesTab {
 
   // ===== Add / Delete =====
   onAdd() {
+    this.callbacks.saveHistory(this.fileKey);
     const maxId = this.data.reduce((max, m) => Math.max(max, m.id || 0), 0);
     const newMon = {
       id: maxId + 1,
@@ -344,6 +345,7 @@ export class SpeciesTab {
   }
 
   onDelete() {
+    this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const mon = this._getSpecies(this.currentId);
     if (!mon) return;
@@ -383,6 +385,7 @@ export class SpeciesTab {
     if (!slider || !asexualChk) return;
 
     const applyRatio = () => {
+      this.callbacks.saveHistory(this.fileKey);
       if (asexualChk.checked) {
         mon.gender_ratio = "无性别";
       } else {
@@ -756,6 +759,7 @@ export class SpeciesTab {
       const el = document.getElementById(id);
       if (!el) return;
       el.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         mon[field] = parser ? parser(el.value) : el.value;
         this.callbacks.onModified(this.fileKey);
       });
@@ -781,6 +785,7 @@ export class SpeciesTab {
     // 特性下拉改成可搜索输入框（原生 select 逐条滚动选特性太慢，对齐旧编辑器的自动补全体验）
     const abilityNames = this._getAbilitiesList();
     const setAbilities = (a1, a2) => {
+      this.callbacks.saveHistory(this.fileKey);
       // 保留槽位顺序：只有 a2 有值而 a1 为空时，用空字符串占住槽位 0，避免 a2 的值错位挪到 abilities[0]
       if (!a1 && !a2) mon.abilities = [];
       else if (!a1) mon.abilities = ["", a2];
@@ -808,6 +813,7 @@ export class SpeciesTab {
       const el = document.getElementById(id);
       if (!el) return;
       el.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         if (!mon.base) mon.base = {};
         mon.base[field] = parseInt(el.value) || 0;
         this.callbacks.onModified(this.fileKey);
@@ -827,6 +833,7 @@ export class SpeciesTab {
     const suggestTierBtn = document.getElementById("btn-suggest-tier");
     if (suggestTierBtn) {
       suggestTierBtn.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const statIds = ["stat-hp", "stat-atk", "stat-def", "stat-spatk", "stat-spdef", "stat-spd"];
         const total = statIds.reduce((sum, id) => sum + (parseInt(document.getElementById(id)?.value) || 0), 0);
         let tier;
@@ -847,6 +854,7 @@ export class SpeciesTab {
     const addEvoBtn = document.getElementById("btn-add-evo");
     if (addEvoBtn) {
       addEvoBtn.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         this._ensureOwnEvolutionsArray(mon);
         this._openEvoModal({ into: "", level: 16 }, (evo) => mon.evolutions.push(evo), mon);
       });
@@ -856,6 +864,7 @@ export class SpeciesTab {
     document.querySelectorAll("[data-evo-idx]").forEach(el => {
       const idx = parseInt(el.dataset.evoIdx);
       el.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         this._ensureOwnEvolutionsArray(mon);
         const evo = mon.evolutions[idx];
         if (!evo) return;
@@ -880,6 +889,7 @@ export class SpeciesTab {
     // Learnset remove
     document.querySelectorAll(".learn-remove").forEach(btn => {
       btn.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const idx = parseInt(btn.dataset.idx);
         if (mon.learnset) {
           mon.learnset.splice(idx, 1);
@@ -892,6 +902,7 @@ export class SpeciesTab {
     // Learnset inline edits
     document.querySelectorAll(".learn-level").forEach(input => {
       input.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const idx = parseInt(input.dataset.idx);
         if (mon.learnset && mon.learnset[idx]) {
           mon.learnset[idx].level = parseInt(input.value) || 0;
@@ -908,6 +919,7 @@ export class SpeciesTab {
         items: learnMoveNames,
         value: input.value,
         onChange: (v) => {
+          this.callbacks.saveHistory(this.fileKey);
           if (mon.learnset && mon.learnset[idx]) {
             mon.learnset[idx].name = v;
             this.callbacks.onModified(this.fileKey);
@@ -921,6 +933,7 @@ export class SpeciesTab {
     const addEncBtn = document.getElementById("btn-add-enc");
     if (addEncBtn) {
       addEncBtn.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         if (!mon.encounters) mon.encounters = [];
         mon.encounters.push({ location: "", rate: 0 });
         this.callbacks.onModified(this.fileKey);
@@ -931,6 +944,7 @@ export class SpeciesTab {
     // Encounter remove
     document.querySelectorAll(".enc-remove").forEach(btn => {
       btn.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const idx = parseInt(btn.dataset.idx);
         if (mon.encounters) {
           mon.encounters.splice(idx, 1);
@@ -943,6 +957,7 @@ export class SpeciesTab {
     // Encounter field edits
     document.querySelectorAll(".enc-location").forEach(input => {
       input.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const idx = parseInt(input.dataset.idx);
         if (mon.encounters && mon.encounters[idx]) {
           mon.encounters[idx].location = input.value;
@@ -952,6 +967,7 @@ export class SpeciesTab {
     });
     document.querySelectorAll(".enc-rate").forEach(input => {
       input.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const idx = parseInt(input.dataset.idx);
         if (mon.encounters && mon.encounters[idx]) {
           mon.encounters[idx].rate = parseInt(input.value) || 0;

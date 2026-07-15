@@ -14,6 +14,7 @@ const state = {
   dataPaths: null,
   data: {},  // { species: [...], moves: [...], ... }
   modified: {},  // { species: true, ... }
+  history: {},  // { fileKey: { undo: [], redo: [] } }
 };
 
 const tabs = {};
@@ -106,6 +107,7 @@ async function openProjectAt(root) {
       onSave: (fileKey, jsonData) => handleSaveOne(fileKey, jsonData),
       onStatus: setStatus,
       onModified: (fileKey) => { state.modified[fileKey] = true; updateSaveButton(); },
+      saveHistory: (fileKey) => saveHistory(fileKey),
     });
     tabs[key] = tab;
   }
@@ -160,6 +162,7 @@ async function loadAllData() {
       state.modified[def.file] = false;
     } catch (e) {
       console.warn(`加载 ${def.file}.json 失败:`, e);
+      setStatus(`加载失败 ${def.file}.json: ${e.message || e}`);
       state.data[def.file] = key === "dialogs" ? {} : [];
     }
   }
@@ -169,6 +172,82 @@ async function loadAllData() {
 // synthetic id=index+1 purely so the UI has a stable selection key, but that
 // synthetic value must never be written back into the JSON.
 const NO_NATIVE_ID = new Set(["abilities", "items", "moves"]);
+
+// === Undo / Redo ===
+const MAX_HISTORY = 50;
+
+function deepClone(obj) {
+  try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj)); }
+}
+
+function saveHistory(fileKey) {
+  if (fileKey === "encounters") {
+    const mapsTab = tabs["maps"];
+    if (!mapsTab || !mapsTab.encountersData) return;
+    state.history.encounters = state.history.encounters || { undo: [], redo: [] };
+    state.history.encounters.undo.push(deepClone(mapsTab.encountersData));
+    if (state.history.encounters.undo.length > MAX_HISTORY) state.history.encounters.undo.shift();
+    state.history.encounters.redo = [];
+    return;
+  }
+  const data = state.data[fileKey];
+  if (!data) return;
+  state.history[fileKey] = state.history[fileKey] || { undo: [], redo: [] };
+  state.history[fileKey].undo.push(deepClone(data));
+  if (state.history[fileKey].undo.length > MAX_HISTORY) state.history[fileKey].undo.shift();
+  state.history[fileKey].redo = [];
+}
+
+function undo() {
+  const tab = tabs[activeTab];
+  if (!tab) return;
+  const fileKey = tab.fileKey;
+
+  // 遇效表单独走 encounters 历史栈
+  if (fileKey === "maps" && tab.encountersData && state.history?.encounters?.undo?.length) {
+    state.history.encounters.redo.push(deepClone(tab.encountersData));
+    tab.encountersData = state.history.encounters.undo.pop();
+    const curMap = tab.data.find(m => m.id === tab.currentId);
+    if (curMap) tab._renderEncSection(curMap);
+    setStatus("撤销遇效表");
+    return;
+  }
+
+  const history = state.history?.[fileKey];
+  if (!history || !history.undo.length) return;
+  history.redo.push(deepClone(state.data[fileKey]));
+  const prev = history.undo.pop();
+  state.data[fileKey] = prev;
+  tab.data = prev;
+  tab.renderList();
+  if (tab.currentId != null) tab.renderDetail(tab.currentId);
+  setStatus("撤销");
+}
+
+function redo() {
+  const tab = tabs[activeTab];
+  if (!tab) return;
+  const fileKey = tab.fileKey;
+
+  if (fileKey === "maps" && tab.encountersData && state.history?.encounters?.redo?.length) {
+    state.history.encounters.undo.push(deepClone(tab.encountersData));
+    tab.encountersData = state.history.encounters.redo.pop();
+    const curMap = tab.data.find(m => m.id === tab.currentId);
+    if (curMap) tab._renderEncSection(curMap);
+    setStatus("重做遇效表");
+    return;
+  }
+
+  const history = state.history?.[fileKey];
+  if (!history || !history.redo.length) return;
+  history.undo.push(deepClone(state.data[fileKey]));
+  const next = history.redo.pop();
+  state.data[fileKey] = next;
+  tab.data = next;
+  tab.renderList();
+  if (tab.currentId != null) tab.renderDetail(tab.currentId);
+  setStatus("重做");
+}
 
 // Convert editor array data back to file object format for saving
 function dataForSave(fileKey, data) {
@@ -191,6 +270,16 @@ function dataForSave(fileKey, data) {
     obj[item[keyField]] = toSave;
   }
   return obj;
+}
+
+// Rebuild encounters.json from species.json encounters (species is the single source of truth)
+async function _syncEncountersFromSpecies() {
+  const mapsTab = tabs["maps"];
+  if (!mapsTab || !mapsTab.encountersPath) return;
+  await mapsTab._ensureEncounters();
+  const speciesData = state.data.species || [];
+  mapsTab.rebuildFromSpecies(speciesData);
+  await mapsTab._saveEncounters();
 }
 
 // Convert an in-memory species item (learnset as flat [{level,name}] array, for editing)
@@ -218,12 +307,16 @@ async function handleSaveOne(fileKey, jsonData) {
     state.modified[fileKey] = false;
     updateSaveButton();
     setStatus(`已保存 ${fileKey}.json`);
+    if (fileKey === "species") {
+      await _syncEncountersFromSpecies();
+    }
   } catch (err) {
     setStatus(`保存失败: ${err}`);
   }
 }
 
 async function handleSaveAll() {
+  const speciesModified = state.modified["species"];
   for (const [key, def] of Object.entries(TAB_DEFS)) {
     const info = state.dataPaths[def.file];
     if (info && info.exists && state.modified[def.file]) {
@@ -239,6 +332,15 @@ async function handleSaveAll() {
         }
       }
     }
+  }
+  // 以 species.json 为唯一数据源，species 有改动时才重建 encounters.json
+  if (speciesModified) {
+    await _syncEncountersFromSpecies();
+  }
+  // 同时保存地图 tab 手动修改的遇效表（若与 species 不同步）
+  const mapsTab = tabs["maps"];
+  if (mapsTab && mapsTab.encModified && mapsTab.encountersPath) {
+    await mapsTab._saveEncounters();
   }
   state.modified = {};
   updateSaveButton();
@@ -269,6 +371,14 @@ document.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === "s") {
     e.preventDefault();
     handleSaveAll();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+    e.preventDefault();
+    undo();
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.key === "z" && e.shiftKey))) {
+    e.preventDefault();
+    redo();
   }
 });
 

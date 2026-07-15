@@ -101,6 +101,7 @@ export class ItemsTab {
     `;
     const bind = (id, field, num) => {
       document.getElementById(id)?.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const v = document.getElementById(id).value;
         item[field] = num ? (parseInt(v)||0) : v;
         this.callbacks.onModified(this.fileKey);
@@ -110,6 +111,7 @@ export class ItemsTab {
     bind("it-price", "price", true); bind("it-effect", "effect"); bind("it-desc", "desc");
     bind("it-train-stat", "train_stat");
     document.getElementById("it-train-amount")?.addEventListener("change", () => {
+      this.callbacks.saveHistory(this.fileKey);
       item.train_amount = parseInt(document.getElementById("it-train-amount").value) || 0;
       this.callbacks.onModified(this.fileKey);
     });
@@ -141,6 +143,7 @@ export class ItemsTab {
   }
 
   onAdd() {
+    this.callbacks.saveHistory(this.fileKey);
     const maxId = this.data.reduce((max, m) => Math.max(max, parseInt(m.id) || 0), 0);
     this.data.push({ id: maxId + 1, name: "新道具", category: "回复", price: 0, effect: "", desc: "" });
     this.callbacks.onModified(this.fileKey);
@@ -148,6 +151,7 @@ export class ItemsTab {
   }
 
   onDelete() {
+    this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
     if (!item || !confirm(`确认删除道具「${item.name}」？`)) return;

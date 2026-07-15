@@ -140,6 +140,7 @@ export class MovesTab {
 
     const bind = (id, field) => {
       document.getElementById(id)?.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const val = document.getElementById(id).value;
         if (field === "power" || field === "accuracy" || field === "pp" || field === "priority") {
           move[field] = parseInt(val) || 0;
@@ -157,6 +158,7 @@ export class MovesTab {
     const effectEl = document.getElementById("mv-effect");
     if (effectEl) {
       effectEl.addEventListener("change", function() {
+        this.callbacks.saveHistory(this.fileKey);
         move.effect = this.value;
         const chanceGroup = document.getElementById("mv-effect-chance-group");
         const valueGroup = document.getElementById("mv-effect-value-group");
@@ -166,16 +168,19 @@ export class MovesTab {
       }.bind(move));
     }
     document.getElementById("mv-effect-chance")?.addEventListener("change", function() {
+      this.callbacks.saveHistory(this.fileKey);
       move.effect_chance = parseInt(this.value) || 0;
       this.callbacks.onModified(this.fileKey);
     }.bind(move));
     document.getElementById("mv-effect-value")?.addEventListener("change", function() {
+      this.callbacks.saveHistory(this.fileKey);
       move.effect_value = parseInt(this.value) || 0;
       this.callbacks.onModified(this.fileKey);
     }.bind(move));
   }
 
   onAdd() {
+    this.callbacks.saveHistory(this.fileKey);
     const maxId = this.data.reduce((max, m) => Math.max(max, parseInt(m.id) || 0), 0);
     this.data.push({ id: String(maxId + 1), name: "新技能", type: "木", category: "物理", power: 60, accuracy: 100, pp: 20, priority: 0, desc: "" });
     this.callbacks.onModified(this.fileKey);
@@ -183,6 +188,7 @@ export class MovesTab {
   }
 
   onDelete() {
+    this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
     if (!item || !confirm(`确认删除技能「${item.name}」？`)) return;

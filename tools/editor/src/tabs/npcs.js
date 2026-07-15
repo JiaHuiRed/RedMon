@@ -211,28 +211,29 @@ export class NpcsTab {
       </details>
     `;
 
-    document.getElementById("np-id")?.addEventListener("change", (e) => { npc.id = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-name")?.addEventListener("change", (e) => { npc.name = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-title")?.addEventListener("change", (e) => { npc.title = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-type")?.addEventListener("change", (e) => { npc.role = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-gender")?.addEventListener("change", (e) => { npc.gender = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-desc")?.addEventListener("change", (e) => { npc.desc = e.target.value; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("np-dialog")?.addEventListener("change", (e) => { npc.dialog = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-id")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.id = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-name")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.name = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-title")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.title = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-type")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.role = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-gender")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.gender = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-desc")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.desc = e.target.value; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("np-dialog")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); npc.dialog = e.target.value; this.callbacks.onModified(this.fileKey); });
 
     // — 训练师数据事件 —
     const getT = () => { if (!npc.trainer) npc.trainer = {}; return npc.trainer; };
     const bindTr = (id, field) => {
-      document.getElementById(id)?.addEventListener("change", (e) => { const t = getT(); t[field] = e.target.value; this.callbacks.onModified(this.fileKey); });
+      document.getElementById(id)?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); const t = getT(); t[field] = e.target.value; this.callbacks.onModified(this.fileKey); });
     };
     bindTr("tr-id", "trainer_id"); bindTr("tr-class", "class");
     bindTr("tr-dialog-before", "dialog_before"); bindTr("tr-dialog-win", "dialog_win");
     bindTr("tr-dialog-lose", "dialog_lose"); bindTr("tr-dialog-player-lose", "dialog_player_lose");
     bindTr("tr-dialog-after", "dialog_after");
 
-    document.getElementById("tr-reward")?.addEventListener("change", (e) => { const t = getT(); t.reward = parseInt(e.target.value)||0; this.callbacks.onModified(this.fileKey); });
-    document.getElementById("tr-iv-tier")?.addEventListener("change", (e) => { const t = getT(); t.iv_tier = parseInt(e.target.value); this.callbacks.onModified(this.fileKey); });
+    document.getElementById("tr-reward")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); const t = getT(); t.reward = parseInt(e.target.value)||0; this.callbacks.onModified(this.fileKey); });
+    document.getElementById("tr-iv-tier")?.addEventListener("change", (e) => { this.callbacks.saveHistory(this.fileKey); const t = getT(); t.iv_tier = parseInt(e.target.value); this.callbacks.onModified(this.fileKey); });
 
     document.getElementById("tr-add-team")?.addEventListener("click", () => {
+      this.callbacks.saveHistory(this.fileKey);
       const t = getT();
       if (!t.team) t.team = [];
       t.team.push({ species: "", level: 5, moves: [], item: "" });
@@ -242,6 +243,7 @@ export class NpcsTab {
 
     document.querySelectorAll(".tr-team-species, .tr-team-level, .tr-team-moves, .tr-team-item").forEach(el => {
       el.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const t = getT();
         const idx = parseInt(el.dataset.idx);
         if (!t.team[idx]) return;
@@ -258,6 +260,7 @@ export class NpcsTab {
     });
     document.querySelectorAll(".tr-team-remove").forEach(el => {
       el.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const t = getT();
         const idx = parseInt(el.dataset.idx);
         if (t.team) { t.team.splice(idx, 1); this.callbacks.onModified(this.fileKey); this.renderDetail(npc); }
@@ -332,6 +335,7 @@ export class NpcsTab {
   }
 
   onAdd() {
+    this.callbacks.saveHistory(this.fileKey);
     const newNpc = {
       id: `npc_${Date.now()}`,
       name: "新角色",
@@ -348,6 +352,7 @@ export class NpcsTab {
   }
 
   onDelete() {
+    this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const npc = this.data.find(m => m.id === this.currentId);
     if (!npc) return;

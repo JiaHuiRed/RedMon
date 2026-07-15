@@ -76,6 +76,7 @@ export class AbilitiesTab {
     `;
     const bind = (id, field) => {
       document.getElementById(id)?.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         ab[field] = document.getElementById(id).value;
         this.callbacks.onModified(this.fileKey);
       });
@@ -84,6 +85,7 @@ export class AbilitiesTab {
   }
 
   onAdd() {
+    this.callbacks.saveHistory(this.fileKey);
     const maxId = this.data.reduce((max, m) => Math.max(max, parseInt(m.id) || 0), 0);
     this.data.push({ id: maxId + 1, name: "新特性", desc: "" });
     this.callbacks.onModified(this.fileKey);
@@ -91,6 +93,7 @@ export class AbilitiesTab {
   }
 
   onDelete() {
+    this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
     if (!item || !confirm(`确认删除特性「${item.name}」？`)) return;

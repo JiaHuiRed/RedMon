@@ -41,6 +41,40 @@ export class MapsTab {
     if (btn) btn.style.opacity = this.encModified ? "1" : "0.4";
   }
 
+  rebuildFromSpecies(speciesData) {
+    // Build name -> map_id lookup from maps.json
+    const nameToId = {};
+    for (const m of (this.state.data.maps || [])) {
+      if (m.name) nameToId[m.name] = String(m.id ?? m.name);
+    }
+    const result = { "_comment": "中央遇敌表——按 map_id 索引", "maps": {} };
+    for (const sp of speciesData) {
+      if (!sp.encounters) continue;
+      for (const enc of sp.encounters) {
+        const mapName = enc.location;
+        if (!mapName) continue;
+        const mapId = nameToId[mapName] || mapName;
+        if (!result.maps[mapId]) {
+          result.maps[mapId] = { encounter_rate: enc.rate || 0, mons: [] };
+        } else {
+          // Preserve existing encounter_rate if species doesn't specify one
+          if (enc.rate && !result.maps[mapId].encounter_rate) {
+            result.maps[mapId].encounter_rate = enc.rate;
+          }
+        }
+        const existing = result.maps[mapId].mons.find(m => m.species === sp.name);
+        if (existing) {
+          existing.weight = enc.rate || existing.weight;
+        } else {
+          result.maps[mapId].mons.push({ species: sp.name, weight: enc.rate || 0 });
+        }
+      }
+    }
+    this.encountersData = result;
+    this.encModified = true;
+    this._renderEncSaveState();
+  }
+
   getData() { return this.data; }
 
   renderList(filter) {
@@ -116,6 +150,7 @@ export class MapsTab {
     `;
     const bind = (id, field) => {
       document.getElementById(id)?.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         map[field] = document.getElementById(id).value;
         this.callbacks.onModified(this.fileKey);
       });
@@ -123,6 +158,7 @@ export class MapsTab {
     bind("mp-id", "id"); bind("mp-name", "name"); bind("mp-type", "type");
     bind("mp-scene", "scene_file"); bind("mp-desc", "desc"); bind("mp-gym", "gym");
     document.getElementById("mp-npcs")?.addEventListener("change", (e) => {
+      this.callbacks.saveHistory(this.fileKey);
       map.npcs = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
       this.callbacks.onModified(this.fileKey);
     });
@@ -166,28 +202,33 @@ export class MapsTab {
     const markEncModified = () => { this.encModified = true; this._renderEncSaveState(); };
 
     document.getElementById("enc-rate")?.addEventListener("change", (e) => {
+      this.callbacks.saveHistory("encounters");
       entry.encounter_rate = parseInt(e.target.value) || 0;
       markEncModified();
     });
     document.getElementById("enc-add-mon")?.addEventListener("click", () => {
+      this.callbacks.saveHistory("encounters");
       entry.mons.push({ species: "", weight: 10 });
       markEncModified();
       this._renderEncSection(map);
     });
     body.querySelectorAll(".enc-mon-species").forEach(el => {
       el.addEventListener("change", () => {
+        this.callbacks.saveHistory("encounters");
         entry.mons[parseInt(el.dataset.idx)].species = el.value;
         markEncModified();
       });
     });
     body.querySelectorAll(".enc-mon-weight").forEach(el => {
       el.addEventListener("change", () => {
-        entry.mons[parseInt(el.dataset.idx)].weight = parseInt(el.value) || 0;
+        this.callbacks.saveHistory("encounters");
+        entry.mons[parseInt(el.dataset.idx)].weight = parseInt(el.target.value) || 0;
         markEncModified();
       });
     });
     body.querySelectorAll(".enc-mon-remove").forEach(el => {
       el.addEventListener("click", () => {
+        this.callbacks.saveHistory("encounters");
         entry.mons.splice(parseInt(el.dataset.idx), 1);
         markEncModified();
         this._renderEncSection(map);
@@ -196,6 +237,7 @@ export class MapsTab {
   }
 
   onAdd() {
+    this.callbacks.saveHistory(this.fileKey);
     const maxId = this.data.reduce((max, m) => Math.max(max, parseInt(m.id) || 0), 0);
     this.data.push({ id: maxId + 1, name: "新地图", type: "野外", scene_file: "", npcs: [] });
     this.callbacks.onModified(this.fileKey);
@@ -203,6 +245,7 @@ export class MapsTab {
   }
 
   onDelete() {
+    this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
     if (!item || !confirm(`确认删除地图「${item.name}」？`)) return;

@@ -144,7 +144,7 @@ func _get_runtime_info() -> Dictionary:
 		"process_frames": Engine.get_process_frames(),
 		"debugger_active": EngineDebugger.is_active(),
 		"current_scene": str(get_tree().current_scene.get_path()) if get_tree().current_scene else "",
-		"node_count": _count_nodes(get_tree().root)
+		"node_count": int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
 	}
 
 func _get_performance_snapshot() -> Dictionary:
@@ -159,7 +159,7 @@ func _get_performance_snapshot() -> Dictionary:
 		"memory_static_bytes": int(memory_static),
 		"memory_static_mb": memory_static / 1024.0 / 1024.0,
 		"current_scene": str(get_tree().current_scene.get_path()) if get_tree().current_scene else "",
-		"node_count": _count_nodes(get_tree().root)
+		"node_count": int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
 	}
 
 func _get_memory_sample(sample_index: int) -> Dictionary:
@@ -173,6 +173,11 @@ func _get_memory_sample(sample_index: int) -> Dictionary:
 		"resource_count": int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
 	}
 
+# Started as a fire-and-forget coroutine (mirrors _handle_advance_frames): the
+# capture callback returns true immediately and the result is delivered later
+# via the "mcp:memory_trend" message once sampling finishes. Sampling awaits a
+# SceneTree timer between samples instead of OS.delay_msec, which would freeze
+# the very game whose memory trend is being measured.
 func _handle_get_memory_trend(data: Array) -> bool:
 	var sample_count: int = 5
 	var sample_interval_ms: int = 100
@@ -180,11 +185,18 @@ func _handle_get_memory_trend(data: Array) -> bool:
 		sample_count = max(int(data[0]), 1)
 	if data.size() > 1:
 		sample_interval_ms = max(int(data[1]), 0)
+	_run_get_memory_trend(sample_count, sample_interval_ms)
+	return true
+
+func _run_get_memory_trend(sample_count: int, sample_interval_ms: int) -> void:
+	var tree: SceneTree = get_tree()
 	var samples: Array = []
 	for sample_index in range(sample_count):
 		samples.append(_get_memory_sample(sample_index))
 		if sample_index < sample_count - 1 and sample_interval_ms > 0:
-			OS.delay_msec(sample_interval_ms)
+			if not is_inside_tree() or not tree:
+				break
+			await tree.create_timer(sample_interval_ms / 1000.0).timeout
 
 	var first_sample: Dictionary = samples[0] if not samples.is_empty() else {}
 	var last_sample: Dictionary = samples[samples.size() - 1] if not samples.is_empty() else {}
@@ -204,7 +216,6 @@ func _handle_get_memory_trend(data: Array) -> bool:
 		"current_scene": str(get_tree().current_scene.get_path()) if get_tree().current_scene else "",
 		"samples": samples
 	}])
-	return true
 
 func _serialize_node(node: Node, depth: int, max_depth: int, include_properties: bool = false) -> Dictionary:
 	var result: Dictionary = {
@@ -1586,12 +1597,6 @@ func _serialize_value(value: Variant) -> Variant:
 			return result
 		_:
 			return str(value)
-
-func _count_nodes(node: Node) -> int:
-	var count: int = 1
-	for child in node.get_children():
-		count += _count_nodes(child)
-	return count
 
 func _variant_to_vector2i(value: Variant) -> Vector2i:
 	if value is Vector2i:

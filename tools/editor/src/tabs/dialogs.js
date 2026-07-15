@@ -152,12 +152,14 @@ export class DialogsTab {
     // Array elements
     this.container.querySelectorAll(".dl-list-item").forEach(el => {
       el.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         section[el.dataset.key][parseInt(el.dataset.idx)] = el.value;
         this.callbacks.onModified(this.fileKey);
       });
     });
     this.container.querySelectorAll(".dl-list-add").forEach(el => {
       el.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         section[el.dataset.key].push("");
         this.callbacks.onModified(this.fileKey);
         this.renderDetail(this.currentId);
@@ -165,6 +167,7 @@ export class DialogsTab {
     });
     this.container.querySelectorAll(".dl-list-remove").forEach(el => {
       el.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         section[el.dataset.key].splice(parseInt(el.dataset.idx), 1);
         this.callbacks.onModified(this.fileKey);
         this.renderDetail(this.currentId);
@@ -174,6 +177,7 @@ export class DialogsTab {
     // Nested dict leaves (one level, e.g. trainers.t_xiaomin -> dialog_before)
     this.container.querySelectorAll(".dl-nested").forEach(el => {
       el.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
         const parent = section[el.dataset.key];
         const raw = el.value;
         // Preserve original type: if it was an object/array, try to parse back as JSON
@@ -191,6 +195,7 @@ export class DialogsTab {
     // Delete a whole top-level key
     this.container.querySelectorAll(".dl-key-remove").forEach(el => {
       el.addEventListener("click", () => {
+        this.callbacks.saveHistory(this.fileKey);
         if (!confirm(`删除条目「${KEY_LABELS[el.dataset.key] || el.dataset.key}」？`)) return;
         delete section[el.dataset.key];
         this.callbacks.onModified(this.fileKey);
