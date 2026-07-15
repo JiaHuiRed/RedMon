@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://bc5kjbkksh4t3" path="res://assets/npc/劲敌walk_sheet.png" id="22_rival"]
 [ext_resource type="Texture2D" uid="uid://c6lkuidaqkfnm" path="res://assets/npc/城镇训练师.png" id="23_towntrainer"]
 [ext_resource type="Texture2D" uid="uid://c4lbecd8jtgwl" path="res://assets/npc/劲敌front.png" id="24_rivalportrait"]
+[ext_resource type="Texture2D" path="res://assets/sprites/君美front.png" id="30_junmei"]
+[ext_resource type="Texture2D" path="res://assets/npc_homage_reference/battle_portraits/LEADER_Misty.png" id="31_xiaoxia"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gktdk"]
 size = Vector2(113, 122)
@@ -161,5 +163,30 @@ texture = ExtResource("24_rivalportrait")
 metadata/npc_type = "rival"
 metadata/npc_name = "劲敌"
 metadata/npc_dialog = "__rival__"
+
+[node name="君美_头目" type="Sprite2D" parent="角色"]
+position = Vector2(552, 264)
+z_index = 5
+texture_filter = 4
+centered = true
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("30_junmei")
+metadata/npc_type = "npc"
+metadata/npc_name = "君美"
+metadata/npc_dialog = "junmei_boss_npc"
+
+[node name="小霞_头目战" type="Sprite2D" parent="角色"]
+position = Vector2(32, 264)
+z_index = 6
+texture_filter = 4
+centered = true
+scale = Vector2(0.45, 0.45)
+visible = false
+texture = ExtResource("31_xiaoxia")
+metadata/npc_type = "ally_hidden"
+metadata/npc_name = "小霞"
+
+[node name="小霞_停靠点" type="Marker2D" parent="角色"]
+position = Vector2(608, 264)
 
 [node name="背景" type="Sprite2D" parent="." unique_id=959645119]

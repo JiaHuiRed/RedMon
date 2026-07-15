@@ -5,6 +5,7 @@
       "id": 1,
       "type": "村庄",
       "desc": "主角的故乡，陈教授的研究所在此",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "",
       "scene_file": "village.tscn",
       "npcs": [
@@ -19,6 +20,7 @@
       "id": 2,
       "type": "路线",
       "desc": "连接青木村与碧溪镇的草原，野生精灵丰富",
+      "bg": "res://assets/backgrounds/草原.png",
       "gym": "",
       "scene_file": "grassland.tscn",
       "npcs": [
@@ -36,6 +38,7 @@
       "id": 3,
       "type": "城镇",
       "desc": "翠竹馆所在地，以竹林闻名",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "翠竹馆",
       "scene_file": "town.tscn",
       "npcs": []
@@ -44,6 +47,7 @@
       "id": 4,
       "type": "道馆",
       "desc": "木系道馆，馆主林青松",
+      "bg": "res://assets/backgrounds/战斗背景_竹馆.png",
       "gym": "木1",
       "scene_file": "gym.tscn",
       "npcs": [
@@ -54,6 +58,7 @@
       "id": 5,
       "type": "路线",
       "desc": "通往炎心市的山路，火系精灵出没",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -62,6 +67,7 @@
       "id": 6,
       "type": "城市",
       "desc": "火山脚下的城市，韩炎驰的火系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "炎心馆",
       "scene_file": "",
       "npcs": [
@@ -72,6 +78,7 @@
       "id": 7,
       "type": "路线",
       "desc": "湖泊区域，水系精灵栖息地",
+      "bg": "res://assets/backgrounds/河边.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -80,6 +87,7 @@
       "id": 8,
       "type": "城市",
       "desc": "湖畔城市，苏漪漪的水系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "碧波馆",
       "scene_file": "",
       "npcs": [
@@ -90,6 +98,7 @@
       "id": 9,
       "type": "路线",
       "desc": "岩石洞穴，岩系精灵栖息",
+      "bg": "res://assets/backgrounds/洞穴.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -98,6 +107,7 @@
       "id": 10,
       "type": "城镇",
       "desc": "山中小镇，赵磐石的岩系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "磐石馆",
       "scene_file": "",
       "npcs": [
@@ -108,6 +118,7 @@
       "id": 11,
       "type": "路线",
       "desc": "荒芜的土地，土系精灵出没",
+      "bg": "res://assets/backgrounds/沙漠.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -116,6 +127,7 @@
       "id": 12,
       "type": "城镇",
       "desc": "荒原边缘小镇，陈赭云的土系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "厚土馆",
       "scene_file": "",
       "npcs": [
@@ -126,6 +138,7 @@
       "id": 13,
       "type": "路线",
       "desc": "雷暴频发的峡谷",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -134,6 +147,7 @@
       "id": 14,
       "type": "城市",
       "desc": "科技城市，杨焘的雷系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "雷鸣馆",
       "scene_file": "",
       "npcs": [
@@ -144,6 +158,7 @@
       "id": 15,
       "type": "路线",
       "desc": "终年积雪的山峰",
+      "bg": "res://assets/backgrounds/雪地.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -152,6 +167,7 @@
       "id": 16,
       "type": "城镇",
       "desc": "雪山小镇，鲁成洋的冰系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "冰晶馆",
       "scene_file": "",
       "npcs": [
@@ -162,6 +178,7 @@
       "id": 17,
       "type": "路线",
       "desc": "修行者聚集的山峰",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -170,6 +187,7 @@
       "id": 18,
       "type": "城市",
       "desc": "武术之都，武承山的格斗系道馆",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "武道馆",
       "scene_file": "",
       "npcs": [
@@ -180,6 +198,7 @@
       "id": 19,
       "type": "路线",
       "desc": "青木村南出口",
+      "bg": "res://assets/backgrounds/室外.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -188,6 +207,7 @@
       "id": 20,
       "type": "路线",
       "desc": "碧溪镇东侧海滩",
+      "bg": "res://assets/backgrounds/海边.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -196,6 +216,7 @@
       "id": 21,
       "type": "路线",
       "desc": "穿越火山的隧道",
+      "bg": "res://assets/backgrounds/洞穴.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -204,6 +225,7 @@
       "id": 22,
       "type": "路线",
       "desc": "通往磐石镇的山道",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -212,6 +234,7 @@
       "id": 23,
       "type": "路线",
       "desc": "厚土荒原入口关卡",
+      "bg": "res://assets/backgrounds/沙漠.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -220,6 +243,7 @@
       "id": 24,
       "type": "路线",
       "desc": "横跨峡谷的大桥",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -228,6 +252,7 @@
       "id": 25,
       "type": "路线",
       "desc": "通往冰晶镇的冰封小路",
+      "bg": "res://assets/backgrounds/雪地.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -236,6 +261,7 @@
       "id": 26,
       "type": "路线",
       "desc": "通往武道城的千级台阶",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []
@@ -244,6 +270,7 @@
       "id": 27,
       "type": "据点",
       "desc": "黑风堂总部",
+      "bg": "res://assets/backgrounds/战斗背景_室内.png",
       "gym": "",
       "scene_file": "",
       "npcs": [
@@ -259,6 +286,7 @@
       "id": 28,
       "type": "联盟",
       "desc": "四天王+冠军所在地",
+      "bg": "res://assets/backgrounds/战斗背景_室内.png",
       "gym": "",
       "scene_file": "",
       "npcs": [
@@ -273,6 +301,7 @@
       "id": 29,
       "type": "路线",
       "desc": "通往华灵联盟的最终试炼之路",
+      "bg": "res://assets/backgrounds/山上.png",
       "gym": "",
       "scene_file": "",
       "npcs": []

@@ -238,6 +238,13 @@ func roll_wild_tier_ivs(species_id: String) -> Dictionary:
 		ivs[stat] = randi_range(r[0], r[1])
 	return {"tier": tier, "ivs": ivs}
 
+# 260715 Red 头目战：保证"首领"档个体值(26-31)，供明雷头目精灵使用
+func boss_tier_ivs() -> Dictionary:
+	var ivs := {}
+	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
+		ivs[stat] = randi_range(26, 31)
+	return ivs
+
 func get_effectiveness(atk_type: String, def_type1: String, def_type2: String = "") -> float:
 	var mult = 1.0
 	if _type_chart.has(atk_type):

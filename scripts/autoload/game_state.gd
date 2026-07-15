@@ -17,6 +17,8 @@ var has_running_shoes: bool = false  # 260630 Red 跑步鞋（林薇赠送）
 var defeated_trainers: Array = []   # 已击败的训练师 id 列表
 var rival_done: bool = false       # 第一次劲敌战已结束（无论输赢）
 var cleared_gyms: Array = []       # 已通关的道馆 id 列表
+var eggs: Array = []               # 260715 Red 头目战蛋奖励 {species_id, steps_remaining, steps_total}
+var boss_eggs_claimed: Array = []  # 260715 Red 已领取过蛋的头目战 id，防止重复触发
 var last_scene: String = ""        # YYMMDD Red 最后所在场景，用于读档回跳
 var player_pos_x: float = 0.0     # 260709 Red 存档时玩家坐标
 var player_pos_y: float = 0.0
@@ -143,6 +145,8 @@ func save_game() -> void:
 		"defeated_trainers": defeated_trainers,
 		"rival_done":        rival_done,
 		"cleared_gyms":      cleared_gyms,
+		"eggs":              eggs,
+		"boss_eggs_claimed": boss_eggs_claimed,
 		"last_scene":        last_scene,
 		"player_pos_x":      player_pos_x,
 		"player_pos_y":      player_pos_y,
@@ -189,6 +193,11 @@ func load_game(slot: int = 0) -> bool:
 	defeated_trainers = data.get("defeated_trainers", [])
 	rival_done        = data.get("rival_done", false)
 	cleared_gyms      = data.get("cleared_gyms", [])
+	eggs              = data.get("eggs", [])
+	boss_eggs_claimed = data.get("boss_eggs_claimed", [])
+	for egg in eggs:
+		if egg.has("steps_remaining"): egg["steps_remaining"] = int(egg["steps_remaining"])
+		if egg.has("steps_total"): egg["steps_total"] = int(egg["steps_total"])
 	last_scene        = data.get("last_scene", "")
 	player_pos_x      = float(data.get("player_pos_x", 0))
 	player_pos_y      = float(data.get("player_pos_y", 0))
@@ -226,6 +235,8 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	defeated_trainers = []
 	rival_done = false
 	cleared_gyms = []
+	eggs = []
+	boss_eggs_claimed = []
 	last_scene = ""  # YYMMDD Red 新游戏重置
 	play_time = 0.0
 	_play_timer_active = true
@@ -250,6 +261,19 @@ func add_mon(mon: Dictionary) -> void:
 
 func first_mon() -> Dictionary:
 	return player_team[0] if player_team.size() > 0 else {}
+
+# 260715 Red 每走一步调用一次；返回本次刚好孵化的蛋（已从 eggs 中移除），没有则空数组
+func tick_eggs() -> Array:
+	var hatched := []
+	var remaining := []
+	for egg in eggs:
+		egg["steps_remaining"] -= 1
+		if egg["steps_remaining"] <= 0:
+			hatched.append(egg)
+		else:
+			remaining.append(egg)
+	eggs = remaining
+	return hatched
 
 # 全局纹理加载：优先 import 缓存，fallback 直接读原始 PNG
 static func load_tex(path: String) -> Texture2D:

@@ -82,5 +82,16 @@
 	"npc_shopkeeper": "店员：想买精灵葫芦的话，进来看看吧。抓精灵必备哦！",
 	"clinic_greeting": "精灵堂堂主：欢迎光临！\n要让你的精灵休息一下吗？",
 	"clinic_healed": "精灵堂堂主：好了，精灵们都精神抖擞！\n路上小心。"
+  },
+  "boss_encounter": {
+	"intro": "{ally}：这只精灵气场不对……是头目级的野生精灵！我来助你一臂之力，一起上！",
+	"praise_super": "{ally}：漂亮！打中要害了！",
+	"praise_weak": "{ally}：没事，换个思路再试试！",
+	"warn_super": "{ally}：小心！这一下伤得不轻！",
+	"reassure_weak": "{ally}：没关系，这点伤扛得住！",
+	"egg_reward": "{ally}：辛苦了！这颗蛋交给你，好好照顾它——多走走路，说不定会有惊喜~"
+  },
+  "ally_xiaoxia": {
+	"self_intro": "小霞：对了，还没自我介绍——我以前也是道馆馆主，专精水系精灵，这些年一直在外游历磨炼。"
   }
 }

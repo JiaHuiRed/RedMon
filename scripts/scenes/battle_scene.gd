@@ -119,6 +119,15 @@ var _trainer_dialog_after:       String = ""
 var _trainer_dialog_player_lose: String = ""
 var _trainer_iv_tier:            int    = 0
 
+# 260715 Red 头目战：怀旧NPC场外声援 + 蛋奖励
+var _ally_name:  String = ""
+var _egg_reward: String = ""
+var _boss_id:    String = ""
+var _ally_commented_super: bool = false
+var _ally_commented_weak:  bool = false
+var _ally_commented_enemy_super: bool = false
+var _ally_commented_enemy_weak:  bool = false
+
 const FIELD_H := 575
 const MSG_Y   := 575
 const MSG_H   := 65
@@ -137,6 +146,9 @@ func _ready() -> void:
 	_return_pos     = data.get("player_pos", [])
 	_bg_path        = data.get("bg", "res://assets/backgrounds/草原.png")
 	_encounter_area = data.get("encounter_area", "")
+	_ally_name      = data.get("ally_name", "")
+	_egg_reward     = data.get("egg_reward", "")
+	_boss_id        = data.get("boss_id", "")
 
 	var trainer_data = data.get("trainer", {})
 	if not trainer_data.is_empty():
@@ -1296,6 +1308,23 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		elif eff_msg != "":
 			await _show_message_async(eff_msg)
 
+		# 260715 Red 头目战：怀旧NPC场外声援（每种情况整场只触发一次，避免刷屏）
+		if _ally_name != "":
+			if not is_enemy:
+				if eff > 1.0 and not _ally_commented_super:
+					_ally_commented_super = true
+					await _show_message_async(MonDB.dlg("boss_encounter", "praise_super", {"ally": _ally_name}))
+				elif eff < 1.0 and eff > 0.0 and not _ally_commented_weak:
+					_ally_commented_weak = true
+					await _show_message_async(MonDB.dlg("boss_encounter", "praise_weak", {"ally": _ally_name}))
+			else:
+				if eff > 1.0 and not _ally_commented_enemy_super:
+					_ally_commented_enemy_super = true
+					await _show_message_async(MonDB.dlg("boss_encounter", "warn_super", {"ally": _ally_name}))
+				elif eff < 1.0 and eff > 0.0 and not _ally_commented_enemy_weak:
+					_ally_commented_enemy_weak = true
+					await _show_message_async(MonDB.dlg("boss_encounter", "reassure_weak", {"ally": _ally_name}))
+
 		# 260703 Red recoil（反伤）
 		var sec_effect  = mv.get("effect", "")
 		var sec_value   = mv.get("effect_value", 0)
@@ -1483,6 +1512,14 @@ func _handle_victory() -> void:
 			await _show_message_async("打败了训练师%s！\n获得了 %dG！" % [_trainer_name, _trainer_reward])
 			_end_battle("win")
 			return
+
+	# 260715 Red 头目战：野生战胜利后发放蛋奖励
+	if _egg_reward != "":
+		GameState.eggs.append({"species_id": _egg_reward, "steps_remaining": 1500, "steps_total": 1500})
+		if _boss_id != "" and not GameState.boss_eggs_claimed.has(_boss_id):
+			GameState.boss_eggs_claimed.append(_boss_id)
+		var ally_msg = MonDB.dlg("boss_encounter", "egg_reward", {"ally": _ally_name}) if _ally_name != "" else "获得了一颗蛋！"
+		await _show_message_async(ally_msg)
 
 	_busy = false
 	GameState.save_game()

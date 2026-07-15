@@ -440,7 +440,8 @@ func _on_confirm() -> void:
 		"wild_mon": MonDB.create_mon(WILD_THREAT_ID, WILD_THREAT_LEVEL),
 		"return_scene": "starter",
 		"from_scene": "starter",
-		"player_pos": ppos
+		"player_pos": ppos,
+		"bg": "res://assets/backgrounds/室外.png"
 	})
 
 # ── Keyboard nav ─────────────────────────────────────────────────────────────

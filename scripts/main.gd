@@ -27,17 +27,19 @@ var _swap_pick_idx: int = -1
 var _stat_cursor: int = 0
 const _STAT_KEYS   := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
 const _STAT_LABELS := ["HP", "攻击", "防御", "特攻", "特防", "速度"]
-# 260709 Red 现代菜单配色（与 party_ui 统一）
+# 260715 Red 现代菜单配色（实际对齐 party_ui.gd 的深色主题，此前注释与配色不符）
 const _PW   := 280
 const _PH   := 420
 const _PX   := 340   # 水平居中 (960-280)/2
 const _PY   := 110   # 垂直居中 (640-420)/2
-const _M_BG      := Color(1.0, 0.95, 0.77, 0.98)  # 暖黄底
-const _M_CARD    := Color(1.0, 1.0, 1.0, 1.0)       # 白色卡片
-const _M_SEL     := Color(0.96, 0.65, 0.14, 1.0)    # 选中橙
-const _M_TEXT    := Color(0.15, 0.15, 0.18)          # 主文字
-const _M_TEXT2   := Color(0.50, 0.50, 0.55)          # 次要文字
-const _M_HINT    := Color(0.65, 0.60, 0.50)          # 底部提示
+const _M_BG      := Color(0.075, 0.102, 0.157, 0.98)  # 深蓝底，同 party_ui.C_BG
+const _M_CARD    := Color(0.114, 0.149, 0.220, 1.0)   # 卡片底，同 party_ui.C_CARD
+const _M_CARD_BORDER := Color(0.200, 0.260, 0.380)    # 卡片描边，同 party_ui.C_CARD_BORDER
+const _M_SEL     := Color(0.388, 0.588, 0.929, 1.0)   # 选中蓝，同 party_ui.C_ACCENT
+const _M_TEXT    := Color(0.878, 0.906, 0.953)         # 主文字，同 party_ui.C_TEXT
+const _M_TEXT2   := Color(0.439, 0.533, 0.639)         # 次要文字，同 party_ui.C_SUB
+const _M_HINT    := Color(0.439, 0.533, 0.639, 0.85)   # 底部提示
+const _M_DIVIDER := Color(0.176, 0.224, 0.314)         # 分割线，同 party_ui.C_DIVIDER
 const _POPTS := ["精灵", "背包", "存档", "回到标题", "关闭"]
 
 func _ready() -> void:
@@ -257,7 +259,9 @@ func _m_panel() -> void:
 	var style = StyleBoxFlat.new()
 	style.bg_color = _M_BG
 	style.set_corner_radius_all(16)
-	style.shadow_color = Color(0, 0, 0, 0.18)
+	style.border_color = _M_DIVIDER
+	style.set_border_width_all(1)
+	style.shadow_color = Color(0, 0, 0, 0.35)
 	style.shadow_size = 8
 	panel.add_theme_stylebox_override("panel", style)
 	_pause_panel.add_child(panel)
@@ -276,11 +280,10 @@ func _m_card(x: int, y: int, w: int, h: int, selected: bool = false) -> void:
 	panel.custom_minimum_size = Vector2(w, h)
 	panel.size = Vector2(w, h)
 	var style = StyleBoxFlat.new()
-	style.bg_color = _M_CARD
+	style.bg_color = _M_SEL.lerp(_M_CARD, 0.75) if selected else _M_CARD
 	style.set_corner_radius_all(10)
-	if selected:
-		style.border_color = _M_SEL
-		style.set_border_width_all(2)
+	style.border_color = _M_SEL if selected else _M_CARD_BORDER
+	style.set_border_width_all(2 if selected else 1)
 	panel.add_theme_stylebox_override("panel", style)
 	_pause_panel.add_child(panel)
 
@@ -288,16 +291,26 @@ func _m_div(y: int) -> void:
 	var d := ColorRect.new()
 	d.size = Vector2(_PW - 32, 1)
 	d.position = Vector2(_PX + 16, _PY + y)
-	d.color = Color(0.85, 0.80, 0.65, 0.50)
+	d.color = _M_DIVIDER
 	_pause_panel.add_child(d)
+
+func _m_icon(path: String, x: int, y: int, size: int = 28) -> void:
+	if not ResourceLoader.exists(path): return
+	var tex := TextureRect.new()
+	tex.texture = load(path)
+	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tex.custom_minimum_size = Vector2(size, size); tex.size = Vector2(size, size)
+	tex.position = Vector2(_PX + x, _PY + y)
+	_pause_panel.add_child(tex)
 
 func _m_hp_bar(x: int, y: int, w: int, ratio: float) -> void:
 	var bg = ColorRect.new()
 	bg.size = Vector2(w, 6); bg.position = Vector2(_PX + x, _PY + y)
-	bg.color = Color(0.88, 0.88, 0.85); _pause_panel.add_child(bg)
+	bg.color = Color(0.15, 0.19, 0.28); _pause_panel.add_child(bg)
 	var fill = ColorRect.new()
 	fill.size = Vector2(w * ratio, 6); fill.position = Vector2(_PX + x, _PY + y)
-	fill.color = Color(0.30, 0.78, 0.35) if ratio > 0.5 else Color(0.92, 0.78, 0.15) if ratio > 0.2 else Color(0.88, 0.22, 0.15)
+	fill.color = Color(0.278, 0.808, 0.408) if ratio > 0.5 else Color(0.961, 0.780, 0.216) if ratio > 0.2 else Color(0.918, 0.267, 0.267)
 	_pause_panel.add_child(fill)
 
 # ── 主菜单 ──
@@ -337,9 +350,21 @@ func _draw_pause_bag() -> void:
 			var sel = row == _bag_cursor
 			var cy = 50 + row * (ch + 6)
 			_m_card(16, cy, cw, ch, sel)
+			_m_icon("res://assets/ui/items/%s.png" % item_name, 22, cy + 4, 32)
 			var col = _M_SEL if sel else (_M_TEXT if qty > 0 else _M_TEXT2)
-			_m_lbl(item_name, 28, cy + 10, 12, col)
-			_m_lbl("x%d" % qty, cw - 16, cy + 10, 12, col)
+			_m_lbl(item_name, 62, cy + 12, 12, col)
+			_m_lbl("x%d" % qty, cw - 16, cy + 12, 12, col)
+	# 260715 Red 头目战蛋：孵化中的蛋只读展示，不可选中/使用
+	if not GameState.eggs.is_empty():
+		var egg_y = 50 + _bag_keys.size() * 46 + 8
+		var cw2 = _PW - 32
+		for i in range(GameState.eggs.size()):
+			var egg = GameState.eggs[i]
+			var cy2 = egg_y + i * 36
+			_m_card(16, cy2, cw2, 30, false)
+			_m_icon("res://assets/ui/items/蛋.png", 20, cy2 + 2, 26)
+			_m_lbl("%s 的蛋" % egg["species_id"], 54, cy2 + 8, 11, _M_TEXT2)
+			_m_lbl("剩余%d步" % egg["steps_remaining"], cw2 - 60, cy2 + 8, 10, _M_TEXT2)
 	_m_div(_PH - 34)
 	var hint = "Z使用  X返回" if not _bag_keys.is_empty() else "X返回"
 	_m_lbl(hint, 16, _PH - 28, 10, _M_HINT)
@@ -348,7 +373,8 @@ func _draw_pause_bag() -> void:
 func _draw_pause_bag_target() -> void:
 	_m_panel()
 	var item_id = _bag_keys[_bag_cursor] if _bag_cursor < _bag_keys.size() else ""
-	_m_lbl("使用【%s】" % item_id, 16, 16, 14, _M_SEL)
+	_m_icon("res://assets/ui/items/%s.png" % item_id, 16, 12, 24)
+	_m_lbl("使用【%s】" % item_id, 46, 16, 14, _M_SEL)
 	_m_div(42)
 	var team = GameState.player_team
 	var cw = _PW - 32; var ch = 44
