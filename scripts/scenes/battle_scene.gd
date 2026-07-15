@@ -23,6 +23,7 @@ var _encounter_area: String = ""
 # ── UI references ─────────────────────────────────────────────────────────────
 var _msg_label:        Label
 var _action_panel:     Control   # 战斗 / 背包 / 精灵 / 逃跑
+var _cmd_menu:         Control   # SV-style vertical command menu (right side)
 var _move_panel:       Control   # 四技能格
 var _move_btns:        Array = []
 var _pending_callback: Callable  # 260703 Red 防止 _show_message 回调丢失
@@ -466,15 +467,29 @@ func _build_action_panel() -> void:
 	_action_panel.size = Vector2(VW, MENU_H)
 	add_child(_action_panel)
 
-	# Vertical command menu on the right (SV-style)
+	# Bottom prompt area
+	var prompt = Label.new()
+	prompt.text = "该怎么做？"
+	prompt.position = Vector2(14, 12)
+	prompt.add_theme_color_override("font_color", Color(0.95, 0.92, 0.75))
+	prompt.add_theme_font_size_override("font_size", 13)
+	_action_panel.add_child(prompt)
+
+	var kb_hint = Label.new()
+	kb_hint.text = "Z/Enter 确定\n↑↓←→ 移动"
+	kb_hint.position = Vector2(14, 36)
+	kb_hint.add_theme_color_override("font_color", Color(0.55, 0.58, 0.68))
+	kb_hint.add_theme_font_size_override("font_size", 9)
+	_action_panel.add_child(kb_hint)
+
+	# ── SV-style vertical command menu (right side, absolute position) ─────
+	_cmd_menu = Control.new()
+	_cmd_menu.position = Vector2(0, 0)
+	_cmd_menu.size = Vector2(VW, VH)
+	add_child(_cmd_menu)
+
 	var labels = ["战  斗", "宝可梦", "背  包", "逃  走"]
 	var callbacks = [_on_fight, _on_bag, _on_mon, _on_run]
-	_action_btn_colors = [
-		Color(0.75, 0.20, 0.15),
-		Color(0.20, 0.50, 0.20),
-		Color(0.18, 0.35, 0.75),
-		Color(0.45, 0.45, 0.45),
-	]
 	var menu_x = VW - 196
 	var menu_y = 382
 	var btn_w = 180
@@ -503,7 +518,7 @@ func _build_action_panel() -> void:
 		btn.add_theme_stylebox_override("hover", sh)
 		btn.add_theme_color_override("font_color", Color(0.15, 0.15, 0.2))
 		btn.add_theme_font_size_override("font_size", 16)
-		_action_panel.add_child(btn)
+		_cmd_menu.add_child(btn)
 		_action_btns.append(btn)
 
 		# Icon on the right side of each button
@@ -517,10 +532,10 @@ func _build_action_panel() -> void:
 			icon_spr.centered = false
 			icon_spr.position = Vector2(menu_x + btn_w - 56, menu_y + i * (btn_h + gap) + 6)
 			icon_spr.scale = Vector2(0.38, 0.38)
-			_action_panel.add_child(icon_spr)
+			_cmd_menu.add_child(icon_spr)
 
 	# 光标高亮框
-	_action_hl = _make_hl_panel(_action_panel)
+	_action_hl = _make_hl_panel(_cmd_menu)
 	_refresh_action_cursor()
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -971,6 +986,7 @@ func _on_evo_choice(evo: Dictionary) -> void:
 # ══════════════════════════════════════════════════════════════════════════════
 func _show_action_panel() -> void:
 	_action_panel.visible = true
+	_cmd_menu.visible = true
 	_move_panel.visible   = false
 	if _bag_panel:  _bag_panel.visible  = false
 	if _mon_panel:  _mon_panel.visible  = false
@@ -979,6 +995,7 @@ func _show_action_panel() -> void:
 
 func _show_move_panel() -> void:
 	_action_panel.visible = false
+	_cmd_menu.visible = false
 	_move_panel.visible   = true
 	if _bag_panel:  _bag_panel.visible  = false
 	if _mon_panel:  _mon_panel.visible  = false
@@ -1087,6 +1104,7 @@ func _hp_color(ratio: float) -> Color:
 # ══════════════════════════════════════════════════════════════════════════════
 func _show_message(text: String, callback: Callable = Callable()) -> void:
 	_action_panel.visible = false
+	_cmd_menu.visible = false
 	_move_panel.visible   = false
 	_active_panel = "none"
 	_msg_label.text = text
@@ -1109,6 +1127,7 @@ func _on_bag() -> void:
 	_bag_cursor = 0
 	_refresh_bag_panel()
 	_action_panel.visible = false
+	_cmd_menu.visible = false
 	_move_panel.visible   = false
 	_bag_panel.visible    = true
 	_active_panel = "bag"
@@ -1120,6 +1139,7 @@ func _on_mon() -> void:
 	_mon_cursor = 0
 	_refresh_mon_panel()
 	_action_panel.visible = false
+	_cmd_menu.visible = false
 	_move_panel.visible   = false
 	_mon_panel.visible    = true
 	_active_panel = "mon"
@@ -1575,6 +1595,7 @@ func _handle_defeat() -> void:
 		_mon_cursor = 0
 		_refresh_mon_panel()
 		_action_panel.visible = false
+		_cmd_menu.visible = false
 		_move_panel.visible   = false
 		_mon_panel.visible    = true
 		_active_panel = "mon"
