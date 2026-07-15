@@ -578,7 +578,7 @@ func _advance_dialog() -> void:
 				.replace("黑风堂据点", "27")
 				.replace("华灵联盟", "28")
 				.replace("冠军之路", "29"))
-			var boss_lv := EncounterDB.calc_level_range(int(area_map_id))[1] + 7
+			var boss_lv: int = EncounterDB.calc_level_range(int(area_map_id))[1] + 7
 			var boss_mon = MonDB.create_mon("君美", boss_lv, MonDB.boss_tier_ivs())
 			request_scene.emit("battle", {
 				"wild_mon": boss_mon, "ally_name": "小霞",
