@@ -20,9 +20,8 @@ static func create(parent: Node, vw: int = 1280, vh: int = 720) -> DialogBubble:
 func _build() -> void:
 	panel = Panel.new()
 	panel.visible = false
-	panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	panel.offset_top = _vh - 80
-	panel.offset_bottom = 0
+	panel.position = Vector2(0, _vh - 80)
+	panel.size = Vector2(_vw, 80)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.10, 0.10, 0.15, 0.95)
 	style.corner_radius_top_left = 16
@@ -30,13 +29,16 @@ func _build() -> void:
 	style.corner_radius_bottom_left = 16
 	style.corner_radius_bottom_right = 16
 	style.border_color = Color(0.35, 0.35, 0.45, 0.8)
-	style.border_width_all = 2
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
 	panel.add_theme_stylebox_override("panel", style)
 	add_child(panel)
 
 	label = Label.new()
+	label.position = Vector2(20, 8)
 	label.size = Vector2(_vw - 80, 52)
-	label.position = Vector2(20, _vh - 72)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_color_override("font_color", Color.WHITE)
 	label.add_theme_font_size_override("font_size", 12)
@@ -44,7 +46,7 @@ func _build() -> void:
 
 	_arrow = Label.new()
 	_arrow.text = "▼"
-	_arrow.position = Vector2(_vw - 28, _vh - 28)
+	_arrow.position = Vector2(_vw - 28, 52)
 	_arrow.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	_arrow.add_theme_font_size_override("font_size", 14)
 	panel.add_child(_arrow)
