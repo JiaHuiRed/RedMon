@@ -126,11 +126,11 @@ var _tree_tex: ImageTexture = null  # 树纹理缓存
 func _ready() -> void:
 	_rival_done = "rival" in GameState.defeated_trainers
 
- 	# 260709 Red Area2D 遇敌区检测，取代 tile 坐标扫描
- 	_connect_encounter_zones()
- 	_scan_tiles()
- 	print("[overworld] grass tiles found: ", _grass_tiles.size())
- 	print("[overworld] water tiles found: ", _water_tiles.size())
+	# 260709 Red Area2D 遇敌区检测，取代 tile 坐标扫描
+	_connect_encounter_zones()
+	_scan_tiles()
+	print("[overworld] grass tiles found: ", _grass_tiles.size())
+	print("[overworld] water tiles found: ", _water_tiles.size())
 
 	_build_border_walls()
 	# 260708 Red _build_buildings() 已移除——建筑/标签全部由 .tscn 编辑器搭建
@@ -148,6 +148,9 @@ func _ready() -> void:
 	var data = get_meta("scene_data", {})
 	if data.get("battle_result", "") == "lose":
 		_handle_defeat()
+	# 播放地图 BGM（青木村/华灵草原/碧溪镇都用同一首，后续可分区）
+	if AudioManager and AudioManager.has_method("play_bgm"):
+		AudioManager.play_bgm(AudioManager.BGM_OVERWORLD)
 	print("[OVERWORLD] 大世界三区合并 v1")
 
 # ── TileMap ────────────────────────────────────────────────────────────────────
@@ -226,11 +229,11 @@ func _has_terrain_layer(ts: TileSet) -> bool:
 			return true
 	return false
 
- # 260713 Red 水面碰撞改为 tile 判断（见 _physics_process），不再用 StaticBody2D
- # _build_water_colliders() 已移除——水面在移动代码里直接 tile 检测
- # 冲浪术开关：GameState.set_meta("has_surf", true) 后此函数仍返回 true，但移动不再被阻挡
- func _is_water_tile(tile: Vector2i) -> bool:
- 	return tile in _water_tiles
+# 260713 Red 水面碰撞改为 tile 判断（见 _physics_process），不再用 StaticBody2D
+# _build_water_colliders() 已移除——水面在移动代码里直接 tile 检测
+# 冲浪术开关：GameState.set_meta("has_surf", true) 后此函数仍返回 true，但移动不再被阻挡
+func _is_water_tile(tile: Vector2i) -> bool:
+	return tile in _water_tiles
 
 # ── 边界 ──────────────────────────────────────────────────────────────────────
 func _build_border_walls() -> void:
@@ -532,38 +535,38 @@ func _advance_dialog() -> void:
 		_:
 			_dialog_active = false; _dialog_panel.visible = false
 
- # ── 移动 & 输入 ───────────────────────────────────────────────────────────────
- func _physics_process(delta: float) -> void:
- 	if _battling or _dialog_active or _shop_active or _pcbox_active or _menu_active or _party_active: return
- 	var dir = Vector2.ZERO
- 	if Input.is_action_pressed("ui_right"): dir.x += 1
- 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
- 	if Input.is_action_pressed("ui_down"):  dir.y += 1
- 	if Input.is_action_pressed("ui_up"):    dir.y -= 1
- 	var moved = dir != Vector2.ZERO
- 	_update_walk_anim(dir, moved, delta)
- 	var spd = SPEED * (2.0 if Input.is_action_pressed("run") else 1.0)
- 	var old_pos := _player.position
- 	_player.velocity = (dir.normalized() if dir.length() > 1.0 else dir) * spd
- 	_player.move_and_slide()
+# ── 移动 & 输入 ───────────────────────────────────────────────────────────────
+func _physics_process(delta: float) -> void:
+	if _battling or _dialog_active or _shop_active or _pcbox_active or _menu_active or _party_active: return
+	var dir = Vector2.ZERO
+	if Input.is_action_pressed("ui_right"): dir.x += 1
+	if Input.is_action_pressed("ui_left"):  dir.x -= 1
+	if Input.is_action_pressed("ui_down"):  dir.y += 1
+	if Input.is_action_pressed("ui_up"):    dir.y -= 1
+	var moved = dir != Vector2.ZERO
+	_update_walk_anim(dir, moved, delta)
+	var spd = SPEED * (2.0 if Input.is_action_pressed("run") else 1.0)
+	var old_pos := _player.position
+	_player.velocity = (dir.normalized() if dir.length() > 1.0 else dir) * spd
+	_player.move_and_slide()
 	# 260713 Red 水面 tile 碰撞：移动后检测玩家是否踩到水面 tile
 	# 没有 GameState meta "has_surf" 时弹回原位，玩家无法踏入水面
 	# 后续接冲浪术/HM 只需 GameState.set_meta("has_surf", true)，此处逻辑自动放开
 	if moved and _is_water_tile(Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))):
 		if not GameState.has_meta("has_surf") or not GameState.get_meta("has_surf"):
 			_player.position = old_pos
- 	_player.position.x = clamp(_player.position.x, TILE, MAP_W - TILE)
- 	_player.position.y = clamp(_player.position.y, TILE, MAP_H - TILE)
- 	# 260708 Red 没御三家不能离开青木村
- 	if not GameState.has_starter and _player.position.x > VILLAGE_END - TILE * 2:
- 		_player.position.x = VILLAGE_END - TILE * 2
- 	if moved:
- 		_step_counter += 1
- 		if _step_counter % 4 == 0: _check_encounter()
- 		_check_trainer_sight()
- 		_check_shenhe_grassland()
- 		_check_shenhe_town()
- 	_update_hud()
+	_player.position.x = clamp(_player.position.x, TILE, MAP_W - TILE)
+	_player.position.y = clamp(_player.position.y, TILE, MAP_H - TILE)
+	# 260708 Red 没御三家不能离开青木村
+	if not GameState.has_starter and _player.position.x > VILLAGE_END - TILE * 2:
+		_player.position.x = VILLAGE_END - TILE * 2
+	if moved:
+		_step_counter += 1
+		if _step_counter % 4 == 0: _check_encounter()
+		_check_trainer_sight()
+		_check_shenhe_grassland()
+		_check_shenhe_town()
+	_update_hud()
 
 func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
 	if not _has_walk_sheet: return
@@ -789,13 +792,12 @@ func _handle_defeat() -> void:
 		_player.position = Vector2(CLINIC_DOOR.x * TILE + TILE * 2, CLINIC_DOOR.y * TILE + TILE * 2)
 		wake_msg = "在精灵堂醒来了。"
 	else:
- add_child(_player)
- 
- 	var controller = PlayerController.new()
- 	controller.name = "PlayerController"
- 	_player.add_child(controller)
 		_player.position = Vector2(HOME_DOOR.x * TILE + TILE / 2.0, HOME_DOOR.y * TILE + TILE)
 		wake_msg = "迷迷糊糊被人送回了家……\n妈妈照顾你的精灵恢复了体力。"
+
+	var controller = PlayerController.new()
+	controller.name = "PlayerController"
+	_player.add_child(controller)
 	_save_with_area()
 	# 显示"菜"字动画
 	_show_defeat_screen(penalty, wake_msg)
@@ -854,6 +856,7 @@ func _heal_all_mons() -> void:
 		for mv in mon["moves"]: mv["pp"] = mv["max_pp"]
 		mon["status"] = ""
 	_save_with_area()
+	AudioManager.play_me(AudioManager.ME_HEAL)
 
 # ── 商店 ──────────────────────────────────────────────────────────────────────
 func _build_shop_panel() -> void:
@@ -1096,14 +1099,7 @@ func _show_pcbox_detail(mon: Dictionary) -> void:
 		pn.get_node("PcD_Sprite").texture = load(icon_path)
 		pn.get_node("PcD_SpriteBg").show(); pn.get_node("PcD_Sprite").show()
 	else:
- 	var controller: PlayerController = _player.get_node_or_null("PlayerController")
- 	var dir = controller.get_direction() if controller else Vector2.ZERO
- 	var moved = dir != Vector2.ZERO
- 	_update_walk_anim(dir, moved, delta)
- 	var spd = SPEED * (2.0 if controller and controller.is_running() else 1.0)
- 	var old_pos := _player.position
- 	_player.velocity = (dir.normalized() if dir.length() > 1.0 else dir) * spd
- 	_player.move_and_slide()
+		pn.get_node("PcD_SpriteBg").hide(); pn.get_node("PcD_Sprite").hide()
 	# 属性徽章
 	for j in range(2):
 		var t = [t1, t2][j]; var bg = pn.get_node("PcD_TBadge%d" % j)

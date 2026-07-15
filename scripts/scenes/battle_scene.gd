@@ -163,6 +163,10 @@ func _ready() -> void:
 	_build_bag_panel()
 	_build_mon_panel()
 
+	# 播放战斗 BGM
+	if AudioManager and AudioManager.has_method("play_bgm"):
+		AudioManager.play_bgm(AudioManager.BGM_TRAINER if _is_trainer else AudioManager.BGM_WILD)
+
 	if _is_trainer:
 		await _show_message("训练师%s\n想要对战！" % _trainer_name, func(): _show_action_panel())
 	else:
@@ -1400,6 +1404,8 @@ func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary)
 # Victory / Defeat
 # ══════════════════════════════════════════════════════════════════════════════
 func _handle_victory() -> void:
+	AudioManager.play_me(AudioManager.ME_VICTORY)
+
 	var sp_id     = _enemy_mon.get("species_id", "")
 	var exp_yield = MonDB.species.get(sp_id, {}).get("exp_yield", 40)
 	var gain      = max(1, int(exp_yield * _enemy_mon["level"] / 7.0))

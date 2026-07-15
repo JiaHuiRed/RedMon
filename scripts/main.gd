@@ -117,6 +117,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _pause_active:
 			_close_pause()
 		else:
+			AudioManager.play_se(AudioManager.SE_MENU_OPEN)
 			_open_pause()
 		return
 
@@ -124,10 +125,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and _pause_active:
 		get_viewport().set_input_as_handled()
 		match _pause_sub:
-			"bag_target":      _pause_sub = "bag"; _draw_pause()
-			"bag_stat_select": _pause_sub = "bag_target"; _draw_pause()
+			"bag_target":      AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = "bag"; _draw_pause()
+			"bag_stat_select": AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = "bag_target"; _draw_pause()
 			"":                _close_pause()
-			_:                 _pause_sub = ""; _pause_cursor = 0; _draw_pause()
+			_:                 AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = ""; _pause_cursor = 0; _draw_pause()
 		return
 
 	if not _pause_active:
@@ -136,11 +137,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _pause_sub == "saved":
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
+			AudioManager.play_se(AudioManager.SE_CONFIRM)
 			_pause_sub = ""; _pause_cursor = 0; _draw_pause()
 		return
 
 	if event.is_action_pressed("ui_up"):
 		get_viewport().set_input_as_handled()
+		AudioManager.play_se(AudioManager.SE_CURSOR)
 		match _pause_sub:
 			"":
 				_pause_cursor = (_pause_cursor - 1 + _POPTS.size()) % _POPTS.size()
@@ -154,6 +157,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_draw_pause()
 	elif event.is_action_pressed("ui_down"):
 		get_viewport().set_input_as_handled()
+		AudioManager.play_se(AudioManager.SE_CURSOR)
 		match _pause_sub:
 			"":
 				_pause_cursor = (_pause_cursor + 1) % _POPTS.size()
@@ -167,6 +171,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_draw_pause()
 	elif event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
+		AudioManager.play_se(AudioManager.SE_CONFIRM)
 		match _pause_sub:
 			"":
 				_select_pause()
@@ -221,6 +226,7 @@ func _close_pause() -> void:
 	_pause_active = false
 	_pause_sub    = ""
 	_pause_panel.visible = false
+	AudioManager.play_se(AudioManager.SE_MENU_CLOSE)
 	if _current != null:
 		_current.set_meta("pause_open", false)
 		_current.process_mode = Node.PROCESS_MODE_INHERIT
@@ -424,6 +430,7 @@ func _save_with_pos() -> void:
 		GameState.player_pos_x = pos.x
 		GameState.player_pos_y = pos.y
 	GameState.save_game()
+	AudioManager.play_se(AudioManager.SE_SAVE)
 
 func _select_pause() -> void:
 	match _pause_cursor:
