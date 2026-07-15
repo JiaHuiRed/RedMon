@@ -5,7 +5,7 @@ import { openModal } from "../components/modal.js";
 import { attachSearchableSelect } from "../components/searchable-select.js";
 import { computeMatchup } from "../components/type-chart.js";
 
-const GROWTH_RATES = ["慢", "中慢", "中", "中快", "快"];
+const GROWTH_RATES = ["早熟", "正常", "大器晚成"];
 
 const TIERS = ["凡", "灵", "玄", "地", "神", "天"];
 
@@ -228,7 +228,7 @@ export class SpeciesTab {
 
         <div class="form-section-stack">
           <div class="form-section">
-            <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv50 / Lv120 实际数值，个体值/努力值均取满）</span></div>
+            <div class="form-section-title">种族值 <span style="font-weight:400;color:var(--text-muted);font-size:12px">（右侧数值为 Lv60 / Lv120 实际数值，个体值/努力值均取满）</span></div>
             <div class="form-grid" style="margin-bottom:12px">
               <div class="form-group"><label>体力 <span class="stat-label-en">HP</span></label><input type="number" id="stat-hp" value="${hp}" min="0" max="255" /></div>
               <div class="form-group"><label>物攻 <span class="stat-label-en">ATK</span></label><input type="number" id="stat-atk" value="${atk}" min="0" max="255" /></div>
@@ -329,7 +329,7 @@ export class SpeciesTab {
       tier: "凡",
       catch_rate: 45,
       exp_yield: 100,
-      growth_rate: "中",
+      growth_rate: "早熟",
       desc: "",
       height: "",
       weight: "",

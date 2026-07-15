@@ -136,6 +136,7 @@ func _ready() -> void:
 	_load_json("res://data/natures.json", natures)  # 260702 Red
 	_load_json("res://data/abilities.json", abilities)  # 260702 Red
 	_load_species_json()
+	_build_exp_tables()
 
 func _load_json(path: String, target: Dictionary) -> void:
 	var file = FileAccess.open(path, FileAccess.READ)
@@ -299,7 +300,7 @@ func create_mon(species_id: String, level: int, ivs: Dictionary = {}, nature: St
 	for mv in learned:
 		move_list.append({"id": mv, "pp": moves[mv]["max_pp"], "max_pp": moves[mv]["max_pp"]})
 
-	var gr = sp.get("growth_rate", "中速")
+	var gr = sp.get("growth_rate", "正常")
 
 	var mon = {
 		"species_id": species_id,
@@ -430,7 +431,10 @@ func calc_damage(attacker: Dictionary, defender: Dictionary, move_id: String) ->
 	var crit_mult = 1.3 if crit else 1.0
 	var rng = randf_range(0.85, 1.0)
 
-	var dmg = int(((2.0 * attacker["level"] / 5.0 + 2.0) * mv["power"] * eff_atk / eff_def) / 50.0 + 2.0)
+	# 伤害内核：等级系数按本作 Lv10/60/120 的伤害节奏反推校准（不是宝可梦的 /50+2）
+	# 攻防比取 0.8 次幂而非线性比值，压制数值差距悬殊时的一击秒杀/隔靴搔痒
+	var level_factor = (0.8 * attacker["level"] + 6.0) / 100.0
+	var dmg = int(level_factor * mv["power"] * pow(eff_atk / eff_def, 0.8))
 	dmg = int(dmg * stab * effectiveness * crit_mult * rng)
 	dmg = max(1, dmg)
 
@@ -443,15 +447,41 @@ func _stage_mult(stage: int) -> float:
 		return 2.0 / (2.0 - float(stage))
 
 # ── 经验值 / 升级系统 ─────────────────────────────────────────────────────────
+# 三档成长速度：按种族值（BST）划分，早熟(<480) / 正常(480-599) / 大器晚成(≥600)
+# 幼年-成长-壮年-成熟四段阶梯（1-25/26-50/51-90/91-120），早熟前期涨得快、
+# 后期涨不动；大器晚成前期贵、后期反而划算——练级曲线跟种族值定位对应上。
+const EXP_STAGE_BREAKPOINTS := [25, 50, 90, 120]
+const EXP_STAGE_BASE_MULT := [0.6, 1.0, 1.4, 1.8]
+const EXP_TIER_MULT := {
+	"早熟":     [0.8, 0.9, 1.3, 1.6],
+	"正常":     [1.0, 1.0, 1.0, 1.0],
+	"大器晚成": [1.3, 1.2, 0.8, 0.6],
+}
+const EXP_BASE_UNIT := 1.2
+
+var _exp_table: Dictionary = {}  # growth_rate -> Array[121]，_ready() 时预算好
+
+func _exp_stage_index(lv: int) -> int:
+	for i in EXP_STAGE_BREAKPOINTS.size():
+		if lv <= EXP_STAGE_BREAKPOINTS[i]:
+			return i
+	return EXP_STAGE_BREAKPOINTS.size() - 1
+
+func _build_exp_tables() -> void:
+	for tier in EXP_TIER_MULT:
+		var tier_mult = EXP_TIER_MULT[tier]
+		var table: Array = [0]
+		for lv in range(2, MAX_LEVEL + 1):
+			var stage = _exp_stage_index(lv)
+			var marginal = EXP_BASE_UNIT * EXP_STAGE_BASE_MULT[stage] * tier_mult[stage] * float(lv * lv)
+			table.append(table[lv - 2] + int(round(marginal)))
+		_exp_table[tier] = table
 
 # 到达 lv 级所需的累计总经验
 func exp_for_level(growth_rate: String, lv: int) -> int:
 	if lv <= 1: return 0
-	match growth_rate:
-		"快速": return int(pow(lv, 3) * 0.8)
-		"中速": return int(pow(lv, 3))
-		"缓慢": return int(pow(lv, 3) * 1.25)
-	return int(pow(lv, 3))
+	var table = _exp_table.get(growth_rate, _exp_table.get("正常"))
+	return table[min(lv, MAX_LEVEL) - 1]
 
 # 升一级：重算能力值，返回本级新学的技能列表
 func level_up(mon: Dictionary) -> Array:
@@ -584,7 +614,7 @@ func gain_exp(mon: Dictionary, amount: int) -> Array:
 	mon["exp"] = mon.get("exp", 0) + amount
 	var events: Array = []
 	var sp = species[mon["species_id"]]
-	var gr = sp.get("growth_rate", "中速")
+	var gr = sp.get("growth_rate", "正常")
 	while mon["level"] < MAX_LEVEL:
 		if mon["exp"] < exp_for_level(gr, mon["level"] + 1):
 			break

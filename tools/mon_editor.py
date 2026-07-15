@@ -45,7 +45,7 @@ ABILITY_EFFECTS = [  # 260702 Red 效果标识：中文显示，底层存英文k
 ]
 ABILITY_EFFECT_KEY2LABEL = dict(ABILITY_EFFECTS)
 ABILITY_EFFECT_LABEL2KEY = {v: k for k, v in ABILITY_EFFECTS}
-GROWTH     = ["快速", "中速", "缓慢"]
+GROWTH     = ["早熟", "正常", "大器晚成"]
 CATEGORIES = ["物理", "特殊", "变化"]
 GENDERS    = ["50/50", "87.5/12.5", "25/75", "0/100", "无性别"]
 TRAINER_GENDERS = ["男", "女", "未知"]
@@ -911,7 +911,7 @@ class App:
         _lbl(f, "", bg=BG_MAIN).grid(row=row, column=0)
         _lbl(f, "", bg=BG_MAIN).grid(row=row, column=1)
         _lbl(f, "", bg=BG_MAIN).grid(row=row, column=2)
-        _lbl(f, "Lv 50", bg=BG_MAIN, fg=TEXT_SEC).grid(row=row, column=3, padx=(4, 2))
+        _lbl(f, "Lv 60", bg=BG_MAIN, fg=TEXT_SEC).grid(row=row, column=3, padx=(4, 2))
         _lbl(f, "Lv120", bg=BG_MAIN, fg=TEXT_SEC).grid(row=row, column=4, padx=(2, 10))
         row += 1
 
@@ -1493,10 +1493,10 @@ class App:
             total += v
             self._draw_bar(self.mon_stat_bars[key], v, STAT_COLORS[key])
             is_hp = key == "hp"
-            lv50  = (3 * v * 50  // 100) + (60  if is_hp else 5)
-            lv100 = (3 * v)               + (110 if is_hp else 5)
-            self.mon_stat_lv50[key].config(text=str(lv50))
-            self.mon_stat_lv100[key].config(text=str(lv100))
+            lv60  = (3 * v * 60  // 100) + (70  if is_hp else 5)
+            lv120 = (3 * v * 120 // 100) + (130 if is_hp else 5)
+            self.mon_stat_lv50[key].config(text=str(lv60))
+            self.mon_stat_lv100[key].config(text=str(lv120))
         self.mon_total_label.config(text=str(total))
         # Color-code BST tier: 天/神/地/玄/灵/凡
         if   total >= 670: col = "#D42020"   # 红   — 天（顶级神兽 670+）
@@ -1975,7 +1975,7 @@ class App:
             "id": max_id, "name": name, "type1": "", "type2": "",
             "base": {"hp": 50, "atk": 50, "def": 50,
                      "sp_atk": 50, "sp_def": 50, "spd": 50},
-            "catch_rate": 45, "exp_yield": 64, "growth_rate": "中速",
+            "catch_rate": 45, "exp_yield": 64, "growth_rate": "早熟",
             "desc": "", "gender_ratio": "50/50",
             "height": "0.5", "weight": "5.0", "learnset": {},
             "abilities": ["", ""],

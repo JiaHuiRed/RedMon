@@ -997,7 +997,7 @@ func _refresh_info(animate: bool = false) -> void:
 	# XP 条
 	if _player_mon.size() > 0:
 		var sp = MonDB.species[_player_mon["species_id"]]
-		var gr = sp.get("growth_rate", "中速")
+		var gr = sp.get("growth_rate", "正常")
 		var lv = _player_mon["level"]
 		var cur_exp  = _player_mon.get("exp", 0)
 		var exp_this = MonDB.exp_for_level(gr, lv)
