@@ -52,8 +52,7 @@ var _battling:       bool  = false
 
 var _dialog_active:    bool    = false
 var _dialog_phase:     int     = 0
-var _dialog_panel:     Control
-var _dialog_label:     Label
+var _dialog_bubble:    DialogBubble
 var _npc_dialog_lines: Array   = []
 var _npc_dialog_idx:   int     = 0
 
@@ -479,57 +478,43 @@ func _update_hud() -> void:
 
 # ── Dialog ────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 10; add_child(cl)
-	_dialog_panel = Control.new(); _dialog_panel.visible = false; cl.add_child(_dialog_panel)
-	var bg = ColorRect.new(); bg.size = Vector2(VW, 60); bg.position = Vector2(0, VH-60)
-	bg.color = Color(0.05, 0.05, 0.12, 0.92); _dialog_panel.add_child(bg)
-	var border = ColorRect.new(); border.size = Vector2(VW, 2); border.position = Vector2(0, VH-60)
-	border.color = Color(0.85, 0.85, 0.85); _dialog_panel.add_child(border)
-	_dialog_label = Label.new()
-	_dialog_label.size = Vector2(VW-24, 50); _dialog_label.position = Vector2(12, VH-56)
-	_dialog_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_dialog_label.add_theme_color_override("font_color", Color.WHITE)
-	_dialog_label.add_theme_font_size_override("font_size", 12); _dialog_panel.add_child(_dialog_label)
-	var hint = Label.new(); hint.text = "【▼ 继续】"
-	hint.size = Vector2(160, 14); hint.position = Vector2(VW-164, VH-18)
-	hint.add_theme_color_override("font_color", Color(0.7,0.7,0.7))
-	hint.add_theme_font_size_override("font_size", 10); _dialog_panel.add_child(hint)
+	_dialog_bubble = DialogBubble.create(self)
 
 func _show_dialog(text: String, phase: int) -> void:
 	_dialog_active = true; _dialog_phase = phase
-	_dialog_panel.visible = true; _dialog_label.text = text
+	_dialog_bubble.show(text)
 
 func _advance_dialog() -> void:
 	match _dialog_phase:
 		100:  # 训练师确认 → 开战
-			_dialog_active = false; _dialog_panel.visible = false; _battling = true
+			_dialog_active = false; _dialog_bubble.hide(); _battling = true
 			request_scene.emit("battle", {
 				"trainer": _pending_trainer, "from_scene": "overworld",
 				"player_pos": [_player.position.x, _player.position.y],
 				"bg": _bg_for_area(_current_area())
 			})
 		101:  # 训练师战后
-			_dialog_active = false; _dialog_panel.visible = false; _pending_trainer = {}
+			_dialog_active = false; _dialog_bubble.hide(); _pending_trainer = {}
 		200:  # NPC 普通对话翻页
 			_npc_dialog_idx += 1
 			if _npc_dialog_idx < _npc_dialog_lines.size():
-				_dialog_label.text = _npc_dialog_lines[_npc_dialog_idx]
+				_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
 			else:
-				_dialog_active = false; _dialog_panel.visible = false
+				_dialog_active = false; _dialog_bubble.hide()
 				_npc_dialog_lines = []; _npc_dialog_idx = 0
 		210:  # 阿婆对话 → 仓库引导
 			_npc_dialog_idx += 1
 			if _npc_dialog_idx < _npc_dialog_lines.size():
-				_dialog_label.text = _npc_dialog_lines[_npc_dialog_idx]
+				_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
 			else:
-				_dialog_active = false; _dialog_panel.visible = false
+				_dialog_active = false; _dialog_bubble.hide()
 				_npc_dialog_lines = []; _npc_dialog_idx = 0
 				_show_dialog("阿婆：仓库里的精灵们也都精神着呢！要看看吗？", 211)
 		211:  # 阿婆仓库
-			_dialog_active = false; _dialog_panel.visible = false
+			_dialog_active = false; _dialog_bubble.hide()
 			_open_pcbox()
 		300:  # 劲敌确认 → 开战
-			_dialog_active = false; _dialog_panel.visible = false; _battling = true
+			_dialog_active = false; _dialog_bubble.hide(); _battling = true
 			_rival_leave()
 			var starter_id = GameState.player_team[0].get("species_id", "炎喵") if not GameState.player_team.is_empty() else "炎喵"
 			var rival_sp = {"炎喵": "蓝蛇", "蓝蛇": "小竹熊", "小竹熊": "炎喵"}.get(starter_id, "蓝蛇")
@@ -542,14 +527,14 @@ func _advance_dialog() -> void:
 			})
 		400:  # 精灵堂治疗
 			_heal_all_mons(); _dialog_phase = 401
-			_dialog_label.text = "精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？"
+			_dialog_bubble.show("精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？")
 		401:
-			_dialog_active = false; _dialog_panel.visible = false; _open_pcbox()
+			_dialog_active = false; _dialog_bubble.hide(); _open_pcbox()
 		500:  # 260706 Red 开场教授遇难 → 跳 starter_scene
-			_dialog_active = false; _dialog_panel.visible = false
+			_dialog_active = false; _dialog_bubble.hide()
 			request_scene.emit("starter", {"player_pos": [_player.position.x, _player.position.y]})
 		600:  # 260706 Red 申鹤碧溪镇对战
-			_dialog_active = false; _dialog_panel.visible = false; _battling = true
+			_dialog_active = false; _dialog_bubble.hide(); _battling = true
 			var shenhe_data = MonDB.trainers.get("shenhe", {})
 			if shenhe_data.is_empty():
 				shenhe_data = {"name":"申鹤","team":[{"species":"小雉鸡","level":14},{"species":"炎喵","level":16}],"reward":1600,"id":"shenhe","dialog_win":"哼……还算有点意思。","difficulty":2}
@@ -559,11 +544,42 @@ func _advance_dialog() -> void:
 				"bg": _bg_for_area(_current_area())
 			})
 		700:  # 260715 Red 头目战：小霞自我介绍
-			_dialog_active = false; _dialog_panel.visible = false
+			_dialog_active = false; _dialog_bubble.hide()
 			_show_dialog(MonDB.dlg("ally_xiaoxia", "self_intro"), 701)
 		701:  # 260715 Red 头目战确认 → 开战 (君美 + 小霞声援)
-			_dialog_active = false; _dialog_panel.visible = false; _battling = true
-			var boss_mon = MonDB.create_mon("君美", 10, MonDB.boss_tier_ivs())
+			_dialog_active = false; _dialog_bubble.hide(); _battling = true
+			var area_map_id := (_current_area()
+				.replace("青木村", "1")
+				.replace("华灵草原", "2")
+				.replace("碧溪镇", "3")
+				.replace("翠竹馆", "4")
+				.replace("炎心山道", "5")
+				.replace("炎心市", "6")
+				.replace("碧波湖畔", "7")
+				.replace("碧波市", "8")
+				.replace("磐石洞穴", "9")
+				.replace("磐石镇", "10")
+				.replace("厚土荒原", "11")
+				.replace("厚土镇", "12")
+				.replace("雷鸣峡谷", "13")
+				.replace("雷鸣市", "14")
+				.replace("冰晶雪峰", "15")
+				.replace("冰晶镇", "16")
+				.replace("武道山", "17")
+				.replace("武道城", "18")
+				.replace("青木路口", "19")
+				.replace("碧溪海滩", "20")
+				.replace("炎心隧道", "21")
+				.replace("磐石山道", "22")
+				.replace("厚土关口", "23")
+				.replace("雷鸣桥", "24")
+				.replace("冰晶小径", "25")
+				.replace("武道阶梯", "26")
+				.replace("黑风堂据点", "27")
+				.replace("华灵联盟", "28")
+				.replace("冠军之路", "29"))
+			var boss_lv := EncounterDB.calc_level_range(int(area_map_id))[1] + 7
+			var boss_mon = MonDB.create_mon("君美", boss_lv, MonDB.boss_tier_ivs())
 			request_scene.emit("battle", {
 				"wild_mon": boss_mon, "ally_name": "小霞",
 				"egg_reward": "君美", "boss_id": "junmei_xiaoxia",
@@ -572,9 +588,9 @@ func _advance_dialog() -> void:
 				"bg": _bg_for_area(_current_area())
 			})
 		-1:
-			_dialog_active = false; _dialog_panel.visible = false
+			_dialog_active = false; _dialog_bubble.hide()
 		_:
-			_dialog_active = false; _dialog_panel.visible = false
+			_dialog_active = false; _dialog_bubble.hide()
 
 # ── 移动 & 输入 ───────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:

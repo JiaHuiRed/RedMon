@@ -1,32 +1,86 @@
 {
-  "_comment": "中央遇敌表——按 map_id 索引，EncounterDB 优先读取此文件。每条记录含 encounter_rate（踩雷率）和 mons（遭遇池，weight=遭遇率，level_min/max 可选覆盖公式默认值）。",
+  "_comment": "中央遇敌表——按 map_id 索引",
   "maps": {
     "1": {
-      "encounter_rate": 12,
+      "encounter_rate": 40,
       "mons": [
-        { "species": "绿肥虫", "weight": 40 },
-        { "species": "小灯鼠", "weight": 25 },
-        { "species": "岩灵",   "weight": 15 },
-        { "species": "粉粉丘", "weight": 15 },
-        { "species": "小魔女", "weight": 8  },
-        { "species": "舒华",   "weight": 5  },
-        { "species": "梵天",   "weight": 5  }
+        {
+          "species": "绿肥虫",
+          "weight": 40
+        },
+        {
+          "species": "小灯鼠",
+          "weight": 25
+        },
+        {
+          "species": "小魔女",
+          "weight": 6
+        },
+        {
+          "species": "岩灵",
+          "weight": 15
+        },
+        {
+          "species": "舒华",
+          "weight": 5
+        },
+        {
+          "species": "浅浅丘",
+          "weight": 15
+        },
+        {
+          "species": "雷礼",
+          "weight": 5
+        }
       ]
     },
     "2": {
-      "encounter_rate": 15,
+      "encounter_rate": 12,
       "mons": [
-        { "species": "小雉鸡", "weight": 8  },
-        { "species": "绵绵虫", "weight": 40 },
-        { "species": "眀灯鼠", "weight": 27 },
-        { "species": "露比",   "weight": 2  },
-        { "species": "蓬蓬丘", "weight": 10 }
-      ]
-    },
-    "3": {
-      "encounter_rate": 10,
-      "mons": [
-        { "species": "芙芙", "weight": 100 }
+        {
+          "species": "小雉鸡",
+          "weight": 12
+        },
+        {
+          "species": "绿螳螂",
+          "weight": 12
+        },
+        {
+          "species": "粉粉丘",
+          "weight": 3
+        },
+        {
+          "species": "君美",
+          "weight": 8
+        },
+        {
+          "species": "泥蛙",
+          "weight": 18
+        },
+        {
+          "species": "美延",
+          "weight": 8
+        },
+        {
+          "species": "野兔",
+          "weight": 30
+        },
+        {
+          "species": "蛛优优",
+          "weight": 8
+        },
+        {
+          "species": "露比",
+          "weight": 2
+        },
+        {
+          "species": "灰鼠",
+          "weight": 40
+        },
+        {
+          "species": "岩兔儿",
+          "weight": 8
+        }
       ]
     }
   }

@@ -27,8 +27,7 @@ var _walk_anim_t: float = 0.0
 
 var _battling      := false
 var _dialog_active := false
-var _dialog_panel:  Control
-var _dialog_label:  Label
+var _dialog_bubble: DialogBubble
 var _dialog_lines:  Array = []
 var _dialog_idx:    int   = 0
 
@@ -226,42 +225,20 @@ func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 
 # ── 对话框 ────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 10; add_child(cl)
-	_dialog_panel = Control.new()
-	_dialog_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_dialog_panel.visible = false
-	cl.add_child(_dialog_panel)
-	var bg = ColorRect.new()
-	bg.size     = Vector2(VW, 72); bg.position = Vector2(0, VH - 72)
-	bg.color    = Color(0.04, 0.08, 0.04, 0.92); _dialog_panel.add_child(bg)
-	var border = ColorRect.new()
-	border.size = Vector2(VW, 2); border.position = Vector2(0, VH - 72)
-	border.color = Color(0.40, 0.80, 0.40); _dialog_panel.add_child(border)
-	_dialog_label = Label.new()
-	_dialog_label.size = Vector2(VW - 24, 52)
-	_dialog_label.position = Vector2(12, VH - 64)
-	_dialog_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_dialog_label.add_theme_color_override("font_color", Color.WHITE)
-	_dialog_label.add_theme_font_size_override("font_size", 12)
-	_dialog_panel.add_child(_dialog_label)
-	var hint = Label.new()
-	hint.text = "【▼ 继续】"
-	hint.size = Vector2(160, 14); hint.position = Vector2(VW - 164, VH - 18)
-	hint.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
-	hint.add_theme_font_size_override("font_size", 10)
-	_dialog_panel.add_child(hint)
+	_dialog_bubble = DialogBubble.create(self)
 
 func _show_dialog(lines: Array) -> void:
 	_dialog_lines = lines; _dialog_idx = 0
-	_dialog_active = true; _dialog_panel.visible = true
-	_dialog_label.text = lines[0]
+	_dialog_active = true
+	_dialog_bubble.show(lines[0])
 
 func _advance_dialog() -> void:
 	_dialog_idx += 1
 	if _dialog_idx < _dialog_lines.size():
-		_dialog_label.text = _dialog_lines[_dialog_idx]
+		_dialog_bubble.show(_dialog_lines[_dialog_idx])
 	else:
-		_dialog_active = false; _dialog_panel.visible = false
+		_dialog_active = false
+		_dialog_bubble.hide()
 		_dialog_lines = []; _dialog_idx = 0
 		_on_dialog_end()
 

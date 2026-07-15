@@ -54,9 +54,7 @@ var _dialog_active: bool = false
 
 var _dialog_phase: int = 0
 
-var _dialog_panel: Control
-
-var _dialog_label: Label
+var _dialog_bubble: DialogBubble
 
 var _battling: bool = false
 
@@ -1377,7 +1375,7 @@ func _on_script_end() -> void:
 
 	_dialog_active = false
 
-	_dialog_panel.visible = false
+	_dialog_bubble.hide()
 
 	if _pending_pcbox:
 
@@ -1397,68 +1395,7 @@ func _build_dialog() -> void:
 
 	add_child(cl)
 
-	_dialog_panel = Control.new()
-
-	_dialog_panel.visible = false
-
-	cl.add_child(_dialog_panel)
-
-
-
-	var bg = ColorRect.new()
-
-	bg.size = Vector2(VW, 60)
-
-	bg.position = Vector2(0, VH - 60)
-
-	bg.color = Color(0.05, 0.05, 0.12, 0.92)
-
-	_dialog_panel.add_child(bg)
-
-
-
-	var border = ColorRect.new()
-
-	border.size = Vector2(VW, 2)
-
-	border.position = Vector2(0, VH - 60)
-
-	border.color = Color(0.85, 0.85, 0.85)
-
-	_dialog_panel.add_child(border)
-
-
-
-	_dialog_label = Label.new()
-
-	_dialog_label.size = Vector2(VW - 24, 50)
-
-	_dialog_label.position = Vector2(12, VH - 56)
-
-	_dialog_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
-	_dialog_label.add_theme_color_override("font_color", Color.WHITE)
-
-	_dialog_label.add_theme_font_size_override("font_size", 12)
-
-	_dialog_panel.add_child(_dialog_label)
-
-
-
-	var hint = Label.new()
-
-	hint.text = "【▼ 继续】"
-
-	hint.size = Vector2(130, 14)
-
-	hint.position = Vector2(VW - 134, VH - 18)
-
-	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
-
-	hint.add_theme_font_size_override("font_size", 10)
-
-	_dialog_panel.add_child(hint)
-
+	_dialog_bubble = DialogBubble.create(self)
 
 
 func _show_dialog(text: String, phase: int) -> void:
@@ -1467,9 +1404,7 @@ func _show_dialog(text: String, phase: int) -> void:
 
 	_dialog_phase = phase
 
-	_dialog_panel.visible = true
-
-	_dialog_label.text = text
+	_dialog_bubble.show(text)
 
 
 
@@ -1651,7 +1586,7 @@ func _input(event: InputEvent) -> void:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 		return
 
@@ -1723,7 +1658,7 @@ func _advance_dialog() -> void:
 
 		_dialog_active = false
 
-		_dialog_panel.visible = false
+		_dialog_bubble.hide()
 
 		return
 
@@ -1739,13 +1674,13 @@ func _advance_dialog() -> void:
 
 			btxt = btxt.replace("{rival}", GameState.rival_name)
 
-			_dialog_label.text = btxt
+			_dialog_bubble.show(btxt)
 
 		1:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 			_battling = true
 
@@ -1755,7 +1690,7 @@ func _advance_dialog() -> void:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 			request_scene.emit("starter", {})
 
@@ -1763,7 +1698,7 @@ func _advance_dialog() -> void:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 			GameState.last_scene = "village"
 
@@ -1773,7 +1708,7 @@ func _advance_dialog() -> void:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 			_open_pcbox()
 
@@ -1781,7 +1716,7 @@ func _advance_dialog() -> void:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 			GameState.last_scene = "village"
 
@@ -1791,7 +1726,7 @@ func _advance_dialog() -> void:
 
 			_dialog_active = false
 
-			_dialog_panel.visible = false
+			_dialog_bubble.hide()
 
 
 

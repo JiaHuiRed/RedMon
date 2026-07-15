@@ -16,8 +16,7 @@ var _player: CharacterBody2D
 var _player_spr: Sprite2D
 var _dialog_active: bool = false
 var _dialog_phase: int = 0
-var _dialog_panel: Control
-var _dialog_label: Label
+var _dialog_bubble: DialogBubble
 
 var _mom_spr: Sprite2D
 var _stair_hint_2f: Sprite2D  # 2F 下楼箭头
@@ -256,65 +255,31 @@ func _go_downstairs() -> void:
 
 # ── Dialog ───────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 10; add_child(cl)
-	_dialog_panel = Control.new()
-	_dialog_panel.visible = false
-	cl.add_child(_dialog_panel)
-
-	var bg = ColorRect.new()
-	bg.size = Vector2(VW, 60); bg.position = Vector2(0, VH - 60)
-	bg.color = Color(0.05, 0.05, 0.12, 0.92)
-	_dialog_panel.add_child(bg)
-
-	var border = ColorRect.new()
-	border.size = Vector2(VW, 2); border.position = Vector2(0, VH - 60)
-	border.color = Color(0.85, 0.85, 0.85)
-	_dialog_panel.add_child(border)
-
-	_dialog_label = Label.new()
-	_dialog_label.size = Vector2(VW - 24, 50)
-	_dialog_label.position = Vector2(12, VH - 56)
-	_dialog_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_dialog_label.add_theme_color_override("font_color", Color.WHITE)
-	_dialog_label.add_theme_font_size_override("font_size", 12)
-	_dialog_panel.add_child(_dialog_label)
-
-	var hint = Label.new()
-	hint.text = "【▼ 继续】"
-	hint.size = Vector2(160, 14)
-	hint.position = Vector2(VW - 164, VH - 18)
-	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
-	hint.add_theme_font_size_override("font_size", 10)
-	_dialog_panel.add_child(hint)
+	_dialog_bubble = DialogBubble.create(self)
 
 func _start_mom_dialog() -> void:
 	_dialog_active = true
 	_dialog_phase = 0
-	_dialog_panel.visible = true
 	if not GameState.has_starter:
-		# 260708 Red 未拿御三家：出门前嘱咐
-		_dialog_label.text = MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name)
+		_dialog_bubble.show(MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name))
 	else:
-		# 260708 Red 已有精灵：直接治疗
 		for mon in GameState.player_team:
 			mon["current_hp"] = mon["max_hp"]
 		AudioManager.play_me(AudioManager.ME_HEAL)
-		_dialog_label.text = "妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。"
+		_dialog_bubble.show("妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。")
 
 func _advance_dialog() -> void:
 	_dialog_phase += 1
 	if not GameState.has_starter:
-		# 未拿御三家：多段对话
 		match _dialog_phase:
 			1:
-				_dialog_label.text = MonDB.dlg("home", "mom_professor")
+				_dialog_bubble.show(MonDB.dlg("home", "mom_professor"))
 			_:
 				_dialog_active = false
-				_dialog_panel.visible = false
+				_dialog_bubble.hide()
 	else:
-		# 已有精灵：一段对话后结束
 		_dialog_active = false
-		_dialog_panel.visible = false
+		_dialog_bubble.hide()
 
 # ── Movement & input ─────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
