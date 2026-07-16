@@ -72,6 +72,10 @@ shape = SubResource("RectangleShape2D_lab")
 
 [node name="水井" type="Marker2D" parent="装饰" unique_id=317291201]
 position = Vector2(364, 180)
+metadata/npc_type = "sign"
+metadata/npc_name = "水井"
+metadata/npc_dialog = "村口的老水井，井水清凉见底。
+往下望去，井壁深处似乎别有洞天……"
 
 [node name="路标_家" type="Marker2D" parent="装饰" unique_id=141680803]
 position = Vector2(274, 214)
