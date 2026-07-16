@@ -130,19 +130,34 @@ var _ally_commented_enemy_super: bool = false
 var _ally_commented_enemy_weak:  bool = false
 
 const FIELD_H := 575
-const MSG_Y   := 575
-const MSG_H   := 65
 const MENU_Y  := 640
 const MENU_H  := 80
 
+# 260716 Red 消息框收窄至我方信息栏与右侧 2×2 指令卡片之间的空档
+const MSG_X := 240
+const MSG_Y := 632
+const MSG_H := 76
+const MSG_W := CMD_GRID_X - MSG_X - 12
+
 # 战斗菜单图标
-const ACTION_ICON_TEX := preload("res://assets/ui/战斗图标.png")  # 单纹理，4 宫格 100×100
+# 260716 Red 原始素材每格 1024×1024 是"图标+底部文字"整张卡片；直接按格整取会把
+# 卡片里烘焙的"战斗/精灵/背包/逃走"文字也缩进图标框，糊成一团。
+# 下面这组矩形是用 Pillow 扫描每格色彩饱和区域算出的、只包含图标本体(不含文字)的裁切框。
+const ACTION_ICON_TEX := preload("res://assets/ui/战斗图标.png")  # 单纹理，4 宫格，实际 4096×1024
 const ACTION_ICON_RECTS := {
-	0: Rect2(0, 0, 100, 100),      # 战斗
-	1: Rect2(100, 0, 100, 100),    # 宝可梦
-	2: Rect2(200, 0, 100, 100),    # 包包
-	3: Rect2(300, 0, 100, 100),    # 逃走
+	0: Rect2(244,  130, 654, 654),  # 战斗
+	1: Rect2(1243, 146, 626, 626),  # 精灵
+	2: Rect2(2261, 180, 576, 576),  # 背包
+	3: Rect2(3240, 188, 580, 580),  # 逃走
 }
+
+# 2×2 指令卡片网格几何：按钮与光标高亮框共用，避免重绘时两处数值脱节
+const CMD_GRID_X  := 680
+const CMD_GRID_Y  := 624
+const CMD_CARD_W  := 288
+const CMD_CARD_H  := 44
+const CMD_GAP_X   := 8
+const CMD_GAP_Y   := 4
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})
@@ -198,9 +213,18 @@ func _ready() -> void:
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Battle field
 # ══════════════════════════════════════════════════════════════════════════════
+const DEFAULT_BG_PATH := "res://assets/backgrounds/草原.png"
+
 func _build_battle_field() -> void:
 	# 战斗背景图（由调用方传入，默认草原）
 	var tex = load(_bg_path) if ResourceLoader.exists(_bg_path) else null
+	if not tex and _bg_path != DEFAULT_BG_PATH:
+		# 260716 Red 传入路径加载失败时先兜底默认草原图，再落到纯代码画天空；
+		# 打印具体失败路径方便下次复现时在 Output 面板直接定位
+		push_warning("[battle_scene] 背景加载失败: %s，尝试默认背景 %s" % [_bg_path, DEFAULT_BG_PATH])
+		tex = load(DEFAULT_BG_PATH) if ResourceLoader.exists(DEFAULT_BG_PATH) else null
+	if not tex:
+		push_warning("[battle_scene] 默认背景也加载失败，回退到纯代码天空")
 	if tex:
 		# 260709 Red 用 Sprite2D 手动缩放适配战场区域
 		var bg = Sprite2D.new()
@@ -327,44 +351,38 @@ func _make_platform(pos: Vector2, w: float, h: float, color: Color) -> ColorRect
 func _build_info_boxes() -> void:
 	# ── Enemy info – top-right (white bg, frosted glass) ─────────────────────
 	var ebg = Panel.new()
-	ebg.position = Vector2(VW - 210, 8)
-	ebg.size = Vector2(200, 52)
+	ebg.position = Vector2(VW - 230, 8)
+	ebg.size = Vector2(220, 60)
 	var e_style := StyleBoxFlat.new()
-	e_style.bg_color = Color(1, 1, 1, 0.92)
-	e_style.corner_radius_top_left = 12
-	e_style.corner_radius_top_right = 12
-	e_style.corner_radius_bottom_left = 12
-	e_style.corner_radius_bottom_right = 12
-	e_style.border_color = Color(0.85, 0.85, 0.85, 0.6)
-	e_style.border_width_left = 1
-	e_style.border_width_right = 1
-	e_style.border_width_top = 1
-	e_style.border_width_bottom = 1
+	e_style.bg_color = Color(0.12, 0.18, 0.28, 0.88)
+	e_style.set_corner_radius_all(14)
+	e_style.border_color = Color(0.25, 0.55, 0.85, 0.85)
+	e_style.set_border_width_all(3)
 	ebg.add_theme_stylebox_override("panel", e_style)
 	add_child(ebg)
 
-	_enemy_name_lbl = _label("", Vector2(VW - 200, 14), 13, Color(0.1, 0.1, 0.1))
+	_enemy_name_lbl = _label("", Vector2(VW - 220, 16), 13, Color.WHITE)
 	add_child(_enemy_name_lbl)
 
-	_enemy_lv_lbl = _label("", Vector2(VW - 60, 14), 12, Color(0.2, 0.2, 0.5))
+	_enemy_lv_lbl = _label("", Vector2(VW - 68, 16), 12, Color(0.75, 0.85, 1.0))
 	add_child(_enemy_lv_lbl)
 
-	_enemy_status_lbl = _label("", Vector2(VW - 96, 15), 10, Color(0.9, 0.4, 0.1))
+	_enemy_status_lbl = _label("", Vector2(VW - 104, 17), 10, Color(1.0, 0.7, 0.3))
 	add_child(_enemy_status_lbl)
 
 	var ehp_bg = ColorRect.new()
 	ehp_bg.size = Vector2(150, 6)
-	ehp_bg.position = Vector2(VW - 200, 34)
-	ehp_bg.color = Color(0.75, 0.75, 0.75)
+	ehp_bg.position = Vector2(VW - 220, 36)
+	ehp_bg.color = Color(0.3, 0.3, 0.3)
 	add_child(ehp_bg)
 
 	_enemy_hp_bar = ColorRect.new()
 	_enemy_hp_bar.size = Vector2(150, 6)
-	_enemy_hp_bar.position = Vector2(VW - 200, 34)
+	_enemy_hp_bar.position = Vector2(VW - 220, 36)
 	_enemy_hp_bar.color = Color(0.2, 0.85, 0.3)
 	add_child(_enemy_hp_bar)
 
-	_enemy_hp_val = _label("", Vector2(VW - 200, 42), 9, Color(0.35, 0.35, 0.35))
+	_enemy_hp_val = _label("", Vector2(VW - 220, 46), 9, Color.WHITE)
 	add_child(_enemy_hp_val)
 
 	# ── Player info – bottom-left (frosted glass + red accent) ───────────────
@@ -429,8 +447,8 @@ func _build_info_boxes() -> void:
 func _build_message_box() -> void:
 	# Outer dark frame
 	var box_bg = Panel.new()
-	box_bg.size     = Vector2(VW, MSG_H + 4)
-	box_bg.position = Vector2(0, MSG_Y - 2)
+	box_bg.size     = Vector2(MSG_W, MSG_H + 4)
+	box_bg.position = Vector2(MSG_X, MSG_Y - 2)
 	var outer_style = StyleBoxFlat.new()
 	outer_style.bg_color = Color(0.10, 0.10, 0.14)
 	box_bg.add_theme_stylebox_override("panel", outer_style)
@@ -438,8 +456,8 @@ func _build_message_box() -> void:
 
 	# Inner cream box with rounded corners
 	var box = Panel.new()
-	box.size     = Vector2(VW - 8, MSG_H - 4)
-	box.position = Vector2(4, MSG_Y + 1)
+	box.size     = Vector2(MSG_W - 8, MSG_H - 4)
+	box.position = Vector2(MSG_X + 4, MSG_Y + 1)
 	var inner_style = StyleBoxFlat.new()
 	inner_style.bg_color    = Color(0.97, 0.97, 0.93)
 	inner_style.border_color = Color(0.25, 0.25, 0.30)
@@ -449,8 +467,8 @@ func _build_message_box() -> void:
 	add_child(box)
 
 	_msg_label = Label.new()
-	_msg_label.position = Vector2(14, MSG_Y + 6)
-	_msg_label.size = Vector2(VW - 28, MSG_H - 10)
+	_msg_label.position = Vector2(MSG_X + 14, MSG_Y + 6)
+	_msg_label.size = Vector2(MSG_W - 28, MSG_H - 10)
 	_msg_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	_msg_label.add_theme_font_size_override("font_size", 14)
 	_msg_label.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
@@ -480,57 +498,77 @@ func _build_action_panel() -> void:
 	kb_hint.add_theme_font_size_override("font_size", 9)
 	_action_panel.add_child(kb_hint)
 
-	# ── SV-style vertical command menu (right side, absolute position) ─────
+	# ── 2×2 icon card grid (bottom-right) ─────────────────────────────────
 	_cmd_menu = Control.new()
 	_cmd_menu.position = Vector2(0, 0)
 	_cmd_menu.size = Vector2(VW, VH)
 	_cmd_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_cmd_menu)
 
-	var labels = ["战  斗", "宝可梦", "背  包", "逃  走"]
-	var callbacks = [_on_fight, _on_bag, _on_mon, _on_run]
-	var menu_x = VW - 200
-	var menu_y = 646
-	var btn_w = 175
-	var btn_h = 16
-	var gap = 3
+	var labels    = ["战  斗", "精  灵", "背  包", "逃  走"]
+	var callbacks = [_on_fight, _on_mon, _on_bag, _on_run]
+	var icon_tints = [
+		Color(0.85, 0.22, 0.22),
+		Color(0.22, 0.50, 0.88),
+		Color(0.30, 0.60, 0.15),
+		Color(0.73, 0.46, 0.09),
+	]
 	_action_btns = []
 	for i in range(4):
+		var col := i % 2
+		var row := i / 2
+		var bx := CMD_GRID_X + col * (CMD_CARD_W + CMD_GAP_X)
+		var by := CMD_GRID_Y + row * (CMD_CARD_H + CMD_GAP_Y)
+
 		var btn = Button.new()
-		btn.text = labels[i]
-		btn.size = Vector2(btn_w, btn_h)
-		btn.position = Vector2(menu_x, menu_y + i * (btn_h + gap))
+		btn.text = ""
+		btn.size = Vector2(CMD_CARD_W, CMD_CARD_H)
+		btn.position = Vector2(bx, by)
 		btn.pressed.connect(callbacks[i])
+		btn.focus_mode = Control.FOCUS_NONE
 		var s = StyleBoxFlat.new()
-		s.bg_color = Color(1, 1, 1, 0.88)
-		s.corner_radius_top_left = 10
-		s.corner_radius_top_right = 10
-		s.corner_radius_bottom_left = 10
-		s.corner_radius_bottom_right = 10
+		s.bg_color = Color(1, 1, 1, 0.95)
+		s.set_corner_radius_all(10)
 		s.border_color = Color(0.7, 0.7, 0.75, 0.5)
-		s.border_width_left = 1
-		s.border_width_right = 1
-		s.border_width_top = 1
-		s.border_width_bottom = 1
+		s.set_border_width_all(1)
 		btn.add_theme_stylebox_override("normal", s)
-		var sh = s.duplicate(); sh.bg_color = Color(0.15, 0.15, 0.22, 0.95)
+		btn.add_theme_stylebox_override("pressed", s)
+		var sh = s.duplicate()
+		sh.bg_color = Color(0.15, 0.15, 0.22, 0.95)
 		btn.add_theme_stylebox_override("hover", sh)
-		btn.add_theme_color_override("font_color", Color(0.15, 0.15, 0.2))
-		btn.add_theme_font_size_override("font_size", 11)
 		_cmd_menu.add_child(btn)
 		_action_btns.append(btn)
 
-		# Icon on the right side of each button
+		# Icon tinted background
+		var icon_bg = ColorRect.new()
+		icon_bg.size = Vector2(32, 32)
+		icon_bg.position = Vector2(6, 6)
+		icon_bg.color = Color(icon_tints[i].r, icon_tints[i].g, icon_tints[i].b, 0.15)
+		icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(icon_bg)
+
+		# Icon from atlas
 		var atlas = AtlasTexture.new()
 		atlas.atlas = ACTION_ICON_TEX
-		atlas.region = ACTION_ICON_RECTS.get(i, Rect2(i * 100, 0, 100, 100))
+		atlas.region = ACTION_ICON_RECTS.get(i, Rect2(0, 0, 1024, 1024))
 		var icon_rect = TextureRect.new()
 		icon_rect.texture = atlas
-		icon_rect.position = Vector2(btn_w - 40, 1)
-		icon_rect.size = Vector2(14, 14)
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.position = Vector2(6, 6)
+		icon_rect.size = Vector2(32, 32)
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		btn.add_child(icon_rect)
 
-	# 光标高亮框
+		# Text label (separate node, avoids Button text rendering quirks)
+		var lbl = Label.new()
+		lbl.text = labels[i]
+		lbl.position = Vector2(46, 13)
+		lbl.add_theme_font_size_override("font_size", 14)
+		lbl.add_theme_color_override("font_color", Color(0.15, 0.15, 0.2))
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(lbl)
+
 	_action_hl = _make_hl_panel(_cmd_menu)
 	_refresh_action_cursor()
 
@@ -687,7 +725,7 @@ func _on_use_item(item_id: String) -> void:
 		var success = await _anim_throw_gourd(item_id, catch_mult)
 		if success:
 			GameState.caught_count += 1
-			# 260712 Red 捕获后取名
+			await _show_message_async("恭喜！成功捕捉到%s了！" % MonDB.display_name(_enemy_mon))
 			var dialog = preload("res://scripts/ui/name_dialog.gd").new()
 			add_child(dialog)
 			dialog.open(MonDB.species[_enemy_mon["species_id"]]["name"])
@@ -716,7 +754,7 @@ func _on_use_item(item_id: String) -> void:
 			GameState.save_game()
 			_end_battle("caught")
 			return
-		await _show_message_async("%s 挣脱了！" % MonDB.display_name(_enemy_mon))
+		await _show_message_async("哎呀，真可惜！\n%s挣脱了！" % MonDB.display_name(_enemy_mon))
 
 	# ── 回复 ──────────────────────────────────────────────────────────────
 	elif category == "回复":
@@ -1644,8 +1682,8 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				match _action_cursor:
 					0: _on_fight()
-					1: _on_bag()
-					2: _on_mon()
+					1: _on_mon()
+					2: _on_bag()
 					3: _on_run()
 		"move":
 			if event.is_action_pressed("ui_up") or event.is_action_pressed("ui_down"):
@@ -1723,12 +1761,12 @@ func _make_hl_panel(parent: Control) -> Panel:
 # ── 各面板光标刷新 ────────────────────────────────────────────────────────────
 func _refresh_action_cursor() -> void:
 	if not _action_hl: return
-	var btn_w := 180; var btn_h := 50
-	var menu_x := VW - 196
-	var menu_y := 382
-	var gap := 8
-	_action_hl.position = Vector2(menu_x - 3, menu_y + _action_cursor * (btn_h + gap) - 3)
-	_action_hl.size     = Vector2(btn_w + 6, btn_h + 6)
+	var col := _action_cursor % 2
+	var row := _action_cursor / 2
+	_action_hl.position = Vector2(
+		CMD_GRID_X + col * (CMD_CARD_W + CMD_GAP_X) - 3,
+		CMD_GRID_Y + row * (CMD_CARD_H + CMD_GAP_Y) - 3)
+	_action_hl.size = Vector2(CMD_CARD_W + 6, CMD_CARD_H + 6)
 
 func _refresh_move_cursor() -> void:
 	if not _move_hl: return

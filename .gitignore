@@ -22,6 +22,9 @@ desktop.ini
 *.swp
 *.swo
 
+# Claude Code MCP config (hardcodes local Godot.exe path, machine-specific)
+.mcp.json
+
 # Logs
 *.log
 
