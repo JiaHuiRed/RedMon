@@ -21842,8 +21842,8 @@
     "exp_yield": 100,
     "growth_rate": "正常",
     "desc": "",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": "0.6",
+    "weight": "12.0",
     "gender_ratio": "100/0",
     "evolutions": [],
     "learnset": {},
@@ -21870,7 +21870,7 @@
     "growth_rate": "正常",
     "desc": "",
     "height": "2.5",
-    "weight": "60.0",
+    "weight": "300.0",
     "gender_ratio": "70/30",
     "evolutions": [
       {
@@ -21900,7 +21900,7 @@
     "growth_rate": "正常",
     "desc": "",
     "height": "4.0",
-    "weight": "180.0",
+    "weight": "800.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
@@ -21951,8 +21951,8 @@
     "exp_yield": 100,
     "growth_rate": "早熟",
     "desc": "",
-    "height": "0.6",
-    "weight": "8.0",
+    "height": "0.4",
+    "weight": "3.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -21982,7 +21982,7 @@
     "growth_rate": "正常",
     "desc": "",
     "height": "3.0",
-    "weight": "150.0",
+    "weight": "200.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
