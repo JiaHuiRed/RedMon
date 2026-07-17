@@ -37,12 +37,18 @@ func _build_bg() -> void:
 		add_child(bg)
 		return
 
+	# 暗色底色（填充两侧黑边）
+	var bg := ColorRect.new()
+	bg.size  = Vector2(VW, VH)
+	bg.color = Color(0.04, 0.05, 0.18)
+	add_child(bg)
+
 	var tr := TextureRect.new()
 	tr.size         = Vector2(VW, VH)
 	tr.position     = Vector2.ZERO
 	tr.texture      = tex
-	tr.expand_mode  = TextureRect.EXPAND_IGNORE_SIZE
-	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tr.expand_mode  = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	add_child(tr)
 
 # ── 选项菜单（底部横向条） ────────────────────────────────────────────────────

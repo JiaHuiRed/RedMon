@@ -1,16 +1,59 @@
 # Changelog
 
-## [0.25.2] - 2026-07-17
+## [0.25.4] - 2026-07-17
 
-> 编辑器：遭遇地地图名校验 + 头目所在地编辑
+> 新精灵 5 种（云翼→凌云龙→大应 / 敏皇 / 雨琦女王）+ 开场体验打磨 + 标题背景修复 + NPC 对话修复
 
 ### 新增
-- **编辑器遭遇地地点输入**：从自由文本改为可搜索下拉选择（数据源为 `maps.json` 地图名），避免输入错别字导致遇敌数据不同步；新增 "头目" 节段，头目所在地同为地图名下选框，数据存 `species[n].boss_location` 字段
+- **5 种新精灵素材入库**（贴图由哥哥生成）：
+  - **云翼(413)** → **凌云龙(414)** → **大应(415)**：龙/风/仙三属性进化链，大应 BST 630 神品
+  - **敏皇(416)**：卡琳娜的最终进化型，灵/冰，SPATK 148 特攻核弹，特性降雪+魔法防守
+  - **雨琦女王(417)**：宋皇的最终进化型，灵/暗，ATK 142 物攻霸主，特性威吓+好胜
+  - 进化链补全：智敏→卡琳娜→敏皇（50级），雨琦→宋皇→雨琦女王（50级）
+- **开场实验室背景**：`_build_bg()` 优先加载 `res://assets/backgrounds/buildings/开场实验室.png`，不存在则回落 ColorRect 代码背景
+- **劲敌命名环节回归**：Phase 3 劲敌命名面板（角色选择→劲敌名输入→确认），独立于玩家命名流程，数据存入 `GameState.rival_name`
+- **劲敌立绘**：命名阶段显示劲敌 front sprite 居中偏右（3x 放大），确认后自动切入下一阶段
+
+### 变更
+- **开场文案扩充**：intro_0 从 5 段扩至 10 段（补充世界观背景：「千年前精灵与天地共鸣……被称为『灵』」）；intro_2 扩至 6 段（增加"家里还有朋友在等你""路上小心草丛"叮嘱）
+- **教授位置调整**：从 (50, 500) 上移至 (50, 340)，不再遮挡对话文案；名字标签同步下移至 y=300
+- **劲敌台词语境修正**：从"家里"语境改为真·劲敌设定："隔壁那孩子——从小就跟你比到大的那位""她一大早就跑来放话：告诉{player}，这次我一定赢他！"
+- **标题画面背景裁切修复**：深色 ColorRect 填缝 + `EXPAND_FIT_WIDTH_PROPORTIONAL` + `KEEP_ASPECT_CENTERED` 替代原来的 `IGNORE_SIZE` + `COVERED`
+- **注册背景图自动生成工具**：`tools/rembg/` + `tools/resize_sprites.spec`
 
 ### 修复
-- **编辑器布局**：`enc-item` 的 searchable-select wrapper 缺少 flex 样式，导致地点下拉与百分比/删除按钮不在同一行
+- **蓝秋秋无碰撞体**：`home_scene.gd` 添加 StaticBody2D + RectangleShape2D (40×40) 物理碰撞，永久显示"Z 交谈"标签
+- **劲敌命名崩溃**：`GameState.set_rival_name()` 不存在，改用 `GameState.rival_name = n` 直接赋值
+- **{player}变量未替换**：`dlg_sub()` 仅传 `{rival}` 缺少 `{player}`，导致对话显示 `{player}` 原文
+- **NPC对话翻页缩进 bug**：`overworld_scene.gd` 中 `_advance_dialog()` 的 case 200 分支因缩进错误在 switch 外，导致所有 NPC 对话翻页不生效
+- **NPC 对话变量声明修复**：`_try_talk_npc()` 中 `dlg` 变量未声明，导致未定义变量引用
+- **无用代码清理**：移除 `_dialog_lbl.text = _dialog_lbl.text` 无意义赋值、`_show_lanqiuqiu_prompt()` 死代码
 
 ---
+
+## [0.25.3] - 2026-07-17
+
+> 开场动画大改（蓝秋秋是卧室伙伴非博士赠予）+ 标题背景修复 + MonDB 过渡平稳
+
+### 变更
+- **蓝秋秋不再是博士赠予**：按设定，蓝秋秋是玩家卧室里的童年伙伴（出发前的首只精灵），并非博士在新手教学后赠送；开场博士现在展示**小灯鼠**（空属性，有小精灵 front/back 贴图）作为示范精灵
+- **开场流程重写**：博士不再赠予玩家第一只精灵——教学战后博士收回小灯鼠，让玩家直接回家；新增 Phase 0 开场旁白（intro_0 五段台词）；移除 `_confirm_starter()` 函数
+
+### 新增
+- **卧室蓝秋秋互动**：`home_scene.gd` 在玩家卧室放置蓝秋秋 Sprite2D + 名字标签，走近按 Z 触发三段对话 → 确认后收为第一只精灵并自动存档；门口增加守卫提示"先去看看家里的朋友吧"，防止跳过
+
+### 修复
+- **标题画面背景裁剪**：2546×1582 背景图在 1280×720 下被上下裁去约 38px，文字"的冒险"超出可见区；改用 `EXPAND_FIT_WIDTH_PROPORTIONAL` + `KEEP_ASPECT_CENTERED` + 深色 ColorRect 填缝
+- **开场对话数组崩溃**：`dlg()` 返回的是数组而非字符串，直接塞入 `Label.text` 输出如 `[intro_1]` 而非实际台词；改用 `dlg_array()` + `call_deferred("_show_phase", N)` 修复
+- **开场空格键双重触发**：Phase 1 中 Enter 触发 Phase 2 后，下一帧的空格也因输入累积被处理，跳过博士出场；用 `call_deferred` 延迟切换 phase 解决
+- **MonDB 调用点适配**：`opening_scene.gd`/`home_scene.gd`/`overworld_scene.gd` 中残留 `MonDB.call_func()` 改为 `MonDB.load_func()`，适配此前 `load_func` 重构
+
+### 数据
+- **dialogs.json**：`intro_1`/`intro_2` 重写为小灯鼠相关文案；新增 `home.bedroom_lanqiuqiu`（三段对话）、`home.bedroom_confirm`（确认提示）、`home.blue_autumn_bedroom`（已获得后的备用台词）
+
+---
+
+## [0.25.2] - 2026-07-17
 
 ## [0.25.1] - 2026-07-17
 

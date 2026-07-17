@@ -491,11 +491,11 @@ func _advance_dialog() -> void:
 			_dialog_active = false; _dialog_bubble.hide(); _pending_trainer = {}
 		200:  # NPC 普通对话翻页
 			_npc_dialog_idx += 1
-		if _npc_dialog_idx < _npc_dialog_lines.size():
-			_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
-		else:
-			_dialog_active = false; _dialog_bubble.hide()
-			_npc_dialog_lines = []; _npc_dialog_idx = 0
+			if _npc_dialog_idx < _npc_dialog_lines.size():
+				_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
+			else:
+				_dialog_active = false; _dialog_bubble.hide()
+				_npc_dialog_lines = []; _npc_dialog_idx = 0
 		300:  # 劲敌确认 → 开战
 			_dialog_active = false; _dialog_bubble.hide(); _battling = true
 			_rival_leave()
@@ -684,7 +684,7 @@ func _try_talk_npc(tile: Vector2i) -> void:
 		if not spr.has_meta("npc_tile"): continue
 		var nt: Vector2i = spr.get_meta("npc_tile")
 		if nt == face or nt == tile:
-		if dlg == "__guard_north__":
+			var dlg = spr.get_meta("npc_dialog", "")
 			if dlg == "__guard_north__":
 				_handle_north_guard(); return
 			if dlg == "__guard_right__":

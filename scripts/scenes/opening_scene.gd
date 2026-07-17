@@ -1,22 +1,24 @@
 extends Node2D
-# RedMon – 开场序幕（桌上精灵葫芦 + 蓝秋秋蹦出 + 教授对白）
-# 替代旧的 char_create + starter 两段流程
+# RedMon – 开场序幕（桌上精灵葫芦 + 小灯鼠蹦出 + 教授对白 + 劲敌取名）
 signal request_scene(scene_name: String, data: Dictionary)
 
 const VW := 1280
 const VH := 720
 
-# 阶段：0=性别选择 1=取名 2~4=教授三段对白+蓝秋秋出现
+# 阶段：0=开场白 1=性别选择 2=取名 3=劲敌取名 4~6=教授三段对白+小灯鼠出现
 var _phase: int = 0
 var _gender: String = "男"
 
 var _gender_panel: Control
 var _name_panel: Control
 var _name_input: LineEdit
+var _rival_panel: Control
+var _rival_input: LineEdit
+var _rival_spr: Sprite2D
 var _dialog_lbl: Label
 var _dialog_hint: Label
 
-# 精灵（蓝秋秋 pop-in 动画用）
+# 精灵（小灯鼠 pop-in 动画用）
 var _mon_spr: Sprite2D
 var _mon_spr_b: Sprite2D  # back sprite，pop-out 用
 var _mon_anim_t: float = 0.0
@@ -25,17 +27,9 @@ var _mon_animating: bool = false
 # 教授立绘（phase 2~4 用）
 var _prof_spr: Sprite2D
 
-# 蓝秋秋参数
-const STARTER_SPECIES := "蓝秋秋"
-const STARTER_LEVEL := 3
-const STARTER_NATURE := "顽皮"   # up=atk down=sp_atk
-const STARTER_IVS := {
-	"hp": 31, "atk": 31, "def": 31, "sp_atk": 31, "sp_def": 31, "spd": 31
-}
-
 const PROFESSOR_SPRITE := "res://assets/npc/博士front.png"
-const MON_FRONT := "res://assets/sprites/蓝秋秋front.png"
-const MON_BACK := "res://assets/sprites/蓝秋秋back.png"
+const MON_FRONT := "res://assets/sprites/小灯鼠front.png"
+const MON_BACK := "res://assets/sprites/小灯鼠back.png"
 
 func _ready() -> void:
 	_build_bg()
@@ -44,10 +38,19 @@ func _ready() -> void:
 	_build_dialog()
 	_gender_panel = _build_gender_panel()
 	_name_panel = _build_name_panel()
+	_rival_panel = _build_rival_panel()
 	_show_phase(0)
 
 # ── 背景 ──────────────────────────────────────────────────────────────────────
 func _build_bg() -> void:
+	var bg_path = "res://assets/backgrounds/buildings/开场实验室.png"
+	if ResourceLoader.exists(bg_path):
+		var bg = Sprite2D.new()
+		bg.texture = load(bg_path)
+		bg.centered = false
+		add_child(bg)
+		return
+
 	var bg = ColorRect.new()
 	bg.size = Vector2(VW, VH)
 	bg.color = Color(0.10, 0.12, 0.22)
@@ -82,53 +85,40 @@ func _build_bg() -> void:
 
 # ── 教授立绘 ─────────────────────────────────────────────────────────────────
 func _build_professor() -> void:
-	var tex: Texture2D
-	if ResourceLoader.exists(PROFESSOR_SPRITE):
-		tex = load(PROFESSOR_SPRITE)
-	else:
-		tex = _draw_professor_fallback()
+	var tex = load(PROFESSOR_SPRITE)
 
 	_prof_spr = Sprite2D.new()
 	_prof_spr.texture = tex
 	var s = 160.0 / maxf(tex.get_size().x, tex.get_size().y)
 	_prof_spr.scale = Vector2(s, s)
-	_prof_spr.position = Vector2(50, VH - 220)
+	_prof_spr.position = Vector2(50, VH - 380)
 	_prof_spr.z_index = 5
-	_prof_spr.visible = false  # phase 2 起显示
+	_prof_spr.visible = true
 	add_child(_prof_spr)
 
 	var name_lbl = Label.new()
 	name_lbl.text = "陈教授"
-	name_lbl.position = Vector2(26, 360)
+	name_lbl.position = Vector2(26, 300)
 	name_lbl.add_theme_color_override("font_color", Color(0.85, 0.83, 0.75))
 	name_lbl.add_theme_font_size_override("font_size", 11)
-	name_lbl.visible = false
+	name_lbl.visible = true
 	name_lbl.name = "prof_name"
 	add_child(name_lbl)
 
-# ── 蓝秋秋精灵 ───────────────────────────────────────────────────────────────
+# ── 小灯鼠精灵 ───────────────────────────────────────────────────────────────
 func _build_mon() -> void:
-	var tex: Texture2D
-	if ResourceLoader.exists(MON_FRONT):
-		tex = load(MON_FRONT)
-	else:
-		tex = _draw_lanqiuqiu_fallback()
+	var tex = load(MON_FRONT)
 
 	_mon_spr = Sprite2D.new()
 	_mon_spr.texture = tex
 	var s = 70.0 / maxf(tex.get_size().x, tex.get_size().y)
-	_mon_spr.scale = Vector2(0.01, 0.01)  # 初始极小，动画放大
+	_mon_spr.scale = Vector2(0.01, 0.01)
 	_mon_spr.position = Vector2(VW - 160, VH - 200)
 	_mon_spr.z_index = 6
 	_mon_spr.visible = false
 	add_child(_mon_spr)
 
-	# back sprite（phase 4 pop-out 用）
-	var tex_b: Texture2D
-	if ResourceLoader.exists(MON_BACK):
-		tex_b = load(MON_BACK)
-	else:
-		tex_b = _draw_lanqiuqiu_back_fallback()
+	var tex_b = load(MON_BACK)
 
 	_mon_spr_b = Sprite2D.new()
 	_mon_spr_b.texture = tex_b
@@ -214,13 +204,23 @@ func _build_gender_panel() -> Control:
 		panel.add_child(lbl)
 
 	var hint = Label.new()
-	hint.text = "←  /  → 切换    Z 确认"
-	hint.position = Vector2(0, 204)
+	hint.text = "（最多 8 个字，Z 确认）"
+	hint.position = Vector2(0, 208)
 	hint.size.x = VW
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_color_override("font_color", Color(0.55, 0.55, 0.70))
-	hint.add_theme_font_size_override("font_size", 11)
+	hint.add_theme_font_size_override("font_size", 10)
 	panel.add_child(hint)
+
+	# 劲敌立绘（中间偏右，大比例展示）
+	var rtex = load("res://assets/npc/劲敌front.png")
+	_rival_spr = Sprite2D.new()
+	_rival_spr.texture = rtex
+	var rs = 360.0 / maxf(rtex.get_size().x, rtex.get_size().y)
+	_rival_spr.scale = Vector2(rs, rs)
+	_rival_spr.position = Vector2(VW / 2 + 80, VH / 2 + 20)
+	_rival_spr.z_index = 5
+	add_child(_rival_spr)
 
 	return panel
 
@@ -278,33 +278,107 @@ func _build_name_panel() -> Control:
 
 	return panel
 
+# ── 劲敌取名面板 ─────────────────────────────────────────────────────────────
+func _build_rival_panel() -> Control:
+	var panel = Control.new()
+	panel.visible = false
+	add_child(panel)
+
+	var title = Label.new()
+	title.text = "你的劲敌叫什么名字？"
+	title.position = Vector2(0, 38)
+	title.size.x = VW
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color(0.88, 0.87, 0.80))
+	title.add_theme_font_size_override("font_size", 20)
+	panel.add_child(title)
+
+	var box_bg = ColorRect.new()
+	box_bg.size = Vector2(210, 40)
+	box_bg.position = Vector2((VW - 210) / 2, 108)
+	box_bg.color = Color(1.0, 1.0, 1.0)
+	panel.add_child(box_bg)
+
+	var box_border = ColorRect.new()
+	box_border.size = Vector2(210, 2)
+	box_border.position = Vector2((VW - 210) / 2, 146)
+	box_border.color = Color(0.55, 0.55, 0.80)
+	panel.add_child(box_border)
+
+	_rival_input = LineEdit.new()
+	_rival_input.size = Vector2(206, 36)
+	_rival_input.position = Vector2((VW - 206) / 2, 110)
+	_rival_input.max_length = 8
+	_rival_input.placeholder_text = "输入她的名字……"
+	_rival_input.add_theme_font_size_override("font_size", 17)
+	_rival_input.text_submitted.connect(_on_rival_confirmed)
+	panel.add_child(_rival_input)
+
+	var confirm_btn = Button.new()
+	confirm_btn.text = "好！"
+	confirm_btn.size = Vector2(110, 32)
+	confirm_btn.position = Vector2((VW - 110) / 2, 164)
+	confirm_btn.pressed.connect(func(): _on_rival_confirmed(_rival_input.text))
+	panel.add_child(confirm_btn)
+
+	var hint = Label.new()
+	hint.text = "（最多 8 个字，Z 确认）"
+	hint.position = Vector2(0, 208)
+	hint.size.x = VW
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override("font_color", Color(0.55, 0.55, 0.70))
+	hint.add_theme_font_size_override("font_size", 10)
+	panel.add_child(hint)
+
+	return panel
+
 # ── 阶段切换 ──────────────────────────────────────────────────────────────────
 func _show_phase(phase: int) -> void:
 	_phase = phase
 	_gender_panel.visible = false
 	_name_panel.visible = false
+	_rival_panel.visible = false
+	_rival_spr.visible = false
 	_dialog_hint.visible = true
 
 	match phase:
-		0:  # 性别选择
+		0:  # 教授开场白
+			_dialog_lbl.text = "\n\n".join(MonDB.dlg_array("opening", "intro_0"))
+		1:  # 性别选择
 			_gender_panel.visible = true
 			_refresh_gender()
 			_dialog_lbl.text = MonDB.dlg("opening", "gender_prompt")
-		1:  # 取名
+		2:  # 玩家取名
 			_name_panel.visible = true
 			_dialog_lbl.text = MonDB.dlg("opening", "name_prompt")
 			_dialog_hint.visible = false
 			_name_input.call_deferred("grab_focus")
-		2:  # 教授第一段：桌上精灵葫芦
+		3:  # 劲敌取名
+			_prof_spr.visible = false
+			var pl = get_node_or_null("prof_name")
+			if pl: pl.visible = false
+			_rival_spr.visible = true
+			_dialog_lbl.text = MonDB.dlg("opening", "rival_name_prompt")
+			_rival_panel.visible = true
+			_dialog_hint.visible = false
+			_rival_input.call_deferred("grab_focus")
+		4:  # 教授介绍小灯鼠
 			_prof_spr.visible = true
-			(get_node_or_null("prof_name") as Label).visible = true
-			_dialog_lbl.text = MonDB.dlg("opening", "intro_1")
-		3:  # 蓝秋秋蹦出
+			var pl = get_node_or_null("prof_name")
+			if pl: pl.visible = true
+			var i1 = MonDB.dlg_array("opening", "intro_1")
+			for i in i1.size():
+				i1[i] = MonDB.dlg_sub(i1[i], {"player": GameState.player_name})
+			_dialog_lbl.text = "\n".join(i1)
+		5:  # 小灯鼠蹦出
 			_dialog_hint.visible = false
 			_start_mon_pop_in()
-		4:  # 教授收尾
+		6:  # 教授收尾
+			var i2 = MonDB.dlg_array("opening", "intro_2")
+			for i in i2.size():
+				i2[i] = MonDB.dlg_sub(i2[i], {"player": GameState.player_name})
 			_dialog_hint.visible = true
-			_dialog_lbl.text = MonDB.dlg("opening", "intro_2")
+			_dialog_lbl.text = "\n\n".join(i2)
 
 func _refresh_gender() -> void:
 	var m_box = _gender_panel.get_node_or_null("男Box")
@@ -318,7 +392,7 @@ func _refresh_gender() -> void:
 	if f_lbl: f_lbl.add_theme_color_override("font_color",
 		Color(0.88, 0.12, 0.48) if _gender == "女" else Color(0.48, 0.48, 0.65))
 
-# ── 蓝秋秋弹出动画 ────────────────────────────────────────────────────────────
+# ── 小灯鼠弹出动画 ────────────────────────────────────────────────────────────
 func _start_mon_pop_in() -> void:
 	_mon_animating = true
 	_mon_anim_t = 0.0
@@ -329,7 +403,7 @@ func _start_mon_pop_in() -> void:
 	tw.tween_property(_mon_spr, "scale", Vector2(1.0, 1.0), 0.70)
 	await tw.finished
 	_mon_animating = false
-	_show_phase(4)
+	_show_phase(6)
 
 func _start_mon_pop_out() -> void:
 	_mon_animating = true
@@ -346,7 +420,7 @@ func _start_mon_pop_out() -> void:
 	await tw2.finished
 	_mon_spr_b.visible = false
 	_mon_animating = false
-	_confirm_starter()
+	request_scene.emit("home", {})
 
 # ── 输入 ──────────────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:
@@ -354,27 +428,40 @@ func _input(event: InputEvent) -> void:
 		return
 
 	match _phase:
-		0:  # 性别选择
+		0:  # 开场白 → 选性别
+			if event.is_action_pressed("ui_accept"):
+				get_viewport().set_input_as_handled()
+				_show_phase(1)
+		1:  # 性别选择
 			if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
 				get_viewport().set_input_as_handled()
 				_gender = "女" if _gender == "男" else "男"
 				_refresh_gender()
 			elif event.is_action_pressed("ui_accept"):
 				get_viewport().set_input_as_handled()
-				_show_phase(1)
-		1:  # 取名
+				_show_phase(2)
+		2:  # 玩家取名
 			if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_menu"):
 				get_viewport().set_input_as_handled()
 				_on_name_confirmed(_name_input.text)
-		2, 3, 4:  # 教授对白
+		3:  # 劲敌取名（两步：输入→确认→再按Z继续）
+			if _rival_panel.visible:
+				if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_menu"):
+					get_viewport().set_input_as_handled()
+					_on_rival_confirmed(_rival_input.text)
+			else:
+				if event.is_action_pressed("ui_accept"):
+					get_viewport().set_input_as_handled()
+					call_deferred("_show_phase", 4)
+		4, 5, 6:  # 教授对白
 			if event.is_action_pressed("ui_accept"):
 				get_viewport().set_input_as_handled()
 				match _phase:
-					2:  # 桌上精灵葫芦 → 蓝秋秋蹦出
-						_show_phase(3)
-					3:  # 动画播放中，忽略
+					4:  # 介绍小灯鼠 → 蹦出动画
+						_show_phase(5)
+					5:  # 动画播放中，忽略
 						pass
-					4:  # 蓝秋秋跳回葫芦
+					6:  # 收尾 → 回家
 						_start_mon_pop_out()
 
 func _on_name_confirmed(text: String) -> void:
@@ -383,111 +470,13 @@ func _on_name_confirmed(text: String) -> void:
 		n = "小明" if _gender == "男" else "小华"
 	GameState.player_name = n
 	GameState.player_gender = _gender
-	_show_phase(2)
+	call_deferred("_show_phase", 3)
 
-# ── 确认初始精灵 ──────────────────────────────────────────────────────────────
-func _confirm_starter() -> void:
-	var mon := MonDB.create_mon(STARTER_SPECIES, STARTER_LEVEL, STARTER_IVS, STARTER_NATURE)
-	mon["gender"] = "female"
-	mon["met_location"] = "命中注定的相遇"
-	GameState.player_team = [mon]
-	GameState.has_starter = true
-	GameState.rival_name = "小敏"
-	GameState.save_game()
-	request_scene.emit("home", {})
-
-# ── fallback 绘图 ─────────────────────────────────────────────────────────────
-func _draw_circle(img: Image, center: Vector2i, radius: int, color: Color) -> void:
-	var r2 = radius * radius
-	for y in range(max(0, center.y - radius), min(img.get_height(), center.y + radius + 1)):
-		for x in range(max(0, center.x - radius), min(img.get_width(), center.x + radius + 1)):
-			if (x - center.x) * (x - center.x) + (y - center.y) * (y - center.y) <= r2:
-				img.set_pixel(x, y, color)
-
-func _draw_professor_fallback() -> Texture2D:
-	var img = Image.create(80, 120, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	var coat = Color(0.96, 0.96, 0.96)
-	var skin = Color(0.92, 0.78, 0.65)
-	var hair = Color(0.62, 0.62, 0.62)
-	var hair_d = Color(0.44, 0.44, 0.44)
-	var dark = Color(0.22, 0.14, 0.09)
-	var pant = Color(0.30, 0.22, 0.16)
-	var beard = Color(0.70, 0.68, 0.66)
-	img.fill_rect(Rect2i(24, 96, 13, 24), pant)
-	img.fill_rect(Rect2i(43, 96, 13, 24), pant)
-	img.fill_rect(Rect2i(16, 40, 48, 58), coat)
-	img.fill_rect(Rect2i(30, 40, 20, 52), dark)
-	img.fill_rect(Rect2i(16, 40, 18, 46), coat)
-	img.fill_rect(Rect2i(46, 40, 18, 46), coat)
-	img.fill_rect(Rect2i(16, 82, 48, 16), coat)
-	img.fill_rect(Rect2i(4, 44, 14, 12), coat)
-	img.fill_rect(Rect2i(4, 54, 12, 10), skin)
-	img.fill_rect(Rect2i(62, 44, 14, 14), coat)
-	img.fill_rect(Rect2i(62, 56, 10, 8), skin)
-	img.fill_rect(Rect2i(60, 60, 18, 26), Color(0.14, 0.14, 0.17))
-	img.fill_rect(Rect2i(62, 62, 14, 22), Color(0.28, 0.52, 0.82))
-	img.fill_rect(Rect2i(34, 44, 12, 6), skin)
-	_draw_circle(img, Vector2i(40, 28), 17, skin)
-	_draw_circle(img, Vector2i(22, 28), 4, skin)
-	_draw_circle(img, Vector2i(58, 28), 4, skin)
-	img.fill_rect(Rect2i(22, 8, 36, 18), hair)
-	_draw_circle(img, Vector2i(40, 14), 16, hair)
-	img.fill_rect(Rect2i(18, 10, 8, 16), hair_d)
-	img.fill_rect(Rect2i(54, 10, 8, 16), hair_d)
-	img.fill_rect(Rect2i(28, 4, 8, 12), hair)
-	img.fill_rect(Rect2i(44, 4, 8, 12), hair)
-	img.fill_rect(Rect2i(36, 2, 8, 10), hair_d)
-	img.fill_rect(Rect2i(25, 20, 11, 3), hair_d)
-	img.fill_rect(Rect2i(44, 20, 11, 3), hair_d)
-	img.fill_rect(Rect2i(27, 24, 9, 5), Color(0.08, 0.06, 0.04))
-	img.fill_rect(Rect2i(29, 24, 5, 4), Color(0.97, 0.97, 0.97))
-	img.fill_rect(Rect2i(30, 25, 3, 3), Color(0.22, 0.14, 0.06))
-	img.fill_rect(Rect2i(44, 24, 9, 5), Color(0.08, 0.06, 0.04))
-	img.fill_rect(Rect2i(46, 24, 5, 4), Color(0.97, 0.97, 0.97))
-	img.fill_rect(Rect2i(47, 25, 3, 3), Color(0.22, 0.14, 0.06))
-	img.fill_rect(Rect2i(37, 30, 6, 6), Color(0.80, 0.66, 0.56))
-	img.fill_rect(Rect2i(24, 34, 32, 14), beard)
-	img.fill_rect(Rect2i(32, 38, 16, 2), Color(0.50, 0.32, 0.28))
-	img.fill_rect(Rect2i(34, 40, 12, 2), Color(0.42, 0.26, 0.22))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	return tex
-
-func _draw_lanqiuqiu_fallback() -> Texture2D:
-	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	# 蓝色鸟身
-	_draw_circle(img, Vector2i(32, 38), 16, Color(0.18, 0.52, 0.92))
-	_draw_circle(img, Vector2i(32, 40), 10, Color(0.60, 0.82, 1.0))
-	_draw_circle(img, Vector2i(32, 22), 14, Color(0.22, 0.58, 0.96))
-	_draw_circle(img, Vector2i(26, 10), 5, Color(0.16, 0.46, 0.86))
-	_draw_circle(img, Vector2i(38, 10), 5, Color(0.16, 0.46, 0.86))
-	_draw_circle(img, Vector2i(26, 10), 2, Color(0.72, 0.92, 1.0))
-	_draw_circle(img, Vector2i(38, 10), 2, Color(0.72, 0.92, 1.0))
-	_draw_circle(img, Vector2i(26, 20), 3, Color(1, 1, 1))
-	_draw_circle(img, Vector2i(38, 20), 3, Color(1, 1, 1))
-	_draw_circle(img, Vector2i(26, 20), 2, Color(0.04, 0.18, 0.52))
-	_draw_circle(img, Vector2i(38, 20), 2, Color(0.04, 0.18, 0.52))
-	_draw_circle(img, Vector2i(32, 26), 2, Color(0.08, 0.38, 0.68))
-	img.fill_rect(Rect2i(44, 36, 14, 6), Color(0.14, 0.48, 0.88))
-	img.fill_rect(Rect2i(56, 34, 4, 8), Color(0.08, 0.42, 0.82))
-	_draw_circle(img, Vector2i(22, 44), 5, Color(0.14, 0.48, 0.88))
-	_draw_circle(img, Vector2i(42, 44), 5, Color(0.14, 0.48, 0.88))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	return tex
-
-func _draw_lanqiuqiu_back_fallback() -> Texture2D:
-	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
-	img.fill(Color(0, 0, 0, 0))
-	_draw_circle(img, Vector2i(32, 40), 16, Color(0.18, 0.52, 0.92))
-	_draw_circle(img, Vector2i(32, 42), 10, Color(0.55, 0.78, 0.98))
-	_draw_circle(img, Vector2i(32, 26), 12, Color(0.20, 0.56, 0.94))
-	img.fill_rect(Rect2i(20, 10, 6, 16), Color(0.14, 0.46, 0.86))
-	img.fill_rect(Rect2i(38, 10, 6, 16), Color(0.14, 0.46, 0.86))
-	_draw_circle(img, Vector2i(38, 52), 6, Color(0.14, 0.46, 0.86))
-	_draw_circle(img, Vector2i(26, 52), 6, Color(0.14, 0.46, 0.86))
-	var tex = ImageTexture.new()
-	tex.set_image(img)
-	return tex
+func _on_rival_confirmed(text: String) -> void:
+	var n = text.strip_edges()
+	if n.is_empty():
+		n = "小敏"
+	GameState.rival_name = n
+	_dialog_lbl.text = MonDB.dlg_sub(MonDB.dlg("opening", "rival_name_confirm"), {"rival": n, "player": GameState.player_name})
+	_rival_panel.visible = false
+	_dialog_hint.visible = true

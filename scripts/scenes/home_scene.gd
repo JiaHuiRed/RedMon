@@ -19,6 +19,8 @@ var _dialog_phase: int = 0
 var _dialog_bubble: DialogBubble
 
 var _mom_spr: Sprite2D
+var _lanqiuqiu_spr: Sprite2D
+var _door_guard: bool = false
 var _stair_hint_2f: Sprite2D  # 2F 下楼箭头
 var _stair_hint_1f: Sprite2D  # 1F 上楼箭头
 var _stair_hint_t: float = 0.0
@@ -34,6 +36,8 @@ const STAIRS1_POS := Vector2(155, 330)  # 260706 Red 1F 楼梯口，对应背景
 const STAIRS2_POS := Vector2(60, 320)   # 2F 楼梯口（对应位置）
 const DOOR_CENTER := Vector2(VW / 2, VH - 18)
 const MOM_POS := Vector2(VW / 2 - 80, VH / 2 + 30)  # 260706 Red 客厅桌旁，远离门口
+const LANQIUQIU_POS := Vector2(740, 340)  # 卧室蓝秋秋位置
+const LANQIUQIU_RADIUS := 35.0
 
 func _ready() -> void:
 	_build_floor1()
@@ -114,6 +118,59 @@ func _build_mom() -> void:
 
 	_add_collider(_floor1, _mom_spr.position, Vector2(24, 24))
 
+# ── 卧室蓝秋秋 ──────────────────────────────────────────────────────────────
+func _build_lanqiuqiu() -> void:
+	var tex_path = "res://assets/sprites/蓝秋秋front.png"
+	if ResourceLoader.exists(tex_path):
+		var tex = load(tex_path)
+		_lanqiuqiu_spr = Sprite2D.new()
+		_lanqiuqiu_spr.texture = tex
+		var s = 70.0 / maxf(tex.get_size().x, tex.get_size().y)
+		_lanqiuqiu_spr.scale = Vector2(s, s)
+		_lanqiuqiu_spr.position = LANQIUQIU_POS
+		_lanqiuqiu_spr.z_index = 5
+		_floor2.add_child(_lanqiuqiu_spr)
+
+		var name_lbl = Label.new()
+		name_lbl.text = "蓝秋秋"
+		name_lbl.position = LANQIUQIU_POS + Vector2(-14, -60)
+		name_lbl.add_theme_font_size_override("font_size", 10)
+		name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
+		_floor2.add_child(name_lbl)
+
+		# Z提示（始终显示，无需信号触发）
+		var prompt := Label.new()
+		prompt.text = "Z 交谈"
+		prompt.position = LANQIUQIU_POS + Vector2(-22, -72)
+		prompt.add_theme_font_size_override("font_size", 10)
+		prompt.add_theme_color_override("font_color", Color(0.95, 0.90, 0.30))
+		_floor2.add_child(prompt)
+
+		# 物理碰撞体（阻挡玩家穿过蓝秋秋）
+		var body := StaticBody2D.new()
+		body.position = LANQIUQIU_POS
+		var col_shape := CollisionShape2D.new()
+		var rect := RectangleShape2D.new()
+		rect.size = Vector2(40, 40)
+		col_shape.shape = rect
+		body.add_child(col_shape)
+		_floor2.add_child(body)
+
+func _confirm_starter() -> void:
+	var mon := MonDB.create_mon("蓝秋秋", 3, {"hp":31,"atk":31,"def":31,"sp_atk":31,"sp_def":31,"spd":31}, "顽皮")
+	mon["gender"] = "female"
+	mon["met_location"] = "命中注定的相遇"
+	GameState.player_team = [mon]
+	GameState.has_starter = true
+	# 存档推迟到玩家关掉确认对话框后才写，避免卡对话时强关落下一个不一致的存档
+
+	if _lanqiuqiu_spr:
+		_lanqiuqiu_spr.queue_free()
+		_lanqiuqiu_spr = null
+
+	_dialog_active = true
+	_dialog_bubble.show(MonDB.dlg("home", "bedroom_confirm"))
+
 func _draw_mom() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0, 0, 0, 0))
@@ -149,6 +206,10 @@ func _build_floor2() -> void:
 	_stair_hint_2f.position = STAIRS2_POS + Vector2(14, -12)
 	_stair_hint_2f.z_index = 4
 	_floor2.add_child(_stair_hint_2f)
+
+	# 蓝秋秋（开场后未拿御三家时在卧室等玩家）
+	if not GameState.has_starter:
+		_build_lanqiuqiu()
 
 func _build_player() -> void:
 	_player = CharacterBody2D.new()
@@ -269,7 +330,27 @@ func _start_mom_dialog() -> void:
 		_dialog_bubble.show("妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。")
 
 func _advance_dialog() -> void:
+	if _door_guard:
+		_door_guard = false
+		_dialog_active = false
+		_dialog_bubble.hide()
+		return
+
 	_dialog_phase += 1
+	if _floor == 2 and not GameState.has_starter:
+		var lines = MonDB.dlg_array("home", "bedroom_lanqiuqiu")
+		if _dialog_phase < lines.size():
+			_dialog_bubble.show(lines[_dialog_phase].replace("{player}", GameState.player_name))
+		elif _dialog_phase == lines.size():
+			_dialog_active = false
+			_dialog_bubble.hide()
+			_confirm_starter()
+		return
+
+	# 选完御三家关掉确认对话框→存档，确保存的时候双方状态一致
+	if GameState.has_starter and _floor == 2:
+		GameState.save_game()
+
 	if not GameState.has_starter:
 		match _dialog_phase:
 			1:
@@ -341,6 +422,11 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if _floor == 1:
 			if _player.position.distance_to(DOOR_CENTER) < 40:
+				if not GameState.has_starter:
+					_dialog_bubble.show("门外传来陈教授的声音：\n「先去看看家里的朋友吧。」")
+					_dialog_active = true
+					_door_guard = true
+					return
 				GameState.last_scene = "home"
 				request_scene.emit("overworld", {"spawn": "home"})
 				return
@@ -351,6 +437,11 @@ func _input(event: InputEvent) -> void:
 				_go_upstairs()
 				return
 		else:
+			if _player.position.distance_to(LANQIUQIU_POS) < LANQIUQIU_RADIUS and not GameState.has_starter:
+				_dialog_active = true
+				_dialog_phase = 0
+				_dialog_bubble.show(MonDB.dlg_array("home", "bedroom_lanqiuqiu")[0].replace("{player}", GameState.player_name))
+				return
 			if _player.position.distance_to(STAIRS2_POS + Vector2(20, 20)) < 45:
 				_go_downstairs()
 				return
