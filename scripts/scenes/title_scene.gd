@@ -109,11 +109,10 @@ func _build_options() -> void:
 	_refresh()
 
 func _route_load_scene() -> String:
-	# 优先用存档记录的场景
 	if not GameState.last_scene.is_empty():
 		return GameState.last_scene
 	if not GameState.has_starter:
-		return "char_create"
+		return "opening"
 	return "overworld"
 
 func _refresh() -> void:
@@ -312,4 +311,4 @@ func _confirm_slot() -> void:
 	else:  # new
 		GameState.current_slot = slot
 		_slot_panel.visible = false
-		request_scene.emit("char_create", {})
+		request_scene.emit("opening", {})

@@ -4,7 +4,7 @@ extends Node2D
 var _current: Node = null
 var _scene_name: String = ""
 # 暂停菜单免检场景（标题/创建角色/选初始精灵）
-const _PAUSE_EXEMPT := ["title", "starter", "char_create", "battle"]
+const _PAUSE_EXEMPT := ["title", "opening", "battle"]
 
 # ── 全局暂停菜单 ──────────────────────────────────────────────
 var _pause_panel: Control
@@ -84,8 +84,7 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		var script: GDScript
 		match scene_name:
 			"title":       script = load("res://scripts/scenes/title_scene.gd")
-			"char_create": script = load("res://scripts/scenes/char_create_scene.gd")
-			"starter":     script = load("res://scripts/scenes/starter_scene.gd")
+			"opening":     script = load("res://scripts/scenes/opening_scene.gd")
 			"home":        script = load("res://scripts/scenes/home_scene.gd")
 			"gym":         script = load("res://scripts/scenes/gym_scene.gd")
 			"battle":      script = load("res://scripts/scenes/battle_scene.gd")

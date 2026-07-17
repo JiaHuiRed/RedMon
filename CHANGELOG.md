@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.25.1] - 2026-07-17
+
+> 开场动画场景重构（opening_scene 替换 starter/char_create）+ 大量精灵数据及贴图追加
+
+### 新增
+- **开场动画新场景**：`opening_scene.gd` 替换原有的 `starter_scene.gd` + `char_create_scene.gd`，统一开场流程
+- **新精灵贴图**：追加剧毒贝/南小鸟/叶瞬光/小维/木木雕/毒刺贝/疾风羽枭 7 只精灵的正背面贴图
+- **大量精灵数据追加**：新增 + 补全多只精灵基础数据（species.json）、NPC 头像图更新、剧情文本补全（dialogs.json）
+
+### 变更
+- **场景路由**：删除 `starter_scene.gd` / `char_create_scene.gd`，相关功能合并至 `opening_scene.gd`
+
+---
+
 ## [0.25.0] - 2026-07-17
 
 > 精灵图鉴数据补全（1-400全量desc/身高体重/性别比/阶位修正）+ 精灵贴图批量抠图（406张AI生图白底→透明背景）

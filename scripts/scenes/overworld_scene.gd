@@ -71,7 +71,7 @@ var TRAINERS:         Array      = []
 var _pending_trainer: Dictionary = {}
 var _rival_done:      bool       = false
 var _rival_node:      Node2D     = null   # 260708 Red 劲敌可见精灵图
-var _prof_event_shown: bool      = false  # 260706 Red 开场教授遇难触发（仅一次）
+var _prof_event_shown: bool      = false  # 260726 Red 旧 starter 流已移除，保留兜底
 var _shenhe_village_done: bool   = false  # 260706 Red 申鹤村内对话已触发
 var _shenhe_grassland_done: bool = false  # 260706 Red 申鹤草原出口对话已触发
 var _shenhe_town_done: bool      = false  # 260706 Red 申鹤碧溪镇对战已完成
@@ -513,9 +513,9 @@ func _advance_dialog() -> void:
 			_dialog_bubble.show("精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？")
 		401:
 			_dialog_active = false; _dialog_bubble.hide(); _open_pcbox()
-		500:  # 260706 Red 开场教授遇难 → 跳 starter_scene
+		500:  # 260726 Red 旧 starter 流已移除，兜底回 opening（正常新游戏不会走到这里）
 			_dialog_active = false; _dialog_bubble.hide()
-			request_scene.emit("starter", {"player_pos": [_player.position.x, _player.position.y]})
+			request_scene.emit("opening", {"player_pos": [_player.position.x, _player.position.y]})
 		600:  # 260706 Red 申鹤碧溪镇对战
 			_dialog_active = false; _dialog_bubble.hide(); _battling = true
 			var shenhe_data = MonDB.trainers.get("shenhe", {})
@@ -597,7 +597,7 @@ func _physics_process(delta: float) -> void:
 			_player.position = old_pos
 	_player.position.x = clamp(_player.position.x, TILE, MAP_W - TILE)
 	_player.position.y = clamp(_player.position.y, TILE, MAP_H - TILE)
-	# 260708 Red 没御三家不能离开青木村
+	# 260726 Red 没御三家不能离开青木村（opening_scene 必给蓝秋秋，此 guard 仅兜底）
 	if not GameState.has_starter and _player.position.x > VILLAGE_END - TILE * 2:
 		_player.position.x = VILLAGE_END - TILE * 2
 	if moved:
@@ -817,6 +817,7 @@ func _check_encounter() -> void:
 	_trigger_encounter()
 
 func _trigger_professor_event() -> void:
+	# 260726 Red 旧 starter 流已移除，正常新游戏不会走到这里；兜底跳 opening
 	if _prof_event_shown or _dialog_active or _battling: return
 	_prof_event_shown = true
 	_show_dialog("林薇：%s，等等！那片草丛危险得很，野生精灵随时会冲出来！
