@@ -491,22 +491,11 @@ func _advance_dialog() -> void:
 			_dialog_active = false; _dialog_bubble.hide(); _pending_trainer = {}
 		200:  # NPC 普通对话翻页
 			_npc_dialog_idx += 1
-			if _npc_dialog_idx < _npc_dialog_lines.size():
-				_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
-			else:
-				_dialog_active = false; _dialog_bubble.hide()
-				_npc_dialog_lines = []; _npc_dialog_idx = 0
-		210:  # 阿婆对话 → 仓库引导
-			_npc_dialog_idx += 1
-			if _npc_dialog_idx < _npc_dialog_lines.size():
-				_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
-			else:
-				_dialog_active = false; _dialog_bubble.hide()
-				_npc_dialog_lines = []; _npc_dialog_idx = 0
-				_show_dialog("阿婆：仓库里的精灵们也都精神着呢！要看看吗？", 211)
-		211:  # 阿婆仓库
+		if _npc_dialog_idx < _npc_dialog_lines.size():
+			_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
+		else:
 			_dialog_active = false; _dialog_bubble.hide()
-			_open_pcbox()
+			_npc_dialog_lines = []; _npc_dialog_idx = 0
 		300:  # 劲敌确认 → 开战
 			_dialog_active = false; _dialog_bubble.hide(); _battling = true
 			_rival_leave()
@@ -695,10 +684,7 @@ func _try_talk_npc(tile: Vector2i) -> void:
 		if not spr.has_meta("npc_tile"): continue
 		var nt: Vector2i = spr.get_meta("npc_tile")
 		if nt == face or nt == tile:
-			if spr.get_meta("npc_name", "") == "阿婆":
-				_handle_granny(); return
-			var dlg: String = spr.get_meta("npc_dialog", "…")
-			# 260706 Red 申鹤专属逻辑
+		if dlg == "__guard_north__":
 			if dlg == "__guard_north__":
 				_handle_north_guard(); return
 			if dlg == "__guard_right__":
@@ -741,9 +727,7 @@ func _handle_lab_visit() -> void:
 	_show_dialog(lines[0], 200)
 
 func _handle_granny() -> void:
-	_npc_dialog_lines = ["阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！"]
-	_npc_dialog_idx = 0
-	_show_dialog(_npc_dialog_lines[0], 210)
+	_show_dialog("阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！", -1)
 
 func _handle_north_guard() -> void:
 	var n := GameState.badges
