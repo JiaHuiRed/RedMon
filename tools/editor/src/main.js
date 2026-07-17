@@ -106,7 +106,7 @@ async function openProjectAt(root) {
     const tab = new def.TabClass(container, state, key, {
       onSave: (fileKey, jsonData) => handleSaveOne(fileKey, jsonData),
       onStatus: setStatus,
-      onModified: (fileKey) => { state.modified[fileKey] = true; updateSaveButton(); },
+      onModified: (fileKey) => { state.modified[fileKey] = true; updateSaveButton(); updateSummary(); },
       saveHistory: (fileKey) => saveHistory(fileKey),
     });
     tabs[key] = tab;
@@ -115,6 +115,7 @@ async function openProjectAt(root) {
   // Render active tab
   tabs[activeTab]?.renderList();
   setStatus(`已加载项目: ${root}`);
+  updateSummary();
   updateSaveButton();
   updateSidebarButtons();
 }
@@ -364,6 +365,16 @@ dom.searchInput.addEventListener("input", (e) => {
 // === Status ===
 function setStatus(msg) {
   dom.statusText.textContent = msg;
+}
+
+function updateSummary() {
+  const el = document.getElementById("status-summary");
+  if (!el || !state.data) return;
+  const sp = (state.data.species || []).length;
+  const mv = (state.data.moves || []).length;
+  const ab = (state.data.abilities || []).length;
+  const it = (state.data.items || []).length;
+  el.textContent = `精灵 ${sp}只  ·  技能 ${mv}个  ·  特性 ${ab}种  ·  道具 ${it}种`;
 }
 
 // === Keyboard Shortcuts ===

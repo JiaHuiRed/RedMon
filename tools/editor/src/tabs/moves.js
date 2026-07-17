@@ -154,29 +154,28 @@ export class MovesTab {
     bind("mv-category", "category"); bind("mv-power", "power");
     bind("mv-accuracy", "accuracy"); bind("mv-pp", "pp");
     bind("mv-priority", "priority"); bind("mv-desc", "desc");
-    // Effect dropdown (manual, not via bind to avoid double-binding)
     const effectEl = document.getElementById("mv-effect");
     if (effectEl) {
-      effectEl.addEventListener("change", function() {
+      effectEl.addEventListener("change", () => {
         this.callbacks.saveHistory(this.fileKey);
-        move.effect = this.value;
+        move.effect = effectEl.value;
         const chanceGroup = document.getElementById("mv-effect-chance-group");
         const valueGroup = document.getElementById("mv-effect-value-group");
-        if (chanceGroup) chanceGroup.style.display = EFFECT_NEEDS_CHANCE.has(this.value) ? "block" : "none";
-        if (valueGroup) valueGroup.style.display = EFFECT_NEEDS_VALUE.has(this.value) ? "block" : "none";
+        if (chanceGroup) chanceGroup.style.display = EFFECT_NEEDS_CHANCE.has(effectEl.value) ? "block" : "none";
+        if (valueGroup) valueGroup.style.display = EFFECT_NEEDS_VALUE.has(effectEl.value) ? "block" : "none";
         this.callbacks.onModified(this.fileKey);
-      }.bind(move));
+      });
     }
-    document.getElementById("mv-effect-chance")?.addEventListener("change", function() {
+    document.getElementById("mv-effect-chance")?.addEventListener("change", (e) => {
       this.callbacks.saveHistory(this.fileKey);
-      move.effect_chance = parseInt(this.value) || 0;
+      move.effect_chance = parseInt(e.target.value) || 0;
       this.callbacks.onModified(this.fileKey);
-    }.bind(move));
-    document.getElementById("mv-effect-value")?.addEventListener("change", function() {
+    });
+    document.getElementById("mv-effect-value")?.addEventListener("change", (e) => {
       this.callbacks.saveHistory(this.fileKey);
-      move.effect_value = parseInt(this.value) || 0;
+      move.effect_value = parseInt(e.target.value) || 0;
       this.callbacks.onModified(this.fileKey);
-    }.bind(move));
+    });
   }
 
   onAdd() {
