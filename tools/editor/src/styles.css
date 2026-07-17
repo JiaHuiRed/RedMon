@@ -617,6 +617,34 @@ input, select, textarea, button {
   gap: 6px;
 }
 
+.enc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.enc-item .ss-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+.enc-item .enc-rate {
+  width: 64px;
+  flex-shrink: 0;
+}
+.enc-item .remove-btn {
+  opacity: 0.4;
+  cursor: pointer;
+  font-size: 14px;
+  border: none;
+  background: none;
+  color: var(--danger);
+  flex-shrink: 0;
+  padding: 4px;
+}
+.enc-item .remove-btn:hover {
+  opacity: 1;
+}
+
 .learn-card {
   display: flex;
   align-items: center;

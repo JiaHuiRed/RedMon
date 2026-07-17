@@ -260,6 +260,19 @@ export class SpeciesTab {
               ${this._renderEncounters(mon)}
             </div>
           </div>
+
+          <!-- Boss Encounter -->
+          <div class="form-section">
+            <div class="section-header">
+              <span class="form-section-title">头目</span>
+            </div>
+            <div id="boss-container">
+              <div class="form-group">
+                <label>头目所在地</label>
+                <input type="text" id="field-boss-location" value="${mon.boss_location || ""}" placeholder="选择地图..." />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -954,15 +967,20 @@ export class SpeciesTab {
       });
     });
 
-    // Encounter field edits
+    // Encounter field edits — location as searchable-select (maps), rate as number
+    const mapNames = (this.state.data.maps || []).map(m => m.name).sort();
     document.querySelectorAll(".enc-location").forEach(input => {
-      input.addEventListener("change", () => {
-        this.callbacks.saveHistory(this.fileKey);
-        const idx = parseInt(input.dataset.idx);
-        if (mon.encounters && mon.encounters[idx]) {
-          mon.encounters[idx].location = input.value;
-          this.callbacks.onModified(this.fileKey);
-        }
+      const idx = parseInt(input.dataset.idx);
+      attachSearchableSelect(input, {
+        items: mapNames,
+        value: input.value,
+        onChange: (v) => {
+          this.callbacks.saveHistory(this.fileKey);
+          if (mon.encounters && mon.encounters[idx]) {
+            mon.encounters[idx].location = v;
+            this.callbacks.onModified(this.fileKey);
+          }
+        },
       });
     });
     document.querySelectorAll(".enc-rate").forEach(input => {
@@ -975,5 +993,19 @@ export class SpeciesTab {
         }
       });
     });
+
+    // Boss location — searchable-select from maps
+    const bossInput = document.getElementById("field-boss-location");
+    if (bossInput) {
+      attachSearchableSelect(bossInput, {
+        items: mapNames,
+        value: mon.boss_location || "",
+        onChange: (v) => {
+          this.callbacks.saveHistory(this.fileKey);
+          mon.boss_location = v || "";
+          this.callbacks.onModified(this.fileKey);
+        },
+      });
+    }
   }
 }
