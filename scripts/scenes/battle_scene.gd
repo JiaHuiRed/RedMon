@@ -22,6 +22,7 @@ var _encounter_area: String = ""
 
 # ── UI references ─────────────────────────────────────────────────────────────
 var _msg_label:        Label
+var _dialog_bubble:    DialogBubble
 var _action_panel:     Control   # 战斗 / 背包 / 精灵 / 逃跑
 var _cmd_menu:         Control   # SV-style vertical command menu (right side)
 var _move_panel:       Control   # 四技能格
@@ -445,34 +446,15 @@ func _build_info_boxes() -> void:
 # BUILD – Message box
 # ══════════════════════════════════════════════════════════════════════════════
 func _build_message_box() -> void:
-	# Outer dark frame
-	var box_bg = Panel.new()
-	box_bg.size     = Vector2(MSG_W, MSG_H + 4)
-	box_bg.position = Vector2(MSG_X, MSG_Y - 2)
-	var outer_style = StyleBoxFlat.new()
-	outer_style.bg_color = Color(0.10, 0.10, 0.14)
-	box_bg.add_theme_stylebox_override("panel", outer_style)
-	add_child(box_bg)
-
-	# Inner cream box with rounded corners
-	var box = Panel.new()
-	box.size     = Vector2(MSG_W - 8, MSG_H - 4)
-	box.position = Vector2(MSG_X + 4, MSG_Y + 1)
-	var inner_style = StyleBoxFlat.new()
-	inner_style.bg_color    = Color(0.97, 0.97, 0.93)
-	inner_style.border_color = Color(0.25, 0.25, 0.30)
-	inner_style.set_border_width_all(2)
-	inner_style.set_corner_radius_all(4)
-	box.add_theme_stylebox_override("panel", inner_style)
-	add_child(box)
-
-	_msg_label = Label.new()
-	_msg_label.position = Vector2(MSG_X + 14, MSG_Y + 6)
-	_msg_label.size = Vector2(MSG_W - 28, MSG_H - 10)
-	_msg_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	# 260717 Red 改用共享的 DialogBubble（scripts/ui/DialogBubble.gd），
+	# 外观参数还原成原本的深色描边+奶油色底的战斗消息框样式
+	_dialog_bubble = DialogBubble.create(self, VW, VH,
+		Vector2(MSG_W, MSG_H + 4), Vector2(MSG_X, MSG_Y - 2),
+		Color(0.97, 0.97, 0.93), Color(0.10, 0.10, 0.14), 4, 4,
+		Color(0.1, 0.1, 0.1), false)
+	_dialog_bubble.panel.show()
+	_msg_label = _dialog_bubble.label
 	_msg_label.add_theme_font_size_override("font_size", 14)
-	_msg_label.add_theme_color_override("font_color", Color(0.1, 0.1, 0.1))
-	add_child(_msg_label)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BUILD – Action panel (战斗 / 背包 / 精灵 / 逃跑)
@@ -525,17 +507,8 @@ func _build_action_panel() -> void:
 		btn.size = Vector2(CMD_CARD_W, CMD_CARD_H)
 		btn.position = Vector2(bx, by)
 		btn.pressed.connect(callbacks[i])
-		btn.focus_mode = Control.FOCUS_NONE
-		var s = StyleBoxFlat.new()
-		s.bg_color = Color(1, 1, 1, 0.95)
-		s.set_corner_radius_all(10)
-		s.border_color = Color(0.7, 0.7, 0.75, 0.5)
-		s.set_border_width_all(1)
-		btn.add_theme_stylebox_override("normal", s)
-		btn.add_theme_stylebox_override("pressed", s)
-		var sh = s.duplicate()
-		sh.bg_color = Color(0.15, 0.15, 0.22, 0.95)
-		btn.add_theme_stylebox_override("hover", sh)
+		UiStyle.style_button(btn, Color(1, 1, 1, 0.95), Color(0.7, 0.7, 0.75, 0.5),
+			10, 1, 0.08, Color(0.15, 0.15, 0.22, 0.95))
 		_cmd_menu.add_child(btn)
 		_action_btns.append(btn)
 

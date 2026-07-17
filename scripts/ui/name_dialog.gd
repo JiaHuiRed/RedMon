@@ -101,17 +101,7 @@ func _make_btn(pos: Vector2, text: String, bg_color: Color) -> Button:
 	var btn = Button.new()
 	btn.position = pos; btn.size = Vector2(120, 40)
 	btn.text = text
-	btn.focus_mode = Control.FOCUS_NONE
-	var s = StyleBoxFlat.new()
-	s.bg_color = bg_color
-	s.set_corner_radius_all(10)
-	s.border_color = C_BORDER
-	s.set_border_width_all(2)
-	btn.add_theme_stylebox_override("normal", s)
-	btn.add_theme_stylebox_override("pressed", s)
-	var sh = s.duplicate()
-	sh.bg_color = Color(bg_color.r + 0.08, bg_color.g + 0.08, bg_color.b + 0.08, bg_color.a)
-	btn.add_theme_stylebox_override("hover", sh)
+	UiStyle.style_button(btn, bg_color, C_BORDER)
 	btn.add_theme_font_size_override("font_size", 16)
 	btn.add_theme_color_override("font_color", C_TEXT)
 	return btn

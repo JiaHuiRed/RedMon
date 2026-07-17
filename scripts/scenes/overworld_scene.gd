@@ -91,12 +91,7 @@ var _bag_cursor:  int    = 0
 
 # 商店
 var SHOP_ITEMS := ["精灵葫芦", "铜丹", "银丹", "金丹", "铁丹"]
-var _shop_active:       bool    = false
-var _shop_cursor:       int     = 0
-var _shop_qty:          int     = 1
-var _shop_panel:        Control
-var _shop_result_label: Label
-var _shop_qty_label:    Label
+var _shop: ShopPanel
 
 # 精灵仓库
 const PCBOX_ROWS  := 8
@@ -123,10 +118,7 @@ const PC_STAT_COLORS := [
 ]
 const PC_STAT_KEYS  := ["hp","atk","def","sp_atk","sp_def","spd"]
 const PC_STAT_NAMES := ["HP","攻击","防御","特攻","特防","速度"]
-var _pcbox_active: bool = false
-var _pcbox_cursor: int  = 0
-var _pcbox_scroll: int  = 0
-var _pcbox_panel:  Control
+var _pcbox: PcBoxList
 
 var _tree_tex: ImageTexture = null  # 树纹理缓存
 
@@ -150,8 +142,9 @@ func _ready() -> void:
 	_build_hud()
 	_build_dialog()
 	_build_menu()
-	_build_shop_panel()
-	_build_pcbox_panel()
+	_shop = ShopPanel.create(self, SHOP_ITEMS)
+	_pcbox = PcBoxList.create(self, PCBOX_ROWS, Vector2(340, 55), Vector2(280, 260), 22, "↑↓选择  Z查看  Esc离开")
+	_build_pcbox_detail()
 	# 260708 Red 战败处理：菜字动画 → 传送精灵堂 → 扣金币 → 满血
 	var data = get_meta("scene_data", {})
 	if data.get("battle_result", "") == "lose":
@@ -595,7 +588,7 @@ func _advance_dialog() -> void:
 
 # ── 移动 & 输入 ───────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _battling or _dialog_active or _shop_active or _pcbox_active or _menu_active or _party_active: return
+	if _battling or _dialog_active or _shop.is_active() or _pcbox.is_active() or _menu_active or _party_active: return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
@@ -658,16 +651,16 @@ func _input(event: InputEvent) -> void:
 	# 260709 Red 菜单统一由 main.gd 全局暂停菜单处理，overworld 不再拦截 ui_menu
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
-		if _shop_active:  _close_shop(); return
-		if _pcbox_active: _close_pcbox(); return
+		if _shop.is_active():  _close_shop(); return
+		if _pcbox.is_active(): _close_pcbox(); return
 		if _dialog_active: return
 		return
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled(); _advance_dialog()
 		return
-	if _shop_active:  _handle_shop_nav(event); return
-	if _pcbox_active: _handle_pcbox_nav(event); return
+	if _shop.is_active():  _handle_shop_nav(event); return
+	if _pcbox.is_active(): _handle_pcbox_nav(event); return
 	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled(); _try_interact()
 
@@ -967,187 +960,105 @@ func _heal_all_mons() -> void:
 	AudioManager.play_me(AudioManager.ME_HEAL)
 
 # ── 商店 ──────────────────────────────────────────────────────────────────────
-func _build_shop_panel() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
-	_shop_panel = Control.new(); _shop_panel.visible = false; cl.add_child(_shop_panel)
-	var bg = ColorRect.new(); bg.size = Vector2(220, 220); bg.position = Vector2(130, 60)
-	bg.color = Color(0.04, 0.06, 0.18, 0.96); _shop_panel.add_child(bg)
-	var bd = ColorRect.new(); bd.size = Vector2(220, 2); bd.position = Vector2(130, 60)
-	bd.color = Color(0.50, 0.70, 1.0); _shop_panel.add_child(bd)
-	var tl = Label.new(); tl.text = "■ 杂货铺"; tl.position = Vector2(142, 66)
-	tl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-	tl.add_theme_font_size_override("font_size", 12); _shop_panel.add_child(tl)
-	var ml = Label.new(); ml.name = "ShopMoney"; ml.position = Vector2(268, 66)
-	ml.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-	ml.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(ml)
-	for i in range(SHOP_ITEMS.size()):
-		var rl = Label.new(); rl.name = "ShopRow%d" % i; rl.position = Vector2(142, 90 + i * 22)
-		rl.add_theme_font_size_override("font_size", 11); _shop_panel.add_child(rl)
-	_shop_qty_label = Label.new()
-	_shop_qty_label.position = Vector2(142, 90 + SHOP_ITEMS.size() * 22 + 6)
-	_shop_qty_label.add_theme_font_size_override("font_size", 11)
-	_shop_qty_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5))
-	_shop_panel.add_child(_shop_qty_label)
-	_shop_result_label = Label.new()
-	_shop_result_label.position = Vector2(142, 90 + SHOP_ITEMS.size() * 22 + 24)
-	_shop_result_label.add_theme_font_size_override("font_size", 10)
-	_shop_result_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
-	_shop_panel.add_child(_shop_result_label)
-	var hl = Label.new(); hl.text = "↑↓选择 ←→数量 Enter购买 Esc离开"
-	hl.position = Vector2(134, 264)
-	hl.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
-	hl.add_theme_font_size_override("font_size", 9); _shop_panel.add_child(hl)
-
-func _open_shop() -> void:
-	_shop_active = true; _shop_cursor = 0; _shop_qty = 1
-	_shop_result_label.text = ""; _shop_panel.visible = true; _refresh_shop()
-func _close_shop() -> void: _shop_active = false; _shop_panel.visible = false
-
-func _refresh_shop() -> void:
-	var ml = _shop_panel.get_node_or_null("ShopMoney")
-	if ml: ml.text = "%dG" % GameState.money
-	for i in range(SHOP_ITEMS.size()):
-		var key = SHOP_ITEMS[i]; var def = MonDB.items.get(key, {})
-		var row = _shop_panel.get_node_or_null("ShopRow%d" % i); if not row: continue
-		var sel = (i == _shop_cursor)
-		row.text = "%s%s  %dG  持有x%d" % ["▶ " if sel else "  ", def.get("name", key), def.get("price", 0), GameState.items.get(key, 0)]
-		row.add_theme_color_override("font_color", Color.WHITE if sel else Color(0.70, 0.70, 0.85))
-	var cd = MonDB.items.get(SHOP_ITEMS[_shop_cursor], {})
-	_shop_qty_label.text = "数量: ×%d   共计 %dG" % [_shop_qty, cd.get("price", 0) * _shop_qty]
-
-func _shop_buy() -> void:
-	var key = SHOP_ITEMS[_shop_cursor]; var def = MonDB.items.get(key, {})
-	var total = def.get("price", 0) * _shop_qty
-	if GameState.money < total: _shop_result_label.text = "钱不够！"; return
-	GameState.money -= total; GameState.items[key] = GameState.items.get(key, 0) + _shop_qty
-	_shop_result_label.text = "购买了%s ×%d！" % [def.get("name", key), _shop_qty]
-	_shop_qty = 1; _refresh_shop()
-
+# 建面板/刷新/翻页逻辑已抽到 scripts/ui/ShopPanel.gd，与 town_scene 共用
+func _open_shop() -> void: _shop.open()
+func _close_shop() -> void: _shop.close()
 func _handle_shop_nav(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_up"):
-		get_viewport().set_input_as_handled()
-		_shop_cursor = (_shop_cursor - 1 + SHOP_ITEMS.size()) % SHOP_ITEMS.size()
-		_shop_qty = 1; _shop_result_label.text = ""; _refresh_shop()
-	elif event.is_action_pressed("ui_down"):
-		get_viewport().set_input_as_handled()
-		_shop_cursor = (_shop_cursor + 1) % SHOP_ITEMS.size()
-		_shop_qty = 1; _shop_result_label.text = ""; _refresh_shop()
-	elif event.is_action_pressed("ui_left"):
-		get_viewport().set_input_as_handled(); _shop_qty = max(1, _shop_qty-1); _shop_result_label.text = ""; _refresh_shop()
-	elif event.is_action_pressed("ui_right"):
-		get_viewport().set_input_as_handled(); _shop_qty = min(99, _shop_qty+1); _shop_result_label.text = ""; _refresh_shop()
-	elif event.is_action_pressed("ui_accept"):
-		get_viewport().set_input_as_handled(); _shop_buy()
+	if _shop.handle_nav(event): get_viewport().set_input_as_handled()
 
 # ── PCBox ─────────────────────────────────────────────────────────────────────
-func _build_pcbox_panel() -> void:
-	var cl = CanvasLayer.new(); cl.layer = 11; add_child(cl)
-	_pcbox_panel = Control.new(); _pcbox_panel.visible = false; cl.add_child(_pcbox_panel)
-	# ── 列表面板 ──
-	var bg = ColorRect.new(); bg.size = Vector2(280, 260); bg.position = Vector2(340, 55)
-	bg.color = Color(0.075, 0.102, 0.157); _pcbox_panel.add_child(bg)
-	var bd = ColorRect.new(); bd.size = Vector2(280, 2); bd.position = Vector2(340, 55)
-	bd.color = Color(0.388, 0.588, 0.929); _pcbox_panel.add_child(bd)
-	var tl = Label.new(); tl.text = "■ 精灵仓库"; tl.position = Vector2(352, 62)
-	tl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-	tl.add_theme_font_size_override("font_size", 12); _pcbox_panel.add_child(tl)
-	for i in range(PCBOX_ROWS):
-		var rl = Label.new(); rl.name = "PcRow%d" % i; rl.position = Vector2(352, 88 + i * 20)
-		rl.add_theme_font_size_override("font_size", 10); _pcbox_panel.add_child(rl)
-	# ── 详情面板 ──
+# 列表部分（建面板/滚动裁剪/翻页）已抽到 scripts/ui/PcBoxList.gd，与 town_scene /
+# village_scene 共用；详情视图是 overworld 独有的，叠加在 _pcbox.panel 之上
+func _build_pcbox_detail() -> void:
+	var pn = _pcbox.panel
 	var CX = 230; var CY = 22; var CW = 600; var CH = 380
 	var dbg = ColorRect.new(); dbg.name = "PcDetailBg"
 	dbg.size = Vector2(CW, CH); dbg.position = Vector2(CX, CY)
-	dbg.color = Color(0.075, 0.102, 0.157); dbg.hide(); _pcbox_panel.add_child(dbg)
+	dbg.color = Color(0.075, 0.102, 0.157); dbg.hide(); pn.add_child(dbg)
 	# 顶部色条
 	var tb = ColorRect.new(); tb.name = "PcD_TopBar"
-	tb.size = Vector2(CW, 3); tb.position = Vector2(CX, CY); tb.hide(); _pcbox_panel.add_child(tb)
+	tb.size = Vector2(CW, 3); tb.position = Vector2(CX, CY); tb.hide(); pn.add_child(tb)
 	# 精灵肖像区
 	var sbg = ColorRect.new(); sbg.name = "PcD_SpriteBg"
 	sbg.size = Vector2(174, 174); sbg.position = Vector2(CX+16, CY+14)
-	sbg.color = Color(0.102, 0.133, 0.196); sbg.hide(); _pcbox_panel.add_child(sbg)
+	sbg.color = Color(0.102, 0.133, 0.196); sbg.hide(); pn.add_child(sbg)
 	var spr = TextureRect.new(); spr.name = "PcD_Sprite"
 	spr.size = Vector2(174, 174); spr.position = Vector2(CX+16, CY+14)
 	spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	spr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	spr.hide(); _pcbox_panel.add_child(spr)
+	spr.hide(); pn.add_child(spr)
 	# 右侧信息区
 	var rx = CX + 206
 	var name_l = Label.new(); name_l.name = "PcD_Name"
-	name_l.position = Vector2(rx, CY+12); name_l.hide(); _pcbox_panel.add_child(name_l)
+	name_l.position = Vector2(rx, CY+12); name_l.hide(); pn.add_child(name_l)
 	var lv_l = Label.new(); lv_l.name = "PcD_Lv"
-	lv_l.position = Vector2(rx, CY+38); lv_l.hide(); _pcbox_panel.add_child(lv_l)
+	lv_l.position = Vector2(rx, CY+38); lv_l.hide(); pn.add_child(lv_l)
 	# 属性徽章
 	var tx = rx; var ty = CY+62
 	for j in range(2):
 		var tbg = ColorRect.new(); tbg.name = "PcD_TBadge%d" % j
 		tbg.size = Vector2(56, 22); tbg.position = Vector2(tx + j*62, ty)
-		tbg.hide(); _pcbox_panel.add_child(tbg)
+		tbg.hide(); pn.add_child(tbg)
 		var tl2 = Label.new(); tl2.name = "PcD_TLabel%d" % j
 		tl2.position = Vector2(tx + j*62 + 6, ty+2); tl2.hide()
 		tl2.add_theme_font_size_override("font_size", 12)
 		tl2.add_theme_color_override("font_color", Color.WHITE)
-		_pcbox_panel.add_child(tl2)
+		pn.add_child(tl2)
 	var ab_l = Label.new(); ab_l.name = "PcD_Ability"
-	ab_l.position = Vector2(rx, CY+90); ab_l.hide(); _pcbox_panel.add_child(ab_l)
+	ab_l.position = Vector2(rx, CY+90); ab_l.hide(); pn.add_child(ab_l)
 	var no_l = Label.new(); no_l.name = "PcD_No"
-	no_l.position = Vector2(rx, CY+112); no_l.hide(); _pcbox_panel.add_child(no_l)
+	no_l.position = Vector2(rx, CY+112); no_l.hide(); pn.add_child(no_l)
 	# 性格
 	var nat_l = Label.new(); nat_l.name = "PcD_Nature"
 	nat_l.position = Vector2(rx, CY+124); nat_l.hide()
 	nat_l.add_theme_font_size_override("font_size", 11)
 	nat_l.add_theme_color_override("font_color", Color(0.60, 0.70, 0.85))
-	_pcbox_panel.add_child(nat_l)
+	pn.add_child(nat_l)
 	# 六围条（6 行）
 	for si in range(6):
 		var sy = CY + 138 + si * 22
 		var sn = Label.new(); sn.name = "PcD_SName%d" % si
 		sn.position = Vector2(rx, sy); sn.hide()
-		sn.add_theme_font_size_override("font_size", 11); _pcbox_panel.add_child(sn)
+		sn.add_theme_font_size_override("font_size", 11); pn.add_child(sn)
 		var sv = Label.new(); sv.name = "PcD_SVal%d" % si
 		sv.position = Vector2(rx + 38, sy); sv.hide()
-		sv.add_theme_font_size_override("font_size", 11); _pcbox_panel.add_child(sv)
+		sv.add_theme_font_size_override("font_size", 11); pn.add_child(sv)
 		var sb = ColorRect.new(); sb.name = "PcD_SBar%d" % si
 		sb.size = Vector2(210, 8); sb.position = Vector2(rx + 80, sy + 2)
-		sb.color = Color(0.12, 0.16, 0.24); sb.hide(); _pcbox_panel.add_child(sb)
+		sb.color = Color(0.12, 0.16, 0.24); sb.hide(); pn.add_child(sb)
 		var sf = ColorRect.new(); sf.name = "PcD_SFill%d" % si
 		sf.size = Vector2(0, 8); sf.position = Vector2(rx + 80, sy + 2)
-		sf.hide(); _pcbox_panel.add_child(sf)
+		sf.hide(); pn.add_child(sf)
 		var si_l = Label.new(); si_l.name = "PcD_SIv%d" % si
 		si_l.position = Vector2(rx + 296, sy); si_l.hide()
 		si_l.add_theme_font_size_override("font_size", 9)
 		si_l.add_theme_color_override("font_color", Color(0.44, 0.53, 0.64))
-		_pcbox_panel.add_child(si_l)
+		pn.add_child(si_l)
 	# 技能
 	var mv_l = Label.new(); mv_l.name = "PcD_Moves"
-	mv_l.position = Vector2(CX+16, CY+210); mv_l.hide(); _pcbox_panel.add_child(mv_l)
+	mv_l.position = Vector2(CX+16, CY+210); mv_l.hide(); pn.add_child(mv_l)
 	# 身高体重
 	var hw_l = Label.new(); hw_l.name = "PcD_HW"
-	hw_l.position = Vector2(CX+16, CY+240); hw_l.hide(); _pcbox_panel.add_child(hw_l)
+	hw_l.position = Vector2(CX+16, CY+240); hw_l.hide(); pn.add_child(hw_l)
 	# 描述
 	var dc_l = RichTextLabel.new(); dc_l.name = "PcD_Desc"
 	dc_l.position = Vector2(CX+16, CY+260); dc_l.size = Vector2(CW-32, 80)
 	dc_l.custom_minimum_size = Vector2(CW-32, 80)
 	dc_l.bbcode_enabled = false; dc_l.fit_content = false; dc_l.scroll_active = false
-	dc_l.hide(); _pcbox_panel.add_child(dc_l)
+	dc_l.hide(); pn.add_child(dc_l)
 	# 底部提示
 	var ht_l = Label.new(); ht_l.name = "PcD_Hint"
-	ht_l.position = Vector2(CX+16, CY+356); ht_l.hide(); _pcbox_panel.add_child(ht_l)
-	# 列表底部提示
-	var hl = Label.new(); hl.text = "↑↓选择  Z查看  Esc离开"; hl.position = Vector2(352, 300)
-	hl.add_theme_color_override("font_color", Color(0.52, 0.52, 0.66))
-	hl.add_theme_font_size_override("font_size", 9); _pcbox_panel.add_child(hl)
+	ht_l.position = Vector2(CX+16, CY+356); ht_l.hide(); pn.add_child(ht_l)
 
 func _open_pcbox() -> void:
-	_pcbox_active = true; _pcbox_cursor = 0; _pcbox_scroll = 0
-	_pcbox_panel.visible = true; _refresh_pcbox(); _pcbox_show_list()
-func _close_pcbox() -> void: _pcbox_active = false; _pcbox_panel.visible = false
+	_pcbox.open(); _pcbox_show_list()
+func _close_pcbox() -> void: _pcbox.close()
 
 var _pcbox_viewing: bool = false
 
 func _pcbox_show_list() -> void:
 	_pcbox_viewing = false
-	var pn = _pcbox_panel
+	var pn = _pcbox.panel
 	for c in [pn.get_node("PcDetailBg"), pn.get_node("PcD_TopBar"),
 			pn.get_node("PcD_SpriteBg"), pn.get_node("PcD_Sprite"),
 			pn.get_node("PcD_Name"), pn.get_node("PcD_Lv"),
@@ -1165,30 +1076,12 @@ func _pcbox_show_list() -> void:
 		var r = pn.get_node_or_null("PcRow%d" % i)
 		if r: r.show()
 
-func _refresh_pcbox() -> void:
-	var box = GameState.pc_box
-	if box.is_empty():
-		for i in range(PCBOX_ROWS):
-			var r = _pcbox_panel.get_node_or_null("PcRow%d" % i)
-			if r: r.text = ("仓库里还没有精灵" if i == 0 else "")
-		return
-	if _pcbox_cursor < _pcbox_scroll: _pcbox_scroll = _pcbox_cursor
-	elif _pcbox_cursor > _pcbox_scroll + PCBOX_ROWS - 1: _pcbox_scroll = _pcbox_cursor - PCBOX_ROWS + 1
-	_pcbox_scroll = clampi(_pcbox_scroll, 0, max(0, box.size() - PCBOX_ROWS))
-	for i in range(PCBOX_ROWS):
-		var row = _pcbox_panel.get_node_or_null("PcRow%d" % i); var idx = _pcbox_scroll + i
-		if idx >= box.size(): if row: row.text = ""; continue
-		var mon = box[idx]; var sel = (idx == _pcbox_cursor)
-		if row:
-			row.text = "%s%s  Lv.%2d" % ["▶ " if sel else "  ", MonDB.display_name(mon), mon["level"]]
-			row.add_theme_color_override("font_color", Color.WHITE if sel else Color(0.70, 0.70, 0.85))
-
 func _show_pcbox_detail(mon: Dictionary) -> void:
 	_pcbox_viewing = true
+	var pn = _pcbox.panel
 	for i in range(PCBOX_ROWS):
-		var r = _pcbox_panel.get_node_or_null("PcRow%d" % i)
+		var r = pn.get_node_or_null("PcRow%d" % i)
 		if r: r.hide()
-	var pn = _pcbox_panel
 	var sp = MonDB.species.get(mon.get("species_id",""), {})
 	var t1 = sp.get("type1","空"); var t2 = sp.get("type2","")
 	var tc = PC_TYPE_COLORS.get(t1, Color(0.50,0.50,0.50))
@@ -1295,16 +1188,13 @@ func _handle_pcbox_nav(event: InputEvent) -> void:
 		if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
 			get_viewport().set_input_as_handled(); _pcbox_show_list(); return
 		return
-	if event.is_action_pressed("ui_up"):
-		get_viewport().set_input_as_handled(); _pcbox_cursor = max(0, _pcbox_cursor-1); _refresh_pcbox()
-	elif event.is_action_pressed("ui_down"):
-		get_viewport().set_input_as_handled()
-		_pcbox_cursor = min(max(0, GameState.pc_box.size()-1), _pcbox_cursor+1); _refresh_pcbox()
-	elif event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
 		var box = GameState.pc_box
-		if _pcbox_cursor < box.size():
-			_show_pcbox_detail(box[_pcbox_cursor])
+		if _pcbox.cursor < box.size():
+			_show_pcbox_detail(box[_pcbox.cursor])
+	elif _pcbox.handle_nav(event):
+		get_viewport().set_input_as_handled()
 
 # ── 菜单 ──────────────────────────────────────────────────────────────────────
 func _build_menu() -> void:

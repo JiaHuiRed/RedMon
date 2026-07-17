@@ -5,19 +5,19 @@
     "type1": "木",
     "type2": "",
     "base": {
-      "hp": 55,
-      "atk": 65,
-      "def": 49,
-      "sp_atk": 20,
-      "sp_def": 65,
-      "spd": 46
+      "hp": 59,
+      "atk": 68,
+      "def": 54,
+      "sp_atk": 21,
+      "sp_def": 57,
+      "spd": 50
     },
     "catch_rate": 45,
     "exp_yield": 64,
     "growth_rate": "早熟",
     "desc": "圆滚滚的竹林小熊，以竹叶为食，浑身毛茸茸的。天生能感应草木之灵气，憨态可掬。最爱做的事就是抱着竹子打滚晒太阳。",
     "tier": "凡",
-    "gender_ratio": "87.5/12.5",
+    "gender_ratio": "70/30",
     "height": "0.7",
     "weight": "32",
     "evolutions": [
@@ -53,19 +53,19 @@
     "type1": "木",
     "type2": "格",
     "base": {
-      "hp": 80,
-      "atk": 88,
-      "def": 63,
+      "hp": 85,
+      "atk": 93,
+      "def": 77,
       "sp_atk": 25,
-      "sp_def": 80,
-      "spd": 65
+      "sp_def": 71,
+      "spd": 68
     },
     "catch_rate": 45,
     "exp_yield": 142,
     "growth_rate": "早熟",
     "desc": "熟习竹林功法的少年熊，拳风带着草木之力，憨厚中透着认真。每天在竹林中练习基础拳法，据说它的拳头能让千年古竹为之断裂。",
     "tier": "灵",
-    "gender_ratio": "50/50",
+    "gender_ratio": "70/30",
     "height": "1.2",
     "weight": "65.5",
     "evolutions": [
@@ -108,12 +108,12 @@
     "type1": "木",
     "type2": "格",
     "base": {
-      "hp": 102,
-      "atk": 101,
-      "def": 90,
+      "hp": 109,
+      "atk": 108,
+      "def": 103,
       "sp_atk": 41,
-      "sp_def": 100,
-      "spd": 85
+      "sp_def": 91,
+      "spd": 91
     },
     "catch_rate": 45,
     "exp_yield": 240,
@@ -176,10 +176,10 @@
     "type1": "火",
     "type2": "",
     "base": {
-      "hp": 50,
-      "atk": 55,
+      "hp": 47,
+      "atk": 59,
       "def": 36,
-      "sp_atk": 50,
+      "sp_atk": 59,
       "sp_def": 35,
       "spd": 65
     },
@@ -224,12 +224,12 @@
     "type1": "火",
     "type2": "",
     "base": {
-      "hp": 70,
-      "atk": 73,
-      "def": 58,
-      "sp_atk": 70,
+      "hp": 68,
+      "atk": 78,
+      "def": 53,
+      "sp_atk": 78,
       "sp_def": 52,
-      "spd": 81
+      "spd": 87
     },
     "catch_rate": 45,
     "exp_yield": 142,
@@ -279,12 +279,12 @@
     "type1": "火",
     "type2": "暗",
     "base": {
-      "hp": 78,
-      "atk": 102,
-      "def": 67,
-      "sp_atk": 98,
-      "sp_def": 67,
-      "spd": 105
+      "hp": 81,
+      "atk": 105,
+      "def": 72,
+      "sp_atk": 105,
+      "sp_def": 72,
+      "spd": 109
     },
     "catch_rate": 45,
     "exp_yield": 240,
@@ -453,9 +453,9 @@
       "hp": 90,
       "atk": 45,
       "def": 100,
-      "sp_atk": 108,
+      "sp_atk": 115,
       "sp_def": 105,
-      "spd": 76
+      "spd": 90
     },
     "catch_rate": 45,
     "exp_yield": 240,

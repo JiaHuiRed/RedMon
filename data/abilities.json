@@ -1,10 +1,4 @@
 {
-  "恶臭": {
-    "desc": "攻击有几率使目标畏缩。",
-    "effect": "",
-    "category": "常规实用",
-    "name": "恶臭"
-  },
   "降雨": {
     "desc": "出场时把天气变为下雨。",
     "effect": "weather",
@@ -39,19 +33,14 @@
     "desc": "每回合结束自身速度提升一段。",
     "effect": "stat_boost_passive",
     "category": "特殊机制",
-    "name": "加速"
+    "name": "加速",
+    "stage": 1
   },
   "结实": {
     "desc": "满血时被一击必杀的攻击不会被秒杀，至少留1点HP。",
     "effect": "damage_reduce",
     "category": "防御减伤",
     "name": "结实"
-  },
-  "湿气": {
-    "desc": "免疫火系灼伤，也会让灼伤类招式对自己失效。",
-    "effect": "immune_status",
-    "category": "状态触发",
-    "name": "湿气"
   },
   "柔软": {
     "desc": "免疫麻痹状态。",
@@ -63,7 +52,8 @@
     "desc": "沙暴天气中回避率提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "沙隐"
+    "name": "沙隐",
+    "stage": 1
   },
   "静电": {
     "desc": "被物理接触攻击后有几率使对方麻痹。",
@@ -93,7 +83,8 @@
     "desc": "命中率提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "复眼"
+    "name": "复眼",
+    "stage": 1
   },
   "不眠": {
     "desc": "免疫睡眠状态。",
@@ -117,7 +108,8 @@
     "desc": "受到火系招式攻击时无伤害，自身火系招式威力提升。",
     "effect": "immune_type",
     "category": "防御减伤",
-    "name": "引火"
+    "name": "引火",
+    "stage": 1
   },
   "鳞粉": {
     "desc": "对方招式的追加异常状态几率降低。",
@@ -141,7 +133,8 @@
     "desc": "出场时使对方攻击下降一段。",
     "effect": "on_switch_in",
     "category": "出场交换",
-    "name": "威吓"
+    "name": "威吓",
+    "stage": -1
   },
   "踩影": {
     "desc": "使对方无法通过特性或招式逃走/被换下。",
@@ -201,19 +194,22 @@
     "desc": "招式附加效果的发动几率提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "天恩"
+    "name": "天恩",
+    "stage": 1
   },
   "悠游自如": {
     "desc": "下雨天气中速度翻倍。",
     "effect": "weather",
     "category": "天气场地",
-    "name": "悠游自如"
+    "name": "悠游自如",
+    "stage": 5
   },
   "叶绿素": {
     "desc": "大晴天天气中速度翻倍。",
     "effect": "weather",
     "category": "天气场地",
-    "name": "叶绿素"
+    "name": "叶绿素",
+    "stage": 5
   },
   "发光": {
     "desc": "不会被沙尘暴/黑雾等效果影响视野，防止逃跑失败。",
@@ -231,7 +227,8 @@
     "desc": "物理攻击力翻倍。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "大力士"
+    "name": "大力士",
+    "stage": 2
   },
   "毒刺": {
     "desc": "被物理接触攻击后有几率使对方中毒。",
@@ -285,7 +282,8 @@
     "desc": "受到的火系与冰系招式伤害减半。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "厚脂肪"
+    "name": "厚脂肪",
+    "stage": -3
   },
   "早起": {
     "desc": "睡眠状态解除所需回合数减少。",
@@ -315,7 +313,8 @@
     "desc": "使用夹住类连续伤害招式的威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "怪力钳"
+    "name": "怪力钳",
+    "stage": 1
   },
   "拾取": {
     "desc": "战斗结束后有几率捡到道具。",
@@ -323,17 +322,13 @@
     "category": "常规实用",
     "name": "拾取"
   },
-  "懒惰": {
-    "desc": "每隔一回合才能行动一次。",
-    "effect": "other",
-    "category": "常规实用",
-    "name": "懒惰"
-  },
   "活力": {
     "desc": "物理攻击力提升，但物理招式命中率下降。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "活力"
+    "name": "活力",
+    "stage": 1,
+    "stage2": -1
   },
   "迷人之躯": {
     "desc": "被物理接触攻击后有几率使对方着迷。",
@@ -345,13 +340,15 @@
     "desc": "我方场上有相同电系辅助特性精灵时特攻提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "正电"
+    "name": "正电",
+    "stage": 1
   },
   "负电": {
     "desc": "我方场上有相同电系辅助特性精灵时特攻提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "负电"
+    "name": "负电",
+    "stage": 1
   },
   "天气预知": {
     "desc": "会根据天气变化改变自身属性。",
@@ -375,13 +372,15 @@
     "desc": "处于异常状态时物理攻击力提升。",
     "effect": "stat_boost_passive",
     "category": "状态触发",
-    "name": "毅力"
+    "name": "毅力",
+    "stage": 1
   },
   "神奇鳞片": {
     "desc": "处于异常状态时防御力提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "神奇鳞片"
+    "name": "神奇鳞片",
+    "stage": 1
   },
   "臭液": {
     "desc": "被吸取HP类招式攻击时反而使对方受到伤害。",
@@ -393,25 +392,29 @@
     "desc": "HP过低时草系招式威力提升。",
     "effect": "stat_boost_low_hp",
     "category": "攻击强化",
-    "name": "茂盛"
+    "name": "茂盛",
+    "stage": 1
   },
   "猛火": {
     "desc": "HP过低时火系招式威力提升。",
     "effect": "stat_boost_low_hp",
     "category": "攻击强化",
-    "name": "猛火"
+    "name": "猛火",
+    "stage": 1
   },
   "激流": {
     "desc": "HP过低时水系招式威力提升。",
     "effect": "stat_boost_low_hp",
     "category": "攻击强化",
-    "name": "激流"
+    "name": "激流",
+    "stage": 1
   },
   "虫之预感": {
     "desc": "HP过低时虫系招式威力提升。",
     "effect": "stat_boost_low_hp",
     "category": "攻击强化",
-    "name": "虫之预感"
+    "name": "虫之预感",
+    "stage": 1
   },
   "坚硬脑袋": {
     "desc": "免疫使用招式产生的反作用力伤害。",
@@ -441,7 +444,9 @@
     "desc": "物理攻击力翻倍，但HP上限减半。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "瑜伽之力"
+    "name": "瑜伽之力",
+    "stage": 2,
+    "stage2": -2
   },
   "硬壳盔甲": {
     "desc": "免疫要害命中。",
@@ -459,25 +464,30 @@
     "desc": "受到电系招式攻击时无伤害，自身速度提升。",
     "effect": "immune_type",
     "category": "防御减伤",
-    "name": "电气引擎"
+    "name": "电气引擎",
+    "stage": 1
   },
   "好胜": {
     "desc": "对同性别对手造成的伤害提升，对异性别对手伤害降低。",
     "effect": "damage_boost",
     "category": "状态触发",
-    "name": "好胜"
+    "name": "好胜",
+    "stage": 1,
+    "stage2": -1
   },
   "不屈之心": {
     "desc": "能力等级被降低后本回合速度提升。",
     "effect": "stat_boost_passive",
     "category": "状态触发",
-    "name": "不屈之心"
+    "name": "不屈之心",
+    "stage": 1
   },
   "雪隐": {
     "desc": "冰雹天气中回避率提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "雪隐"
+    "name": "雪隐",
+    "stage": 1
   },
   "贪吃鬼": {
     "desc": "在HP较高时也能提前使用树果类道具。",
@@ -489,19 +499,22 @@
     "desc": "被打出会心一击后攻击力大幅提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "愤怒穴位"
+    "name": "愤怒穴位",
+    "stage": 2
   },
   "轻装": {
     "desc": "持有的道具被消耗或夺取后速度翻倍。",
     "effect": "stat_boost_passive",
     "category": "特殊机制",
-    "name": "轻装"
+    "name": "轻装",
+    "stage": 2
   },
   "耐热": {
     "desc": "受到的火系招式伤害减半，也不易被灼伤。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "耐热"
+    "name": "耐热",
+    "stage": -3
   },
   "单纯": {
     "desc": "自身能力等级变化的效果量翻倍（无论提升或降低）。",
@@ -513,19 +526,22 @@
     "desc": "水系招式回复HP，火系招式伤害提升，晴天每回合损耗HP，雨天回复HP。",
     "effect": "immune_type",
     "category": "防御减伤",
-    "name": "干燥皮肤"
+    "name": "干燥皮肤",
+    "stage": 1
   },
   "下载": {
     "desc": "出场时比较对方物防特防，自动提升较高一项对应的攻击。",
     "effect": "on_switch_in",
     "category": "出场交换",
-    "name": "下载"
+    "name": "下载",
+    "stage": 1
   },
   "铁拳": {
     "desc": "拳类招式威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "铁拳"
+    "name": "铁拳",
+    "stage": 1
   },
   "毒疗": {
     "desc": "处于中毒状态时每回合回复HP而非损耗。",
@@ -537,7 +553,8 @@
     "desc": "本系加成效果提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "适应力"
+    "name": "适应力",
+    "stage": 1
   },
   "连续攻击": {
     "desc": "多段攻击类招式必定打出最大段数。",
@@ -549,19 +566,22 @@
     "desc": "下雨天气中异常状态解除几率提升。",
     "effect": "weather",
     "category": "天气场地",
-    "name": "治愈之心"
+    "name": "治愈之心",
+    "stage": 1
   },
   "太阳之力": {
     "desc": "大晴天天气中特攻提升，但每回合损耗HP。",
     "effect": "weather",
     "category": "攻击强化",
-    "name": "太阳之力"
+    "name": "太阳之力",
+    "stage": 2
   },
   "飞毛腿": {
     "desc": "处于异常状态时速度提升。",
     "effect": "stat_boost_passive",
     "category": "特殊机制",
-    "name": "飞毛腿"
+    "name": "飞毛腿",
+    "stage": 1
   },
   "一般皮肤": {
     "desc": "使用的招式属性全部变为一般系。",
@@ -573,7 +593,8 @@
     "desc": "会心一击造成的伤害倍率提升。",
     "effect": "damage_boost",
     "category": "命中回避",
-    "name": "狙击手"
+    "name": "狙击手",
+    "stage": 2
   },
   "魔法防守": {
     "desc": "除自己主动使用招式造成的伤害外免疫其他所有HP损耗效果。",
@@ -587,29 +608,18 @@
     "category": "常规实用",
     "name": "拨云见日"
   },
-  "慢半拍": {
-    "desc": "总是最后行动，但招式威力会提升。",
-    "effect": "other",
-    "category": "常规实用",
-    "name": "慢半拍"
-  },
   "技术高手": {
     "desc": "威力60以下的招式威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "技术高手"
+    "name": "技术高手",
+    "stage": 1
   },
   "叶子防守": {
     "desc": "大晴天天气中不会陷入异常状态。",
     "effect": "weather",
     "category": "天气场地",
     "name": "叶子防守"
-  },
-  "笨拙": {
-    "desc": "无法使用携带的道具。",
-    "effect": "other",
-    "category": "常规实用",
-    "name": "笨拙"
   },
   "破格": {
     "desc": "使用招式时无视对方的特性效果。",
@@ -621,7 +631,8 @@
     "desc": "会心一击率提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "超幸运"
+    "name": "超幸运",
+    "stage": 1
   },
   "危险预知": {
     "desc": "出场时能感知到对方是否携带效果拔群的招式。",
@@ -645,19 +656,15 @@
     "desc": "效果拔群的招式伤害提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "有色眼镜"
+    "name": "有色眼镜",
+    "stage": 2
   },
   "过滤": {
     "desc": "效果拔群的招式受到的伤害减少。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "过滤"
-  },
-  "慢启动": {
-    "desc": "出场后一段时间内攻击与速度减半。",
-    "effect": "other",
-    "category": "常规实用",
-    "name": "慢启动"
+    "name": "过滤",
+    "stage": -1
   },
   "胆量": {
     "desc": "无视对方的闪避提升效果进行攻击，也能命中飘浮的对手。",
@@ -687,7 +694,8 @@
     "desc": "会反弹自身的招式威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "舍身"
+    "name": "舍身",
+    "stage": 1
   },
   "多变": {
     "desc": "属性随所持携带的天赋神石而改变。",
@@ -699,7 +707,8 @@
     "desc": "晴天时自身与队友的攻击、特防提升。",
     "effect": "weather",
     "category": "天气场地",
-    "name": "花之礼"
+    "name": "花之礼",
+    "stage": 1
   },
   "恶梦": {
     "desc": "使处于睡眠状态的对手每回合损耗HP。",
@@ -735,13 +744,15 @@
     "desc": "HP过低时改变形态，提升攻击与速度。",
     "effect": "stat_boost_low_hp",
     "category": "攻击强化",
-    "name": "达摩模式"
+    "name": "达摩模式",
+    "stage": 1
   },
   "胜利之星": {
     "desc": "自身与队友的命中率提升。",
     "effect": "stat_boost_passive",
     "category": "攻击强化",
-    "name": "胜利之星"
+    "name": "胜利之星",
+    "stage": 1
   },
   "力量摇篮": {
     "desc": "给予传递给下一只出场的精灵能力提升效果。",
@@ -759,19 +770,22 @@
     "desc": "受到的物理招式伤害减少。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "重装甲"
+    "name": "重装甲",
+    "stage": -1
   },
   "电气场地": {
     "desc": "出场时把场地变为电气场地，场上精灵免疫睡眠，电系招式威力提升。",
     "effect": "field_terrain",
     "category": "天气场地",
-    "name": "电气场地"
+    "name": "电气场地",
+    "stage": 1
   },
   "青草场地": {
     "desc": "出场时把场地变为青草场地，场上精灵每回合回复少量HP，木系招式威力提升。",
     "effect": "field_terrain",
     "category": "天气场地",
-    "name": "青草场地"
+    "name": "青草场地",
+    "stage": 1
   },
   "薄雾场地": {
     "desc": "出场时把场地变为薄雾场地，我方精灵免疫能力等级下降和异常状态。",
@@ -783,61 +797,72 @@
     "desc": "出场时把场地变为精神场地，场上精灵免疫先制招式，灵系招式威力提升。",
     "effect": "field_terrain",
     "category": "天气场地",
-    "name": "精神场地"
+    "name": "精神场地",
+    "stage": 1
   },
   "铁刺": {
     "desc": "使用切割类招式时威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "铁刺"
+    "name": "铁刺",
+    "stage": 1
   },
   "强壮之颚": {
     "desc": "使用咬类招式时威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "强壮之颚"
+    "name": "强壮之颚",
+    "stage": 1
   },
   "硬爪": {
     "desc": "使用爪类招式时威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "硬爪"
+    "name": "硬爪",
+    "stage": 1
   },
   "超级发射器": {
     "desc": "使用脉冲/波动类招式时威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "超级发射器"
+    "name": "超级发射器",
+    "stage": 2
   },
   "沙之力": {
     "desc": "沙暴天气中，岩系、土系、钢系招式威力提升。",
     "effect": "weather",
     "category": "天气场地",
-    "name": "沙之力"
+    "name": "沙之力",
+    "stage": 1
   },
   "草之毛皮": {
     "desc": "受到的草系招式伤害减半，自身草系招式威力提升。",
     "effect": "damage_reduce",
     "category": "攻击强化",
-    "name": "草之毛皮"
+    "name": "草之毛皮",
+    "stage": -3,
+    "stage2": 1
   },
   "妖精气场": {
     "desc": "场上所有精灵使用的仙系招式威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "妖精气场"
+    "name": "妖精气场",
+    "stage": 1
   },
   "暗黑气场": {
     "desc": "场上所有精灵使用的暗系招式威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "暗黑气场"
+    "name": "暗黑气场",
+    "stage": 1
   },
   "龙颚": {
     "desc": "使用龙系招式时威力提升。",
     "effect": "damage_boost",
     "category": "攻击强化",
-    "name": "龙颚"
+    "name": "龙颚",
+    "stage": 1
   },
   "无形拳": {
     "desc": "使用拳类招式时必定命中。",
@@ -855,37 +880,44 @@
     "desc": "受到物理攻击后防御力下降一段，但速度大幅提升。",
     "effect": "contact_punish",
     "category": "防御减伤",
-    "name": "碎裂铠甲"
+    "name": "碎裂铠甲",
+    "stage": -1,
+    "stage2": 2
   },
   "重金属": {
     "desc": "自身体重翻倍，影响依赖体重判定的招式效果。",
     "effect": "other",
     "category": "防御减伤",
-    "name": "重金属"
+    "name": "重金属",
+    "stage": 5
   },
   "轻金属": {
     "desc": "自身体重减半，影响依赖体重判定的招式效果。",
     "effect": "other",
     "category": "防御减伤",
-    "name": "轻金属"
+    "name": "轻金属",
+    "stage": -3
   },
   "多重鳞片": {
     "desc": "HP满时受到的伤害减半。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "多重鳞片"
+    "name": "多重鳞片",
+    "stage": -3
   },
   "蒸汽机": {
     "desc": "受到火系或水系招式攻击后速度大幅提升。",
     "effect": "stat_boost_passive",
     "category": "防御减伤",
-    "name": "蒸汽机"
+    "name": "蒸汽机",
+    "stage": 2
   },
   "洁净之盐": {
     "desc": "免疫招式附带的能力等级下降效果，受到鬼系招式伤害减半。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "洁净之盐"
+    "name": "洁净之盐",
+    "stage": -3
   },
   "金属防护": {
     "desc": "能力等级不会被任何招式或特性降低。",
@@ -897,7 +929,8 @@
     "desc": "本次出场后第一次受到的攻击伤害减半。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "幻影防守"
+    "name": "幻影防守",
+    "stage": -3
   },
   "蹲守": {
     "desc": "免疫先制招式的攻击。",
@@ -909,13 +942,15 @@
     "desc": "受到的钢系招式伤害减少。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "钢之意志"
+    "name": "钢之意志",
+    "stage": -2
   },
   "毛皮大衣": {
     "desc": "受到的物理招式伤害减半。",
     "effect": "damage_reduce",
     "category": "防御减伤",
-    "name": "毛皮大衣"
+    "name": "毛皮大衣",
+    "stage": -3
   },
   "战斗盔甲": {
     "desc": "攻击不会被击中要害（会心一击）。",
@@ -933,13 +968,15 @@
     "desc": "处于中毒状态时特攻提升。",
     "effect": "stat_boost_passive",
     "category": "状态触发",
-    "name": "中毒激升"
+    "name": "中毒激升",
+    "stage": 1
   },
   "受热激升": {
     "desc": "处于灼伤状态时特攻提升，且灼伤不会降低物理攻击力。",
     "effect": "stat_boost_passive",
     "category": "状态触发",
-    "name": "受热激升"
+    "name": "受热激升",
+    "stage": 1
   },
   "木乃伊": {
     "desc": "被物理接触攻击后，对方特性变为木乃伊。",
@@ -951,7 +988,8 @@
     "desc": "受到暗系招式攻击后特攻提升一段。",
     "effect": "stat_boost_passive",
     "category": "状态触发",
-    "name": "正义之心"
+    "name": "正义之心",
+    "stage": 1
   },
   "胆怯": {
     "desc": "受到攻击后有几率陷入畏缩状态。",
@@ -981,7 +1019,8 @@
     "desc": "对方使用变化类招式的命中率大幅降低。",
     "effect": "other",
     "category": "出场交换",
-    "name": "奇迹皮肤"
+    "name": "奇迹皮肤",
+    "stage": -3
   },
   "幻觉": {
     "desc": "出场时伪装成队伍中最后一只精灵的外观，直到受到攻击。",
@@ -993,13 +1032,15 @@
     "desc": "本回合最后行动时，招式威力提升。",
     "effect": "damage_boost",
     "category": "出场交换",
-    "name": "分析"
+    "name": "分析",
+    "stage": 1
   },
   "发号施令": {
     "desc": "特定友方精灵在场时，自身招式威力提升。",
     "effect": "damage_boost",
     "category": "出场交换",
-    "name": "发号施令"
+    "name": "发号施令",
+    "stage": 1
   },
   "先行治疗": {
     "desc": "我方精灵倒下后，下一只登场的精灵自动回复少量HP。",
@@ -1011,7 +1052,8 @@
     "desc": "队友使用电系招式时，其威力提升。",
     "effect": "other",
     "category": "特殊机制",
-    "name": "蓄电池"
+    "name": "蓄电池",
+    "stage": 2
   },
   "看门犬": {
     "desc": "对方尝试撤换精灵离场时，可对其发动一次攻击。",
@@ -1035,37 +1077,43 @@
     "desc": "出场时降低场上所有其他精灵的防御力。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "灾祸之鼎"
+    "name": "灾祸之鼎",
+    "stage": -1
   },
   "灾祸之剑": {
     "desc": "出场时降低场上所有其他精灵的攻击力。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "灾祸之剑"
+    "name": "灾祸之剑",
+    "stage": -1
   },
   "灾祸之简": {
     "desc": "出场时降低场上所有其他精灵的速度。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "灾祸之简"
+    "name": "灾祸之简",
+    "stage": -1
   },
   "灾祸之玉": {
     "desc": "出场时降低场上所有其他精灵的特攻。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "灾祸之玉"
+    "name": "灾祸之玉",
+    "stage": -1
   },
   "古代活性": {
     "desc": "晴天时，攻击、特攻、速度大幅提升。",
     "effect": "weather",
     "category": "稀有专属",
-    "name": "古代活性"
+    "name": "古代活性",
+    "stage": 3
   },
   "夸克充能": {
     "desc": "电气场地下，攻击、特攻、速度大幅提升。",
     "effect": "field_terrain",
     "category": "稀有专属",
-    "name": "夸克充能"
+    "name": "夸克充能",
+    "stage": 3
   },
   "黄金之躯": {
     "desc": "免疫所有异常状态与一击必杀效果。",
@@ -1077,20 +1125,23 @@
     "desc": "出场时把场地变为电气场地，且自身特攻大幅提升。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "强子引擎"
+    "name": "强子引擎",
+    "stage": 3
   },
   "绯红脉动": {
     "desc": "出场时使自身攻击大幅提升，代价是防御与特防下降。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "绯红脉动"
+    "name": "绯红脉动",
+    "stage": 3,
+    "stage2": -1
   },
   "超越者": {
     "desc": "攻击、特攻、速度三项能力值中，数值最高的一项额外提升50%。",
     "effect": "stat_boost_passive",
     "category": "稀有专属",
-    "magnitude": 50,
-    "name": "超越者"
+    "name": "超越者",
+    "stage": 1
   },
   "不灭圣火": {
     "desc": "免疫灼伤状态；濒死攻击命中时有几率保留1点HP，且下回合开始回复大量HP。",
@@ -1108,27 +1159,30 @@
     "desc": "攻击力提升50%。",
     "effect": "stat_boost_passive",
     "category": "稀有专属",
-    "magnitude": 50,
-    "name": "不挠之剑"
+    "name": "不挠之剑",
+    "stage": 1
   },
   "荣耀之光": {
     "desc": "特攻力提升50%。",
     "effect": "stat_boost_passive",
     "category": "稀有专属",
-    "magnitude": 50,
-    "name": "荣耀之光"
+    "name": "荣耀之光",
+    "stage": 1
   },
   "泽被四方": {
     "desc": "出场时，我方全体能力等级各提升一段。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "泽被四方"
+    "name": "泽被四方",
+    "stage": 1
   },
   "腥红之怒": {
     "desc": "每次受到攻击后，攻击力提升一段，同时防御力降低一段。",
     "effect": "contact_punish",
     "category": "稀有专属",
-    "name": "腥红之怒"
+    "name": "腥红之怒",
+    "stage": 1,
+    "stage2": -1
   },
   "梦境侵蚀": {
     "desc": "每回合结束时，对方有几率陷入睡眠状态。",
@@ -1140,7 +1194,8 @@
     "desc": "HP低于二分之一时，攻击与特攻同时大幅提升。",
     "effect": "stat_boost_low_hp",
     "category": "稀有专属",
-    "name": "核心过载"
+    "name": "核心过载",
+    "stage": 2
   },
   "预知眼": {
     "desc": "出场时能得知对方的招式组成与当前异常状态。",
@@ -1152,43 +1207,50 @@
     "desc": "能力等级不会被对方招式或特性降低，雨天时速度翻倍。",
     "effect": "other",
     "category": "稀有专属",
-    "name": "太一无极"
+    "name": "太一无极",
+    "stage": 5
   },
   "吞天之息": {
     "desc": "使用招式时无视对方特性效果，且每回合结束自身速度提升一段。",
     "effect": "other",
     "category": "稀有专属",
-    "name": "吞天之息"
+    "name": "吞天之息",
+    "stage": 1
   },
   "乾天独尊": {
     "desc": "招式附加效果的发动几率大幅提升，且会心一击率大幅提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "乾天独尊"
+    "name": "乾天独尊",
+    "stage": 2
   },
   "坤载万物": {
     "desc": "对方无法从战斗中逃走或被换下，且受到效果拔群的招式伤害减少。",
     "effect": "damage_reduce",
     "category": "稀有专属",
-    "name": "坤载万物"
+    "name": "坤载万物",
+    "stage": -1
   },
   "阳煌烈焰": {
     "desc": "拳类招式威力提升，且免疫火系招式伤害并使自身火系招式威力提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "阳煌烈焰"
+    "name": "阳煌烈焰",
+    "stage": 1
   },
   "阴冥幽寒": {
     "desc": "受到的火系与冰系招式伤害减半，处于异常状态时速度大幅提升。",
     "effect": "damage_reduce",
     "category": "稀有专属",
-    "name": "阴冥幽寒"
+    "name": "阴冥幽寒",
+    "stage": 2
   },
   "凝香蔽雪": {
     "desc": "冰雹天气中回避率与防御力同时提升。",
     "effect": "weather",
     "category": "稀有专属",
-    "name": "凝香蔽雪"
+    "name": "凝香蔽雪",
+    "stage": 1
   },
   "国色天成": {
     "desc": "免疫所有异常状态，且换下场时回复大量HP。",
@@ -1200,13 +1262,15 @@
     "desc": "免疫火系招式伤害并使自身火系招式威力提升，且招式附加效果的发动几率提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "凤鸣九天"
+    "name": "凤鸣九天",
+    "stage": 1
   },
   "霆啸破空": {
     "desc": "拳类招式威力提升，且免疫畏缩状态。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "霆啸破空"
+    "name": "霆啸破空",
+    "stage": 1
   },
   "玄溟深渊": {
     "desc": "受到水系招式攻击时无伤害并回复HP，能力等级不会被对方招式或特性降低。",
@@ -1218,19 +1282,22 @@
     "desc": "免疫火系招式伤害，自身光系与火系招式威力提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "祝融点睛"
+    "name": "祝融点睛",
+    "stage": 1
   },
   "瑞獠镇岳": {
     "desc": "免疫反冲伤害，受到的物理招式伤害减少。",
     "effect": "damage_reduce",
     "category": "稀有专属",
-    "name": "瑞獠镇岳"
+    "name": "瑞獠镇岳",
+    "stage": -1
   },
   "禄羚驭风": {
     "desc": "会心一击率大幅提升，且招式附加效果的发动几率提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "禄羚驭风"
+    "name": "禄羚驭风",
+    "stage": 2
   },
   "夔寿镇雷": {
     "desc": "免疫反冲伤害与要害命中。",
@@ -1242,7 +1309,8 @@
     "desc": "沙暴天气中回避率提升，且能力等级不会被对方招式或特性降低。",
     "effect": "weather",
     "category": "稀有专属",
-    "name": "万岳不倒"
+    "name": "万岳不倒",
+    "stage": 1
   },
   "瑶姬绝尘": {
     "desc": "免疫除自己主动造成伤害外的所有HP损耗效果，且免疫所有异常状态。",
@@ -1254,50 +1322,57 @@
     "desc": "拳类招式威力提升，且每回合结束自身速度提升一段。",
     "effect": "damage_boost",
     "category": "稀有专属",
-    "name": "猿圣通天"
+    "name": "猿圣通天",
+    "stage": 1
   },
   "蚩极不屈": {
     "desc": "物理攻击力提升（命中率有所下降），且满血时不会被一击必杀。",
     "effect": "stat_boost_passive",
     "category": "稀有专属",
-    "name": "蚩极不屈"
+    "name": "蚩极不屈",
+    "stage": 1,
+    "stage2": -1
   },
   "天蓬护体": {
     "desc": "受到的火系与冰系招式伤害减半，受到效果拔群的招式伤害减少。",
     "effect": "damage_reduce",
     "category": "稀有专属",
-    "name": "天蓬护体"
+    "name": "天蓬护体",
+    "stage": 1
   },
   "铠霜不动": {
     "desc": "冰雹天气中回避率提升，且能力等级不会被对方招式或特性降低。",
     "effect": "weather",
     "category": "稀有专属",
-    "name": "铠霜不动"
+    "name": "铠霜不动",
+    "stage": 1
   },
   "花灵秘境": {
     "desc": "免疫火系招式伤害并使自身火系招式威力提升，HP过低时草系招式威力提升。",
     "effect": "damage_boost",
     "category": "稀有专属",
     "name": "花灵秘境",
-    "magnitude": 20
+    "stage": 2
   },
   "盖亚镇魂": {
     "desc": "拳类招式威力提升，且能力等级不会被对方招式或特性降低。",
     "effect": "damage_boost",
     "category": "稀有专属",
     "name": "盖亚镇魂",
-    "magnitude": 25
+    "stage": 1
   },
   "暗蛙教主": {
     "desc": "出场时使对方攻击力下降一段，接触到对手后有几率使其中毒。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "暗蛙教主"
+    "name": "暗蛙教主",
+    "stage": -1
   },
   "基拉祈愿": {
     "desc": "招式附加效果的发动几率提升，且出场时能得知对方的招式组成与当前异常状态。",
     "effect": "on_switch_in",
     "category": "稀有专属",
-    "name": "基拉祈愿"
+    "name": "基拉祈愿",
+    "stage": 1
   }
 }
