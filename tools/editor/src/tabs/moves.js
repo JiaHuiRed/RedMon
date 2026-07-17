@@ -122,11 +122,11 @@ export class MovesTab {
               `<option value="${k}" ${move.effect===k?"selected":""}>${v}</option>`
             ).join("")}</select>
           </div>
-          <div class="form-group" id="mv-effect-chance-group" style="display:${EFFECT_NEEDS_CHANCE.has(move.effect)?"block":"none"}">
+          <div class="form-group" id="mv-effect-chance-group" style="display:${EFFECT_NEEDS_CHANCE.has(move.effect)?"flex":"none"}">
             <label>概率%</label>
             <input type="number" id="mv-effect-chance" value="${move.effect_chance||0}" min="0" max="100" />
           </div>
-          <div class="form-group" id="mv-effect-value-group" style="display:${EFFECT_NEEDS_VALUE.has(move.effect)?"block":"none"}">
+          <div class="form-group" id="mv-effect-value-group" style="display:${EFFECT_NEEDS_VALUE.has(move.effect)?"flex":"none"}">
             <label>数值%</label>
             <input type="number" id="mv-effect-value" value="${move.effect_value||0}" min="0" />
           </div>

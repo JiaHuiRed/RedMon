@@ -3,6 +3,7 @@ const ABILITY_EFFECTS = {
   "immune_status": "免疫异常状态",
   "immune_type": "免疫特定属性",
   "weather": "天气效果",
+  "field_terrain": "场地效果",
   "on_switch_in": "出场时触发",
   "stat_boost_passive": "被动数值加成",
   "stat_boost_low_hp": "低血量强化",
@@ -11,6 +12,23 @@ const ABILITY_EFFECTS = {
   "contact_punish": "接触反伤",
   "other": "其他效果",
 };
+
+const ABILITY_CATEGORIES = {
+  "": "-- 未分类 --",
+  "天气场地": "天气/场地类",
+  "攻击强化": "攻击强化类",
+  "防御减伤": "防御/减伤类",
+  "状态触发": "状态触发/免疫类",
+  "出场交换": "出场/交换类",
+  "命中回避": "命中/回避/暴击类",
+  "特殊机制": "特殊机制类",
+  "稀有专属": "稀有/传说专属类",
+  "常规实用": "常规实用类",
+};
+
+const EFFECT_NEEDS_MAGNITUDE = new Set([
+  "stat_boost_passive", "stat_boost_low_hp", "damage_boost", "damage_reduce",
+]);
 
 export class AbilitiesTab {
   constructor(container, state, fileKey, callbacks) {
@@ -67,6 +85,16 @@ export class AbilitiesTab {
               `<option value="${k}" ${ab.effect===k?"selected":""}>${v}</option>`
             ).join("")}</select>
           </div>
+          <div class="form-group">
+            <label>分类标签</label>
+            <select id="ab-category">${Object.entries(ABILITY_CATEGORIES).map(([k,v]) =>
+              `<option value="${k}" ${ab.category===k?"selected":""}>${v}</option>`
+            ).join("")}</select>
+          </div>
+          <div class="form-group" id="ab-magnitude-group" style="display:${EFFECT_NEEDS_MAGNITUDE.has(ab.effect)?"flex":"none"}">
+            <label>数值%</label>
+            <input type="number" id="ab-magnitude" value="${ab.magnitude||0}" min="0" />
+          </div>
           <div class="form-group full-width">
             <label>效果描述</label>
             <textarea id="ab-desc" rows="4">${ab.desc||""}</textarea>
@@ -81,7 +109,23 @@ export class AbilitiesTab {
         this.callbacks.onModified(this.fileKey);
       });
     };
-    bind("ab-id", "id"); bind("ab-name", "name"); bind("ab-effect", "effect"); bind("ab-desc", "desc");
+    bind("ab-id", "id"); bind("ab-name", "name"); bind("ab-desc", "desc"); bind("ab-category", "category");
+
+    const effectEl = document.getElementById("ab-effect");
+    if (effectEl) {
+      effectEl.addEventListener("change", () => {
+        this.callbacks.saveHistory(this.fileKey);
+        ab.effect = effectEl.value;
+        const magGroup = document.getElementById("ab-magnitude-group");
+        if (magGroup) magGroup.style.display = EFFECT_NEEDS_MAGNITUDE.has(effectEl.value) ? "flex" : "none";
+        this.callbacks.onModified(this.fileKey);
+      });
+    }
+    document.getElementById("ab-magnitude")?.addEventListener("change", (e) => {
+      this.callbacks.saveHistory(this.fileKey);
+      ab.magnitude = parseInt(e.target.value) || 0;
+      this.callbacks.onModified(this.fileKey);
+    });
   }
 
   onAdd() {
