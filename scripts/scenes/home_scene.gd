@@ -34,8 +34,7 @@ var _has_walk_sheet: bool = false
 
 const STAIRS1_POS := Vector2(155, 330)  # 260706 Red 1F 楼梯口，对应背景图楼梯底部
 const STAIRS2_POS := Vector2(60, 320)   # 2F 楼梯口（对应位置）
-const DOOR_CENTER := Vector2(VW / 2, VH - 18)
-const MOM_POS := Vector2(VW / 2 - 80, VH / 2 + 30)  # 260706 Red 客厅桌旁，远离门口
+const DOOR_CENTER := Vector2(528, 660)  # 260718 Red 匹配 tilemap 底部墙缺口 (480~576)
 const LANQIUQIU_POS := Vector2(740, 340)  # 卧室蓝秋秋位置
 const LANQIUQIU_RADIUS := 35.0
 
@@ -90,33 +89,19 @@ func _build_floor1() -> void:
 	_floor1.add_child(_stair_hint_1f)
 
 func _build_mom() -> void:
-	var sheet_path = "res://assets/npc/npc_young_woman_walk_sheet.png"
-	if ResourceLoader.exists(sheet_path):
-		var spr = Sprite2D.new()
-		spr.texture = load(sheet_path)
-		spr.region_enabled = true
-		spr.region_rect = Rect2(0, 0, 48, 48)
-		spr.centered = true
-		spr.scale = Vector2(NPC_SCALE, NPC_SCALE)
-		spr.position = MOM_POS
-		spr.z_index = 3
-		_mom_spr = spr
-		_floor1.add_child(spr)
-	else:
-		_mom_spr = Sprite2D.new()
-		_mom_spr.texture = _draw_mom()
-		_mom_spr.position = MOM_POS
-		_mom_spr.z_index = 3
-		_floor1.add_child(_mom_spr)
+	# 260718 Red 妈妈已作为 Sprite2D 节点（含碰撞）放在 tscn 中
+	# 代码里只补上名称标签
+	_mom_spr = _floor1.find_child("妈妈", true, false) if _floor1 else null
+	if not _mom_spr:
+		push_error("home_scene: 找不到妈妈节点")
+		return
 
 	var name_lbl = Label.new()
 	name_lbl.text = "妈妈"
-	name_lbl.position = MOM_POS + Vector2(-14, -30)
+	name_lbl.position = _mom_spr.position + Vector2(-14, -30)
 	name_lbl.add_theme_font_size_override("font_size", 10)
 	name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
-	_floor1.add_child(name_lbl)
-
-	_add_collider(_floor1, _mom_spr.position, Vector2(24, 24))
+	_mom_spr.get_parent().add_child(name_lbl)
 
 # ── 卧室蓝秋秋 ──────────────────────────────────────────────────────────────
 func _build_lanqiuqiu() -> void:
@@ -430,7 +415,7 @@ func _input(event: InputEvent) -> void:
 				GameState.last_scene = "home"
 				request_scene.emit("overworld", {"spawn": "home"})
 				return
-			elif _player.position.distance_to(MOM_POS) < 30:
+			elif _mom_spr and _player.position.distance_to(_mom_spr.position) < 30:
 				_start_mom_dialog()
 				return
 			elif _player.position.distance_to(STAIRS1_POS + Vector2(20, 20)) < 45:

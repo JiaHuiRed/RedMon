@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b4alq0sncejtk" path="res://assets/tilemaps/室内素材.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dju41o0331aa0" path="res://assets/tilemaps/家具.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://ddh0e72pc2wop" path="res://assets/tilemaps/碰撞遮挡.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://csw4l1oqg2evh" path="res://assets/tilemaps/室内场景瓦片素材.png" id="4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture = ExtResource("1")
@@ -64,6 +65,11 @@ texture_region_size = Vector2i(96, 96)
 2:3/0 = 0
 3:3/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hd"]
+texture = ExtResource("4")
+texture_region_size = Vector2i(128, 128)
+# 6列×10行=60个tile，由编辑器自动识别，无需逐格注册
+
 [resource]
 tile_size = Vector2i(96, 96)
 physics_layer_0/collision_layer = 1
@@ -72,3 +78,4 @@ custom_data_layer_0/type = 4
 sources/0 = SubResource("TileSetAtlasSource_floor")
 sources/1 = SubResource("TileSetAtlasSource_furniture")
 sources/2 = SubResource("TileSetAtlasSource_obstacle")
+sources/3 = SubResource("TileSetAtlasSource_hd")
