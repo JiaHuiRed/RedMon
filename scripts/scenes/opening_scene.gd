@@ -18,6 +18,10 @@ var _rival_spr: Sprite2D
 var _dialog_lbl: Label
 var _dialog_hint: Label
 
+# 教授旁白翻页（intro_0/intro_1/intro_2 逐段显示，而非一次性拼接全文）
+var _dlg_lines: Array = []
+var _dlg_idx: int = 0
+
 # 精灵（小灯鼠 pop-in 动画用）
 var _mon_spr: Sprite2D
 var _mon_spr_b: Sprite2D  # back sprite，pop-out 用
@@ -342,8 +346,10 @@ func _show_phase(phase: int) -> void:
 	_dialog_hint.visible = true
 
 	match phase:
-		0:  # 教授开场白
-			_dialog_lbl.text = "\n\n".join(MonDB.dlg_array("opening", "intro_0"))
+		0:  # 教授开场白（逐段翻页）
+			_dlg_lines = MonDB.dlg_array("opening", "intro_0")
+			_dlg_idx = 0
+			_dialog_lbl.text = _dlg_lines[0] if not _dlg_lines.is_empty() else ""
 		1:  # 性别选择
 			_gender_panel.visible = true
 			_refresh_gender()
@@ -362,23 +368,33 @@ func _show_phase(phase: int) -> void:
 			_rival_panel.visible = true
 			_dialog_hint.visible = false
 			_rival_input.call_deferred("grab_focus")
-		4:  # 教授介绍小灯鼠
+		4:  # 教授介绍小灯鼠（逐段翻页）
 			_prof_spr.visible = true
 			var pl = get_node_or_null("prof_name")
 			if pl: pl.visible = true
-			var i1 = MonDB.dlg_array("opening", "intro_1")
-			for i in i1.size():
-				i1[i] = MonDB.dlg_sub(i1[i], {"player": GameState.player_name})
-			_dialog_lbl.text = "\n".join(i1)
+			_dlg_lines = MonDB.dlg_array("opening", "intro_1").duplicate()
+			for i in _dlg_lines.size():
+				_dlg_lines[i] = MonDB.dlg_sub(_dlg_lines[i], {"player": GameState.player_name})
+			_dlg_idx = 0
+			_dialog_lbl.text = _dlg_lines[0] if not _dlg_lines.is_empty() else ""
 		5:  # 小灯鼠蹦出
 			_dialog_hint.visible = false
 			_start_mon_pop_in()
-		6:  # 教授收尾
-			var i2 = MonDB.dlg_array("opening", "intro_2")
-			for i in i2.size():
-				i2[i] = MonDB.dlg_sub(i2[i], {"player": GameState.player_name})
+		6:  # 教授收尾（逐段翻页）
+			_dlg_lines = MonDB.dlg_array("opening", "intro_2").duplicate()
+			for i in _dlg_lines.size():
+				_dlg_lines[i] = MonDB.dlg_sub(_dlg_lines[i], {"player": GameState.player_name})
+			_dlg_idx = 0
 			_dialog_hint.visible = true
-			_dialog_lbl.text = "\n\n".join(i2)
+			_dialog_lbl.text = _dlg_lines[0] if not _dlg_lines.is_empty() else ""
+
+# 翻到下一段旁白；还有下一段则显示并返回 true，已翻完返回 false
+func _advance_dlg() -> bool:
+	_dlg_idx += 1
+	if _dlg_idx < _dlg_lines.size():
+		_dialog_lbl.text = _dlg_lines[_dlg_idx]
+		return true
+	return false
 
 func _refresh_gender() -> void:
 	var m_box = _gender_panel.get_node_or_null("男Box")
@@ -428,10 +444,11 @@ func _input(event: InputEvent) -> void:
 		return
 
 	match _phase:
-		0:  # 开场白 → 选性别
+		0:  # 开场白 → 逐段翻页 → 选性别
 			if event.is_action_pressed("ui_accept"):
 				get_viewport().set_input_as_handled()
-				_show_phase(1)
+				if not _advance_dlg():
+					_show_phase(1)
 		1:  # 性别选择
 			if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
 				get_viewport().set_input_as_handled()
@@ -457,12 +474,14 @@ func _input(event: InputEvent) -> void:
 			if event.is_action_pressed("ui_accept"):
 				get_viewport().set_input_as_handled()
 				match _phase:
-					4:  # 介绍小灯鼠 → 蹦出动画
-						_show_phase(5)
+					4:  # 介绍小灯鼠 → 逐段翻页 → 蹦出动画
+						if not _advance_dlg():
+							_show_phase(5)
 					5:  # 动画播放中，忽略
 						pass
-					6:  # 收尾 → 回家
-						_start_mon_pop_out()
+					6:  # 收尾 → 逐段翻页 → 回家
+						if not _advance_dlg():
+							_start_mon_pop_out()
 
 func _on_name_confirmed(text: String) -> void:
 	var n = text.strip_edges()
