@@ -20964,7 +20964,10 @@
     "gender_ratio": "无性别",
     "height": "0.5",
     "weight": "5.0",
-    "abilities": [],
+    "abilities": [
+      "猛火",
+      "引火"
+    ],
     "evolutions": [
       {
         "into": "戈娅",
@@ -20994,9 +20997,12 @@
     "desc": "戈娅身披烈焰与日光交织的铠甲，冲锋时如流星坠地。她的战吼能点燃周围空气，将战场化为一片火海。",
     "tier": "玄",
     "gender_ratio": "0/100",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [],
+    "height": "1.65",
+    "weight": "50.0",
+    "abilities": [
+      "引火",
+      "舍身"
+    ],
     "evolutions": [
       {
         "into": "祝融",
@@ -21026,8 +21032,8 @@
     "desc": "祝融是远古火神的化身，一挥手便能召来焚天烈焰。传说中祝融之火能烧尽世间一切污秽，为大地带来涅槃的新生。",
     "tier": "神",
     "gender_ratio": "0/100",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": "1.8",
+    "weight": "58.0",
     "abilities": [
       "祝融点睛"
     ],
@@ -21052,9 +21058,12 @@
     "desc": "提坦是岩石中诞生的斗士，每一拳都蕴含崩山裂地之力。它们以天地灵气淬炼筋骨，追求极致纯粹的肉体力量。",
     "tier": "灵",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [],
+    "height": "1.3",
+    "weight": "70.0",
+    "abilities": [
+      "大力士",
+      "铁拳"
+    ],
     "evolutions": [
       {
         "into": "盖亚",
@@ -21084,8 +21093,8 @@
     "desc": "盖亚以大地为躯、星辰为魂，拳锋所至大地为之震颤。她是远古泰坦的王者，跺一脚便能引发地震山崩。",
     "tier": "神",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": "2.2",
+    "weight": "150.0",
     "abilities": [
       "盖亚镇魂"
     ],
@@ -21272,9 +21281,12 @@
     "desc": "隐蛙的皮肤能随环境变色，在阴影中近乎完全隐形。它们潜伏于暗水之中，吐舌一击从无失手。",
     "tier": "灵",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
-    "abilities": [],
+    "height": "0.9",
+    "weight": "12.0",
+    "abilities": [
+      "变色",
+      "毒手"
+    ],
     "evolutions": [
       {
         "into": "暗蛙宗",
@@ -21304,8 +21316,8 @@
     "desc": "暗蛙宗是隐蛙的终极形态，掌握了暗水融合之道。它们能在阴影与水幕之间自由穿梭，出手如暗夜中的惊雷。",
     "tier": "神",
     "gender_ratio": "50/50",
-    "height": "0.5",
-    "weight": "5.0",
+    "height": "1.3",
+    "weight": "28.0",
     "abilities": [
       "暗蛙教主"
     ],
@@ -21901,7 +21913,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "重装甲",
+      "坚硬脑袋"
+    ]
   },
   "熔钢巨蟒": {
     "id": 395,
@@ -21926,7 +21941,10 @@
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "耐热",
+      "火焰之躯"
+    ]
   },
   "盖革": {
     "id": 396,
@@ -21983,7 +22001,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "结实",
+      "胆怯"
+    ]
   },
   "暴鲤": {
     "id": 398,
@@ -22013,7 +22034,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "威吓",
+      "不屈之心"
+    ]
   },
   "恶鲤龙": {
     "id": 399,
@@ -22087,8 +22111,8 @@
     "exp_yield": 100,
     "growth_rate": "早熟",
     "desc": "蓝秋秋是一只小巧的蓝色风灵，在大风中依然能保持优雅的飞行姿态。它们利用气流弹射加速，速度快到在空中留下蓝色残影。",
-    "height": "",
-    "weight": "",
+    "height": "0.4",
+    "weight": "6.0",
     "gender_ratio": "60/40",
     "evolutions": [
       {
@@ -22098,7 +22122,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "加速",
+      "复眼"
+    ]
   },
   "蓝丘": {
     "id": 402,
@@ -22118,12 +22145,15 @@
     "exp_yield": 100,
     "growth_rate": "正常",
     "desc": "蓝丘进化后获得了仙灵之力，展翅时洒落星辉般的光尘。它们能驾驭飓风，在云层之上筑起壮丽的空中城塞。",
-    "height": "",
-    "weight": "",
+    "height": "0.6",
+    "weight": "10.0",
     "gender_ratio": "30/70",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "飘浮",
+      "雪隐"
+    ]
   },
   "唐小狗": {
     "id": 403,
@@ -22143,12 +22173,15 @@
     "exp_yield": 100,
     "growth_rate": "早熟",
     "desc": "唐小狗是一只毛色纯白的小狗，尾巴摇动时会甩出柔和的光粒。它们对主人极度忠诚，即使面对再强的敌人也绝不退缩。",
-    "height": "",
-    "weight": "",
+    "height": "0.5",
+    "weight": "18.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "净化之躯",
+      "威吓"
+    ]
   },
   "张小豹": {
     "id": 404,
@@ -22167,13 +22200,16 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "张小豹是身披玄甲的猎豹战将，头顶双角象征着与生俱来的统帅之气。它总是携着一条忠心的蛇伙伴四处征伐，长枪所指，所向披靡。",
+    "height": "0.6",
+    "weight": "22.0",
     "gender_ratio": "70/30",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "威吓",
+      "不屈之心"
+    ]
   },
   "沙小鱼": {
     "id": 405,
@@ -22192,13 +22228,16 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "沙小鱼是云游四方的鲨鱼武僧，身披海味僧袍，手持月牙禅杖行走江湖。它秉持渡世之心，即便遇上强敌也从容不迫、以慈悲降服。",
+    "height": "1.1",
+    "weight": "35.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "激流",
+      "净化之躯"
+    ]
   },
   "小维": {
     "id": 406,
@@ -22217,9 +22256,9 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "小维是从光之秘境走出的少女战士，身姿灵动、目光如炬。她随身携带的光刃能斩碎黑暗，是天生的正义使者。",
+    "height": "1.55",
+    "weight": "45.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -22228,7 +22267,10 @@
       }
     ],
     "learnset": {},
-    "abilities": [],
+    "abilities": [
+      "胜利之星",
+      "净化之躯"
+    ],
     "encounters": []
   },
   "叶瞬光": {
@@ -22248,13 +22290,16 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "叶瞬光是小维觉醒后的形态，融合了格斗真气与光之力，出招快若闪电、劲力如虹。她的一击能瞬间贯穿层层护甲，故而得名『瞬光』。",
+    "height": "1.68",
+    "weight": "54.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "铁拳",
+      "净化之躯"
+    ]
   },
   "毒刺贝": {
     "id": 408,
@@ -22273,9 +22318,9 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "毒刺贝的贝壳内侧凝结着终年不化的寒冰，尖刺渗出剧毒粘液。一旦合拢贝壳，任何生物都休想从中脱身。",
+    "height": "0.9",
+    "weight": "45.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -22284,7 +22329,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "毒刺",
+      "硬壳盔甲"
+    ]
   },
   "剧毒贝": {
     "id": 409,
@@ -22303,13 +22351,16 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "剧毒贝是毒刺贝的终极形态，浑身尖刺如林，贝壳内的寒毒之气足以让整片海域为之窒息。传说触碰其贝壳者，十有九伤。",
+    "height": "1.4",
+    "weight": "95.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "毒疗",
+      "硬壳盔甲"
+    ]
   },
   "南小鸟": {
     "id": 410,
@@ -22328,9 +22379,9 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "南小鸟是刚离巢不久的雏鸟，圆滚滚的身体还不太会飞，只能扑腾着翅膀短距离滑翔。它睁着圆圆的大眼睛，对世界充满好奇。",
+    "height": "0.3",
+    "weight": "3.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -22339,7 +22390,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "复眼",
+      "胆怯"
+    ]
   },
   "木木雕": {
     "id": 411,
@@ -22358,9 +22412,9 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "木木雕的羽翼间镶嵌着天然形成的月纹金属片，振翅时会发出清脆的鸣响。它常常伫立枝头，静静守望着夜空中的月轮。",
+    "height": "0.6",
+    "weight": "12.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -22369,7 +22423,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "重装甲",
+      "复眼"
+    ]
   },
   "疾风羽枭": {
     "id": 412,
@@ -22388,13 +22445,16 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "疾风羽枭是木木雕的完全体，头冠般的羽饰与胸前月徽彰显着夜空守护者的身份。它振翅之间便能卷起疾风，追猎目标从不失手。",
+    "height": "0.9",
+    "weight": "22.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "心眼",
+      "重装甲"
+    ]
   },
   "云翼": {
     "id": 413,
@@ -22413,9 +22473,9 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "云翼是刚孵化不久的幼龙，翅膀还未完全长开，只能在低空扑腾盘旋。它喜欢趴在同伴的背上，跟着长辈四处游荡。",
+    "height": "0.3",
+    "weight": "4.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -22424,7 +22484,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "胆怯",
+      "飞毛腿"
+    ]
   },
   "凌云龙": {
     "id": 414,
@@ -22443,9 +22506,9 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "凌云龙已能振翅高飞，常驮着尚未蜕变的雏龙同行，教导它御风之道。它翱翔于云端之上，俯瞰苍茫大地。",
+    "height": "1.5",
+    "weight": "60.0",
     "gender_ratio": "50/50",
     "evolutions": [
       {
@@ -22454,7 +22517,10 @@
       }
     ],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "飘浮",
+      "威吓"
+    ]
   },
   "大应": {
     "id": 415,
@@ -22473,13 +22539,15 @@
     "catch_rate": 45,
     "exp_yield": 100,
     "growth_rate": "早熟",
-    "desc": "",
-    "height": "",
-    "weight": "",
+    "desc": "大应是凌云龙的终极蜕变，浑身覆盖着流光溢彩的星辉鳞甲，双耳镶嵌的灵纹能感应天地异动。它是御风一族的至高图腾，传说能引领迷途的旅人归家。",
+    "height": "3.2",
+    "weight": "280.0",
     "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
-    "abilities": []
+    "abilities": [
+      "云归星引"
+    ]
   },
   "敏皇": {
     "id": 416,
