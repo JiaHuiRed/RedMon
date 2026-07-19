@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.25.9] - 2026-07-19
+
+> 加载过渡动画 + 开场文案重写 + 存档槽位扩展至 5 档
+
+### 新增
+
+- **加载过渡系统**：布伊图淡入淡出，复用场景切换（CanvasLayer），过渡时间 0.25s
+- **开场文案重写**：去掉"四百余种""研究所刚孵化"等急迫感内容，性别/命名流程更自然
+- **存档槽位 3→5**：标题画面选档面板同步扩展，游戏中存档文件完整写 5 档
+
+### 修复
+
+- **蓝秋秋相遇地点**：从"命中注定的相遇"改为"自幼相伴的伙伴"，符合御三家设定
+- **scene navigation transition**：title→opening→home→overworld→home 全套加载动画衔接
+
+### 变更
+
+- **species.json 种族值调整**：末尾若干精灵微调 BST
+
+### 涉及文件
+
+- `scripts/main.gd`、`scripts/ui/loading_transition.gd/tscn`、`data/dialogs.json`、`scripts/scenes/home_scene.gd`、`scripts/autoload/game_state.gd`、`scripts/scenes/title_scene.gd`、`data/species.json`
+
+---
+
 ## [0.25.8] - 2026-07-19
 
 > 全 tileset 纹理格统一为 128×128 标准尺寸
