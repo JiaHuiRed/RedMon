@@ -77,6 +77,7 @@ func switch_to(scene_name: String, data: Dictionary) -> void:
 		"gym":     "res://scenes/翠竹馆.tscn",
 		"overworld": "res://scenes/大世界.tscn",
 		"rival_home": "res://scenes/buildings/劲敌家.tscn",
+		"rival_home_2f": "res://scenes/buildings/劲敌家_2F.tscn",
 	}
 	if _TSCN_SCENES.has(scene_name):
 		_current = load(_TSCN_SCENES[scene_name]).instantiate()

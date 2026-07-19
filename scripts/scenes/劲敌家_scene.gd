@@ -31,6 +31,17 @@ func _ready() -> void:
 	_build_player()
 	_build_dialog()
 	_build_npcs()
+	# 260718 Red 支持从楼梯/特定 spawn 点进入
+	var data = get_meta("scene_data", {})
+	if typeof(data) == TYPE_DICTIONARY and data.has("spawn"):
+		match data["spawn"]:
+			"stairs_down":
+				for child in $角色.get_children():
+					if child.has_meta("interact"):
+						_player.position = child.position + Vector2(0, 56)
+						return
+			_:
+				pass
 
 # ── 玩家 ──────────────────────────────────────────────────────────────────────
 func _build_player() -> void:
@@ -135,7 +146,7 @@ func _input(event: InputEvent) -> void:
 			return
 		# 楼梯交互
 		for child in $角色.get_children():
-			if child.has_meta("interact") and child.get_meta("interact") == "stairs_up":
+			if child.has_meta("interact") and child.get_meta("interact") in ["stairs_up", "stairs_down"]:
 				if _player.position.distance_to(child.position) < 64:
 					request_scene.emit(child.get_meta("target_scene"), {"spawn": "stairs_down"})
 					return
