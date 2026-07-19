@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.26.1] - 2026-07-19
+
+> 开场序幕完善：教授布局、对话框排版、Enter 键确认。
+
+### 变更
+
+- **教授立绘放大右移**：scale 400→520，position (200, VH-570)→(320, VH-680)，名字标签同步移位
+- **对话框文字换行策略统一**：全宽 1920px 对话框中数据 `\n` 不再强制截断，设 `_set_dlg_text()` 统一去换行，文字自然一行流式显示
+- **对话框 UI 统一**：ColorRect 扁平风格→Panel + StyleBoxFlat 圆角深色对话框，与 DialogBubble 风格一致
+- **Enter 键确认名字**：放开 `_input` 对 phase 2/3 的 `ui_accept` 拦截，LineEdit 的 `text_submitted` 信号处理回车
+
+### 涉及文件
+
+- `scripts/scenes/opening_scene.gd`
+
+---
+
 ## [0.26.0] - 2026-07-19
 
 > 内部分辨率升级至 1080p（1920×1080）
