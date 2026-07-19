@@ -6,28 +6,29 @@ extends Node2D
 signal request_scene(scene_name: String, data: Dictionary)
 
 # ── 地图常量 ──────────────────────────────────────────────────────────────────
-const TILE := 16
-const COLS := 180        # 3区各60列
-const ROWS := 45
-const MAP_W := COLS * TILE   # 2880
-const MAP_H := ROWS * TILE   # 640
+# 260719 整体坐标升级：逻辑格 16→32（对齐 TileSet 64px/2），地图扩至 5888×1664
+const TILE := 32
+const COLS := 184        # 青木村64 + 华灵60 + 碧溪60
+const ROWS := 52         # 最高地图(青木村) 1664/32
+const MAP_W := COLS * TILE   # 5888
+const MAP_H := ROWS * TILE   # 1664
 const VW    := 1280
 const VH    := 720
 const SPEED := 100.0
 
-const VILLAGE_END   := 60  * TILE   # 960  村/草原分界
-const GRASSLAND_END := 120 * TILE   # 1920 草原/镇分界
+const VILLAGE_END   := 64  * TILE   # 2048  村/草原分界
+const GRASSLAND_END := 124 * TILE   # 3968 草原/镇分界
 
-const SPAWN_VILLAGE   := Vector2(28 * TILE, 34 * TILE)
-const SPAWN_GRASSLAND := Vector2(80 * TILE, 20 * TILE)
-const SPAWN_TOWN      := Vector2(150 * TILE, 34 * TILE)
+const SPAWN_VILLAGE   := Vector2(12 * TILE, 14 * TILE)    # 家门前附近
+const SPAWN_GRASSLAND := Vector2(74 * TILE, 10 * TILE)    # 华灵草原入口区
+const SPAWN_TOWN      := Vector2(139 * TILE, 17 * TILE)   # 碧溪镇入口区
 
-# 260708 Red 建筑门（16px tile 坐标，对齐 .tscn 实际位置）
-const HOME_DOOR   := Vector2i(12, 14)   # village.tscn Home≈(194,218), global≈(193,215)
-const RIVAL_DOOR  := Vector2i(23, 15)   # village.tscn 劲敌家≈(739,383)
-const CLINIC_DOOR := Vector2i(125, 7)
-const SHOP_DOOR   := Vector2i(147, 7)
-const LAB_DOOR    := Vector2i(46, 11)  # 研究所碰撞中心≈(737,94)，门在建筑正下方
+# 260719 建筑门（32px tile 坐标，按当前建筑碰撞中心÷32重算）
+const HOME_DOOR   := Vector2i(12, 12)   # 家碰撞≈(370,342)→门前一格
+const RIVAL_DOOR  := Vector2i(46, 25)   # 劲敌家碰撞≈(1464.5,784)
+const CLINIC_DOOR := Vector2i(127, 7)   # 原(125,7)→碧溪镇新偏移3968+80px
+const SHOP_DOOR   := Vector2i(138, 7)   # 原(147,7)→碧溪镇新偏移3968+432px
+const LAB_DOOR    := Vector2i(42, 9)    # 研究所碰撞≈(1358.5,262.5)
 
 const WALK_FRAME_W   := 96  # 260706 Red 升96px，走表4行(下/上/右/左)
 const WALK_FRAME_H   := 160
@@ -318,11 +319,11 @@ func _register_scene_npc(spr: Node2D) -> void:
 
 # 260713 Red 碧溪镇 NPC 尚未迁移到 .tscn 场景节点，暂留硬编码兜底（下一步：先做青木村完成后再迁移）
 func _build_town_npcs_fallback() -> void:
-	_add_npc(Vector2i(162, 14),"青年.png", "道馆守卫", "守卫：这里是翠竹馆。\n准备好向馆主林青松发起挑战了吗？\n推荐携带火系或虫系精灵。")
-	_add_npc(Vector2i(130, 20),"老爷爷.png", "镇民",   "镇民：碧溪镇以翠竹著称，林馆主就是在后山竹林中磨炼出来的。\n据说他十岁就自己驯服了一只大竹熊！")
-	_add_npc(Vector2i(150, 28),"少女.png", "小女孩",   "小女孩：姐姐/哥哥，你是来挑战道馆的吗？\n林馆主好强的！上周来了好多人都败退了……")
-	_add_npc(Vector2i(140, 35),"青年.png", "行商",     "行商：从省城来的路上碰到了黑风堂的人，\n他们在收购什么神秘道具，真是越来越猖獗了……")
-	_add_npc(Vector2i(156, 7), "青年.png", "店员", "店员：想买精灵葫芦的话，去杂货铺看看吧！")
+	_add_npc(Vector2i(145, 7), "青年.png", "道馆守卫", "守卫：这里是翠竹馆。\n准备好向馆主林青松发起挑战了吗？\n推荐携带火系或虫系精灵。")
+	_add_npc(Vector2i(129, 10),"老爷爷.png", "镇民",   "镇民：碧溪镇以翠竹著称，林馆主就是在后山竹林中磨炼出来的。\n据说他十岁就自己驯服了一只大竹熊！")
+	_add_npc(Vector2i(139, 14),"少女.png", "小女孩",   "小女孩：姐姐/哥哥，你是来挑战道馆的吗？\n林馆主好强的！上周来了好多人都败退了……")
+	_add_npc(Vector2i(134, 17),"青年.png", "行商",     "行商：从省城来的路上碰到了黑风堂的人，\n他们在收购什么神秘道具，真是越来越猖獗了……")
+	_add_npc(Vector2i(142, 3), "青年.png", "店员", "店员：想买精灵葫芦的话，去杂货铺看看吧！")
 
 func _build_shenhe_grassland_npc() -> void:
 	if _shenhe_village_done or not GameState.has_starter: return
@@ -336,7 +337,7 @@ func _build_shenhe_grassland_npc() -> void:
 		spr.scale = Vector2(0.6, 0.6)
 	else:
 		spr.texture = _tex_npc()
-	var tile = Vector2i(70, 15)  # 华灵草原入口附近
+	var tile = Vector2i(69, 7)  # 华灵草原入口附近
 	spr.position = Vector2(tile.x * TILE + TILE / 2.0, tile.y * TILE + TILE / 2.0)
 	spr.z_index = 5
 	spr.set_meta("npc_tile", tile)
@@ -671,8 +672,8 @@ func _try_interact() -> void:
 	# 研究所（陈教授 + 助手林薇）
 	if tile.x >= LAB_DOOR.x - 2 and tile.x <= LAB_DOOR.x + 2 and abs(tile.y - LAB_DOOR.y) <= 1:
 		_handle_lab_visit(); return
-	# 道馆（碧溪镇 tile 158-165, row 14-16）
-	if tile.x >= 158 and tile.x <= 165 and tile.y >= 14 and tile.y <= 16:
+	# 道馆（碧溪镇 tile 143-146, row 7-8）
+	if tile.x >= 143 and tile.x <= 146 and tile.y >= 7 and tile.y <= 8:
 		request_scene.emit("gym", {"from": "overworld"}); return
 	# NPC
 	_try_talk_npc(tile)
@@ -801,7 +802,7 @@ func _check_shenhe_town() -> void:
 	# 260706 Red 申鹤碧溪镇对战（道馆前）
 	if _shenhe_town_done or not GameState.has_starter or _dialog_active or _battling: return
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
-	if tile.x >= 127 and tile.x <= 133 and tile.y >= 14 and tile.y <= 20:
+	if tile.x >= 127 and tile.x <= 130 and tile.y >= 7 and tile.y <= 10:
 		_shenhe_town_done = true
 		_show_dialog("申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！", 600)
 
