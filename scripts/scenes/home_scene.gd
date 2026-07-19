@@ -145,7 +145,7 @@ func _build_lanqiuqiu() -> void:
 func _confirm_starter() -> void:
 	var mon := MonDB.create_mon("蓝秋秋", 3, {"hp":31,"atk":31,"def":31,"sp_atk":31,"sp_def":31,"spd":31}, "顽皮")
 	mon["gender"] = "female"
-	mon["met_location"] = "命中注定的相遇"
+	mon["met_location"] = "自幼相伴的伙伴"
 	GameState.player_team = [mon]
 	GameState.has_starter = true
 	# 存档推迟到玩家关掉确认对话框后才写，避免卡对话时强关落下一个不一致的存档

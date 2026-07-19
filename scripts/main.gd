@@ -63,16 +63,51 @@ func _build_map_label() -> void:
 	_map_label.visible = false
 	cl.add_child(_map_label)
 
-func switch_to(scene_name: String, data: Dictionary) -> void:
+# ── 加载过场过渡 ────────────────────────────────────────────────
+func switch_to(scene_name: String, data: Dictionary, use_transition: bool = false) -> void:
+	if use_transition:
+		await _transition_switch(scene_name, data)
+		return
 	if _pause_active:
 		_close_pause()
 	if _current != null:
 		_current.queue_free()
 		await get_tree().process_frame
 		_current = null
+	_load_scene_inner(scene_name, data)
 
-	# 260704 Red .tscn 场景优先，纯脚本场景 fallback
-	# 260708 Red village/world/town 不再独立加载，统一走 overworld
+func _should_transition(from: String, to: String) -> bool:
+	const TRANSITION_PAIRS := {
+		"title": "opening",
+		"opening": "home",
+		"home": "overworld",
+		"overworld": "home",
+	}
+	return TRANSITION_PAIRS.get(from, "") == to
+
+func _transition_switch(scene_name: String, data: Dictionary) -> void:
+	if _pause_active:
+		_close_pause()
+
+	var t = load("res://scenes/ui/loading_transition.tscn").instantiate()
+	add_child(t)
+
+	await t.fade_in()
+
+	if _current != null:
+		_current.queue_free()
+		await get_tree().process_frame
+		_current = null
+
+	_load_scene_inner(scene_name, data)
+
+	await get_tree().create_timer(0.15).timeout
+
+	await t.fade_out()
+
+	t.queue_free()
+
+func _load_scene_inner(scene_name: String, data: Dictionary) -> void:
 	var _TSCN_SCENES := {
 		"gym":     "res://scenes/翠竹馆.tscn",
 		"overworld": "res://scenes/大世界.tscn",
@@ -480,9 +515,9 @@ func _on_request_scene(scene_name: String, data: Dictionary) -> void:
 	match scene_name:
 		"village", "青木村":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "village")
-			switch_to("overworld", d)
+			switch_to("overworld", d, _should_transition(_scene_name, "overworld"))
 		"town", "碧溪镇":
 			var d = data.duplicate(); d["spawn"] = d.get("spawn", "town")
-			switch_to("overworld", d)
+			switch_to("overworld", d, _should_transition(_scene_name, "overworld"))
 		_:
-			switch_to(scene_name, data)
+			switch_to(scene_name, data, _should_transition(_scene_name, scene_name))
