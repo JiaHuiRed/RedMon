@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.25.8] - 2026-07-19
+
+> 全 tileset 纹理格统一为 128×128 标准尺寸
+
+### 变更
+
+- **全 tileset 纹理统一至 128×128 网格**：HD indoor 素材 2048→810px、3 张 base indoor 素材 384→512px、world 素材 384→768px，各自的 `texture_region_size` 和 `tile_size` 同步更新；world 碰撞多边形坐标×2
+
+### 涉及文件
+
+- `project.godot`、`indoor_tileset.tres`、`world_tileset.tres`、`碧溪镇.tscn`、`华灵草原.tscn`
+
+---
+
 ## [0.25.7] - 2026-07-18
 
 > HD 室内 tileset 加载修复 + 妈妈节点可视化 + 新增 Godot MCP 集成
