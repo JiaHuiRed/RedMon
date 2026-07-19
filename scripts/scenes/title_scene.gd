@@ -148,7 +148,7 @@ func _open_slot_picker(mode: String) -> void:
 	_slot_cursor = 0
 	# 新存档默认跳到第一个空档
 	if mode == "new":
-		for s in [1, 2, 3]:
+		for s in [1, 2, 3, 4, 5]:
 			if not GameState.has_save(s):
 				_slot_cursor = s - 1; break
 	_slot_panel.visible = true
@@ -170,7 +170,7 @@ func _draw_slot_picker() -> void:
 	_slot_panel.add_child(title_lbl)
 
 	var scene_names := {"home":"家", "village":"青木村", "overworld":"大世界", "town":"碧溪镇", "gym":"翠竹馆", "battle":"战斗中", "":""}
-	for i in range(3):
+	for i in range(5):
 		var slot = i + 1
 		var summary = GameState.get_slot_summary(slot)
 		var sy = 220 + i * 90
@@ -269,11 +269,11 @@ func _input(event: InputEvent) -> void:
 			return
 		if event.is_action_pressed("ui_up"):
 			get_viewport().set_input_as_handled()
-			_slot_cursor = (_slot_cursor - 1 + 3) % 3
+			_slot_cursor = (_slot_cursor - 1 + 5) % 5
 			_draw_slot_picker()
 		elif event.is_action_pressed("ui_down"):
 			get_viewport().set_input_as_handled()
-			_slot_cursor = (_slot_cursor + 1) % 3
+			_slot_cursor = (_slot_cursor + 1) % 5
 			_draw_slot_picker()
 		elif event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
