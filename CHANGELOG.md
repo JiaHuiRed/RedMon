@@ -1,8 +1,28 @@
 # Changelog
 
+## [0.26.0] - 2026-07-19
+
+> 内部分辨率升级至 1080p（1920×1080）
+
+### 变更
+
+- **内部分辨率 720p→1080p**：所有场景 VW/VH 从 1280×720 升级为 1920×1080，布局常量×1.5 比例重算
+  - 战斗场景：FIELD_H/MENU_*/MSG_*/CMD_* 共 11 个常量
+  - 大世界菜单：MENU_W/H/X/Y 及 PCBox 面板坐标
+  - 暂停菜单：面板尺寸/位置从 960×640 迁至 1920×1080
+  - DialogBubble 默认参数同步更新
+  - `project.godot` 视口与窗口分辨率更新（stretch mode canvas_items）
+- **1080p 整数缩放友好**：4K 屏可 2×（2560×1440）或 3×（3840×2160）整数缩放，像素锐利
+
+### 涉及文件
+
+- `project.godot`、`scripts/scenes/opening_scene.gd`、`title_scene.gd`、`home_scene.gd`、`overworld_scene.gd`、`battle_scene.gd`、`gym_scene.gd`、`劲敌家_scene.gd`、`scripts/ui/party_ui.gd`、`loading_transition.gd`、`name_dialog.gd`、`DialogBubble.gd`、`scripts/main.gd`
+
+---
+
 ## [0.25.9] - 2026-07-19
 
-> 加载过渡动画 + 开场文案重写 + 存档槽位扩展至 5 档
+> 坐标系统升级 + 加载过渡动画 + 开场文案重写 + 存档槽位扩展至 5 档
 
 ### 新增
 
@@ -14,14 +34,18 @@
 
 - **蓝秋秋相遇地点**：从"命中注定的相遇"改为"自幼相伴的伙伴"，符合御三家设定
 - **scene navigation transition**：title→opening→home→overworld→home 全套加载动画衔接
+- **开场背景显示不全**：2848×1600 大图超 720p 视口，TextureRect 自适应铺满修复
 
 ### 变更
 
+- **坐标系统 16px→32px**：大世界 tile 网格翻倍，青木村场景 tilemap 同步迁移——为精灵移动精度与碰撞对齐做基础设施升级
 - **species.json 种族值调整**：末尾若干精灵微调 BST
+- **叶瞬光 sprites 高清重置**
+- **新增精灵 418-427**（洛璃等）+ 进化链 + 洛璃 sprites
 
 ### 涉及文件
 
-- `scripts/main.gd`、`scripts/ui/loading_transition.gd/tscn`、`data/dialogs.json`、`scripts/scenes/home_scene.gd`、`scripts/autoload/game_state.gd`、`scripts/scenes/title_scene.gd`、`data/species.json`
+- `scripts/main.gd`、`scripts/ui/loading_transition.gd/tscn`、`data/dialogs.json`、`scripts/scenes/home_scene.gd`、`scripts/autoload/game_state.gd`、`scripts/scenes/title_scene.gd`、`data/species.json`、`scenes/大世界.tscn`、`scenes/青木村.tscn`
 
 ---
 
