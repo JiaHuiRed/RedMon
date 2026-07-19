@@ -49,9 +49,12 @@ func _ready() -> void:
 func _build_bg() -> void:
 	var bg_path = "res://assets/backgrounds/buildings/开场实验室.png"
 	if ResourceLoader.exists(bg_path):
-		var bg = Sprite2D.new()
+		var bg = TextureRect.new()
 		bg.texture = load(bg_path)
-		bg.centered = false
+		bg.size = Vector2(VW, VH)
+		bg.position = Vector2.ZERO
+		bg.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		add_child(bg)
 		return
 
