@@ -25,7 +25,6 @@ var _dialog_active: bool = false
 var _dialog_phase: int = 0
 var _dialog_text: Array = []
 var _dialog_bubble: DialogBubble
-var _dialog_text: Array = []
 
 func _ready() -> void:
 	_build_player()
