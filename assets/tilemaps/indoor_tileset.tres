@@ -108,7 +108,7 @@ texture_region_size = Vector2i(128, 128)
 5:5/0 = 0
 
 [resource]
-tile_size = Vector2i(96, 96)
+tile_size = Vector2i(128, 128)
 physics_layer_0/collision_layer = 1
 custom_data_layer_0/name = "terrain_type"
 custom_data_layer_0/type = 4

@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.27.0] - 2026-07-20
+
+> 室内系统标准化 + 品阶/捕获率平衡重制
+
+### 新增
+
+- **室内 TileMap 标准化**：室内场景统一 tile_size=128，7×7 格（896×896），标准 5 面墙碰撞布局，Shape 子节点归零只拖父级一个点
+
+### 变更
+
+- **精灵素材更新**：元英、光伊、智敏、纯子、明光丘 正面/背面 HD 重置
+- **品阶系统重制**（species.json）：按 BST 严格分档——凡(<300) 灵(300-409) 玄(410-529) 神(530-639) 地(640-719) 天(720-780)，428 只精灵 tier 全量重新分配
+- **捕获率公式重制**（mon_db.gd）：catch_rate 由 BST 实时计算, `clampi(roundi(200 - (BST-180) × 199/600), 1, 200)`，分母 255→200，公式 `P = (catch_rate/200) × (1-0.67×HP%) × status × ball`
+- **主角家二楼**：从 Sprite2D 背景改为三层 TileMapLayer（Ground/Furniture/Overlap）结构
+- **室内尺寸扩大**：6×6→7×7，碰撞墙坐标全部重算
+- **素材目录整理**：`download/像素图` → `assets/像素图`，纳入版本控制
+
+### 涉及文件
+
+- `project.godot`、`assets/tilemaps/indoor_tileset.tres`、`data/species.json`
+- `scenes/buildings/`（主角家一楼/卧室、劲敌家/2F，共 4 个 tscn）
+- `scripts/autoload/mon_db.gd`、`scripts/scenes/home_scene.gd`
+- `assets/sprites/`（元英、光伊、智敏、纯子、明光丘 正背面素材更新）
+
+---
+
 ## [0.26.1] - 2026-07-19
 
 > 开场序幕完善：教授布局、对话框排版、Enter 键确认。

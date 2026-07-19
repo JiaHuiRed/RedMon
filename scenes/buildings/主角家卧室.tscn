@@ -1,10 +1,66 @@
-[gd_scene format=3 uid="uid://home_floor2_cc"]
+[gd_scene format=3 uid="uid://c4ssr0mu0x742"]
 
-[ext_resource type="Texture2D" uid="uid://dxy3elcb324i1" path="res://assets/backgrounds/buildings/卧室.png" id="1_floor2"]
+[ext_resource type="TileSet" uid="uid://01qc7vg5im35" path="res://assets/tilemaps/indoor_tileset.tres" id="1_tileset"]
 
-[node name="home_floor2" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="S_top"]
+size = Vector2(896, 8)
 
-[node name="BG" type="Sprite2D" parent="."]
-texture = ExtResource("1_floor2")
-centered = false
-scale = Vector2(1.0, 1.0)
+[sub_resource type="RectangleShape2D" id="S_left"]
+size = Vector2(8, 896)
+
+[sub_resource type="RectangleShape2D" id="S_right"]
+size = Vector2(8, 896)
+
+[sub_resource type="RectangleShape2D" id="S_bot_l"]
+size = Vector2(384, 8)
+
+[sub_resource type="RectangleShape2D" id="S_bot_r"]
+size = Vector2(384, 8)
+
+[node name="home_floor2" type="Node2D" unique_id=1662423370]
+
+[node name="Ground" type="TileMapLayer" parent="." unique_id=656207485]
+position = Vector2(320, -64)
+tile_set = ExtResource("1_tileset")
+
+[node name="Furniture" type="TileMapLayer" parent="." unique_id=1063722037]
+z_index = 1
+position = Vector2(320, -64)
+tile_set = ExtResource("1_tileset")
+
+[node name="Overlap" type="TileMapLayer" parent="." unique_id=1903864255]
+z_index = 10
+position = Vector2(320, -64)
+tile_set = ExtResource("1_tileset")
+
+[node name="Colliders" type="Node2D" parent="." unique_id=1193711538]
+
+[node name="上墙" type="StaticBody2D" parent="Colliders" unique_id=1593548157]
+position = Vector2(768, -68)
+
+[node name="Shape" type="CollisionShape2D" parent="Colliders/上墙" unique_id=1898616863]
+shape = SubResource("S_top")
+
+[node name="左墙" type="StaticBody2D" parent="Colliders" unique_id=1640513056]
+position = Vector2(316, 384)
+
+[node name="Shape" type="CollisionShape2D" parent="Colliders/左墙" unique_id=462738052]
+shape = SubResource("S_left")
+
+[node name="右墙" type="StaticBody2D" parent="Colliders" unique_id=261874356]
+position = Vector2(1220, 384)
+
+[node name="Shape" type="CollisionShape2D" parent="Colliders/右墙" unique_id=1329037061]
+shape = SubResource("S_right")
+
+[node name="下左" type="StaticBody2D" parent="Colliders" unique_id=240701041]
+position = Vector2(512, 836)
+
+[node name="Shape" type="CollisionShape2D" parent="Colliders/下左" unique_id=2034619665]
+shape = SubResource("S_bot_l")
+
+[node name="下右" type="StaticBody2D" parent="Colliders" unique_id=2096917057]
+position = Vector2(1024, 836)
+
+[node name="Shape" type="CollisionShape2D" parent="Colliders/下右" unique_id=1090324716]
+shape = SubResource("S_bot_r")

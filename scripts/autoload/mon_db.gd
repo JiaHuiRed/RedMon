@@ -606,14 +606,17 @@ func get_encounters(location: String) -> Array:
 	return result
 
 func calc_catch(mon: Dictionary, ball_bonus: float = 1.0) -> bool:
-	var sp         = species.get(mon["species_id"], {})
-	var catch_rate = sp.get("catch_rate", 45)
-	var hp_ratio   = float(mon["current_hp"]) / float(mon["max_hp"])
+	var sp = species.get(mon["species_id"], {})
+	var b = sp.get("base", {})
+	var bst = b.get("hp", 0) + b.get("atk", 0) + b.get("def", 0) \
+	        + b.get("sp_atk", 0) + b.get("sp_def", 0) + b.get("spd", 0)
+	var catch_rate = clampi(roundi(200.0 - (bst - 180.0) * 199.0 / 600.0), 1, 200)
+	var hp_ratio = float(mon["current_hp"]) / float(mon["max_hp"])
 	var status_mult = 1.0
 	match mon.get("status", ""):
 		"睡眠", "冰冻":          status_mult = 2.0
 		"烧伤", "中毒", "麻痹": status_mult = 1.5
-	var p = (catch_rate / 255.0) * (1.0 - 0.67 * hp_ratio) * status_mult * ball_bonus
+	var p = (catch_rate / 200.0) * (1.0 - 0.67 * hp_ratio) * status_mult * ball_bonus
 	return randf() < clamp(p, 0.0, 1.0)
 
 # 获得经验，自动处理连续升级，返回升级事件列表
