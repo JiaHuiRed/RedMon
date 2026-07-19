@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.25.7] - 2026-07-18
+
+> HD 室内 tileset 加载修复 + 妈妈节点可视化 + 新增 Godot MCP 集成
+
+### 修复
+- **HD tileset 因 uid 未注册无法加载**：`室内场景瓦片素材.png` 作为第 4 个 atlas source 加入 `indoor_tileset.tres` 时使用了未经 Godot 注册的 uid，导致文件加载失败；改为纯路径引用，不再依赖 uid 系统
+- **妈妈节点可视化**：妈妈从纯代码生成改为 Sprite2D 节点直接放在 `主角家一楼.tscn` 的 `角色` 组下，遵循青木村 NPC 模式（metadata + collision + 纹理），编辑器场景树中可见可拖拽
+
+### 新增
+- **Godot MCP 运行时探针**：`project.godot` 新增 `MCPRuntimeProbe` 自动加载，为 Godot MCP 集成提供运行时支持
+
 ## [0.25.6] - 2026-07-18
 
 > 开场流程优化：教授旁白改为逐段翻页，修复文案原地修改污染缓存的问题
