@@ -28,10 +28,10 @@ var _stat_cursor: int = 0
 const _STAT_KEYS   := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
 const _STAT_LABELS := ["HP", "攻击", "防御", "特攻", "特防", "速度"]
 # 260715 Red 现代菜单配色（实际对齐 party_ui.gd 的深色主题，此前注释与配色不符）
-const _PW   := 280
-const _PH   := 420
-const _PX   := 340   # 水平居中 (960-280)/2
-const _PY   := 110   # 垂直居中 (640-420)/2
+const _PW   := 420
+const _PH   := 630
+const _PX   := 750   # 水平居中 (1920-420)/2
+const _PY   := 225   # 垂直居中 (1080-630)/2
 const _M_BG      := Color(0.075, 0.102, 0.157, 0.98)  # 深蓝底，同 party_ui.C_BG
 const _M_CARD    := Color(0.114, 0.149, 0.220, 1.0)   # 卡片底，同 party_ui.C_CARD
 const _M_CARD_BORDER := Color(0.200, 0.260, 0.380)    # 卡片描边，同 party_ui.C_CARD_BORDER
@@ -272,7 +272,7 @@ func _draw_pause() -> void:
 	for c in _pause_panel.get_children(): c.queue_free()
 	# 半透明遮罩
 	var overlay := ColorRect.new()
-	overlay.size = Vector2(960, 640)
+	overlay.size = Vector2(1920, 1080)
 	overlay.color = Color(0, 0, 0, 0.45)
 	_pause_panel.add_child(overlay)
 	# 子页面

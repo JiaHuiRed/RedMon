@@ -1,15 +1,14 @@
 extends Node2D
 # RedMon – 战斗场景  (火红风格)
-# Layout (960×640):
-#   0–380  : 战场区（背景、精灵、信息框）
-#   380–500: 消息框
-#   500–640: 指令区（战斗/背包/精灵/逃跑 → 四技能选择）
+# Layout (1920×1080):
+#   0–862     : 战场区（背景、精灵、信息框）
+#   862–1080  : 消息框 + 底部指令菜单
 
 signal request_scene(scene_name: String, data: Dictionary)
 signal _evo_choice_made
 
-const VW := 1280
-const VH := 720
+const VW := 1920
+const VH := 1080
 
 # ── State ────────────────────────────────────────────────────────────────────
 var _player_mon: Dictionary = {}
@@ -130,14 +129,14 @@ var _ally_commented_weak:  bool = false
 var _ally_commented_enemy_super: bool = false
 var _ally_commented_enemy_weak:  bool = false
 
-const FIELD_H := 575
-const MENU_Y  := 640
-const MENU_H  := 80
+const FIELD_H := 862
+const MENU_Y  := 960
+const MENU_H  := 120
 
 # 260716 Red 消息框收窄至我方信息栏与右侧 2×2 指令卡片之间的空档
-const MSG_X := 240
-const MSG_Y := 632
-const MSG_H := 76
+const MSG_X := 360
+const MSG_Y := 948
+const MSG_H := 114
 const MSG_W := CMD_GRID_X - MSG_X - 12
 
 # 战斗菜单图标
@@ -153,12 +152,12 @@ const ACTION_ICON_RECTS := {
 }
 
 # 2×2 指令卡片网格几何：按钮与光标高亮框共用，避免重绘时两处数值脱节
-const CMD_GRID_X  := 680
-const CMD_GRID_Y  := 624
-const CMD_CARD_W  := 288
-const CMD_CARD_H  := 44
-const CMD_GAP_X   := 8
-const CMD_GAP_Y   := 4
+const CMD_GRID_X  := 1020
+const CMD_GRID_Y  := 936
+const CMD_CARD_W  := 432
+const CMD_CARD_H  := 66
+const CMD_GAP_X   := 12
+const CMD_GAP_Y   := 6
 
 func _ready() -> void:
 	var data = get_meta("scene_data", {})

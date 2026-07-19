@@ -3,7 +3,7 @@
 extends CanvasLayer
 signal name_chosen(name: String)
 
-const VW := 1280; const VH := 720
+const VW := 1920; const VH := 1080
 const C_BG     := Color(0.0, 0.0, 0.0, 0.6)
 const C_PANEL  := Color(0.090, 0.118, 0.176)
 const C_BORDER := Color(0.200, 0.260, 0.380)

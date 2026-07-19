@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 玩家的家（室内，二层结构：1F客厅 / 2F卧室）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 1280
-const VH := 720
+const VW := 1920
+const VH := 1080
 const TILE  := 16
 const SPEED := 100.0
 const FLOOR_MIN_Y := 120  # 260706 Red 墙面区域不可行走，地板从此处开始（配合新背景）

@@ -10,8 +10,8 @@ extends CanvasLayer
 
 signal done
 
-const VW := 1280
-const VH := 720
+const VW := 1920
+const VH := 1080
 
 var _bg: ColorRect
 var _img: TextureRect

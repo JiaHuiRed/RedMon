@@ -2,8 +2,8 @@ extends Node2D
 # RedMon – 开场序幕（桌上精灵葫芦 + 小灯鼠蹦出 + 教授对白 + 劲敌取名）
 signal request_scene(scene_name: String, data: Dictionary)
 
-const VW := 1280
-const VH := 720
+const VW := 1920
+const VH := 1080
 
 # 阶段：0=开场白 1=性别选择 2=取名 3=劲敌取名 4~6=教授三段对白+小灯鼠出现
 var _phase: int = 0

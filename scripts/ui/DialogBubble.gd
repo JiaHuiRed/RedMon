@@ -17,12 +17,12 @@ var _corner_radius: int
 var _text_color: Color
 var _show_arrow: bool
 
-func _init(p_vw: int = 1280, p_vh: int = 720) -> void:
+func _init(p_vw: int = 1920, p_vh: int = 1080) -> void:
 	_vw = p_vw
 	_vh = p_vh
 
 ## 除 parent/vw/vh 外均为外观自定义参数，默认值还原成原本的深色全宽对话气泡
-static func create(parent: Node, vw: int = 1280, vh: int = 720,
+static func create(parent: Node, vw: int = 1920, vh: int = 1080,
 		panel_size: Vector2 = Vector2.ZERO, panel_pos: Vector2 = Vector2.ZERO,
 		bg_color: Color = Color(0.10, 0.10, 0.15, 0.95),
 		border_color: Color = Color(0.35, 0.35, 0.45, 0.8),

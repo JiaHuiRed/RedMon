@@ -2,7 +2,7 @@
 extends CanvasLayer
 signal closed
 
-const VW := 1280; const VH := 720
+const VW := 1920; const VH := 1080
 const LEFT_W  := 300
 const CARD_H  := 80
 const CARD_GAP := 8
