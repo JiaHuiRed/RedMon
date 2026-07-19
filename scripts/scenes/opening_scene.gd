@@ -461,11 +461,17 @@ func _input(event: InputEvent) -> void:
 			if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_menu"):
 				get_viewport().set_input_as_handled()
 				_on_name_confirmed(_name_input.text)
+			elif event.is_action_pressed("ui_cancel"):
+				get_viewport().set_input_as_handled()
+				_show_phase(1)
 		3:  # 劲敌取名（两步：输入→确认→再按Z继续）
 			if _rival_panel.visible:
 				if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_menu"):
 					get_viewport().set_input_as_handled()
 					_on_rival_confirmed(_rival_input.text)
+				elif event.is_action_pressed("ui_cancel"):
+					get_viewport().set_input_as_handled()
+					_show_phase(2)
 			else:
 				if event.is_action_pressed("ui_accept"):
 					get_viewport().set_input_as_handled()

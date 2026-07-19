@@ -24,6 +24,7 @@ var _door_guard: bool = false
 var _stair_hint_2f: Sprite2D  # 2F 下楼箭头
 var _stair_hint_1f: Sprite2D  # 1F 上楼箭头
 var _stair_hint_t: float = 0.0
+var _tutorial_shown: bool = false
 var _floor1: Node2D   # 1F 客厅
 var _floor2: Node2D   # 2F 卧室
 var _floor: int = 1   # 260703 Red 进门默认1楼客厅
@@ -335,6 +336,12 @@ func _advance_dialog() -> void:
 	# 选完御三家关掉确认对话框→存档，确保存的时候双方状态一致
 	if GameState.has_starter and _floor == 2:
 		GameState.save_game()
+		if not _tutorial_shown:
+			_tutorial_shown = true
+			var tip = MonDB.dlg("rival", "tutorial")
+			if tip and tip != "":
+				_dialog_bubble.show(tip)
+				return
 
 	if not GameState.has_starter:
 		match _dialog_phase:

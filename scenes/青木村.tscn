@@ -11,13 +11,13 @@
 [ext_resource type="Texture2D" uid="uid://bris3njh0b56a" path="res://assets/npc_homage_reference/battle_portraits/LEADER_Misty.png" id="31_xiaoxia"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gktdk"]
-size = Vector2(113, 122)
+size = Vector2(198.5, 195)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kcivn"]
-size = Vector2(111.5, 111)
+size = Vector2(185, 212)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lab"]
-size = Vector2(260, 158)
+size = Vector2(395, 237)
 
 [node name="village" type="Node2D" unique_id=1796374134]
 
@@ -29,53 +29,47 @@ tile_set = ExtResource("10_ts")
 
 [node name="家" type="Sprite2D" parent="建筑" unique_id=1161558834]
 z_index = 2
-position = Vector2(178, 157)
-scale = Vector2(1.5851064, 1.5333333)
+position = Vector2(365.25, 337.5)
+scale = Vector2(2.6010637, 2.411111)
 texture = ExtResource("2_mv8fa")
 
 [node name="家碰撞" type="StaticBody2D" parent="建筑" unique_id=1418694820]
-position = Vector2(194, 158)
+position = Vector2(379, 236)
 
 [node name="Shape" type="CollisionShape2D" parent="建筑/家碰撞" unique_id=481590620]
-position = Vector2(-18, 1)
+position = Vector2(-9, 106)
 shape = SubResource("RectangleShape2D_gktdk")
 
 [node name="劲敌家" type="Sprite2D" parent="建筑" unique_id=1411037664]
 z_index = 2
-position = Vector2(729, 374)
-scale = Vector2(1.2127659, 1.2)
+position = Vector2(1459.5, 784)
+scale = Vector2(2.4574454, 2.5333338)
 texture = ExtResource("2_mv8fa")
 
 [node name="劲敌家碰撞" type="StaticBody2D" parent="建筑" unique_id=1139931830]
 position = Vector2(769, 472)
 
 [node name="Shape" type="CollisionShape2D" parent="建筑/劲敌家碰撞" unique_id=112854694]
-position = Vector2(-41.25, -95.5)
+position = Vector2(695.5, 312)
 shape = SubResource("RectangleShape2D_kcivn")
 
 [node name="研究所" type="Sprite2D" parent="建筑" unique_id=415623353]
 z_index = 2
-position = Vector2(734, 74)
+position = Vector2(1360.0001, 240)
+scale = Vector2(1.4562044, 1.451557)
 texture = ExtResource("6_lab")
 
 [node name="研究所碰撞" type="StaticBody2D" parent="建筑" unique_id=335662160]
-position = Vector2(672, 154)
+position = Vector2(1313, 262)
 
 [node name="Shape" type="CollisionShape2D" parent="建筑/研究所碰撞" unique_id=574316373]
-position = Vector2(65, -60)
+position = Vector2(45.5, 0.5)
 shape = SubResource("RectangleShape2D_lab")
 
 [node name="装饰" type="Node2D" parent="." unique_id=1122175758]
 
-[node name="水井" type="Marker2D" parent="装饰" unique_id=317291201]
-position = Vector2(364, 180)
-metadata/npc_type = "sign"
-metadata/npc_name = "水井"
-metadata/npc_dialog = "村口的老水井，井水清凉见底。
-往下望去，井壁深处似乎别有洞天……"
-
 [node name="路标_家" type="Marker2D" parent="装饰" unique_id=141680803]
-position = Vector2(274, 214)
+position = Vector2(545, 428)
 metadata/npc_type = "sign"
 metadata/npc_name = "告示牌"
 metadata/npc_dialog = "{player}的家"
@@ -87,26 +81,19 @@ metadata/npc_name = "告示牌"
 metadata/npc_dialog = "{rival}的家"
 
 [node name="路标_研究所" type="Marker2D" parent="装饰" unique_id=349051269]
-position = Vector2(702, 244)
+position = Vector2(1119, 443)
 metadata/npc_type = "sign"
 metadata/npc_name = "告示牌"
 metadata/npc_dialog = "陈教授的研究所
 精灵研究的最前沿"
-
-[node name="告示牌_黑风堂预警" type="Marker2D" parent="装饰" unique_id=2114519212]
-position = Vector2(888, 248)
-metadata/npc_type = "sign"
-metadata/npc_name = "告示牌"
-metadata/npc_dialog = "【华灵草原】→ 前方草丛危险，请带足补给再出发。
-黑风堂出没，请市民提高警惕。"
 
 [node name="角色" type="Node2D" parent="." unique_id=1285328644]
 
 [node name="阿婆" type="Sprite2D" parent="角色" unique_id=150225919]
 z_index = 5
 texture_filter = 4
-position = Vector2(322, 368.99997)
-scale = Vector2(0.2648438, 0.26874992)
+position = Vector2(612, 773)
+scale = Vector2(0.36679685, 0.37265646)
 texture = ExtResource("20_granny")
 region_enabled = true
 region_rect = Rect2(256, 0, 256, 256)
@@ -117,7 +104,7 @@ metadata/npc_dialog = "阿婆：这孩子，出门在外要照顾好自己，野
 [node name="训练师_村1" type="Sprite2D" parent="角色" unique_id=829320325]
 z_index = 5
 texture_filter = 4
-position = Vector2(648, 488)
+position = Vector2(923, 1283.0001)
 scale = Vector2(0.188, 0.188)
 texture = ExtResource("23_towntrainer")
 region_enabled = true
@@ -130,8 +117,8 @@ metadata/sight = "3"
 
 [node name="守卫_北出口" type="Sprite2D" parent="角色" unique_id=1921060534]
 z_index = 5
-position = Vector2(480, -61)
-scale = Vector2(1.2, 1.2)
+position = Vector2(987.00006, -147.00002)
+scale = Vector2(2.2041671, 2.0583334)
 texture = ExtResource("21_youth")
 region_enabled = true
 region_rect = Rect2(48, 0, 48, 48)
@@ -141,8 +128,8 @@ metadata/npc_dialog = "__guard_north__"
 
 [node name="村民_右出口" type="Sprite2D" parent="角色" unique_id=2121822687]
 z_index = 5
-position = Vector2(904, 296)
-scale = Vector2(1.2, 1.2)
+position = Vector2(215, 1.0000005)
+scale = Vector2(2.2250001, 2.1000001)
 texture = ExtResource("21_youth")
 region_enabled = true
 region_rect = Rect2(48, 0, 48, 48)
@@ -153,8 +140,8 @@ metadata/npc_dialog = "__guard_right__"
 [node name="劲敌" type="Sprite2D" parent="角色" unique_id=113670930]
 z_index = 5
 texture_filter = 4
-position = Vector2(856, 360)
-scale = Vector2(0.09375, 0.09375)
+position = Vector2(1703, 676)
+scale = Vector2(0.18155524, 0.14746097)
 texture = ExtResource("24_rivalportrait")
 metadata/npc_type = "rival"
 metadata/npc_name = "劲敌"
@@ -163,8 +150,8 @@ metadata/npc_dialog = "__rival__"
 [node name="君美_头目" type="Sprite2D" parent="角色" unique_id=1735856940]
 z_index = 5
 texture_filter = 4
-position = Vector2(552, 264)
-scale = Vector2(0.15, 0.15)
+position = Vector2(96.950005, 969.69995)
+scale = Vector2(0.24973957, 0.22239596)
 texture = ExtResource("30_junmei")
 metadata/npc_type = "npc"
 metadata/npc_name = "君美"
@@ -181,6 +168,6 @@ metadata/npc_type = "ally_hidden"
 metadata/npc_name = "小霞"
 
 [node name="小霞_停靠点" type="Marker2D" parent="角色" unique_id=1221642055]
-position = Vector2(608, 264)
+position = Vector2(145, 1006)
 
 [node name="背景" type="Sprite2D" parent="." unique_id=959645119]

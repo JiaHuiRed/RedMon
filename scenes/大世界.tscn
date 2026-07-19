@@ -9,7 +9,6 @@
 script = ExtResource("6_script")
 
 [node name="青木村" parent="." unique_id=1796374134 instance=ExtResource("1_eab5i")]
-script = null
 
 [node name="华灵草原" parent="." unique_id=171178249 instance=ExtResource("3_qjxaj")]
 position = Vector2(2048, 0)
@@ -17,4 +16,3 @@ script = null
 
 [node name="碧溪镇" parent="." unique_id=2035275529 instance=ExtResource("5_nesqq")]
 position = Vector2(3968, 0)
-script = null
