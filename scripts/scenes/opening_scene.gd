@@ -469,13 +469,19 @@ func _input(event: InputEvent) -> void:
 			elif event.is_action_pressed("ui_accept"):
 				get_viewport().set_input_as_handled()
 				_show_phase(2)
-		2:  # 玩家取名
-			if event.is_action_pressed("ui_cancel"):
+		2:  # 玩家取名（Enter确认交给LineEdit的text_submitted信号；这里拦截ui_menu防止同一次回车
+			# 被main.gd的_unhandled_input当成菜单键弹出全局暂停菜单——LineEdit的GUI消费不会
+			# 自动标记事件为"已处理"，两边会同时收到同一次按键）
+			if event.is_action_pressed("ui_menu"):
+				get_viewport().set_input_as_handled()
+			elif event.is_action_pressed("ui_cancel"):
 				get_viewport().set_input_as_handled()
 				_show_phase(1)
 		3:  # 劲敌取名（两步：输入→确认→再按Z继续）
 			if _rival_panel.visible:
-				if event.is_action_pressed("ui_cancel"):
+				if event.is_action_pressed("ui_menu"):
+					get_viewport().set_input_as_handled()
+				elif event.is_action_pressed("ui_cancel"):
 					get_viewport().set_input_as_handled()
 					_show_phase(2)
 			else:
