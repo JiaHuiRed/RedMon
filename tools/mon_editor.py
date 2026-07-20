@@ -1084,11 +1084,11 @@ class App:
             try:    total += int(self.mon_stat_entries[key].get())
             except: pass
 
-        if   total >= 670: tier = "天"
-        elif total >= 600: tier = "神"
-        elif total >= 535: tier = "地"
-        elif total >= 450: tier = "玄"
-        elif total >= 360: tier = "灵"
+        if   total >= 720: tier = "天"
+        elif total >= 640: tier = "地"
+        elif total >= 530: tier = "神"
+        elif total >= 410: tier = "玄"
+        elif total >= 300: tier = "灵"
         else:              tier = "凡"
 
         self.mon_tier.set(tier)

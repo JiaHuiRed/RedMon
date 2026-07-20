@@ -248,12 +248,11 @@ func add_mon(mon: Dictionary) -> void:
 		mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
 	if not mon.has("met_location"):
 		mon["met_location"] = last_scene if last_scene != "" else "未知"
-	# 260712 Red 神兽/御三家特殊相遇地
+	# 260712 Red 神兽特殊相遇地：改为跟品阶系统挂钩（仅天/地品阶），此前用BST>=600的独立阈值与品阶重制后的分档脱节
 	if mon.has("species_id") and not mon.has("_encounter_patched"):
 		var sp = MonDB.species.get(mon["species_id"], {})
-		var bs = sp.get("base", {})
-		var total = int(bs.get("hp",0)) + int(bs.get("atk",0)) + int(bs.get("def",0)) + int(bs.get("sp_atk",0)) + int(bs.get("sp_def",0)) + int(bs.get("spd",0))
-		if total >= 600:
+		var sp_tier = sp.get("tier", "")
+		if sp_tier == "天" or sp_tier == "地":
 			mon["met_location"] = "命中注定的相遇"
 		# 防重复计算
 		mon["_encounter_patched"] = true

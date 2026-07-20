@@ -850,11 +850,11 @@ export class SpeciesTab {
         const statIds = ["stat-hp", "stat-atk", "stat-def", "stat-spatk", "stat-spdef", "stat-spd"];
         const total = statIds.reduce((sum, id) => sum + (parseInt(document.getElementById(id)?.value) || 0), 0);
         let tier;
-        if (total >= 670) tier = "天";
-        else if (total >= 600) tier = "神";
-        else if (total >= 535) tier = "地";
-        else if (total >= 450) tier = "玄";
-        else if (total >= 360) tier = "灵";
+        if (total >= 720) tier = "天";
+        else if (total >= 640) tier = "地";
+        else if (total >= 530) tier = "神";
+        else if (total >= 410) tier = "玄";
+        else if (total >= 300) tier = "灵";
         else tier = "凡";
         const sel = document.getElementById("field-tier");
         sel.value = tier;

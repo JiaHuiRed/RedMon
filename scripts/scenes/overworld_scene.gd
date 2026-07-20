@@ -777,12 +777,12 @@ func _check_egg_hatch() -> void:
 	var hatched = GameState.tick_eggs()
 	for egg in hatched:
 		var mon = MonDB.create_mon(egg["species_id"], 1, MonDB.boss_tier_ivs())
+		mon["met_location"] = "蛋中孵化而生"
 		if GameState.player_team.size() < GameState.PARTY_MAX:
 			GameState.add_mon(mon)
 		else:
 			var dt = Time.get_datetime_dict_from_system()
 			mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
-			mon["met_location"] = GameState.last_scene
 			GameState.pc_box.append(mon)
 		GameState.save_game()
 		_show_dialog("蛋孵化了！\n%s 诞生了！" % MonDB.display_name(mon), -1)
