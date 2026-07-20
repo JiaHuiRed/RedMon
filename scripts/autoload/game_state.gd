@@ -7,6 +7,8 @@ var player_gender: String = "男"
 var rival_name: String = "小敏"   # 劲敌名字，角色创建时设定
 var player_team: Array = []      # Array of mon dicts from MonDB.create_mon()
 var has_starter: bool = false
+var starter_trio_given: bool = false  # 260727 Red 御三家是否已从陈教授处领取（区别于蓝秋秋这个自幼相伴的初始伙伴）
+var prof_rescue_pending: bool = false  # 260727 Red 教授草丛遇袭战触发中，运行时标记，不需要存档
 var badges: int = 0
 var money: int = 500
 var items: Dictionary = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
@@ -134,6 +136,7 @@ func save_game() -> void:
 		"player_gender":     player_gender,
 		"rival_name":        rival_name,
 		"has_starter":       has_starter,
+		"starter_trio_given": starter_trio_given,
 		"badges":            badges,
 		"money":             money,
 		"items":             items,
@@ -180,6 +183,7 @@ func load_game(slot: int = 0) -> bool:
 	player_gender     = data.get("player_gender", "男")
 	rival_name        = data.get("rival_name", "小敏")
 	has_starter       = data.get("has_starter", false)
+	starter_trio_given = data.get("starter_trio_given", false)
 	badges            = data.get("badges", 0)
 	money             = data.get("money", 500)
 	items             = data.get("items", {"铁丹": 2, "铜丹": 2, "金丹": 1, "精灵葫芦": 5})
@@ -229,6 +233,7 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	linwei_reward_tier = 0
 	has_running_shoes = false
 	has_starter = false
+	starter_trio_given = false
 	badges = 0
 	money = 500
 	items = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
