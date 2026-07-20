@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://penceroln2tu" path="res://assets/npc/劲敌front.png" id="24_rivalportrait"]
 [ext_resource type="Texture2D" uid="uid://b42vanxg210ug" path="res://assets/sprites/君美front.png" id="30_junmei"]
 [ext_resource type="Texture2D" uid="uid://bris3njh0b56a" path="res://assets/npc_homage_reference/battle_portraits/LEADER_Misty.png" id="31_xiaoxia"]
+[ext_resource type="Texture2D" path="res://assets/npc/博士front.png" id="32_professor"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gktdk"]
 size = Vector2(198.5, 195)
@@ -99,7 +100,16 @@ region_enabled = true
 region_rect = Rect2(256, 0, 256, 256)
 metadata/npc_type = "npc"
 metadata/npc_name = "阿婆"
-metadata/npc_dialog = "阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！"
+metadata/npc_dialog = "__granny_hint__"
+
+[node name="陈教授_草丛事件" type="Sprite2D" parent="角色" unique_id=150225920]
+z_index = 5
+texture_filter = 4
+position = Vector2(612, 900)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("32_professor")
+metadata/npc_type = "prof_grass_event"
+metadata/npc_name = "陈教授"
 
 [node name="训练师_村1" type="Sprite2D" parent="角色" unique_id=829320325]
 z_index = 5

@@ -72,6 +72,11 @@ var TRAINERS:         Array      = []
 var _pending_trainer: Dictionary = {}
 var _rival_done:      bool       = false
 var _rival_node:      Node2D     = null   # 260708 Red 劲敌可见精灵图
+var _prof_grass_spr:  Node2D     = null   # 260727 Red 陈教授草丛遇袭事件立绘
+var _starter_panel:        Control = null  # 260727 Red 御三家三选一面板
+var _starter_panel_active: bool    = false
+var _starter_cursor:       int     = 0
+const STARTER_TRIO := ["炎喵", "蓝蛇", "小竹熊"]
 var _prof_event_shown: bool      = false  # 260726 Red 旧 starter 流已移除，保留兜底
 var _shenhe_village_done: bool   = false  # 260706 Red 申鹤村内对话已触发
 var _shenhe_grassland_done: bool = false  # 260706 Red 申鹤草原出口对话已触发
@@ -150,6 +155,10 @@ func _ready() -> void:
 	var data = get_meta("scene_data", {})
 	if data.get("battle_result", "") == "lose":
 		_handle_defeat()
+	elif GameState.prof_rescue_pending:
+		# 260727 Red 教授草丛遇袭战刚结束（无论输赢，教授都会道谢——蓝秋秋已经证明了自己）
+		GameState.prof_rescue_pending = false
+		call_deferred("_show_dialog", MonDB.dlg("village", "prof_rescue_thanks"), 802)
 	# 播放地图 BGM（青木村/华灵草原/碧溪镇都用同一首，后续可分区）
 	if AudioManager and AudioManager.has_method("play_bgm"):
 		AudioManager.play_bgm(AudioManager.BGM_OVERWORLD)
@@ -293,7 +302,7 @@ func _register_scene_npc(spr: Node2D) -> void:
 		_rival_node = spr
 		spr.set_meta("npc_name", GameState.rival_name)
 		spr.set_meta("npc_tile", tile)
-		spr.visible = GameState.has_starter and not _rival_done
+		spr.visible = GameState.starter_trio_given and not _rival_done
 		if spr.visible:
 			_npc_nodes.append(spr)
 			_add_collider(spr.global_position, Vector2(12, 12))
@@ -302,6 +311,11 @@ func _register_scene_npc(spr: Node2D) -> void:
 		# 260715 Red 头目战怀旧NPC：默认隐藏，交互触发后由脚本跑入
 		_xiaoxia_spr = spr
 		spr.visible = false
+		return
+	if npc_type == "prof_grass_event":
+		# 260727 Red 陈教授草丛遇袭事件：拿到蓝秋秋后、领御三家前，站在草丛旁
+		_prof_grass_spr = spr
+		spr.visible = GameState.has_starter and not GameState.starter_trio_given
 		return
 	if str(spr.get_meta("npc_dialog", "")) == "junmei_boss_npc":
 		# 260715 Red 头目战明雷精灵：拿到初始精灵前 / 已领取过蛋后不出现
@@ -571,6 +585,20 @@ func _advance_dialog() -> void:
 				"player_pos": [_player.position.x, _player.position.y],
 				"bg": _bg_for_area(_current_area())
 			})
+		800:  # 260727 Red 陈教授草丛遇袭确认 → 用蓝秋秋迎战野生绿肥虫
+			_dialog_active = false; _dialog_bubble.hide(); _battling = true
+			GameState.prof_rescue_pending = true
+			var wild_mon = MonDB.create_wild_mon("绿肥虫", 3)
+			request_scene.emit("battle", {
+				"wild_mon": wild_mon, "from_scene": "overworld",
+				"player_pos": [_player.position.x, _player.position.y],
+				"bg": _bg_for_area(_current_area())
+			})
+		802:  # 战后感谢 → 继续
+			_show_dialog(MonDB.dlg("village", "prof_rescue_gift"), 803)
+		803:  # 送御三家 → 弹三选一面板
+			_dialog_active = false; _dialog_bubble.hide()
+			_open_starter_trio_panel()
 		-1:
 			_dialog_active = false; _dialog_bubble.hide()
 		_:
@@ -638,6 +666,9 @@ func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	# 260709 Red 精灵管理界面打开时所有输入交给 party_ui
 	if _party_active: return
+	# 260727 Red 御三家三选一面板打开时，输入交给面板自己处理
+	if _starter_panel_active:
+		_handle_starter_panel_nav(event); return
 	# 260709 Red 菜单统一由 main.gd 全局暂停菜单处理，overworld 不再拦截 ui_menu
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
@@ -696,13 +727,16 @@ func _try_talk_npc(tile: Vector2i) -> void:
 				_handle_shenhe_grassland_npc(); return
 			if dlg == "junmei_boss_npc":
 				_handle_junmei_boss(); return
+			if dlg == "__granny_hint__":
+				_handle_granny_hint(); return
 			_npc_dialog_lines = [dlg]; _npc_dialog_idx = 0
 			_show_dialog(dlg, 200); return
 
 func _handle_lab_visit() -> void:
 	# 260716 Red 林薇是陈教授的助手，常驻研究所内，不在村子地图上走动
-	if not GameState.has_starter:
-		_npc_dialog_lines = ["林薇：你好呀！我是陈教授的助手林薇。\n教授好像去村外了，你可以出去找找他。"]
+	# 260727 Red 领御三家之前教授不在研究所内（正在草丛旁忙着），林薇代为接待
+	if not GameState.starter_trio_given:
+		_npc_dialog_lines = ["林薇：你好呀！我是陈教授的助手林薇。\n教授出去忙了，你可以到村子里转转找找他。"]
 		_npc_dialog_idx = 0
 		_show_dialog(_npc_dialog_lines[0], 200)
 		return
@@ -727,8 +761,12 @@ func _handle_lab_visit() -> void:
 	_npc_dialog_idx = 0
 	_show_dialog(lines[0], 200)
 
-func _handle_granny() -> void:
-	_show_dialog("阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！", -1)
+func _handle_granny_hint() -> void:
+	# 260727 Red has_starter=已带蓝秋秋出门；starter_trio_given=已从教授处正式领取御三家
+	if GameState.has_starter and not GameState.starter_trio_given:
+		_show_dialog(MonDB.dlg("village", "granny_hint").replace("{player}", GameState.player_name), -1)
+	else:
+		_show_dialog("阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！", -1)
 
 func _handle_north_guard() -> void:
 	var n := GameState.badges
@@ -811,18 +849,130 @@ func _check_encounter() -> void:
 	var foot_y := _player.position.y + 8
 	var tile = Vector2i(int(_player.position.x / TILE), int(foot_y / TILE))
 	if tile not in _grass_tiles: return
-	# 260706 Red 首次踩草若无御三家 → 触发开场事件
-	if not GameState.has_starter:
+	# 260727 Red 带着蓝秋秋但还没正式领御三家 → 触发教授草丛遇袭事件
+	if GameState.has_starter and not GameState.starter_trio_given:
 		_trigger_professor_event(); return
+	if not GameState.has_starter: return
 	if randf() > 0.15: return
 	_trigger_encounter()
 
 func _trigger_professor_event() -> void:
-	# 260726 Red 旧 starter 流已移除，正常新游戏不会走到这里；兜底跳 opening
+	# 260727 Red 陈教授草丛遇袭：阿婆已提示过，玩家踩草丛后正式遭遇，用蓝秋秋一战
 	if _prof_event_shown or _dialog_active or _battling: return
 	_prof_event_shown = true
-	_show_dialog("林薇：%s，等等！那片草丛危险得很，野生精灵随时会冲出来！
-……教授！教授被一只绿肥虫攻击了，快去帮他！" % GameState.player_name, 500)
+	_show_dialog(MonDB.dlg("village", "prof_rescue_intro").replace("{player}", GameState.player_name), 800)
+
+# ── 御三家三选一面板 ──────────────────────────────────────────────────────────
+func _open_starter_trio_panel() -> void:
+	_starter_cursor = 0
+	_starter_panel_active = true
+	var cl := CanvasLayer.new(); cl.layer = 20; add_child(cl)
+	_starter_panel = Control.new()
+	cl.add_child(_starter_panel)
+
+	var overlay := ColorRect.new()
+	overlay.size = Vector2(VW, VH)
+	overlay.color = Color(0, 0, 0, 0.72)
+	_starter_panel.add_child(overlay)
+
+	var title := Label.new()
+	title.text = "选一位伙伴，正式踏上冒险的旅途吧！"
+	title.position = Vector2(0, 90)
+	title.size.x = VW
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color(0.92, 0.90, 0.80))
+	title.add_theme_font_size_override("font_size", 32)
+	_starter_panel.add_child(title)
+
+	var card_w := 400; var card_h := 520; var gap := 60
+	var total_w = card_w * 3 + gap * 2
+	var start_x = (VW - total_w) / 2.0
+	for i in range(STARTER_TRIO.size()):
+		var name := STARTER_TRIO[i]
+		var cx = start_x + i * (card_w + gap)
+		var card := ColorRect.new()
+		card.name = "card_%d" % i
+		card.size = Vector2(card_w, card_h)
+		card.position = Vector2(cx, 260)
+		card.color = Color(0.16, 0.16, 0.30, 0.95)
+		_starter_panel.add_child(card)
+
+		var spr := Sprite2D.new()
+		var path := "res://assets/sprites/%sfront.png" % name
+		if ResourceLoader.exists(path):
+			spr.texture = load(path)
+			var s = 300.0 / maxf(spr.texture.get_size().x, spr.texture.get_size().y)
+			spr.scale = Vector2(s, s)
+		spr.position = Vector2(cx + card_w / 2.0, 260 + 200)
+		_starter_panel.add_child(spr)
+
+		var sp := MonDB.species.get(name, {})
+		var t1 := str(sp.get("type1", ""))
+		var t2 := str(sp.get("type2", ""))
+		var type_txt := t1 if t2 == "" else "%s / %s" % [t1, t2]
+
+		var name_lbl := Label.new()
+		name_lbl.text = name
+		name_lbl.position = Vector2(cx, 260 + 360)
+		name_lbl.size.x = card_w
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.add_theme_font_size_override("font_size", 26)
+		name_lbl.add_theme_color_override("font_color", Color.WHITE)
+		_starter_panel.add_child(name_lbl)
+
+		var type_lbl := Label.new()
+		type_lbl.text = type_txt
+		type_lbl.position = Vector2(cx, 260 + 400)
+		type_lbl.size.x = card_w
+		type_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		type_lbl.add_theme_font_size_override("font_size", 16)
+		type_lbl.add_theme_color_override("font_color", Color(0.70, 0.72, 0.85))
+		_starter_panel.add_child(type_lbl)
+
+	var hint := Label.new()
+	hint.text = "←→ 选择   Z 确认"
+	hint.position = Vector2(0, VH - 90)
+	hint.size.x = VW
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 16)
+	hint.add_theme_color_override("font_color", Color(0.55, 0.55, 0.72))
+	_starter_panel.add_child(hint)
+
+	_refresh_starter_panel()
+
+func _refresh_starter_panel() -> void:
+	for i in range(STARTER_TRIO.size()):
+		var card = _starter_panel.get_node_or_null("card_%d" % i)
+		if not card: continue
+		var sel := i == _starter_cursor
+		card.color = Color(0.30, 0.34, 0.58, 0.95) if sel else Color(0.16, 0.16, 0.30, 0.95)
+
+func _handle_starter_panel_nav(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_left"):
+		get_viewport().set_input_as_handled()
+		_starter_cursor = (_starter_cursor - 1 + STARTER_TRIO.size()) % STARTER_TRIO.size()
+		_refresh_starter_panel()
+	elif event.is_action_pressed("ui_right"):
+		get_viewport().set_input_as_handled()
+		_starter_cursor = (_starter_cursor + 1) % STARTER_TRIO.size()
+		_refresh_starter_panel()
+	elif event.is_action_pressed("ui_accept"):
+		get_viewport().set_input_as_handled()
+		_confirm_starter_trio()
+
+func _confirm_starter_trio() -> void:
+	var chosen := STARTER_TRIO[_starter_cursor]
+	var mon := MonDB.create_mon(chosen, 5, {"hp":28,"atk":28,"def":28,"sp_atk":28,"sp_def":28,"spd":28})
+	mon["met_location"] = "陈教授正式授予的搭档"
+	GameState.add_mon(mon)
+	GameState.starter_trio_given = true
+	GameState.save_game()
+
+	_starter_panel_active = false
+	_starter_panel.get_parent().queue_free()  # 连同 CanvasLayer 一起移除
+	_starter_panel = null
+
+	_show_dialog(MonDB.dlg("village", "prof_rescue_farewell").replace("{player}", GameState.player_name), -1)
 
 func _trigger_encounter() -> void:
 	_battling = true

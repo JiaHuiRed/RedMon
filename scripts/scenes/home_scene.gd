@@ -309,6 +309,9 @@ func _start_mom_dialog() -> void:
 	_dialog_phase = 0
 	if not GameState.has_starter:
 		_dialog_bubble.show(MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name))
+	elif GameState.starter_trio_given and not GameState.mom_trio_greeted:
+		# 260727 Red 领到御三家后第一次回家，妈妈感慨一番（记得照顾蓝秋秋的感受）
+		_dialog_bubble.show(MonDB.dlg("home", "mom_encourage").replace("{player}", GameState.player_name))
 	else:
 		for mon in GameState.player_team:
 			mon["current_hp"] = mon["max_hp"]
@@ -348,6 +351,16 @@ func _advance_dialog() -> void:
 			1:
 				_dialog_bubble.show(MonDB.dlg("home", "mom_professor"))
 			_:
+				_dialog_active = false
+				_dialog_bubble.hide()
+	elif GameState.starter_trio_given and not GameState.mom_trio_greeted:
+		match _dialog_phase:
+			1:
+				_dialog_bubble.show(MonDB.dlg("home", "mom_rival")
+					.replace("{rival}", GameState.rival_name).replace("{player}", GameState.player_name))
+			_:
+				GameState.mom_trio_greeted = true
+				GameState.save_game()
 				_dialog_active = false
 				_dialog_bubble.hide()
 	else:
