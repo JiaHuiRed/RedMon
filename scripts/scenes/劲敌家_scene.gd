@@ -25,6 +25,7 @@ var _dialog_active: bool = false
 var _dialog_phase: int = 0
 var _dialog_text: Array = []
 var _dialog_bubble: DialogBubble
+var _npcs: Array = []
 
 func _ready() -> void:
 	_build_player()
@@ -76,7 +77,16 @@ func _build_player() -> void:
 
 # ── NPC（子类可 override 扩展）──────────────────────────────────────────────
 func _build_npcs() -> void:
-	pass  # 劲敌家默认无NPC，子类或编辑器扩展
+	for child in $角色.get_children():
+		if child is Sprite2D and child.has_meta("npc_type"):
+			var name_key = child.get_meta("npc_name", "")
+			var dialog: Array = []
+			match name_key:
+				"劲敌妈妈":
+					dialog = ["劲敌妈妈：哎呀，你就是隔壁家的孩子吧？都长这么大了。", "劲敌妈妈：我家那臭小子在楼上，你去找他玩吧。"]
+				_:
+					dialog = ["……"]
+			_npcs.append({"pos": child.position, "dialog": dialog})
 
 # ── 对话 ─────────────────────────────────────────────────────────────────────
 func _build_dialog() -> void:
