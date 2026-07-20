@@ -1381,5 +1381,33 @@
     "category": "稀有专属",
     "name": "云归星引",
     "stage": 2
+  },
+  "霜心绝念": {
+    "desc": "特攻力大幅提升，且免疫冰系招式伤害。",
+    "effect": "stat_boost_passive",
+    "category": "稀有专属",
+    "name": "霜心绝念",
+    "stage": 1
+  },
+  "雨霸帝心": {
+    "desc": "物理攻击力大幅提升，且不会被畏缩、束缚等效果限制行动。",
+    "effect": "stat_boost_passive",
+    "category": "稀有专属",
+    "name": "雨霸帝心",
+    "stage": 1
+  },
+  "曦光交融": {
+    "desc": "光系与灵系招式威力提升，且换下场时回复大量HP。",
+    "effect": "damage_boost",
+    "category": "稀有专属",
+    "name": "曦光交融",
+    "stage": 1
+  },
+  "赤炎不屈": {
+    "desc": "HP过低时攻击力大幅提升，且免疫灼伤状态。",
+    "effect": "stat_boost_low_hp",
+    "category": "稀有专属",
+    "name": "赤炎不屈",
+    "stage": 1
   }
 }
