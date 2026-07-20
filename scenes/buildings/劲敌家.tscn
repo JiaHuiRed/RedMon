@@ -17,7 +17,7 @@ size = Vector2(8, 896)
 size = Vector2(384, 8)
 
 [sub_resource type="RectangleShape2D" id="S_bot_r"]
-size = Vector2(384, 8)
+size = Vector2(511, 1)
 
 [sub_resource type="RectangleShape2D" id="S_rival_mom"]
 size = Vector2(295.91473, 510.63815)
@@ -26,63 +26,61 @@ size = Vector2(295.91473, 510.63815)
 script = ExtResource("2_script")
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1049449468]
-position = Vector2(320, -64)
 tile_map_data = PackedByteArray("AAAAAAAAAwAAAAEAAAABAAAAAwABAAEAAAACAAAAAwAAAAEAAAADAAAAAwADAAMAAAAEAAAAAwAAAAEAAAAFAAAAAwAAAAEAAAADAAYAAAABAAEAAAAGAAAAAAADAAMAAAAFAAEAAAAAAAIAAAAEAAEAAAAAAAIAAAADAAEAAAAAAAIAAAACAAEAAAAAAAIAAAABAAEAAAAAAAIAAAAAAAEAAAAAAAIAAAAAAAIAAAAAAAIAAAABAAIAAAAAAAIAAAACAAIAAAAAAAIAAAADAAIAAAAAAAIAAAAEAAIAAAAAAAIAAAAFAAIAAAAAAAIAAAAFAAMAAAAAAAIAAAAFAAQAAAAAAAIAAAAFAAUAAAAAAAIAAAAFAAYAAAAAAAIAAAAGAAYAAAAAAAIAAAAGAAUAAAAAAAIAAAAGAAQAAAAAAAIAAAAGAAMAAAAAAAIAAAAGAAIAAAAAAAIAAAAGAAEAAAAAAAIAAAAAAAMAAAAAAAIAAAABAAMAAAAAAAIAAAACAAMAAAAAAAIAAAADAAMAAAAAAAIAAAAEAAMAAAAAAAIAAAAEAAQAAAAAAAIAAAAEAAUAAAAAAAIAAAAEAAYAAAAAAAIAAAADAAQAAAAAAAIAAAADAAUAAAAAAAIAAAACAAUAAAAAAAIAAAACAAQAAAAAAAIAAAABAAQAAAAAAAIAAAAAAAQAAAAAAAIAAAAAAAUAAAAAAAIAAAAAAAYAAAAAAAIAAAABAAYAAAAAAAIAAAACAAYAAAAAAAIAAAABAAUAAAAAAAIAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Furniture" type="TileMapLayer" parent="." unique_id=1663307606]
 z_index = 1
-position = Vector2(320, -64)
 tile_map_data = PackedByteArray("AAABAAAAAwABAAQAAAAAAAAAAwAAAAQAAAACAAIAAQABAAMAAAADAAIAAQACAAMAAAAAAAQAAQABAAAAAAABAAQAAQACAAAAAAAGAAMAAQADAAEAAAAGAAQAAQADAAIAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Overlap" type="TileMapLayer" parent="." unique_id=2038167843]
 z_index = 10
-position = Vector2(320, -64)
 tile_set = ExtResource("1_tileset")
 
 [node name="Colliders" type="Node2D" parent="." unique_id=608605407]
 
 [node name="上墙" type="StaticBody2D" parent="Colliders" unique_id=1869421550]
-position = Vector2(768, -68)
+position = Vector2(448, -4)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/上墙" unique_id=480776009]
 shape = SubResource("S_top")
 
 [node name="左墙" type="StaticBody2D" parent="Colliders" unique_id=617845266]
-position = Vector2(316, 384)
+position = Vector2(-4, 448)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/左墙" unique_id=135289631]
 shape = SubResource("S_left")
 
 [node name="右墙" type="StaticBody2D" parent="Colliders" unique_id=1968427830]
-position = Vector2(1220, 384)
+position = Vector2(900, 448)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/右墙" unique_id=2016335722]
 shape = SubResource("S_right")
 
 [node name="下左" type="StaticBody2D" parent="Colliders" unique_id=650084305]
-position = Vector2(512, 836)
+position = Vector2(192, 900)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下左" unique_id=528688379]
 shape = SubResource("S_bot_l")
 
 [node name="下右" type="StaticBody2D" parent="Colliders" unique_id=265784106]
-position = Vector2(1024, 836)
+position = Vector2(704, 900)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下右" unique_id=1714106312]
+position = Vector2(-63.5, -4.5)
 shape = SubResource("S_bot_r")
 
 [node name="角色" type="Node2D" parent="." unique_id=628243265]
 
 [node name="楼梯" type="Marker2D" parent="角色" unique_id=987654321]
-position = Vector2(1146, 26)
+position = Vector2(826, 90)
 metadata/interact = "stairs_up"
 metadata/target_scene = "rival_home_2f"
 
 [node name="劲敌妈妈" type="Sprite2D" parent="角色" unique_id=1923051837]
 z_index = 5
-position = Vector2(396, 342.00006)
+position = Vector2(76, 406)
 scale = Vector2(0.28048617, 0.28395835)
 texture = ExtResource("3_npc_mom")
 region_enabled = true
@@ -100,5 +98,5 @@ scale = Vector2(1, 0.9999999)
 shape = SubResource("S_rival_mom")
 
 [node name="出口" type="Marker2D" parent="." unique_id=2119263060]
-position = Vector2(768, 833)
+position = Vector2(446, 872)
 metadata/exit_to = "overworld"

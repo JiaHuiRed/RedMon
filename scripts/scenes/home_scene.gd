@@ -34,10 +34,10 @@ var _walk_frame: int = 0
 var _walk_anim_t: float = 0.0
 var _has_walk_sheet: bool = false
 
-const STAIRS1_POS := Vector2(122, 449)  # 260719 Red 7x7 室内，楼梯在左下区域（用户铺砖后微调）
-const STAIRS2_POS := Vector2(60, 449)   # 2F 楼梯口
-const DOOR_CENTER := Vector2(768, 833)  # 260719 Red 7x7 室内门洞（底部正中，704~832）
-const LANQIUQIU_POS := Vector2(1020, 464)  # 卧室蓝秋秋位置
+const STAIRS1_POS := Vector2(821, 90)  # 260720 Red 1F楼梯（与tscn对齐）
+const STAIRS2_POS := Vector2(129, 90)   # 2F 楼梯口（与tscn对齐）
+const DOOR_CENTER := Vector2(448, 833)  # 260720 Red 门洞（与tscn对齐）
+const LANQIUQIU_POS := Vector2(79, 307)  # 卧室蓝秋秋位置（与tscn对齐）
 const LANQIUQIU_RADIUS := 35.0
 
 func _ready() -> void:

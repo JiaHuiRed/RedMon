@@ -12,7 +12,7 @@ const WALK_FRAME_H := 160
 const WALK_FRAME_SEC := 0.15
 const NPC_SCALE := 1.0
 
-const DOOR_POS := Vector2(VW / 2.0, VH - 40)
+const DOOR_POS := Vector2(448, 897)  # 260720 Red 与tscn出口对齐
 
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
