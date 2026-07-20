@@ -240,7 +240,7 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	mom_trio_greeted = false
 	badges = 0
 	money = 500
-	items = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
+	items = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10, "神奇糖果": 20, "经验草莓s": 10}
 	defeated_trainers = []
 	rival_done = false
 	cleared_gyms = []

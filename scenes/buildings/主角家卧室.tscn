@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://c4ssr0mu0x742"]
+[gd_scene format=4 uid="uid://c4ssr0mu0x742"]
 
 [ext_resource type="TileSet" uid="uid://01qc7vg5im35" path="res://assets/tilemaps/indoor_tileset.tres" id="1_tileset"]
+[ext_resource type="Texture2D" uid="uid://bwrqn445p1uq1" path="res://assets/sprites/蓝秋秋front.png" id="2_lanqiuqiu"]
 
 [sub_resource type="RectangleShape2D" id="S_top"]
 size = Vector2(896, 8)
@@ -17,15 +18,20 @@ size = Vector2(384, 8)
 [sub_resource type="RectangleShape2D" id="S_bot_r"]
 size = Vector2(384, 8)
 
+[sub_resource type="CircleShape2D" id="S_lq_contact"]
+radius = 28.0
+
 [node name="home_floor2" type="Node2D" unique_id=1662423370]
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=656207485]
 position = Vector2(320, -64)
+tile_map_data = PackedByteArray("AAAAAAAAAwACAAAAAAABAAAAAwACAAAAAAACAAAAAwAFAAAAAAADAAAAAwACAAAAAAAEAAAAAwACAAAAAAAFAAAAAwACAAAAAAAGAAAAAwAEAAAAAAADAAMAAwAAAAAAAAAAAAEAAwAAAAAAAAABAAEAAwAAAAAAAAACAAEAAwAAAAAAAAADAAEAAwAAAAAAAAAEAAEAAwAAAAAAAAAFAAEAAwAAAAAAAAAGAAEAAwAAAAAAAAAGAAIAAwAAAAAAAAAGAAMAAwAAAAAAAAAFAAMAAwAAAAAAAAAEAAIAAwAAAAAAAAADAAIAAwAAAAAAAAACAAIAAwAAAAAAAAABAAIAAwAAAAAAAAABAAMAAwAAAAAAAAAAAAMAAwAAAAAAAAAAAAIAAwAAAAAAAAACAAMAAwAAAAAAAAAEAAMAAwAAAAAAAAAFAAIAAwAAAAAAAAAGAAQAAwAAAAAAAAAGAAUAAwAAAAAAAAAGAAYAAwAAAAAAAAAFAAYAAwAAAAAAAAAEAAYAAwAAAAAAAAADAAUAAwAAAAAAAAACAAUAAwAAAAAAAAABAAUAAwAAAAAAAAABAAYAAwAAAAAAAAAAAAYAAwAAAAAAAAAAAAUAAwAAAAAAAAAAAAQAAwAAAAAAAAABAAQAAwAAAAAAAAACAAQAAwAAAAAAAAADAAQAAwAAAAAAAAAEAAQAAwAAAAAAAAAFAAQAAwAAAAAAAAAFAAUAAwAAAAAAAAAEAAUAAwAAAAAAAAADAAYAAwAAAAAAAAACAAYAAwAAAAAAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Furniture" type="TileMapLayer" parent="." unique_id=1063722037]
 z_index = 1
 position = Vector2(320, -64)
+tile_map_data = PackedByteArray("AAADAAIAAwABAAIAAAAAAAAAAwADAAQAAAADAAAAAwAFAAQAAAAEAAAAAwABAAMAAAADAAYAAQACAAIAAAACAAYAAQABAAIAAAACAAUAAQABAAEAAAADAAUAAQACAAEAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Overlap" type="TileMapLayer" parent="." unique_id=1903864255]
@@ -64,3 +70,17 @@ position = Vector2(1024, 836)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下右" unique_id=1090324716]
 shape = SubResource("S_bot_r")
+
+[node name="角色" type="Node2D" parent="." unique_id=2056525907]
+
+[node name="Lanqiuqiu" type="Sprite2D" parent="角色" unique_id=633979808]
+position = Vector2(398.99997, 243)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("2_lanqiuqiu")
+metadata/npc_type = "starter"
+metadata/npc_dialog = "__lanqiuqiu__"
+
+[node name="Collision" type="StaticBody2D" parent="角色/Lanqiuqiu" unique_id=1416700428]
+
+[node name="Shape" type="CollisionShape2D" parent="角色/Lanqiuqiu/Collision" unique_id=973932838]
+shape = SubResource("S_lq_contact")

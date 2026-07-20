@@ -108,7 +108,12 @@ func _build_mom() -> void:
 # ── 卧室蓝秋秋 ──────────────────────────────────────────────────────────────
 func _build_lanqiuqiu() -> void:
 	var tex_path = "res://assets/sprites/蓝秋秋front.png"
-	if ResourceLoader.exists(tex_path):
+	if not ResourceLoader.exists(tex_path):
+		return
+
+	# 优先使用 tscn 中已有的可视化节点
+	_lanqiuqiu_spr = _floor2.find_child("Lanqiuqiu", true, false) as Sprite2D
+	if not _lanqiuqiu_spr:
 		var tex = load(tex_path)
 		_lanqiuqiu_spr = Sprite2D.new()
 		_lanqiuqiu_spr.texture = tex
@@ -118,22 +123,6 @@ func _build_lanqiuqiu() -> void:
 		_lanqiuqiu_spr.z_index = 5
 		_floor2.add_child(_lanqiuqiu_spr)
 
-		var name_lbl = Label.new()
-		name_lbl.text = "蓝秋秋"
-		name_lbl.position = LANQIUQIU_POS + Vector2(-14, -60)
-		name_lbl.add_theme_font_size_override("font_size", 10)
-		name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
-		_floor2.add_child(name_lbl)
-
-		# Z提示（始终显示，无需信号触发）
-		var prompt := Label.new()
-		prompt.text = "Z 交谈"
-		prompt.position = LANQIUQIU_POS + Vector2(-22, -72)
-		prompt.add_theme_font_size_override("font_size", 10)
-		prompt.add_theme_color_override("font_color", Color(0.95, 0.90, 0.30))
-		_floor2.add_child(prompt)
-
-		# 物理碰撞体（阻挡玩家穿过蓝秋秋）
 		var body := StaticBody2D.new()
 		body.position = LANQIUQIU_POS
 		var col_shape := CollisionShape2D.new()
@@ -142,6 +131,20 @@ func _build_lanqiuqiu() -> void:
 		col_shape.shape = rect
 		body.add_child(col_shape)
 		_floor2.add_child(body)
+
+	var name_lbl = Label.new()
+	name_lbl.text = "蓝秋秋"
+	name_lbl.position = LANQIUQIU_POS + Vector2(-14, -60)
+	name_lbl.add_theme_font_size_override("font_size", 10)
+	name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
+	_floor2.add_child(name_lbl)
+
+	var prompt := Label.new()
+	prompt.text = "Z 交谈"
+	prompt.position = LANQIUQIU_POS + Vector2(-22, -72)
+	prompt.add_theme_font_size_override("font_size", 10)
+	prompt.add_theme_color_override("font_color", Color(0.95, 0.90, 0.30))
+	_floor2.add_child(prompt)
 
 func _confirm_starter() -> void:
 	var mon := MonDB.create_mon("蓝秋秋", 3, {"hp":31,"atk":31,"def":31,"sp_atk":31,"sp_def":31,"spd":31}, "顽皮")
@@ -153,6 +156,10 @@ func _confirm_starter() -> void:
 	if _lanqiuqiu_spr:
 		_lanqiuqiu_spr.queue_free()
 		_lanqiuqiu_spr = null
+
+	for child in _floor2.get_children():
+		if child is Label and child.position.distance_to(LANQIUQIU_POS) < 100:
+			child.queue_free()
 
 	_show_partner_card()
 

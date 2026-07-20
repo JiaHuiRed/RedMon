@@ -21,18 +21,27 @@ size = Vector2(384, 8)
 [node name="劲敌家_2F" type="Node2D"]
 script = ExtResource("2_script")
 
+[node name="角色" type="Node2D" parent="."]
+
+[node name="楼梯" type="Marker2D" parent="角色"]
+position = Vector2(31, 14)
+metadata/interact = "stairs_up"
+metadata/target_scene = "rival_home"
+
 [node name="Ground" type="TileMapLayer" parent="."]
 position = Vector2(320, -64)
+tile_map_data = PackedByteArray("AAAAAAAAAwACAAAAAAABAAAAAwACAAAAAAACAAAAAwAFAAAAAAADAAAAAwACAAAAAAAEAAAAAwACAAAAAAAFAAAAAwACAAAAAAAGAAAAAwAEAAAAAAADAAMAAwAAAAAAAAAAAAEAAwAAAAAAAAABAAEAAwAAAAAAAAACAAEAAwAAAAAAAAADAAEAAwAAAAAAAAAEAAEAAwAAAAAAAAAFAAEAAwAAAAAAAAAGAAEAAwAAAAAAAAAGAAIAAwAAAAAAAAAGAAMAAwAAAAAAAAAFAAMAAwAAAAAAAAAEAAIAAwAAAAAAAAADAAIAAwAAAAAAAAACAAIAAwAAAAAAAAABAAIAAwAAAAAAAAABAAMAAwAAAAAAAAAAAAMAAwAAAAAAAAAAAAIAAwAAAAAAAAACAAMAAwAAAAAAAAAEAAMAAwAAAAAAAAAFAAIAAwAAAAAAAAAGAAQAAwAAAAAAAAAGAAUAAwAAAAAAAAAGAAYAAwAAAAAAAAAFAAYAAwAAAAAAAAAEAAYAAwAAAAAAAAADAAUAAwAAAAAAAAACAAUAAwAAAAAAAAABAAUAAwAAAAAAAAABAAYAAwAAAAAAAAAAAAYAAwAAAAAAAAAAAAUAAwAAAAAAAAAAAAQAAwAAAAAAAAABAAQAAwAAAAAAAAACAAQAAwAAAAAAAAADAAQAAwAAAAAAAAAEAAQAAwAAAAAAAAAFAAQAAwAAAAAAAAAFAAUAAwAAAAAAAAAEAAUAAwAAAAAAAAADAAYAAwAAAAAAAAACAAYAAwAAAAAAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Furniture" type="TileMapLayer" parent="."]
-position = Vector2(320, -64)
 z_index = 1
+position = Vector2(320, -64)
+tile_map_data = PackedByteArray("AAADAAIAAwABAAIAAAAAAAAAAwADAAQAAAADAAAAAwAFAAQAAAAEAAAAAwABAAMAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Overlap" type="TileMapLayer" parent="."]
-position = Vector2(320, -64)
 z_index = 10
+position = Vector2(320, -64)
 tile_set = ExtResource("1_tileset")
 
 [node name="Colliders" type="Node2D" parent="."]
@@ -66,11 +75,3 @@ position = Vector2(1024, 832)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下右"]
 shape = SubResource("S_bot_r")
-
-
-[node name="角色" type="Node2D" parent="."]
-
-[node name="楼梯" type="Marker2D" parent="角色"]
-position = Vector2(31, 14)
-metadata/interact = "stairs_up"
-metadata/target_scene = "rival_home"
