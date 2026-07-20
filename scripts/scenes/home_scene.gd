@@ -428,7 +428,7 @@ func _input(event: InputEvent) -> void:
 		if _floor == 1:
 			if _player.position.distance_to(DOOR_CENTER) < 40:
 				if not GameState.has_starter:
-					_dialog_bubble.show("门外传来陈教授的声音：\n「先去看看家里的朋友吧。」")
+					_dialog_bubble.show("妈妈：哎呀你这孩子，楼上那小家伙等了你一早上了，先去看看它再走！")
 					_dialog_active = true
 					_door_guard = true
 					return
