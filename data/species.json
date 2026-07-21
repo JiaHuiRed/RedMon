@@ -1738,7 +1738,13 @@
       "95": [
         "十万伏特"
       ]
-    }
+    },
+    "evolutions": [
+      {
+        "into": "明光丘",
+        "level": 30
+      }
+    ]
   },
   "幼冰犬": {
     "id": 30,
@@ -21678,9 +21684,9 @@
       "坤载万物"
     ]
   },
-  "捣蛋露比": {
+  "邪恶露比": {
     "id": 278,
-    "name": "捣蛋露比",
+    "name": "邪恶露比",
     "type1": "暗",
     "type2": "",
     "base": {
@@ -23429,6 +23435,390 @@
     "height": "",
     "weight": "",
     "gender_ratio": "0/100",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": []
+  },
+  "明光丘": {
+    "id": 429,
+    "name": "明光丘",
+    "type1": "雷",
+    "type2": "光",
+    "base": {
+      "hp": 81,
+      "atk": 86,
+      "def": 68,
+      "sp_atk": 108,
+      "sp_def": 87,
+      "spd": 109
+    },
+    "tier": "神",
+    "catch_rate": 99,
+    "exp_yield": 80,
+    "growth_rate": "正常",
+    "desc": "浅浅丘沐浴雷电之力进化而成，周身环绕着耀眼的雷光与圣光。明光丘的雷光可在光明与闪电间自由切换，是永不熄灭的雷光之兽。",
+    "height": "0.7",
+    "weight": "16.5",
+    "gender_ratio": "0/100",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": [
+      "净化之躯",
+      "加速"
+    ]
+  },
+  "小猢狲": {
+    "id": 430,
+    "name": "小猢狲",
+    "type1": "格",
+    "type2": "",
+    "base": {
+      "hp": 80,
+      "atk": 91,
+      "def": 85,
+      "sp_atk": 30,
+      "sp_def": 48,
+      "spd": 84
+    },
+    "tier": "玄",
+    "catch_rate": 150,
+    "exp_yield": 60,
+    "growth_rate": "正常",
+    "desc": "山中顽皮的小猴精灵，生性好动不服输。虽然个头小，但灵活的拳脚功夫足以让大意的对手吃尽苦头。",
+    "height": "0.4",
+    "weight": "8.0",
+    "gender_ratio": "50/50",
+    "evolutions": [
+      {
+        "into": "悟空",
+        "level": 25
+      }
+    ],
+    "learnset": {},
+    "abilities": [
+      "毅力"
+    ]
+  },
+  "悟空": {
+    "id": 431,
+    "name": "悟空",
+    "type1": "格",
+    "type2": "仙",
+    "base": {
+      "hp": 108,
+      "atk": 121,
+      "def": 106,
+      "sp_atk": 70,
+      "sp_def": 60,
+      "spd": 108
+    },
+    "tier": "神",
+    "catch_rate": 75,
+    "exp_yield": 100,
+    "growth_rate": "正常",
+    "desc": "小猢狲历经磨炼进化而来，习得了武道真谛。悟空的双拳蕴含仙灵之气，拳势如风、快如闪电，已经能在山间称王。",
+    "height": "1.2",
+    "weight": "35.0",
+    "gender_ratio": "100/0",
+    "evolutions": [
+      {
+        "into": "齐天",
+        "level": 50
+      }
+    ],
+    "learnset": {},
+    "abilities": [
+      "毅力",
+      "铁拳"
+    ]
+  },
+  "齐天": {
+    "id": 432,
+    "name": "齐天",
+    "type1": "格",
+    "type2": "仙",
+    "base": {
+      "hp": 140,
+      "atk": 157,
+      "def": 140,
+      "sp_atk": 50,
+      "sp_def": 57,
+      "spd": 146
+    },
+    "tier": "地",
+    "catch_rate": 30,
+    "exp_yield": 150,
+    "growth_rate": "大器晚成",
+    "desc": "悟空突破凡体极限，臻至齐天大圣之境。金色战甲般的皮毛下涌动着毁天灭地的仙灵之力，一拳可碎山岳、一脚可裂大地。",
+    "height": "1.8",
+    "weight": "75.0",
+    "gender_ratio": "100/0",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": [
+      "毅力",
+      "铁拳"
+    ]
+  },
+  "魔梦": {
+    "id": 433,
+    "name": "魔梦",
+    "type1": "暗",
+    "type2": "",
+    "base": {
+      "hp": 80,
+      "atk": 142,
+      "def": 129,
+      "sp_atk": 58,
+      "sp_def": 79,
+      "spd": 112
+    },
+    "tier": "神",
+    "catch_rate": 45,
+    "exp_yield": 100,
+    "growth_rate": "正常",
+    "desc": "在黑暗中扭曲变异的幻梦变种，紫黑色的精神力如烟雾般缭绕周身。魔梦的眼中没有梦境的美好，只有无尽的虚无与破坏欲。",
+    "height": "0.5",
+    "weight": "8.0",
+    "gender_ratio": "无性别",
+    "evolutions": [
+      {
+        "into": "释梦",
+        "level": 50
+      }
+    ],
+    "learnset": {},
+    "abilities": [
+      "不眠",
+      "压迫感"
+    ]
+  },
+  "释梦": {
+    "id": 434,
+    "name": "释梦",
+    "type1": "暗",
+    "type2": "钢",
+    "base": {
+      "hp": 91,
+      "atk": 187,
+      "def": 140,
+      "sp_atk": 73,
+      "sp_def": 85,
+      "spd": 134
+    },
+    "tier": "地",
+    "catch_rate": 10,
+    "exp_yield": 200,
+    "growth_rate": "大器晚成",
+    "desc": "魔梦吞噬了无数梦境后进化为释梦——彻底觉醒的噩梦之主。它的精神力可以撕裂现实，在虚空中开辟出属于自己的领域。",
+    "height": "2.0",
+    "weight": "100.0",
+    "gender_ratio": "无性别",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": [
+      "压迫感"
+    ]
+  },
+  "海皇牙": {
+    "id": 435,
+    "name": "海皇牙",
+    "type1": "水",
+    "type2": "",
+    "base": {
+      "hp": 105,
+      "atk": 80,
+      "def": 85,
+      "sp_atk": 140,
+      "sp_def": 135,
+      "spd": 85
+    },
+    "tier": "神",
+    "catch_rate": 10,
+    "exp_yield": 200,
+    "growth_rate": "大器晚成",
+    "desc": "深海中沉睡的海之霸主，以珊瑚为骨、洋流为血。海皇牙的每一次呼吸都能卷起滔天巨浪，是掌控无边汪洋的远古存在。",
+    "height": "4.5",
+    "weight": "200.0",
+    "gender_ratio": "无性别",
+    "evolutions": [
+      {
+        "into": "北海之鲲",
+        "level": 70
+      }
+    ],
+    "learnset": {},
+    "abilities": [
+      "降雨"
+    ]
+  },
+  "北海之鲲": {
+    "id": 436,
+    "name": "北海之鲲",
+    "type1": "水",
+    "type2": "光",
+    "base": {
+      "hp": 141,
+      "atk": 91,
+      "def": 95,
+      "sp_atk": 178,
+      "sp_def": 147,
+      "spd": 98
+    },
+    "tier": "天",
+    "catch_rate": 5,
+    "exp_yield": 250,
+    "growth_rate": "大器晚成",
+    "desc": "海皇牙回归本源后的究极形态，化作北海之鲲——传说中遮天蔽日的太古巨兽。其形态横亘万里，一呼一吸间即可引发天地海啸。",
+    "height": "9.8",
+    "weight": "500.0",
+    "gender_ratio": "无性别",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": [
+      "降雨"
+    ]
+  },
+  "裂地王": {
+    "id": 437,
+    "name": "裂地王",
+    "type1": "土",
+    "type2": "",
+    "base": {
+      "hp": 100,
+      "atk": 143,
+      "def": 142,
+      "sp_atk": 80,
+      "sp_def": 85,
+      "spd": 80
+    },
+    "tier": "神",
+    "catch_rate": 10,
+    "exp_yield": 200,
+    "growth_rate": "大器晚成",
+    "desc": "大地的化身，以岩浆为血、岩石为铠。裂地王的每一脚踏下都会引发地震，是让大陆板块为之颤抖的远古霸主。",
+    "height": "2.1",
+    "weight": "180.0",
+    "gender_ratio": "无性别",
+    "evolutions": [
+      {
+        "into": "始源之兽",
+        "level": 70
+      }
+    ],
+    "learnset": {},
+    "abilities": [
+      "干旱"
+    ]
+  },
+  "始源之兽": {
+    "id": 438,
+    "name": "始源之兽",
+    "type1": "土",
+    "type2": "钢",
+    "base": {
+      "hp": 128,
+      "atk": 154,
+      "def": 183,
+      "sp_atk": 100,
+      "sp_def": 95,
+      "spd": 90
+    },
+    "tier": "天",
+    "catch_rate": 5,
+    "exp_yield": 250,
+    "growth_rate": "大器晚成",
+    "desc": "裂地王回归本源后的究极形态，身披大地熔岩之铠的始源之兽。其身躯中涌动着地核的原始烈焰，举手投足间可重塑整片大陆的地貌。",
+    "height": "3.5",
+    "weight": "380.0",
+    "gender_ratio": "无性别",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": [
+      "干旱",
+      "沙之力"
+    ]
+  },
+  "烈": {
+    "id": 439,
+    "name": "烈",
+    "type1": "龙",
+    "type2": "",
+    "base": {
+      "hp": 100,
+      "atk": 137,
+      "def": 85,
+      "sp_atk": 118,
+      "sp_def": 85,
+      "spd": 105
+    },
+    "tier": "神",
+    "catch_rate": 10,
+    "exp_yield": 200,
+    "growth_rate": "大器晚成",
+    "desc": "天地间最纯粹的龙炎化身，周身燃烧着永不熄灭的烈阳之火。烈以磅礴的气流为翼，穿梭于云层之上，在九天之间划出灼烧天空的火痕。",
+    "height": "3.0",
+    "weight": "120.0",
+    "gender_ratio": "无性别",
+    "evolutions": [
+      {
+        "into": "盘天",
+        "level": 70
+      }
+    ],
+    "learnset": {},
+    "abilities": [
+      "气闸"
+    ]
+  },
+  "盘天": {
+    "id": 440,
+    "name": "盘天",
+    "type1": "龙",
+    "type2": "仙",
+    "base": {
+      "hp": 108,
+      "atk": 168,
+      "def": 95,
+      "sp_atk": 155,
+      "sp_def": 95,
+      "spd": 129
+    },
+    "tier": "天",
+    "catch_rate": 5,
+    "exp_yield": 250,
+    "growth_rate": "大器晚成",
+    "desc": "烈突破极限后的究极进化，身躯盘绕九天云海之上。盘天无需振翅便能驾驭天地间的气流，一念之间即可卷起席卷大陆的飓风，是掌控天空的至高存在。",
+    "height": "7.0",
+    "weight": "250.0",
+    "gender_ratio": "无性别",
+    "evolutions": [],
+    "learnset": {},
+    "abilities": [
+      "气闸"
+    ]
+  },
+  "吕玲绮": {
+    "id": 441,
+    "name": "吕玲绮",
+    "type1": "格",
+    "type2": "钢",
+    "base": {
+      "hp": 95,
+      "atk": 108,
+      "def": 101,
+      "sp_atk": 52,
+      "sp_def": 86,
+      "spd": 100
+    },
+    "tier": "神",
+    "catch_rate": 45,
+    "exp_yield": 100,
+    "growth_rate": "早熟",
+    "desc": "",
+    "height": "",
+    "weight": "",
+    "gender_ratio": "50/50",
     "evolutions": [],
     "learnset": {},
     "abilities": []

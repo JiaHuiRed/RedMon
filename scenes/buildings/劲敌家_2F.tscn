@@ -21,56 +21,57 @@ size = Vector2(384, 8)
 [node name="劲敌家_2F" type="Node2D"]
 script = ExtResource("2_script")
 
+[node name="角色" type="Node2D" parent="."]
+
+[node name="楼梯" type="Marker2D" parent="角色"]
+position = Vector2(129, 90)
+metadata/interact = "stairs_up"
+metadata/target_scene = "rival_home"
+
 [node name="Ground" type="TileMapLayer" parent="."]
-position = Vector2(320, -64)
+position = Vector2(0, 0)
+tile_map_data = PackedByteArray("AAAAAAAAAwACAAAAAAABAAAAAwACAAAAAAACAAAAAwAFAAAAAAADAAAAAwACAAAAAAAEAAAAAwACAAAAAAAFAAAAAwACAAAAAAAGAAAAAwAEAAAAAAADAAMAAwAAAAAAAAAAAAEAAwAAAAAAAAABAAEAAwAAAAAAAAACAAEAAwAAAAAAAAADAAEAAwAAAAAAAAAEAAEAAwAAAAAAAAAFAAEAAwAAAAAAAAAGAAEAAwAAAAAAAAAGAAIAAwAAAAAAAAAGAAMAAwAAAAAAAAAFAAMAAwAAAAAAAAAEAAIAAwAAAAAAAAADAAIAAwAAAAAAAAACAAIAAwAAAAAAAAABAAIAAwAAAAAAAAABAAMAAwAAAAAAAAAAAAMAAwAAAAAAAAAAAAIAAwAAAAAAAAACAAMAAwAAAAAAAAAEAAMAAwAAAAAAAAAFAAIAAwAAAAAAAAAGAAQAAwAAAAAAAAAGAAUAAwAAAAAAAAAGAAYAAwAAAAAAAAAFAAYAAwAAAAAAAAAEAAYAAwAAAAAAAAADAAUAAwAAAAAAAAACAAUAAwAAAAAAAAABAAUAAwAAAAAAAAABAAYAAwAAAAAAAAAAAAYAAwAAAAAAAAAAAAUAAwAAAAAAAAAAAAQAAwAAAAAAAAABAAQAAwAAAAAAAAACAAQAAwAAAAAAAAADAAQAAwAAAAAAAAAEAAQAAwAAAAAAAAAFAAQAAwAAAAAAAAAFAAUAAwAAAAAAAAAEAAUAAwAAAAAAAAADAAYAAwAAAAAAAAACAAYAAwAAAAAAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Furniture" type="TileMapLayer" parent="."]
-position = Vector2(320, -64)
 z_index = 1
+position = Vector2(0, 0)
+tile_map_data = PackedByteArray("AAADAAIAAwABAAIAAAAAAAAAAwADAAQAAAADAAAAAwAFAAQAAAAEAAAAAwABAAMAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Overlap" type="TileMapLayer" parent="."]
-position = Vector2(320, -64)
 z_index = 10
+position = Vector2(0, 0)
 tile_set = ExtResource("1_tileset")
 
 [node name="Colliders" type="Node2D" parent="."]
 
 [node name="上墙" type="StaticBody2D" parent="Colliders"]
-position = Vector2(768, -64)
+position = Vector2(448, 0)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/上墙"]
 shape = SubResource("S_top")
 
 [node name="左墙" type="StaticBody2D" parent="Colliders"]
-position = Vector2(320, 384)
+position = Vector2(0, 448)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/左墙"]
 shape = SubResource("S_left")
 
 [node name="右墙" type="StaticBody2D" parent="Colliders"]
-position = Vector2(1216, 384)
+position = Vector2(896, 448)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/右墙"]
 shape = SubResource("S_right")
 
 [node name="下左" type="StaticBody2D" parent="Colliders"]
-position = Vector2(512, 832)
+position = Vector2(192, 896)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下左"]
 shape = SubResource("S_bot_l")
 
 [node name="下右" type="StaticBody2D" parent="Colliders"]
-position = Vector2(1024, 832)
+position = Vector2(704, 896)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下右"]
 shape = SubResource("S_bot_r")
-
-
-[node name="角色" type="Node2D" parent="."]
-
-[node name="楼梯" type="Marker2D" parent="角色"]
-position = Vector2(31, 14)
-metadata/interact = "stairs_up"
-metadata/target_scene = "rival_home"

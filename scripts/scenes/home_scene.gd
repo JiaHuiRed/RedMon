@@ -21,6 +21,7 @@ var _dialog_bubble: DialogBubble
 var _mom_spr: Sprite2D
 var _lanqiuqiu_spr: Sprite2D
 var _door_guard: bool = false
+var _card_overlay: CanvasLayer = null
 var _stair_hint_2f: Sprite2D  # 2F 下楼箭头
 var _stair_hint_1f: Sprite2D  # 1F 上楼箭头
 var _stair_hint_t: float = 0.0
@@ -33,10 +34,10 @@ var _walk_frame: int = 0
 var _walk_anim_t: float = 0.0
 var _has_walk_sheet: bool = false
 
-const STAIRS1_POS := Vector2(122, 449)  # 260719 Red 7x7 室内，楼梯在左下区域（用户铺砖后微调）
-const STAIRS2_POS := Vector2(60, 449)   # 2F 楼梯口
-const DOOR_CENTER := Vector2(768, 833)  # 260719 Red 7x7 室内门洞（底部正中，704~832）
-const LANQIUQIU_POS := Vector2(1020, 464)  # 卧室蓝秋秋位置
+const STAIRS1_POS := Vector2(821, 90)  # 260720 Red 1F楼梯（与tscn对齐）
+const STAIRS2_POS := Vector2(129, 90)   # 2F 楼梯口（与tscn对齐）
+const DOOR_CENTER := Vector2(448, 833)  # 260720 Red 门洞（与tscn对齐）
+const LANQIUQIU_POS := Vector2(79, 307)  # 卧室蓝秋秋位置（与tscn对齐）
 const LANQIUQIU_RADIUS := 35.0
 
 func _ready() -> void:
@@ -107,7 +108,12 @@ func _build_mom() -> void:
 # ── 卧室蓝秋秋 ──────────────────────────────────────────────────────────────
 func _build_lanqiuqiu() -> void:
 	var tex_path = "res://assets/sprites/蓝秋秋front.png"
-	if ResourceLoader.exists(tex_path):
+	if not ResourceLoader.exists(tex_path):
+		return
+
+	# 优先使用 tscn 中已有的可视化节点
+	_lanqiuqiu_spr = _floor2.find_child("Lanqiuqiu", true, false) as Sprite2D
+	if not _lanqiuqiu_spr:
 		var tex = load(tex_path)
 		_lanqiuqiu_spr = Sprite2D.new()
 		_lanqiuqiu_spr.texture = tex
@@ -117,22 +123,6 @@ func _build_lanqiuqiu() -> void:
 		_lanqiuqiu_spr.z_index = 5
 		_floor2.add_child(_lanqiuqiu_spr)
 
-		var name_lbl = Label.new()
-		name_lbl.text = "蓝秋秋"
-		name_lbl.position = LANQIUQIU_POS + Vector2(-14, -60)
-		name_lbl.add_theme_font_size_override("font_size", 10)
-		name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
-		_floor2.add_child(name_lbl)
-
-		# Z提示（始终显示，无需信号触发）
-		var prompt := Label.new()
-		prompt.text = "Z 交谈"
-		prompt.position = LANQIUQIU_POS + Vector2(-22, -72)
-		prompt.add_theme_font_size_override("font_size", 10)
-		prompt.add_theme_color_override("font_color", Color(0.95, 0.90, 0.30))
-		_floor2.add_child(prompt)
-
-		# 物理碰撞体（阻挡玩家穿过蓝秋秋）
 		var body := StaticBody2D.new()
 		body.position = LANQIUQIU_POS
 		var col_shape := CollisionShape2D.new()
@@ -142,20 +132,179 @@ func _build_lanqiuqiu() -> void:
 		body.add_child(col_shape)
 		_floor2.add_child(body)
 
+	var name_lbl = Label.new()
+	name_lbl.text = "蓝秋秋"
+	name_lbl.position = LANQIUQIU_POS + Vector2(-14, -60)
+	name_lbl.add_theme_font_size_override("font_size", 10)
+	name_lbl.add_theme_color_override("font_color", Color(0.30, 0.30, 0.30))
+	_floor2.add_child(name_lbl)
+
+	var prompt := Label.new()
+	prompt.text = "Z 交谈"
+	prompt.position = LANQIUQIU_POS + Vector2(-22, -72)
+	prompt.add_theme_font_size_override("font_size", 10)
+	prompt.add_theme_color_override("font_color", Color(0.95, 0.90, 0.30))
+	_floor2.add_child(prompt)
+
 func _confirm_starter() -> void:
 	var mon := MonDB.create_mon("蓝秋秋", 3, {"hp":31,"atk":31,"def":31,"sp_atk":31,"sp_def":31,"spd":31}, "顽皮")
 	mon["gender"] = "female"
 	mon["met_location"] = "自幼相伴的伙伴"
 	GameState.player_team = [mon]
 	GameState.has_starter = true
-	# 存档推迟到玩家关掉确认对话框后才写，避免卡对话时强关落下一个不一致的存档
 
 	if _lanqiuqiu_spr:
 		_lanqiuqiu_spr.queue_free()
 		_lanqiuqiu_spr = null
 
-	_dialog_active = true
-	_dialog_bubble.show(MonDB.dlg("home", "bedroom_confirm"))
+	for child in _floor2.get_children():
+		if child is Label and child.position.distance_to(LANQIUQIU_POS) < 100:
+			child.queue_free()
+
+	_show_partner_card()
+
+func _show_partner_card() -> void:
+	var cl := CanvasLayer.new()
+	cl.layer = 30
+	add_child(cl)
+	_card_overlay = cl
+
+	# 白色闪光过渡 (0.4s)
+	var flash := ColorRect.new()
+	flash.size = Vector2(VW, VH)
+	flash.color = Color(1, 1, 1, 1)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cl.add_child(flash)
+	var tw := create_tween()
+	tw.tween_property(flash, "color:a", 0.0, 0.4)
+
+	# 半透明遮罩
+	var bg := ColorRect.new()
+	bg.size = Vector2(VW, VH)
+	bg.color = Color(0, 0, 0, 0.65)
+	cl.add_child(bg)
+
+	# ── 卡片面板 ──────────────────────────────────────────────────────────
+	var card := Panel.new()
+	card.size = Vector2(420, 540)
+	card.position = Vector2(VW / 2 - 210, VH / 2 - 270)
+	var ps := StyleBoxFlat.new()
+	ps.bg_color = Color(0.10, 0.12, 0.16)
+	ps.corner_radius_top_left = 14; ps.corner_radius_top_right = 14
+	ps.corner_radius_bottom_left = 14; ps.corner_radius_bottom_right = 14
+	ps.content_margin_left = 0; ps.content_margin_right = 0
+	ps.content_margin_top = 0; ps.content_margin_bottom = 0
+	card.add_theme_stylebox_override("panel", ps)
+	cl.add_child(card)
+
+	# 精灵图
+	var spr := TextureRect.new()
+	var tex: Texture2D = load("res://assets/sprites/蓝秋秋front.png")
+	spr.texture = tex
+	var max_s := 140.0
+	var sf := minf(max_s / tex.get_size().x, max_s / tex.get_size().y)
+	spr.size = Vector2(tex.get_size().x * sf, tex.get_size().y * sf)
+	spr.position = Vector2(210 - spr.size.x / 2, 24)
+	spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	spr.stretch_mode = TextureRect.STRETCH_KEEP
+	card.add_child(spr)
+
+	# 名字
+	var nl := Label.new()
+	nl.text = "蓝秋秋"
+	nl.size.x = 420; nl.position = Vector2(0, 180)
+	nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nl.add_theme_font_size_override("font_size", 28)
+	nl.add_theme_color_override("font_color", Color(0.95, 0.95, 0.92))
+	card.add_child(nl)
+
+	# 风属性标签
+	var tb := Panel.new()
+	tb.size = Vector2(50, 24)
+	tb.position = Vector2(210 - 25, 215)
+	var ts := StyleBoxFlat.new()
+	ts.bg_color = Color(0.60, 0.85, 0.85)
+	ts.corner_radius_top_left = 6; ts.corner_radius_top_right = 6
+	ts.corner_radius_bottom_left = 6; ts.corner_radius_bottom_right = 6
+	tb.add_theme_stylebox_override("panel", ts)
+	card.add_child(tb)
+	var ttl := Label.new()
+	ttl.text = "风"
+	ttl.position = Vector2(17, 4)
+	ttl.add_theme_font_size_override("font_size", 14)
+	ttl.add_theme_color_override("font_color", Color(0, 0, 0, 0.85))
+	tb.add_child(ttl)
+
+	var sep := ColorRect.new()
+	sep.size = Vector2(340, 1); sep.position = Vector2(40, 260)
+	sep.color = Color(0.25, 0.27, 0.32)
+	card.add_child(sep)
+
+	# 性格
+	var nat_lbl := Label.new()
+	nat_lbl.text = "性格：顽皮"
+	nat_lbl.position = Vector2(60, 285)
+	nat_lbl.add_theme_font_size_override("font_size", 18)
+	nat_lbl.add_theme_color_override("font_color", Color(0.80, 0.82, 0.85))
+	card.add_child(nat_lbl)
+	var nm_lbl := Label.new()
+	nm_lbl.text = "（攻击 ↑ ×1.1  |  特防 ↓ ×0.9）"
+	nm_lbl.position = Vector2(60, 310)
+	nm_lbl.add_theme_font_size_override("font_size", 15)
+	nm_lbl.add_theme_color_override("font_color", Color(0.55, 0.58, 0.65))
+	card.add_child(nm_lbl)
+
+	# 特性
+	var mon_ability = GameState.player_team[0].get("ability", "加速")
+	var al := Label.new()
+	al.text = "特性：" + mon_ability
+	al.position = Vector2(60, 350)
+	al.add_theme_font_size_override("font_size", 18)
+	al.add_theme_color_override("font_color", Color(0.80, 0.82, 0.85))
+	card.add_child(al)
+
+	var sep2 := ColorRect.new()
+	sep2.size = Vector2(340, 1); sep2.position = Vector2(40, 400)
+	sep2.color = Color(0.25, 0.27, 0.32)
+	card.add_child(sep2)
+
+	# 底部文案
+	var sub1 := Label.new()
+	sub1.text = "——  与蓝秋秋一同启程  ——"
+	sub1.size.x = 420; sub1.position = Vector2(0, 430)
+	sub1.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub1.add_theme_font_size_override("font_size", 20)
+	sub1.add_theme_color_override("font_color", Color(0.70, 0.75, 0.85))
+	card.add_child(sub1)
+
+	var sub2 := Label.new()
+	sub2.text = "你们之间，早已不需要多余的言语。"
+	sub2.size.x = 420; sub2.position = Vector2(0, 470)
+	sub2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub2.add_theme_font_size_override("font_size", 14)
+	sub2.add_theme_color_override("font_color", Color(0.45, 0.48, 0.55))
+	card.add_child(sub2)
+
+	var hint := Label.new()
+	hint.text = "Z  确认"
+	hint.size.x = 420; hint.position = Vector2(0, 520)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 14)
+	hint.add_theme_color_override("font_color", Color(0.60, 0.65, 0.45))
+	card.add_child(hint)
+
+func _dismiss_partner_card() -> void:
+	if _card_overlay:
+		_card_overlay.queue_free()
+		_card_overlay = null
+
+	GameState.save_game()
+	if not _tutorial_shown:
+		_tutorial_shown = true
+		var tip = MonDB.dlg("rival", "tutorial")
+		if tip and tip != "":
+			_dialog_active = true
+			_dialog_bubble.show(tip)
 
 func _draw_mom() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -417,6 +566,12 @@ func _physics_process(delta: float) -> void:
 	_stair_hint_1f.modulate = Color(1, 1, 1, alpha)
 
 func _input(event: InputEvent) -> void:
+	if _card_overlay:
+		if event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			_dismiss_partner_card()
+		return
+
 	if _dialog_active:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
@@ -428,7 +583,7 @@ func _input(event: InputEvent) -> void:
 		if _floor == 1:
 			if _player.position.distance_to(DOOR_CENTER) < 40:
 				if not GameState.has_starter:
-					_dialog_bubble.show("门外传来陈教授的声音：\n「先去看看家里的朋友吧。」")
+					_dialog_bubble.show("妈妈：哎呀你这孩子，楼上那小家伙等了你一早上了，先去看看它再走！")
 					_dialog_active = true
 					_door_guard = true
 					return

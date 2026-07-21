@@ -8686,5 +8686,101 @@
     "effect_chance": 100,
     "description": "释放至高之力猛烈攻击对手。",
     "name": "烈血燃魂拳"
+  },
+  "齐天碎星棍": {
+    "type": "格",
+    "category": "物理",
+    "power": 175,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "齐天挥舞如意金箍棒碎星裂空，一击可碎山岳。",
+    "name": "齐天碎星棍"
+  },
+  "释梦绝灭斩": {
+    "type": "暗",
+    "category": "物理",
+    "power": 175,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "释梦以精神力凝聚毁灭之刃，斩裂一切虚妄。",
+    "name": "释梦绝灭斩"
+  },
+  "北海归墟渊": {
+    "type": "水",
+    "category": "特殊",
+    "power": 180,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "北海之鲲张开吞天巨口，将万物卷入无尽归墟。",
+    "name": "北海归墟渊"
+  },
+  "圣光吞天噬": {
+    "type": "光",
+    "category": "特殊",
+    "power": 170,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "北海之鲲引动太古圣光，万丈光芒吞噬一切。",
+    "name": "圣光吞天噬"
+  },
+  "地核熔裂击": {
+    "type": "土",
+    "category": "物理",
+    "power": 180,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "始源之兽引动地核之力，撕裂大陆板块的重击。",
+    "name": "地核熔裂击"
+  },
+  "钢核碎星击": {
+    "type": "钢",
+    "category": "物理",
+    "power": 170,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "始源之兽凝聚地核钢铠之力，崩碎星辰的毁灭重击。",
+    "name": "钢核碎星击"
+  },
+  "盘天龙怒啸": {
+    "type": "龙",
+    "category": "物理",
+    "power": 180,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "盘天仰首发出的怒龙咆哮，声波可震裂虚空。",
+    "name": "盘天龙怒啸"
+  },
+  "九天仙罡裂": {
+    "type": "仙",
+    "category": "物理",
+    "power": 170,
+    "accuracy": 0,
+    "max_pp": 1,
+    "effect": "",
+    "effect_value": 0,
+    "effect_chance": 0,
+    "description": "盘天以仙灵之力凝聚九天罡风，撕裂虚空的至高之击。",
+    "name": "九天仙罡裂"
   }
 }

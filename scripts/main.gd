@@ -215,7 +215,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if _bag_keys.size() > 0:
 					var item_id = _bag_keys[_bag_cursor]
 					var item_data = MonDB.items.get(item_id, {})
-					var usable = item_data.get("category", "") in ["heal", "滋补"]
+					var usable = item_data.get("category", "") in ["heal", "滋补", "进化"]
 					if usable and GameState.items.get(item_id, 0) > 0 and not GameState.player_team.is_empty():
 						_target_cursor = 0
 						_pause_sub = "bag_target"; _draw_pause()
@@ -229,6 +229,12 @@ func _unhandled_input(event: InputEvent) -> void:
 					else:
 						_apply_training_to_mon(item_id2, _target_cursor, item_data2.get("train_stat", ""))
 						_pause_sub = "bag"; _draw_pause()
+				elif item_id2 == "神奇糖果":
+					_apply_candy(item_id2, _target_cursor)
+					_pause_sub = "bag"; _draw_pause()
+				elif item_data2.get("exp_amount", 0) > 0:
+					_apply_exp_to_mon(item_id2, _target_cursor)
+					_pause_sub = "bag"; _draw_pause()
 				else:
 					_apply_heal_to_mon(item_id2, _target_cursor)
 					_pause_sub = "bag"; _draw_pause()
@@ -384,7 +390,8 @@ func _draw_pause_bag() -> void:
 			var sel = row == _bag_cursor
 			var cy = 50 + row * (ch + 6)
 			_m_card(16, cy, cw, ch, sel)
-			_m_icon("res://assets/ui/items/%s.png" % item_name, 22, cy + 4, 32)
+			var icon = MonDB.items.get(item_name, {}).get("icon", item_name)
+			_m_icon("res://assets/ui/items/%s.png" % icon, 22, cy + 4, 32)
 			var col = _M_SEL if sel else (_M_TEXT if qty > 0 else _M_TEXT2)
 			_m_lbl(item_name, 62, cy + 12, 12, col)
 			_m_lbl("x%d" % qty, cw - 16, cy + 12, 12, col)
@@ -436,6 +443,38 @@ func _apply_heal_to_mon(item_id: String, target_idx: int) -> void:
 		mon["current_hp"] = mon["max_hp"]
 	else:
 		mon["current_hp"] = mini(mon["max_hp"], mon["current_hp"] + int(item_data.get("heal_amount", 20)))
+
+func _apply_candy(item_id: String, target_idx: int) -> void:
+	var team = GameState.player_team
+	if target_idx < 0 or target_idx >= team.size(): return
+	if GameState.items.get(item_id, 0) <= 0: return
+	var mon = team[target_idx]
+	GameState.items[item_id] -= 1
+	MonDB.level_up(mon)
+	# 检查进化
+	var evo = MonDB.check_evolution(mon)
+	if evo != "":
+		MonDB.evolve_to(mon, evo)
+		# 进化后把HP回满（进化后满血）
+		mon["current_hp"] = mon["max_hp"]
+
+func _apply_exp_to_mon(item_id: String, target_idx: int) -> void:
+	var team = GameState.player_team
+	if target_idx < 0 or target_idx >= team.size(): return
+	if GameState.items.get(item_id, 0) <= 0: return
+	var mon = team[target_idx]
+	var exp_amount = MonDB.items.get(item_id, {}).get("exp_amount", 0)
+	if exp_amount <= 0: return
+	GameState.items[item_id] -= 1
+	mon["exp"] += exp_amount
+	var sp = MonDB.species.get(mon["species_id"], {})
+	var gr = sp.get("growth_rate", "正常")
+	while mon["exp"] >= MonDB.exp_for_level(gr, mon["level"] + 1):
+		MonDB.level_up(mon)
+		var evo = MonDB.check_evolution(mon)
+		if evo != "":
+			MonDB.evolve_to(mon, evo)
+			mon["current_hp"] = mon["max_hp"]
 
 # ── 努力值属性选择 ──
 func _draw_pause_bag_stat_select() -> void:

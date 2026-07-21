@@ -1409,5 +1409,40 @@
     "category": "稀有专属",
     "name": "赤炎不屈",
     "stage": 1
+  },
+  "齐天斗战意": {
+    "desc": "物理攻击力大幅提升，格斗系招式威力进一步提升，且不会陷入畏缩状态。",
+    "effect": "stat_boost_passive",
+    "category": "稀有专属",
+    "name": "齐天斗战意",
+    "stage": 1
+  },
+  "释梦主宰": {
+    "desc": "暗系与钢系招式威力提升，且出场时攻击力大幅提升。",
+    "effect": "damage_boost",
+    "category": "稀有专属",
+    "name": "释梦主宰",
+    "stage": 1
+  },
+  "归墟之渊": {
+    "desc": "出场时触发暴雨天气，且水系招式威力进一步提升。",
+    "effect": "weather",
+    "category": "稀有专属",
+    "name": "归墟之渊",
+    "stage": 1
+  },
+  "熔岩地核": {
+    "desc": "出场时触发大日照天气，且土系招式威力进一步提升。",
+    "effect": "weather",
+    "category": "稀有专属",
+    "name": "熔岩地核",
+    "stage": 1
+  },
+  "九天御风": {
+    "desc": "出场时攻击和速度大幅提升，且龙系与仙系招式必有追加效果。",
+    "effect": "stat_boost_passive",
+    "category": "稀有专属",
+    "name": "九天御风",
+    "stage": 1
   }
 }

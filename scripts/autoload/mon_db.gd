@@ -609,7 +609,7 @@ func calc_catch(mon: Dictionary, ball_bonus: float = 1.0) -> bool:
 	var sp = species.get(mon["species_id"], {})
 	var b = sp.get("base", {})
 	var bst = b.get("hp", 0) + b.get("atk", 0) + b.get("def", 0) \
-	        + b.get("sp_atk", 0) + b.get("sp_def", 0) + b.get("spd", 0)
+			+ b.get("sp_atk", 0) + b.get("sp_def", 0) + b.get("spd", 0)
 	var catch_rate = clampi(roundi(200.0 - (bst - 180.0) * 199.0 / 600.0), 1, 200)
 	var hp_ratio = float(mon["current_hp"]) / float(mon["max_hp"])
 	var status_mult = 1.0

@@ -2,6 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://01qc7vg5im35" path="res://assets/tilemaps/indoor_tileset.tres" id="1_tileset"]
 [ext_resource type="Script" uid="uid://c5ys8av8l5dih" path="res://scripts/scenes/劲敌家_scene.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cg84ugboxpwg7" path="res://assets/npc/漂亮姐姐.png" id="3_npc_mom"]
 
 [sub_resource type="RectangleShape2D" id="S_top"]
 size = Vector2(896, 8)
@@ -16,65 +17,86 @@ size = Vector2(8, 896)
 size = Vector2(384, 8)
 
 [sub_resource type="RectangleShape2D" id="S_bot_r"]
-size = Vector2(384, 8)
+size = Vector2(511, 1)
+
+[sub_resource type="RectangleShape2D" id="S_rival_mom"]
+size = Vector2(295.91473, 510.63815)
 
 [node name="劲敌家" type="Node2D" unique_id=1994516732]
 script = ExtResource("2_script")
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1049449468]
-position = Vector2(320, -64)
+tile_map_data = PackedByteArray("AAAAAAAAAwAAAAEAAAABAAAAAwABAAEAAAACAAAAAwAAAAEAAAADAAAAAwADAAMAAAAEAAAAAwAAAAEAAAAFAAAAAwAAAAEAAAADAAYAAAABAAEAAAAGAAAAAAADAAMAAAAFAAEAAAAAAAIAAAAEAAEAAAAAAAIAAAADAAEAAAAAAAIAAAACAAEAAAAAAAIAAAABAAEAAAAAAAIAAAAAAAEAAAAAAAIAAAAAAAIAAAAAAAIAAAABAAIAAAAAAAIAAAACAAIAAAAAAAIAAAADAAIAAAAAAAIAAAAEAAIAAAAAAAIAAAAFAAIAAAAAAAIAAAAFAAMAAAAAAAIAAAAFAAQAAAAAAAIAAAAFAAUAAAAAAAIAAAAFAAYAAAAAAAIAAAAGAAYAAAAAAAIAAAAGAAUAAAAAAAIAAAAGAAQAAAAAAAIAAAAGAAMAAAAAAAIAAAAGAAIAAAAAAAIAAAAGAAEAAAAAAAIAAAAAAAMAAAAAAAIAAAABAAMAAAAAAAIAAAACAAMAAAAAAAIAAAADAAMAAAAAAAIAAAAEAAMAAAAAAAIAAAAEAAQAAAAAAAIAAAAEAAUAAAAAAAIAAAAEAAYAAAAAAAIAAAADAAQAAAAAAAIAAAADAAUAAAAAAAIAAAACAAUAAAAAAAIAAAACAAQAAAAAAAIAAAABAAQAAAAAAAIAAAAAAAQAAAAAAAIAAAAAAAUAAAAAAAIAAAAAAAYAAAAAAAIAAAABAAYAAAAAAAIAAAACAAYAAAAAAAIAAAABAAUAAAAAAAIAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Furniture" type="TileMapLayer" parent="." unique_id=1663307606]
-position = Vector2(320, -64)
 z_index = 1
+tile_map_data = PackedByteArray("AAABAAAAAwABAAQAAAAAAAAAAwAAAAQAAAACAAIAAQABAAMAAAADAAIAAQACAAMAAAAAAAQAAQABAAAAAAABAAQAAQACAAAAAAAGAAMAAQADAAEAAAAGAAQAAQADAAIAAAA=")
 tile_set = ExtResource("1_tileset")
 
 [node name="Overlap" type="TileMapLayer" parent="." unique_id=2038167843]
-position = Vector2(320, -64)
 z_index = 10
 tile_set = ExtResource("1_tileset")
 
 [node name="Colliders" type="Node2D" parent="." unique_id=608605407]
 
 [node name="上墙" type="StaticBody2D" parent="Colliders" unique_id=1869421550]
-position = Vector2(768, -68)
+position = Vector2(448, -4)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/上墙" unique_id=480776009]
 shape = SubResource("S_top")
 
 [node name="左墙" type="StaticBody2D" parent="Colliders" unique_id=617845266]
-position = Vector2(316, 384)
+position = Vector2(-4, 448)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/左墙" unique_id=135289631]
 shape = SubResource("S_left")
 
 [node name="右墙" type="StaticBody2D" parent="Colliders" unique_id=1968427830]
-position = Vector2(1220, 384)
+position = Vector2(900, 448)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/右墙" unique_id=2016335722]
 shape = SubResource("S_right")
 
 [node name="下左" type="StaticBody2D" parent="Colliders" unique_id=650084305]
-position = Vector2(512, 836)
+position = Vector2(192, 900)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下左" unique_id=528688379]
 shape = SubResource("S_bot_l")
 
 [node name="下右" type="StaticBody2D" parent="Colliders" unique_id=265784106]
-position = Vector2(1024, 836)
+position = Vector2(704, 900)
 
 [node name="Shape" type="CollisionShape2D" parent="Colliders/下右" unique_id=1714106312]
+position = Vector2(-63.5, -4.5)
 shape = SubResource("S_bot_r")
-
 
 [node name="角色" type="Node2D" parent="." unique_id=628243265]
 
-[node name="出口" type="Marker2D" parent="." unique_id=2119263060]
-position = Vector2(768, 833)
-metadata/exit_to = "overworld"
-
 [node name="楼梯" type="Marker2D" parent="角色" unique_id=987654321]
-position = Vector2(1063, 14)
+position = Vector2(826, 90)
 metadata/interact = "stairs_up"
 metadata/target_scene = "rival_home_2f"
+
+[node name="劲敌妈妈" type="Sprite2D" parent="角色" unique_id=1923051837]
+z_index = 5
+position = Vector2(76, 406)
+scale = Vector2(0.28048617, 0.28395835)
+texture = ExtResource("3_npc_mom")
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 576)
+metadata/npc_type = "npc"
+metadata/npc_name = "劲敌妈妈"
+metadata/npc_dialog = "rival_mom"
+
+[node name="Collision" type="StaticBody2D" parent="角色/劲敌妈妈" unique_id=1930517198]
+position = Vector2(0, 80)
+
+[node name="Shape" type="CollisionShape2D" parent="角色/劲敌妈妈/Collision" unique_id=990338732]
+position = Vector2(-12.478394, -60.631348)
+scale = Vector2(1, 0.9999999)
+shape = SubResource("S_rival_mom")
+
+[node name="出口" type="Marker2D" parent="." unique_id=2119263060]
+position = Vector2(446, 872)
+metadata/exit_to = "overworld"
