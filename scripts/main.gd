@@ -215,7 +215,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if _bag_keys.size() > 0:
 					var item_id = _bag_keys[_bag_cursor]
 					var item_data = MonDB.items.get(item_id, {})
-					var usable = item_data.get("category", "") in ["heal", "滋补", "进化"]
+					var usable = item_data.get("category", "") in ["回复", "滋补", "进化"]
 					if usable and GameState.items.get(item_id, 0) > 0 and not GameState.player_team.is_empty():
 						_target_cursor = 0
 						_pause_sub = "bag_target"; _draw_pause()

@@ -578,21 +578,16 @@ func evolve_to(mon: Dictionary, species_id: String) -> void:
 	if not species.has(species_id):
 		return
 	var new_sp = species[species_id]
-	var b      = new_sp["base"]
-	var ivs    = mon["ivs"]
 	var lv     = mon["level"]
 
 	mon["species_id"] = species_id
 	mon["nickname"]   = ""
 
+	# 260728 Red 改调recalc_stats()统一公式，此前这里自己重复了一份计算且漏了
+	# 努力值(training)和性格(nature)加成，导致进化后这两项加成全部消失
 	var old_max = mon["max_hp"]
-	mon["max_hp"] = int((3.0 * b["hp"] + ivs["hp"]) * lv / 100.0) + lv + 10
+	recalc_stats(mon)
 	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max), mon["max_hp"])
-	mon["atk"]    = int((3.0 * b["atk"]    + ivs["atk"])    * lv / 100.0) + 5
-	mon["def"]    = int((3.0 * b["def"]    + ivs["def"])    * lv / 100.0) + 5
-	mon["sp_atk"] = int((3.0 * b["sp_atk"] + ivs["sp_atk"]) * lv / 100.0) + 5
-	mon["sp_def"] = int((3.0 * b["sp_def"] + ivs["sp_def"]) * lv / 100.0) + 5
-	mon["spd"]    = int((3.0 * b["spd"]    + ivs["spd"])    * lv / 100.0) + 5
 
 	# 学习进化时等级对应的新技能
 	for mv_id in new_sp["learnset"].get(lv, []):
