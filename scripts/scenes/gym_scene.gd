@@ -205,21 +205,27 @@ func _build_player() -> void:
 
 func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 	if not _player_spr.region_enabled: return
-	# 260703 Red 行走动画：下0/上1/左2/右3，3帧循环
+	# 260728 Red 对齐overworld_scene.gd的_update_walk_anim：下0/上1/右2/左3，
+	# 侧走(2/3)5帧循环，正/背面(0/1)4帧循环[0,1,0,2]；此前这里漏了侧走5帧分支，
+	# 换方向也没重置帧，跟其余场景动画不一致
 	if moving:
-		if   dir.y > 0: _walk_dir = 0  # 下
-		elif dir.y < 0: _walk_dir = 1  # 上
-		elif dir.x > 0: _walk_dir = 2  # 右
-		elif dir.x < 0: _walk_dir = 3  # 左
+		var new_dir := _walk_dir
+		if   dir.y > 0: new_dir = 0  # 下
+		elif dir.y < 0: new_dir = 1  # 上
+		elif dir.x > 0: new_dir = 2  # 右
+		elif dir.x < 0: new_dir = 3  # 左
+		if new_dir != _walk_dir:
+			_walk_dir = new_dir; _walk_frame = 0; _walk_anim_t = 0.0
 		_walk_anim_t += delta
+		var max_f := 5 if _walk_dir >= 2 else 4
 		if _walk_anim_t >= WALK_FRAME_SEC:
 			_walk_anim_t -= WALK_FRAME_SEC
-			_walk_frame = (_walk_frame + 1) % 4
+			_walk_frame = (_walk_frame + 1) % max_f
 	else:
 		_walk_frame = 0
 		_walk_anim_t = 0.0
-	var col: int = [0, 1, 0, 2][_walk_frame]
-	
+	var col: int = (_walk_frame if _walk_dir >= 2 else [0, 1, 0, 2][_walk_frame])
+
 	_player_spr.flip_h = false
 	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 
