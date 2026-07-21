@@ -987,9 +987,9 @@ func _on_evo_choice(evo: Dictionary) -> void:
 	_evo_result = evo
 	_evo_choice_made.emit()
 
-# 260728 Red 进化动画：使用 assets/ui/进化界面.png 法阵背景 + 精灵反复闪光，
-# 期间按X可随时中断（参照PokemonEssentials的pbEvolution：中断则这次不进化，
-# 下次再达到条件还会再触发一次）；不中断则在闪光顶点切换成新精灵定型
+# 260728 Red 进化动画：assets/ui/进化界面.png 法阵背景，精灵站上去左右轻摆(期间按X可
+# 中断，参照PokemonEssentials的pbEvolution：中断则这次不进化、下次再达到条件还会再触发)，
+# 摆动结束后全白屏，暗处换成新精灵贴图，白屏淡出后展示新形态
 func _play_evolution_scene(old_species_id: String, new_species_id: String, old_name: String) -> bool:
 	var resume_bgm = AudioManager.BGM_TRAINER if _is_trainer else AudioManager.BGM_WILD
 
@@ -1005,21 +1005,36 @@ func _play_evolution_scene(old_species_id: String, new_species_id: String, old_n
 	bg.modulate = Color(1, 1, 1, 0)
 	cl.add_child(bg)
 
+	var base_x := VW / 2.0
 	var spr := Sprite2D.new()
 	spr.texture = _draw_mon_back(old_species_id)
-	spr.position = Vector2(VW / 2.0, VH / 2.0 + 40)
+	spr.position = Vector2(base_x, VH / 2.0 + 40)
 	_rescale_sprite(spr, 200.0)
 	spr.modulate = Color(1, 1, 1, 0)
 	cl.add_child(spr)
+
+	var msg_lbl := Label.new()
+	msg_lbl.text = ""
+	msg_lbl.size.x = VW
+	msg_lbl.position = Vector2(0, VH - 170)
+	msg_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	msg_lbl.add_theme_color_override("font_color", Color(1, 0.95, 0.85))
+	msg_lbl.add_theme_font_size_override("font_size", 20)
+	cl.add_child(msg_lbl)
 
 	var hint := Label.new()
 	hint.text = "X 中断进化"
 	hint.size.x = VW
 	hint.position = Vector2(0, VH - 70)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.75))
+	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.7))
 	hint.add_theme_font_size_override("font_size", 13)
 	cl.add_child(hint)
+
+	var flash := ColorRect.new()
+	flash.size = Vector2(VW, VH)
+	flash.color = Color(1, 1, 1, 0)
+	cl.add_child(flash)
 
 	AudioManager.play_bgm(AudioManager.BGM_EVOLUTION)
 	AudioManager.play_me(AudioManager.ME_EVOLVE_START)
@@ -1029,40 +1044,48 @@ func _play_evolution_scene(old_species_id: String, new_species_id: String, old_n
 	tw_in.parallel().tween_property(spr, "modulate:a", 1.0, 0.5)
 	await tw_in.finished
 
-	await _show_message_async("咦？\n%s的样子变了！" % old_name)
+	msg_lbl.text = "咦？\n%s的样子正在发生变化……" % old_name
 
+	# 左右轻摆，期间随时可按X中断
 	var canceled := false
 	var t := 0.0
-	const FLASH_DURATION := 2.2
-	while t < FLASH_DURATION:
+	const WIGGLE_DURATION := 2.2
+	while t < WIGGLE_DURATION:
 		if Input.is_action_just_pressed("ui_cancel"):
 			canceled = true
 			break
-		var phase = fmod(t, 0.4)
-		spr.modulate = (Color(2.4, 2.4, 2.4) if phase < 0.2 else Color(1, 1, 1))
+		spr.position.x = base_x + sin(t * 6.0) * 14.0
 		await get_tree().process_frame
 		t += get_process_delta_time()
+	spr.position.x = base_x
 
 	if canceled:
 		AudioManager.play_se(AudioManager.SE_CANCEL)
-		spr.modulate = Color(1, 1, 1)
 		var tw_out := create_tween()
 		tw_out.tween_property(bg, "modulate:a", 0.0, 0.4)
 		tw_out.parallel().tween_property(spr, "modulate:a", 0.0, 0.4)
+		tw_out.parallel().tween_property(msg_lbl, "modulate:a", 0.0, 0.4)
 		await tw_out.finished
 		cl.queue_free()
 		AudioManager.play_bgm(resume_bgm)
 		await _show_message_async("咦？\n%s 似乎停止了进化！" % old_name)
 		return false
 
-	spr.modulate = Color(3, 3, 3, 1)
+	# 全白屏，暗处替换成新精灵贴图
+	hint.visible = false
+	var tw_white := create_tween()
+	tw_white.tween_property(flash, "color:a", 1.0, 0.35)
+	await tw_white.finished
 	spr.texture = _draw_mon_back(new_species_id)
 	_rescale_sprite(spr, 200.0)
-	var tw_settle := create_tween()
-	tw_settle.tween_property(spr, "modulate", Color(1, 1, 1, 1), 0.6)
-	await tw_settle.finished
+	await get_tree().create_timer(0.4).timeout
+	var tw_back := create_tween()
+	tw_back.tween_property(flash, "color:a", 0.0, 0.5)
+	await tw_back.finished
+
 	AudioManager.play_me(AudioManager.ME_EVOLVE_DONE)
-	await get_tree().create_timer(1.0).timeout
+	msg_lbl.text = ""
+	await get_tree().create_timer(0.8).timeout
 
 	var tw_end := create_tween()
 	tw_end.tween_property(bg, "modulate:a", 0.0, 0.5)
@@ -1590,16 +1613,9 @@ func _handle_victory() -> void:
 		for mv_id in ev["new_moves"]:
 			await _show_message_async("%s 学会了【%s】！" % [MonDB.display_name(_player_mon), mv_id])
 
-		# 进化检查（升级后）
-		var evos = MonDB.get_potential_evolutions(_player_mon)
-		# 过滤道具要求：有 item 字段且持有数量 > 0 才可选
-		var available = []
-		for evo in evos:
-			if evo.has("item"):
-				if GameState.items.get(evo["item"], 0) > 0:
-					available.append(evo)
-			else:
-				available.append(evo)
+		# 进化检查（升级后）；260728 Red 统一走MonDB.get_available_evolutions()，
+		# 不再各处各写一份道具校验逻辑
+		var available = MonDB.get_available_evolutions(_player_mon)
 		if available.size() > 0:
 			var old_name = MonDB.display_name(_player_mon)
 			var old_species_id = _player_mon["species_id"]

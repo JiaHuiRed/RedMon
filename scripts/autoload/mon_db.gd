@@ -522,9 +522,11 @@ func level_up(mon: Dictionary) -> Array:
 	return new_moves
 
 # ── 进化系统 ──────────────────────────────────────────────────────────────────
-# 注意：evolutions 中的 item 字段由调用方检查，mon_db 只做等级判断
+# 260728 Red 参照PokemonEssentials的check_evolution_internal设计：进化资格判断（等级+道具持有）
+# 统一收在这一处，战斗内升级/背包用糖果或经验道具升级/背包直接用进化道具三条入口全部
+# 调用get_available_evolutions()，不允许各调用方各写一份、互相不一致
 
-# 检查等级是否满足进化条件，返回第一个满足等级的进化目标
+# 检查等级是否满足进化条件，返回第一个满足等级的进化目标（不检查道具，仅供旧格式兼容场景使用）
 func check_evolution(mon: Dictionary) -> String:
 	var evos = get_potential_evolutions(mon)
 	if evos.size() > 0:
@@ -539,7 +541,7 @@ func check_evolution(mon: Dictionary) -> String:
 
 # 返回所有满足等级条件的进化分支列表
 # 每个元素 dict: {"into": String, "level": int, "item": String(可选)}
-# 不检查道具——调用方负责过滤 GameState.items
+# 不检查道具——调用方负责过滤 GameState.items，一般不要直接调用这个，改调 get_available_evolutions()
 func get_potential_evolutions(mon: Dictionary) -> Array:
 	var sp = species.get(mon["species_id"], {})
 	var result = []
@@ -552,6 +554,23 @@ func get_potential_evolutions(mon: Dictionary) -> Array:
 		if req_gender != "" and mon_gender != "" and req_gender != mon_gender:
 			continue
 		result.append(evo.duplicate())
+	return result
+
+# 260728 Red 唯一的进化资格判断入口：等级+道具(若需要)都满足才算可用
+# 返回所有当前可执行的进化分支；battle_scene.gd分支选择面板需要完整列表，
+# main.gd糖果/经验道具升级只需要取[0]。兼容仅有旧版evolves_into/evolve_level字段的精灵。
+func get_available_evolutions(mon: Dictionary) -> Array:
+	var result = []
+	for evo in get_potential_evolutions(mon):
+		var req_item = evo.get("item", "")
+		if req_item == "" or GameState.items.get(req_item, 0) > 0:
+			result.append(evo)
+	if result.is_empty():
+		var sp = species.get(mon["species_id"], {})
+		var evo_into = sp.get("evolves_into", "")
+		var evo_level = sp.get("evolve_level", 0)
+		if evo_into != "" and mon["level"] >= evo_level:
+			result.append({"into": evo_into})
 	return result
 
 # 进化到指定物种（保留等级/经验/IVs/状态）
