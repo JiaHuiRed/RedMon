@@ -7,7 +7,9 @@ import { computeMatchup } from "../components/type-chart.js";
 
 const GROWTH_RATES = ["早熟", "正常", "大器晚成"];
 
-const TIERS = ["凡", "灵", "玄", "地", "神", "天"];
+const TIERS = ["凡", "灵", "玄", "神", "地", "天"];  // 260728 Red 按BST从低到高排序，此前神/地顺序反了
+// 260728 Red 各品阶技能威力软上限(专属大招等设计豁免除外)，用于添加学习技能时的提示
+const TIER_POWER_CEILING = { "凡": 60, "灵": 85, "玄": 100, "神": 120, "地": 140, "天": 160 };
 
 export class SpeciesTab {
   constructor(container, state, fileKey, callbacks) {
@@ -218,6 +220,7 @@ export class SpeciesTab {
                 <label>特性 2</label>
                 <input type="text" id="field-ability2" value="${mon.abilities?.[1] || ""}" />
               </div>
+              <div id="ability-tier-warn" class="field-warn-msg" style="display:none"></div>
             </div>
           </div>
         </div>
@@ -612,6 +615,14 @@ export class SpeciesTab {
           if (!m) { infoBox.textContent = "（未找到该技能）"; return; }
           let txt = `属性: ${m.type || "?"}   分类: ${m.category || "?"}   威力: ${m.power ?? "-"}   命中: ${m.accuracy ?? "-"}   PP: ${m.max_pp ?? "-"}`;
           if (m.description) txt += `\n${m.description}`;
+          const ceiling = TIER_POWER_CEILING[mon.tier];
+          const isExclusive = (m.max_pp ?? 0) <= 1;  // 260728 Red 专属大招约定PP=1，允许超上限
+          if (ceiling && typeof m.power === "number" && m.power > ceiling && !isExclusive) {
+            txt += `\n⚠ 该技能威力(${m.power})超过[${mon.tier}]品阶软上限(${ceiling})，请确认是否合适`;
+            infoBox.classList.add("modal-info-warn");
+          } else {
+            infoBox.classList.remove("modal-info-warn");
+          }
           infoBox.textContent = txt;
         };
 
@@ -791,6 +802,22 @@ export class SpeciesTab {
     bindStr("field-design-origin", "design_origin");
     // 特性下拉改成可搜索输入框（原生 select 逐条滚动选特性太慢，对齐旧编辑器的自动补全体验）
     const abilityNames = this._getAbilitiesList();
+    const abData = this.state.data.abilities || [];
+    // 260728 Red 稀有专属特性规则(仅天/地品阶可用)此前编辑器里完全没有校验提示，纯靠人记
+    const checkAbilityTier = () => {
+      const warnEl = document.getElementById("ability-tier-warn");
+      if (!warnEl) return;
+      const exclusive = (mon.abilities || []).filter(name => {
+        const a = abData.find(x => x.name === name);
+        return a && a.category === "稀有专属";
+      });
+      if (exclusive.length > 0 && mon.tier !== "天" && mon.tier !== "地") {
+        warnEl.textContent = `⚠ ${exclusive.join("、")} 是稀有专属特性，通常仅限天/地品阶精灵使用（当前品阶：${mon.tier}）`;
+        warnEl.style.display = "";
+      } else {
+        warnEl.style.display = "none";
+      }
+    };
     const setAbilities = (a1, a2) => {
       this.callbacks.saveHistory(this.fileKey);
       // 保留槽位顺序：只有 a2 有值而 a1 为空时，用空字符串占住槽位 0，避免 a2 的值错位挪到 abilities[0]
@@ -799,7 +826,10 @@ export class SpeciesTab {
       else if (!a2) mon.abilities = [a1];
       else mon.abilities = [a1, a2];
       this.callbacks.onModified(this.fileKey);
+      checkAbilityTier();
     };
+    checkAbilityTier();
+    document.getElementById("field-tier")?.addEventListener("change", checkAbilityTier);
     const ability1Input = document.getElementById("field-ability1");
     const ability2Input = document.getElementById("field-ability2");
     if (ability1Input) {

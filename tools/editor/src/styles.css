@@ -981,6 +981,24 @@ input, select, textarea, button {
   white-space: pre-wrap;
 }
 
+/* 260728 Red 技能威力超品阶软上限 / 特性品阶不符时的提示样式 */
+.modal-info-warn {
+  border-color: #C85A00;
+  background: rgba(200, 90, 0, 0.12);
+  color: #C85A00;
+}
+
+.field-warn-msg {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: #C85A00;
+  background: rgba(200, 90, 0, 0.12);
+  border: 1px solid #C85A00;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-top: -2px;
+}
+
 /* ===== Type Matchup Table ===== */
 .matchup-table {
   width: 100%;
