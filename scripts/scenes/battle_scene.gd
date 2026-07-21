@@ -57,6 +57,8 @@ var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 var _evo_panel:       Control
 var _evo_result:      Dictionary = {}
+var _evo_confirm_panel: Control
+var _evo_confirm_result: bool = true
 
 # ── 野生精灵品级显示 ──────────────────────────────────────────────────────────
 const WILD_TIER_COLORS := {
@@ -987,6 +989,58 @@ func _on_evo_choice(evo: Dictionary) -> void:
 	_evo_result = evo
 	_evo_choice_made.emit()
 
+# 260728 Red 进化前确认：X/取消则本次不进化，下次再达到条件还会再问一次
+func _confirm_evolve(old_name: String) -> bool:
+	_evo_confirm_result = true
+	_evo_confirm_panel = Control.new()
+	_evo_confirm_panel.position = Vector2(0, 0)
+	_evo_confirm_panel.size = Vector2(VW, VH)
+	add_child(_evo_confirm_panel)
+
+	var bg = ColorRect.new()
+	bg.size = Vector2(VW, VH)
+	bg.color = Color(0.0, 0.0, 0.0, 0.75)
+	_evo_confirm_panel.add_child(bg)
+
+	var msg = Label.new()
+	msg.text = "咦？%s的样子变得不同了！\n要让它进化吗？" % old_name
+	msg.position = Vector2(VW * 0.25, 100)
+	msg.add_theme_color_override("font_color", Color(1.0, 0.9, 0.7))
+	msg.add_theme_font_size_override("font_size", 16)
+	_evo_confirm_panel.add_child(msg)
+
+	var yes_btn = Button.new()
+	yes_btn.text = "进化 (Z)"
+	yes_btn.size = Vector2(160, 36)
+	yes_btn.position = Vector2(VW * 0.30, 170)
+	yes_btn.pressed.connect(_on_evo_confirm.bind(true))
+	_evo_confirm_panel.add_child(yes_btn)
+
+	var no_btn = Button.new()
+	no_btn.text = "先不要 (X)"
+	no_btn.size = Vector2(160, 36)
+	no_btn.position = Vector2(VW * 0.30 + 200, 170)
+	no_btn.pressed.connect(_on_evo_confirm.bind(false))
+	_evo_confirm_panel.add_child(no_btn)
+
+	yes_btn.call_deferred("grab_focus")  # Z(ui_accept) 默认确认
+
+	while true:
+		if Input.is_action_just_pressed("ui_cancel"):
+			_on_evo_confirm(false)
+			break
+		await get_tree().process_frame
+		if not is_instance_valid(_evo_confirm_panel):
+			break
+
+	return _evo_confirm_result
+
+func _on_evo_confirm(v: bool) -> void:
+	if not is_instance_valid(_evo_confirm_panel): return
+	_evo_confirm_result = v
+	_evo_confirm_panel.queue_free()
+	_evo_confirm_panel = null
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Panel helpers
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1522,18 +1576,21 @@ func _handle_victory() -> void:
 				chosen = await _show_evolution_choice(available)
 				if chosen.is_empty():
 					chosen = available[0]
-			# 消耗进化道具
-			var req_item = chosen.get("item", "")
-			if req_item != "" and GameState.items.has(req_item):
-				GameState.items[req_item] -= 1
-			# 执行进化
-			await _show_message_async("啊！\n%s 要进化了！" % old_name)
-			MonDB.evolve_to(_player_mon, chosen["into"])
-			_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
-			_rescale_sprite(_player_spr, 100.0)
-			_refresh_info()
-			_refresh_move_panel()
-			await _show_message_async("%s 进化成了%s！" % [old_name, MonDB.display_name(_player_mon)])
+			# 260728 Red 进化前先问一次，X取消则本次不进化（下次再达到条件还会再问）
+			var will_evolve = await _confirm_evolve(old_name)
+			if will_evolve:
+				# 消耗进化道具
+				var req_item = chosen.get("item", "")
+				if req_item != "" and GameState.items.has(req_item):
+					GameState.items[req_item] -= 1
+				# 执行进化
+				await _show_message_async("啊！\n%s 要进化了！" % old_name)
+				MonDB.evolve_to(_player_mon, chosen["into"])
+				_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
+				_rescale_sprite(_player_spr, 100.0)
+				_refresh_info()
+				_refresh_move_panel()
+				await _show_message_async("%s 进化成了%s！" % [old_name, MonDB.display_name(_player_mon)])
 	_refresh_info()
 
 	await get_tree().create_timer(0.5).timeout
