@@ -25,6 +25,8 @@ var _bag_keys: Array = []
 var _swap_pick_idx: int = -1
 # 260702 Red 食疗式努力值：滋补道具属性选择（如大烧鸡需自选加成属性）
 var _stat_cursor: int = 0
+# 260728 Red 技能机：4技能已满时需选择替换哪一个
+var _tm_move_cursor: int = 0
 const _STAT_KEYS   := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
 const _STAT_LABELS := ["HP", "攻击", "防御", "特攻", "特防", "速度"]
 # 260715 Red 现代菜单配色（实际对齐 party_ui.gd 的深色主题，此前注释与配色不符）
@@ -163,6 +165,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		match _pause_sub:
 			"bag_target":      AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = "bag"; _draw_pause()
 			"bag_stat_select": AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = "bag_target"; _draw_pause()
+			"bag_move_select": AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = "bag_target"; _draw_pause()
 			"":                _close_pause()
 			_:                 AudioManager.play_se(AudioManager.SE_CANCEL); _pause_sub = ""; _pause_cursor = 0; _draw_pause()
 		return
@@ -190,6 +193,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				if n2 > 0: _target_cursor = (_target_cursor - 1 + n2) % n2
 			"bag_stat_select":
 				_stat_cursor = (_stat_cursor - 1 + _STAT_KEYS.size()) % _STAT_KEYS.size()
+			"bag_move_select":
+				var n3 = _tm_move_option_count()
+				if n3 > 0: _tm_move_cursor = (_tm_move_cursor - 1 + n3) % n3
 		_draw_pause()
 	elif event.is_action_pressed("ui_down"):
 		get_viewport().set_input_as_handled()
@@ -204,6 +210,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				if n2 > 0: _target_cursor = (_target_cursor + 1) % n2
 			"bag_stat_select":
 				_stat_cursor = (_stat_cursor + 1) % _STAT_KEYS.size()
+			"bag_move_select":
+				var n3 = _tm_move_option_count()
+				if n3 > 0: _tm_move_cursor = (_tm_move_cursor + 1) % n3
 		_draw_pause()
 	elif event.is_action_pressed("ui_accept"):
 		get_viewport().set_input_as_handled()
@@ -215,7 +224,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if _bag_keys.size() > 0:
 					var item_id = _bag_keys[_bag_cursor]
 					var item_data = MonDB.items.get(item_id, {})
-					var usable = item_data.get("category", "") in ["回复", "滋补", "进化"]
+					var usable = item_data.get("category", "") in ["回复", "滋补", "进化", "技能机"]
 					if usable and GameState.items.get(item_id, 0) > 0 and not GameState.player_team.is_empty():
 						_target_cursor = 0
 						_pause_sub = "bag_target"; _draw_pause()
@@ -238,12 +247,18 @@ func _unhandled_input(event: InputEvent) -> void:
 				elif item_data2.get("category", "") == "进化":
 					_apply_evolution_item(item_id2, _target_cursor)
 					_pause_sub = "bag"; _draw_pause()
+				elif item_data2.get("category", "") == "技能机":
+					_start_tm_teach(item_id2, _target_cursor)
 				else:
 					_apply_heal_to_mon(item_id2, _target_cursor)
 					_pause_sub = "bag"; _draw_pause()
 			"bag_stat_select":
 				var item_id3 = _bag_keys[_bag_cursor]
 				_apply_training_to_mon(item_id3, _target_cursor, _STAT_KEYS[_stat_cursor])
+				_pause_sub = "bag"; _draw_pause()
+			"bag_move_select":
+				var item_id4 = _bag_keys[_bag_cursor]
+				_apply_tm_move(item_id4, _target_cursor, _tm_move_cursor)
 				_pause_sub = "bag"; _draw_pause()
 
 func _build_pause() -> void:
@@ -290,6 +305,7 @@ func _draw_pause() -> void:
 		"bag":          _draw_pause_bag()
 		"bag_target":   _draw_pause_bag_target()
 		"bag_stat_select": _draw_pause_bag_stat_select()
+		"bag_move_select": _draw_pause_bag_move_select()
 		"saved":        _draw_pause_saved()
 
 # ── 通用绘制工具 ──
@@ -508,6 +524,73 @@ func _draw_pause_bag_stat_select() -> void:
 		_m_lbl(_STAT_LABELS[i], 28, cy + 10, 13, _M_SEL if sel else _M_TEXT)
 	_m_div(_PH - 34)
 	_m_lbl("Z确定  X返回", 16, _PH - 28, 10, _M_HINT)
+
+# ── 技能机教学 ──
+# 260728 Red 技能机：<4个技能直接学会，满4个则弹出替换选择（含"取消"选项）
+func _tm_move_option_count() -> int:
+	var team = GameState.player_team
+	if _target_cursor < 0 or _target_cursor >= team.size(): return 0
+	return team[_target_cursor].get("moves", []).size() + 1  # +1 是"取消"
+
+func _start_tm_teach(item_id: String, target_idx: int) -> void:
+	var team = GameState.player_team
+	if target_idx < 0 or target_idx >= team.size():
+		_pause_sub = "bag"; _draw_pause(); return
+	var mon = team[target_idx]
+	var tm_move = MonDB.items.get(item_id, {}).get("tm_move", "")
+	if tm_move == "":
+		_pause_sub = "bag"; _draw_pause(); return
+	for m in mon.get("moves", []):
+		if m["id"] == tm_move:
+			_pause_sub = "bag"; _draw_pause(); return  # 已经学会，不用教
+	if mon.get("moves", []).size() < 4:
+		_apply_tm_move(item_id, target_idx, mon["moves"].size())  # 直接学，不用选替换哪个
+		_pause_sub = "bag"; _draw_pause()
+	else:
+		_tm_move_cursor = 0
+		_pause_sub = "bag_move_select"; _draw_pause()
+
+func _draw_pause_bag_move_select() -> void:
+	_m_panel()
+	var item_id = _bag_keys[_bag_cursor] if _bag_cursor < _bag_keys.size() else ""
+	var tm_move = MonDB.items.get(item_id, {}).get("tm_move", "")
+	_m_lbl("要替换哪个技能学会\n【%s】？" % tm_move, 16, 12, 13, _M_SEL)
+	_m_div(58)
+	var team = GameState.player_team
+	var mon = team[_target_cursor] if _target_cursor < team.size() else {}
+	var moves = mon.get("moves", [])
+	var cw = _PW - 32; var ch = 40
+	for i in range(moves.size()):
+		var sel = i == _tm_move_cursor
+		var cy = 66 + i * (ch + 6)
+		_m_card(16, cy, cw, ch, sel)
+		_m_lbl(moves[i]["id"], 28, cy + 12, 13, _M_SEL if sel else _M_TEXT)
+	var cancel_i = moves.size()
+	var cancel_sel = _tm_move_cursor == cancel_i
+	var cancel_cy = 66 + cancel_i * (ch + 6)
+	_m_card(16, cancel_cy, cw, ch, cancel_sel)
+	_m_lbl("取消", 28, cancel_cy + 12, 13, _M_SEL if cancel_sel else _M_TEXT2)
+	_m_div(_PH - 34)
+	_m_lbl("Z确定  X返回", 16, _PH - 28, 10, _M_HINT)
+
+# 260728 Red 技能机可反复使用，不消耗道具。技能数<4时直接学会新技能(忽略slot_idx，
+# 调用方_start_tm_teach此时传的是"append"语义)；已满4个时slot_idx是要替换的下标，
+# 等于4(即"取消"选项)则什么都不做
+func _apply_tm_move(item_id: String, target_idx: int, slot_idx: int) -> void:
+	var team = GameState.player_team
+	if target_idx < 0 or target_idx >= team.size(): return
+	var mon = team[target_idx]
+	var tm_move = MonDB.items.get(item_id, {}).get("tm_move", "")
+	if tm_move == "": return
+	var move_count = mon["moves"].size()
+	if slot_idx < 0 or slot_idx > move_count: return
+	var move_data = MonDB.moves.get(tm_move, {})
+	var max_pp = move_data.get("max_pp", 10)
+	var entry = {"id": tm_move, "pp": max_pp, "max_pp": max_pp}
+	if move_count < 4:
+		mon["moves"].append(entry)
+	elif slot_idx < move_count:
+		mon["moves"][slot_idx] = entry
 
 # 260702 Red 食疗式努力值：使用滋补道具，单项上限126，总和上限256
 func _apply_training_to_mon(item_id: String, target_idx: int, stat: String) -> void:
