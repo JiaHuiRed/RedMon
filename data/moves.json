@@ -8782,5 +8782,15 @@
     "effect_chance": 0,
     "description": "盘天以仙灵之力凝聚九天罡风，撕裂虚空的至高之击。",
     "name": "仙罡裂天"
+  },
+  "疾风爆袭": {
+    "name": "疾风爆袭",
+    "type": "风",
+    "category": "物理",
+    "power": 90,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": "卷起呼啸的疾风狂猛冲击对手，招式干净利落，鲜有目标能全身而退。"
   }
 }
