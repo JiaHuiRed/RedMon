@@ -1039,11 +1039,10 @@ func _check_trainer_sight() -> void:
 	var pt = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 	for td in TRAINERS:
 		if td["id"] in GameState.defeated_trainers: continue
-		for i in range(1, td["sight"] + 1):
-			if td["tile"] + td["dir"] * i == pt:
-				_pending_trainer = td
-				_show_dialog("训练师%s：\n%s" % [td["name"], td["dialog_before"]], 100)
-				return
+		if MonDB.is_in_sight(td["tile"], td["dir"], td["sight"], pt):
+			_pending_trainer = td
+			_show_dialog("训练师%s：\n%s" % [td["name"], td["dialog_before"]], 100)
+			return
 
 # ── 战败处理 ──────────────────────────────────────────────────────────────────
 func _handle_defeat() -> void:

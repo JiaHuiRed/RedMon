@@ -645,3 +645,12 @@ func gain_exp(mon: Dictionary, amount: int) -> Array:
 		var new_moves = level_up(mon)
 		events.append({"level": mon["level"], "new_moves": new_moves})
 	return events
+
+# ── NPC 视野判定 ──────────────────────────────────────────────────────────────
+# 260728 Red overworld_scene.gd/gym_scene.gd此前各写了一份等价但独立的视野判定，
+# 统一收在这一处：target是否在origin正前方(dir方向)sight格以内的直线上
+func is_in_sight(origin: Vector2i, dir: Vector2i, sight: int, target: Vector2i) -> bool:
+	for i in range(1, sight + 1):
+		if origin + dir * i == target:
+			return true
+	return false

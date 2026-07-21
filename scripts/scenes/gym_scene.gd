@@ -376,13 +376,7 @@ func _check_sight() -> void:
 	# 杂兵
 	for g in _guards:
 		if g["id"] in _defeated_guards: continue
-		var diff = ptile - g["tile"]
-		var in_sight := false
-		if g["dir"] == Vector2i(1, 0)  and diff.y == 0 and diff.x > 0 and diff.x <= g["sight"]: in_sight = true
-		if g["dir"] == Vector2i(-1, 0) and diff.y == 0 and diff.x < 0 and -diff.x <= g["sight"]: in_sight = true
-		if g["dir"] == Vector2i(0, 1)  and diff.x == 0 and diff.y > 0 and diff.y <= g["sight"]: in_sight = true
-		if g["dir"] == Vector2i(0, -1) and diff.x == 0 and diff.y < 0 and -diff.y <= g["sight"]: in_sight = true
-		if in_sight:
+		if MonDB.is_in_sight(g["tile"], g["dir"], g["sight"], ptile):
 			_active_guard_id = g["id"]
 			_dialog_context = "guard_before"
 			_show_dialog([g["name"] + "：" + g["before"]])
@@ -390,8 +384,7 @@ func _check_sight() -> void:
 
 	# 馆主（需所有杂兵已击败）
 	if not _leader_defeated and _defeated_guards.size() >= _guards.size():
-		var diff = ptile - _leader["tile"]
-		if diff.x == 0 and diff.y > 0 and diff.y <= _leader["sight"]:
+		if MonDB.is_in_sight(_leader["tile"], Vector2i(0, 1), _leader["sight"], ptile):
 			_dialog_context = "leader_before"
 			var lines = MonDB.dlg_array("gym_cuizhu", "leader_before_lines")
 			if lines.is_empty():
