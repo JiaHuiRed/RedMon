@@ -57,8 +57,6 @@ var _force_switch:    bool = false
 var _player_mon_idx:  int  = 0
 var _evo_panel:       Control
 var _evo_result:      Dictionary = {}
-var _evo_confirm_panel: Control
-var _evo_confirm_result: bool = true
 
 # ── 野生精灵品级显示 ──────────────────────────────────────────────────────────
 const WILD_TIER_COLORS := {
@@ -989,57 +987,90 @@ func _on_evo_choice(evo: Dictionary) -> void:
 	_evo_result = evo
 	_evo_choice_made.emit()
 
-# 260728 Red 进化前确认：X/取消则本次不进化，下次再达到条件还会再问一次
-func _confirm_evolve(old_name: String) -> bool:
-	_evo_confirm_result = true
-	_evo_confirm_panel = Control.new()
-	_evo_confirm_panel.position = Vector2(0, 0)
-	_evo_confirm_panel.size = Vector2(VW, VH)
-	add_child(_evo_confirm_panel)
+# 260728 Red 进化动画：使用 assets/ui/进化界面.png 法阵背景 + 精灵反复闪光，
+# 期间按X可随时中断（参照PokemonEssentials的pbEvolution：中断则这次不进化，
+# 下次再达到条件还会再触发一次）；不中断则在闪光顶点切换成新精灵定型
+func _play_evolution_scene(old_species_id: String, new_species_id: String, old_name: String) -> bool:
+	var resume_bgm = AudioManager.BGM_TRAINER if _is_trainer else AudioManager.BGM_WILD
 
-	var bg = ColorRect.new()
+	var cl := CanvasLayer.new()
+	cl.layer = 40
+	add_child(cl)
+
+	var bg := TextureRect.new()
+	bg.texture = load("res://assets/ui/进化界面.png")
 	bg.size = Vector2(VW, VH)
-	bg.color = Color(0.0, 0.0, 0.0, 0.75)
-	_evo_confirm_panel.add_child(bg)
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_SCALE
+	bg.modulate = Color(1, 1, 1, 0)
+	cl.add_child(bg)
 
-	var msg = Label.new()
-	msg.text = "咦？%s的样子变得不同了！\n要让它进化吗？" % old_name
-	msg.position = Vector2(VW * 0.25, 100)
-	msg.add_theme_color_override("font_color", Color(1.0, 0.9, 0.7))
-	msg.add_theme_font_size_override("font_size", 16)
-	_evo_confirm_panel.add_child(msg)
+	var spr := Sprite2D.new()
+	spr.texture = _draw_mon_back(old_species_id)
+	spr.position = Vector2(VW / 2.0, VH / 2.0 + 40)
+	_rescale_sprite(spr, 200.0)
+	spr.modulate = Color(1, 1, 1, 0)
+	cl.add_child(spr)
 
-	var yes_btn = Button.new()
-	yes_btn.text = "进化 (Z)"
-	yes_btn.size = Vector2(160, 36)
-	yes_btn.position = Vector2(VW * 0.30, 170)
-	yes_btn.pressed.connect(_on_evo_confirm.bind(true))
-	_evo_confirm_panel.add_child(yes_btn)
+	var hint := Label.new()
+	hint.text = "X 中断进化"
+	hint.size.x = VW
+	hint.position = Vector2(0, VH - 70)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.75))
+	hint.add_theme_font_size_override("font_size", 13)
+	cl.add_child(hint)
 
-	var no_btn = Button.new()
-	no_btn.text = "先不要 (X)"
-	no_btn.size = Vector2(160, 36)
-	no_btn.position = Vector2(VW * 0.30 + 200, 170)
-	no_btn.pressed.connect(_on_evo_confirm.bind(false))
-	_evo_confirm_panel.add_child(no_btn)
+	AudioManager.play_bgm(AudioManager.BGM_EVOLUTION)
+	AudioManager.play_me(AudioManager.ME_EVOLVE_START)
 
-	yes_btn.call_deferred("grab_focus")  # Z(ui_accept) 默认确认
+	var tw_in := create_tween()
+	tw_in.tween_property(bg, "modulate:a", 1.0, 0.5)
+	tw_in.parallel().tween_property(spr, "modulate:a", 1.0, 0.5)
+	await tw_in.finished
 
-	while true:
+	await _show_message_async("咦？\n%s的样子变了！" % old_name)
+
+	var canceled := false
+	var t := 0.0
+	const FLASH_DURATION := 2.2
+	while t < FLASH_DURATION:
 		if Input.is_action_just_pressed("ui_cancel"):
-			_on_evo_confirm(false)
+			canceled = true
 			break
+		var phase = fmod(t, 0.4)
+		spr.modulate = (Color(2.4, 2.4, 2.4) if phase < 0.2 else Color(1, 1, 1))
 		await get_tree().process_frame
-		if not is_instance_valid(_evo_confirm_panel):
-			break
+		t += get_process_delta_time()
 
-	return _evo_confirm_result
+	if canceled:
+		AudioManager.play_se(AudioManager.SE_CANCEL)
+		spr.modulate = Color(1, 1, 1)
+		var tw_out := create_tween()
+		tw_out.tween_property(bg, "modulate:a", 0.0, 0.4)
+		tw_out.parallel().tween_property(spr, "modulate:a", 0.0, 0.4)
+		await tw_out.finished
+		cl.queue_free()
+		AudioManager.play_bgm(resume_bgm)
+		await _show_message_async("咦？\n%s 似乎停止了进化！" % old_name)
+		return false
 
-func _on_evo_confirm(v: bool) -> void:
-	if not is_instance_valid(_evo_confirm_panel): return
-	_evo_confirm_result = v
-	_evo_confirm_panel.queue_free()
-	_evo_confirm_panel = null
+	spr.modulate = Color(3, 3, 3, 1)
+	spr.texture = _draw_mon_back(new_species_id)
+	_rescale_sprite(spr, 200.0)
+	var tw_settle := create_tween()
+	tw_settle.tween_property(spr, "modulate", Color(1, 1, 1, 1), 0.6)
+	await tw_settle.finished
+	AudioManager.play_me(AudioManager.ME_EVOLVE_DONE)
+	await get_tree().create_timer(1.0).timeout
+
+	var tw_end := create_tween()
+	tw_end.tween_property(bg, "modulate:a", 0.0, 0.5)
+	tw_end.parallel().tween_property(spr, "modulate:a", 0.0, 0.5)
+	await tw_end.finished
+	cl.queue_free()
+	AudioManager.play_bgm(resume_bgm)
+	return true
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Panel helpers
@@ -1571,20 +1602,19 @@ func _handle_victory() -> void:
 				available.append(evo)
 		if available.size() > 0:
 			var old_name = MonDB.display_name(_player_mon)
+			var old_species_id = _player_mon["species_id"]
 			var chosen = available[0]
 			if available.size() > 1:
 				chosen = await _show_evolution_choice(available)
 				if chosen.is_empty():
 					chosen = available[0]
-			# 260728 Red 进化前先问一次，X取消则本次不进化（下次再达到条件还会再问）
-			var will_evolve = await _confirm_evolve(old_name)
+			# 260728 Red 法阵背景+闪光动画，X中断则本次不进化（下次再达到条件还会再触发）
+			var will_evolve = await _play_evolution_scene(old_species_id, chosen["into"], old_name)
 			if will_evolve:
-				# 消耗进化道具
+				# 消耗进化道具（中断的话不扣，避免白白浪费）
 				var req_item = chosen.get("item", "")
 				if req_item != "" and GameState.items.has(req_item):
 					GameState.items[req_item] -= 1
-				# 执行进化
-				await _show_message_async("啊！\n%s 要进化了！" % old_name)
 				MonDB.evolve_to(_player_mon, chosen["into"])
 				_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 				_rescale_sprite(_player_spr, 100.0)

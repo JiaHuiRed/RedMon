@@ -12,6 +12,7 @@ const BGM_WILD    := "Battle wild"
 const BGM_TRAINER := "Battle trainer"
 const BGM_OVERWORLD := "Bicycle"
 const BGM_SURF    := "Surfing"
+const BGM_EVOLUTION := "Evolution"
 
 # 常用 SE 名称
 const SE_CURSOR  := "GUI sel cursor"
