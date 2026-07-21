@@ -156,12 +156,15 @@ func _ready() -> void:
 	_build_pcbox_detail()
 	# 260708 Red 战败处理：菜字动画 → 传送精灵堂 → 扣金币 → 满血
 	var data = get_meta("scene_data", {})
-	if data.get("battle_result", "") == "lose":
+	var battle_result = data.get("battle_result", "")
+	if battle_result == "lose":
+		GameState.prof_rescue_pending = false  # 260727 Red 输给绿肥虫不算救成功，清掉标记避免下次进场自动跳过战斗
 		_handle_defeat()
 	elif GameState.prof_rescue_pending:
-		# 260727 Red 教授草丛遇袭战刚结束（无论输赢，教授都会道谢——蓝秋秋已经证明了自己）
 		GameState.prof_rescue_pending = false
-		call_deferred("_show_dialog", MonDB.dlg("village", "prof_rescue_thanks"), 802)
+		if battle_result == "win":
+			# 260727 Red 只有真正打赢绿肥虫才推进剧情；逃跑等结果原地清空标记，_prof_event_shown 场景重载后自动重置，走进草丛会重新触发战斗
+			call_deferred("_show_dialog", MonDB.dlg("village", "prof_rescue_thanks"), 802)
 	# 播放地图 BGM（青木村/华灵草原/碧溪镇都用同一首，后续可分区）
 	if AudioManager and AudioManager.has_method("play_bgm"):
 		AudioManager.play_bgm(AudioManager.BGM_OVERWORLD)
