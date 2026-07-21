@@ -9,9 +9,11 @@ const STAT_COLORS = {
 };
 
 // 与 mon_editor.py 的 _refresh_stat_bars 保持一致：Lv60/Lv120 的真实数值（种族值×努力值×个体值均取满时的近似展示）
+// 260728 Red 此前公式漏了个体值(31)+努力值(单项满126即t=63)，跟"均取满"的展示口径对不上
+const IV_EV_MAX = 31 + 63;
 export function calcLvStat(base, isHp) {
-  const lv60 = Math.floor((3 * base * 60) / 100) + (isHp ? 70 : 5);
-  const lv120 = Math.floor((3 * base * 120) / 100) + (isHp ? 130 : 5);
+  const lv60 = Math.floor((3 * base + IV_EV_MAX) * 60 / 100) + (isHp ? 70 : 5);
+  const lv120 = Math.floor((3 * base + IV_EV_MAX) * 120 / 100) + (isHp ? 130 : 5);
   return { lv60, lv120 };
 }
 

@@ -1493,8 +1493,10 @@ class App:
             total += v
             self._draw_bar(self.mon_stat_bars[key], v, STAT_COLORS[key])
             is_hp = key == "hp"
-            lv60  = (3 * v * 60  // 100) + (70  if is_hp else 5)
-            lv120 = (3 * v * 120 // 100) + (130 if is_hp else 5)
+            # 260728 Red 此前公式漏了个体值(31)+努力值(单项满126即t=63)，跟"均取满"的展示口径对不上
+            IV_EV_MAX = 31 + 63
+            lv60  = ((3 * v + IV_EV_MAX) * 60  // 100) + (70  if is_hp else 5)
+            lv120 = ((3 * v + IV_EV_MAX) * 120 // 100) + (130 if is_hp else 5)
             self.mon_stat_lv50[key].config(text=str(lv60))
             self.mon_stat_lv100[key].config(text=str(lv120))
         self.mon_total_label.config(text=str(total))
