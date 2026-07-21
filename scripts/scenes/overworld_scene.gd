@@ -1051,11 +1051,7 @@ func _handle_defeat() -> void:
 	# 扣金币（一半，最少留0）
 	var penalty = int(GameState.money / 2)
 	GameState.money -= penalty
-	# 满血恢复
-	for mon in GameState.player_team:
-		mon["current_hp"] = mon["max_hp"]
-		for mv in mon["moves"]: mv["pp"] = mv["max_pp"]
-		mon["status"] = ""
+	GameState.heal_team()
 	# 就近传送：碧溪镇→精灵堂，否则→回家（妈妈恢复）
 	var defeat_pos_x = _player.position.x
 	var wake_msg: String
@@ -1123,10 +1119,7 @@ func _show_defeat_screen(gold_lost: int, wake_msg: String) -> void:
 
 # ── 精灵堂 ────────────────────────────────────────────────────────────────────
 func _heal_all_mons() -> void:
-	for mon in GameState.player_team:
-		mon["current_hp"] = mon["max_hp"]
-		for mv in mon["moves"]: mv["pp"] = mv["max_pp"]
-		mon["status"] = ""
+	GameState.heal_team()
 	_save_with_area()
 	AudioManager.play_me(AudioManager.ME_HEAL)
 

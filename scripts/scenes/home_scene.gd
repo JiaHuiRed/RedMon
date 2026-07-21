@@ -462,8 +462,7 @@ func _start_mom_dialog() -> void:
 		# 260727 Red 领到御三家后第一次回家，妈妈感慨一番（记得照顾蓝秋秋的感受）
 		_dialog_bubble.show(MonDB.dlg("home", "mom_encourage").replace("{player}", GameState.player_name))
 	else:
-		for mon in GameState.player_team:
-			mon["current_hp"] = mon["max_hp"]
+		GameState.heal_team()
 		AudioManager.play_me(AudioManager.ME_HEAL)
 		_dialog_bubble.show("妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。")
 

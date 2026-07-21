@@ -270,6 +270,14 @@ func add_mon(mon: Dictionary) -> void:
 func first_mon() -> Dictionary:
 	return player_team[0] if player_team.size() > 0 else {}
 
+# 260728 Red 队伍精灵HP/PP/异常状态全部回满/清除，精灵堂/晕倒送医/回家找妈妈三处
+# 统一调这个，此前三处各写了一份，回家找妈妈那份漏了PP和异常状态的清除
+func heal_team() -> void:
+	for mon in player_team:
+		mon["current_hp"] = mon["max_hp"]
+		for mv in mon["moves"]: mv["pp"] = mv["max_pp"]
+		mon["status"] = ""
+
 # 260715 Red 每走一步调用一次；返回本次刚好孵化的蛋（已从 eggs 中移除），没有则空数组
 func tick_eggs() -> Array:
 	var hatched := []
