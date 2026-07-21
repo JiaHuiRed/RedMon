@@ -8792,5 +8792,215 @@
     "max_pp": 15,
     "effect": "",
     "description": "卷起呼啸的疾风狂猛冲击对手，招式干净利落，鲜有目标能全身而退。"
+  },
+  "幽灵穿刺": {
+    "name": "幽灵穿刺",
+    "type": "鬼",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用幽灵之力穿透对手的防御。"
+  },
+  "怨念冲击": {
+    "name": "怨念冲击",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "释放强烈的怨念冲击对手。"
+  },
+  "暗影之握": {
+    "name": "暗影之握",
+    "type": "鬼",
+    "category": "物理",
+    "power": 95,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": "用暗影之手紧紧抓住对手。"
+  },
+  "百鬼夜行": {
+    "name": "百鬼夜行",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "召唤百鬼夜行，对对手造成巨大伤害。"
+  },
+  "黄泉送葬": {
+    "name": "黄泉送葬",
+    "type": "鬼",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": "将对手拖入黄泉，给予致命一击。"
+  },
+  "龙鳞剑": {
+    "name": "龙鳞剑",
+    "type": "龙",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用龙鳞化成的利剑攻击对手。"
+  },
+  "龙之气息": {
+    "name": "龙之气息",
+    "type": "龙",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "吐出龙之气息攻击对手。"
+  },
+  "龙牙连击": {
+    "name": "龙牙连击",
+    "type": "龙",
+    "category": "物理",
+    "power": 95,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": "用龙牙连续攻击对手。"
+  },
+  "龙翼制裁": {
+    "name": "龙翼制裁",
+    "type": "龙",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "用龙翼给予对手制裁。"
+  },
+  "龙魂爆碎": {
+    "name": "龙魂爆碎",
+    "type": "龙",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": "爆发龙魂，粉碎一切。"
+  },
+  "岩甲刺": {
+    "name": "岩甲刺",
+    "type": "岩",
+    "category": "物理",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用岩石甲壳上的尖刺攻击。"
+  },
+  "地壳震动": {
+    "name": "地壳震动",
+    "type": "岩",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": "引发地壳震动，震荡对手。"
+  },
+  "陨石坠落": {
+    "name": "陨石坠落",
+    "type": "岩",
+    "category": "物理",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "召唤陨石从天而降。"
+  },
+  "毒液喷射": {
+    "name": "毒液喷射",
+    "type": "毒",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "喷射强力的毒液攻击对手。"
+  },
+  "酸雾弥漫": {
+    "name": "酸雾弥漫",
+    "type": "毒",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": "散布酸雾，腐蚀对手。"
+  },
+  "剧毒爆破": {
+    "name": "剧毒爆破",
+    "type": "毒",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "用剧毒引发大爆炸。"
+  },
+  "花瓣乱舞": {
+    "name": "花瓣乱舞",
+    "type": "仙",
+    "category": "特殊",
+    "power": 60,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用花瓣乱舞攻击对手。"
+  },
+  "花妖精拳": {
+    "name": "花妖精拳",
+    "type": "仙",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "用妖精之力挥拳攻击。"
+  },
+  "星屑光线": {
+    "name": "星屑光线",
+    "type": "仙",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 95,
+    "max_pp": 10,
+    "effect": "",
+    "description": "发射星屑之光攻击对手。"
+  },
+  "妖精之墙": {
+    "name": "妖精之墙",
+    "type": "仙",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "用妖精之力制造墙壁，突破对手的防御。"
+  },
+  "天降花雨": {
+    "name": "天降花雨",
+    "type": "仙",
+    "category": "特殊",
+    "power": 150,
+    "accuracy": 85,
+    "max_pp": 5,
+    "effect": "",
+    "description": "从天而降的花雨，给予对手致命伤害。"
   }
 }

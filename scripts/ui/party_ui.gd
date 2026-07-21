@@ -40,7 +40,8 @@ const STAT_COLORS := [
 ]
 const STAT_KEYS  := ["hp","atk","def","sp_atk","sp_def","spd"]
 const STAT_NAMES := ["HP","攻击","防御","特攻","特防","速度"]
-const ACTIONS    := ["排序","替换","改名","返回"]
+const ACTIONS    := ["排序","替换","改名","回忆技能","返回"]
+const RELEARN_COST := 500
 const TIER_COLORS := {
 	"普通": Color(0.878, 0.906, 0.953),  # 白
 	"精英": Color(0.278, 0.808, 0.408),  # 绿
@@ -54,6 +55,8 @@ var _focus: String = "party"
 var _action_cursor: int = 0
 var _swap_idx: int = -1  # -1 = 不在替换模式, >=0 = 待交换的目标位
 var _busy: bool = false  # 260712 Red 取名对话框打开时锁输入
+var _relearn_cursor: int = 0
+var _relearn_moves: Array = []
 
 func _ready() -> void:
 	layer = 51
@@ -73,7 +76,10 @@ func _render() -> void:
 	_draw_left()
 	_draw_right()
 	_draw_actions()
-	_draw_close_btn()
+	if _focus == "relearn":
+		_draw_relearn_panel()
+	else:
+		_draw_close_btn()
 
 func _draw_bg() -> void:
 	var bg = ColorRect.new()
@@ -410,12 +416,12 @@ func _draw_type_chart(sp: Dictionary, rx: int, my: int) -> void:
 		ry = by + bh + 12
 
 func _draw_actions() -> void:
-	var bw = 130; var bh = 44; var gap = 16
-	var total_w = 3 * bw + 2 * gap
-	var bx = VW/2 - total_w/2; var by = VH - bh - 12
+	var bw := 130; var bh := 44; var gap := 16
+	var total_w := ACTIONS.size() * bw + (ACTIONS.size() - 1) * gap
+	var bx := VW/2 - total_w/2; var by := VH - bh - 12
 	for i in range(ACTIONS.size()):
-		var sel = (_focus == "actions" and _action_cursor == i)
-		var bxi = bx + i * (bw + gap)
+		var sel := (_focus == "actions" and _action_cursor == i)
+		var bxi := bx + i * (bw + gap)
 		var btn = _make_panel(Vector2(bxi, by), Vector2(bw, bh),
 			C_ACCENT if sel else C_PANEL,
 			C_SEL_BORDER if sel else C_DIVIDER, 10, 2 if sel else 1)
@@ -425,6 +431,66 @@ func _draw_actions() -> void:
 		lbl.add_theme_font_size_override("font_size", 17)
 		lbl.add_theme_color_override("font_color", Color.WHITE if sel else C_TEXT)
 		_root.add_child(lbl)
+
+func _draw_relearn_panel() -> void:
+	var team = GameState.player_team
+	if _cursor >= team.size(): return
+	var mon = team[_cursor]
+	var sp = MonDB.species.get(mon.get("species_id",""), {})
+	var merged_ls = MonDB.get_full_learnset(mon["species_id"])
+	_relearn_moves = []
+	for lv in sorted(merged_ls.keys(), key=int):
+		for mv in merged_ls[lv]:
+			if mv not in _relearn_moves:
+				_relearn_moves.append(mv)
+	_relearn_cursor = clampi(_relearn_cursor, 0, max(_relearn_moves.size() - 1, 0))
+
+	_m_panel()
+	_m_lbl("回忆技能  花费 %dG" % RELEARN_COST, 16, 16, 16, _M_SEL)
+	_m_div(48)
+	var cw = _PW - 32; var ch = 40
+	var max_h = _PH - 120
+	var visible_count = min(_relearn_moves.size(), int(max_h / (ch + 6)))
+	var start_idx = max(0, min(_relearn_cursor - visible_count + 1, _relearn_moves.size() - visible_count))
+	for i in range(visible_count):
+		var idx = start_idx + i
+		var mv = _relearn_moves[idx]
+		var mv_data = MonDB.moves.get(mv, {})
+		var sel = idx == _relearn_cursor
+		var cy = 60 + i * (ch + 6)
+		_m_card(16, cy, cw, ch, sel)
+		var col = _M_SEL if sel else _M_TEXT
+		_m_lbl(mv_data.get("name", mv), 28, cy + 10, 13, col)
+		var bp = mv_data.get("power", 0)
+		if bp > 0:
+			_m_lbl("威力%d" % bp, cw - 80, cy + 10, 12, _M_SUB)
+		var pp = mv_data.get("pp", 0)
+		_m_lbl("PP %d" % pp, cw - 20, cy + 10, 12, _M_SUB)
+	_m_div(_PH - 34)
+	_m_lbl("↑↓选择  Z回忆  X返回", 16, _PH - 28, 10, _M_HINT)
+
+func _do_relearn() -> void:
+	var team = GameState.player_team
+	if _cursor >= team.size(): return
+	var mon = team[_cursor]
+	if _relearn_cursor < 0 or _relearn_cursor >= _relearn_moves.size(): return
+	var mv_id = _relearn_moves[_relearn_cursor]
+	# Check if already learned
+	for m in mon.get("moves", []):
+		if m.get("id","") == mv_id:
+			_focus = "actions"; _render(); return
+	if GameState.money < RELEARN_COST:
+		_focus = "actions"; _render(); return
+	# Teach move
+	var move_data = MonDB.moves.get(mv_id, {})
+	var max_pp = move_data.get("pp", 10)
+	var entry = {"id": mv_id, "pp": max_pp, "max_pp": max_pp}
+	if mon["moves"].size() < 4:
+		mon["moves"].append(entry)
+	else:
+		mon["moves"][_relearn_cursor % 4] = entry
+	GameState.money -= RELEARN_COST
+	_focus = "actions"; _render()
 
 func _draw_close_btn() -> void:
 	var cl = Label.new(); cl.text = "✕  [Esc]"
@@ -463,6 +529,8 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		if _swap_idx >= 0:
 			_swap_idx = -1; _render(); return
+		if _focus == "relearn":
+			_focus = "actions"; _render(); return
 		closed.emit(); queue_free(); return
 	if _focus == "party":
 		if event.is_action_pressed("ui_down"):
@@ -502,6 +570,19 @@ func _input(event: InputEvent) -> void:
 				_swap_idx = _cursor; _focus = "party"; _render()
 			elif _action_cursor == 2:  # 改名
 				_show_rename_dialog()
-			elif _action_cursor == 3:  # 返回
+			elif _action_cursor == 3:  # 回忆技能
+				_focus = "relearn"; _relearn_cursor = 0; _render()
+			elif _action_cursor == 4:  # 返回
 				closed.emit(); queue_free()
 			get_viewport().set_input_as_handled()
+	elif _focus == "relearn":
+		if event.is_action_pressed("ui_cancel"):
+			_focus = "actions"; _render(); get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("ui_up"):
+			_relearn_cursor = (_relearn_cursor - 1 + _relearn_moves.size()) % _relearn_moves.size()
+			get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_down"):
+			_relearn_cursor = (_relearn_cursor + 1) % _relearn_moves.size()
+			get_viewport().set_input_as_handled(); _render()
+		elif event.is_action_pressed("ui_accept"):
+			_do_relearn(); get_viewport().set_input_as_handled()

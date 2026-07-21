@@ -501,9 +501,10 @@ func level_up(mon: Dictionary) -> Array:
 	# 当前HP随最大HP成长（不满血升级也只涨差值）
 	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max_hp), mon["max_hp"])
 
-	# 检查本级学到的新技能
+	# 检查本级学到的新技能（进化链技能池共享）
+	var merged_ls = get_full_learnset(mon["species_id"])
 	var new_moves: Array = []
-	for mv_id in sp["learnset"].get(lv, []):
+	for mv_id in merged_ls.get(lv, []):
 		var known = false
 		for m in mon["moves"]:
 			if m["id"] == mv_id:
@@ -542,6 +543,67 @@ func check_evolution(mon: Dictionary) -> String:
 # 返回所有满足等级条件的进化分支列表
 # 每个元素 dict: {"into": String, "level": int, "item": String(可选)}
 # 不检查道具——调用方负责过滤 GameState.items，一般不要直接调用这个，改调 get_available_evolutions()
+# ── 进化链技能池共享 ─────────────────────────────────────────────────────────────
+# 260721 Red 线性进化链技能池共享：不进化也能学进化型技能；分支进化（如露比）不跨分支共享
+
+# 获取进化链全路径（祖先 + 自身 + 所有后代）
+func get_evolution_chain(species_id: String) -> Array:
+	var chain: Array = [species_id]
+	var visited: Dictionary = {species_id: true}
+
+	# 向后找祖先（每个物种最多一个父系，无环）
+	var queue: Array = [species_id]
+	while not queue.is_empty():
+		var current = queue.pop_back()
+		for sp_name in species:
+			var sp_data = species[sp_name]
+			# 新格式
+			for evo in sp_data.get("evolutions", []):
+				if evo.get("into", "") == current and not visited.has(sp_name):
+					chain.insert(0, sp_name)
+					visited[sp_name] = true
+					queue.append(sp_name)
+			# 旧格式兼容
+			if sp_data.get("evolves_into", "") == current and not visited.has(sp_name):
+				chain.insert(0, sp_name)
+				visited[sp_name] = true
+				queue.append(sp_name)
+
+	# 向前找所有后代（BFS，自然处理分支）
+	queue = [species_id]
+	visited = {species_id: true}
+	while not queue.is_empty():
+		var current = queue.pop_back()
+		var sp_data = species.get(current, {})
+		for evo in sp_data.get("evolutions", []):
+			var into = evo.get("into", "")
+			if into != "" and species.has(into) and not visited.has(into):
+				chain.append(into)
+				visited[into] = true
+				queue.append(into)
+		# 旧格式兼容
+		var old_into = sp_data.get("evolves_into", "")
+		if old_into != "" and species.has(old_into) and not visited.has(old_into):
+			chain.append(old_into)
+			visited[old_into] = true
+			queue.append(old_into)
+
+	return chain
+
+# 获取进化链合并技能池（去重）
+func get_full_learnset(species_id: String) -> Dictionary:
+	var chain = get_evolution_chain(species_id)
+	var merged: Dictionary = {}
+	for sid in chain:
+		var sp = species.get(sid, {})
+		for lv_str in sp.get("learnset", {}):
+			var lv = int(lv_str)
+			for mv_id in sp["learnset"][lv_str]:
+				if not merged.has(lv):
+					merged[lv] = []
+				merged[lv].append(mv_id)
+	return merged
+
 func get_potential_evolutions(mon: Dictionary) -> Array:
 	var sp = species.get(mon["species_id"], {})
 	var result = []
@@ -589,8 +651,9 @@ func evolve_to(mon: Dictionary, species_id: String) -> void:
 	recalc_stats(mon)
 	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max), mon["max_hp"])
 
-	# 学习进化时等级对应的新技能
-	for mv_id in new_sp["learnset"].get(lv, []):
+	# 学习进化时等级对应的新技能（进化链技能池共享）
+	var merged_ls = get_full_learnset(species_id)
+	for mv_id in merged_ls.get(lv, []):
 		var known = false
 		for m in mon["moves"]:
 			if m["id"] == mv_id: known = true; break
