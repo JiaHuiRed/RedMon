@@ -733,6 +733,7 @@ func _on_use_item(item_id: String) -> void:
 		var item_data = MonDB.items.get(item_id, {})
 		if item_data.get("full_heal", false):
 			_player_mon["current_hp"] = _player_mon["max_hp"]
+			_player_mon["status"] = ""  # 260728 Red full_heal此前只回HP，没清异常状态(金丹desc明确写了"恢复所有异常状态")
 			_refresh_info(true)
 			await _show_message_async("%s 的 HP 完全恢复了！" % MonDB.display_name(_player_mon))
 		else:
@@ -748,12 +749,21 @@ func _on_use_item(item_id: String) -> void:
 			_player_mon["current_hp"] += actual
 			_refresh_info(true)
 			await _show_message_async("%s 回复了 %d HP！" % [MonDB.display_name(_player_mon), actual])
+		# 260728 Red 此前mp_heal_amount/mp_heal_percent只弹提示文字，没有真的加PP，
+		# 铁丹/铜丹/银丹/金丹这几个从开局就能拿到的基础道具的PP恢复效果一直是假的
 		var mp_heal = item_data.get("mp_heal_amount", 0)
-		if mp_heal > 0:
-			await _show_message_async("MP 恢复了 %d 点！" % mp_heal)
 		var mp_pct = item_data.get("mp_heal_percent", 0)
-		if mp_pct > 0:
-			await _show_message_async("MP 恢复了 %d%%！" % mp_pct)
+		if mp_heal > 0 or mp_pct > 0:
+			for mv in _player_mon["moves"]:
+				var restore = mp_heal if mp_heal > 0 else int(ceil(mv["max_pp"] * mp_pct / 100.0))
+				mv["pp"] = mini(mv["max_pp"], mv["pp"] + restore)
+			_refresh_move_panel()
+			if mp_pct >= 100:
+				await _show_message_async("PP 完全恢复了！")
+			elif mp_heal > 0:
+				await _show_message_async("PP 恢复了 %d 点！" % mp_heal)
+			else:
+				await _show_message_async("PP 恢复了 %d%%！" % mp_pct)
 
 	# ── 使用道具后 → 敌方行动 ─────────────────────────────────────────────
 	await _do_enemy_turn_after_item()
