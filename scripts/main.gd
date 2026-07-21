@@ -235,6 +235,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				elif item_data2.get("exp_amount", 0) > 0:
 					_apply_exp_to_mon(item_id2, _target_cursor)
 					_pause_sub = "bag"; _draw_pause()
+				elif item_data2.get("category", "") == "进化":
+					_apply_evolution_item(item_id2, _target_cursor)
+					_pause_sub = "bag"; _draw_pause()
 				else:
 					_apply_heal_to_mon(item_id2, _target_cursor)
 					_pause_sub = "bag"; _draw_pause()
@@ -444,6 +447,28 @@ func _apply_heal_to_mon(item_id: String, target_idx: int) -> void:
 	else:
 		mon["current_hp"] = mini(mon["max_hp"], mon["current_hp"] + int(item_data.get("heal_amount", 20)))
 
+# 260728 Red 统一进化道具校验：从满足等级的分支里挑第一个玩家持有对应道具(或本就无需道具)的，
+# 避免MonDB.check_evolution()只看等级、不管道具持有情况导致强制进化成错误分支
+# 兼容极少数仅有旧版evolves_into/evolve_level字段(无evolutions数组)的精灵，如鸣武者
+func _resolve_owned_evolution(mon: Dictionary) -> Dictionary:
+	for evo in MonDB.get_potential_evolutions(mon):
+		var req_item = evo.get("item", "")
+		if req_item == "" or GameState.items.get(req_item, 0) > 0:
+			return evo
+	var sp = MonDB.species.get(mon["species_id"], {})
+	var evo_into = sp.get("evolves_into", "")
+	var evo_level = sp.get("evolve_level", 0)
+	if evo_into != "" and mon["level"] >= evo_level:
+		return {"into": evo_into}
+	return {}
+
+func _do_evolve(mon: Dictionary, evo: Dictionary) -> void:
+	var req_item = evo.get("item", "")
+	if req_item != "" and GameState.items.has(req_item):
+		GameState.items[req_item] -= 1
+	MonDB.evolve_to(mon, evo["into"])
+	mon["current_hp"] = mon["max_hp"]
+
 func _apply_candy(item_id: String, target_idx: int) -> void:
 	var team = GameState.player_team
 	if target_idx < 0 or target_idx >= team.size(): return
@@ -452,11 +477,9 @@ func _apply_candy(item_id: String, target_idx: int) -> void:
 	GameState.items[item_id] -= 1
 	MonDB.level_up(mon)
 	# 检查进化
-	var evo = MonDB.check_evolution(mon)
-	if evo != "":
-		MonDB.evolve_to(mon, evo)
-		# 进化后把HP回满（进化后满血）
-		mon["current_hp"] = mon["max_hp"]
+	var evo = _resolve_owned_evolution(mon)
+	if not evo.is_empty():
+		_do_evolve(mon, evo)
 
 func _apply_exp_to_mon(item_id: String, target_idx: int) -> void:
 	var team = GameState.player_team
@@ -471,10 +494,20 @@ func _apply_exp_to_mon(item_id: String, target_idx: int) -> void:
 	var gr = sp.get("growth_rate", "正常")
 	while mon["exp"] >= MonDB.exp_for_level(gr, mon["level"] + 1):
 		MonDB.level_up(mon)
-		var evo = MonDB.check_evolution(mon)
-		if evo != "":
-			MonDB.evolve_to(mon, evo)
-			mon["current_hp"] = mon["max_hp"]
+		var evo = _resolve_owned_evolution(mon)
+		if not evo.is_empty():
+			_do_evolve(mon, evo)
+
+# 260728 Red 背包直接对精灵使用进化道具（等级+道具需同时满足，否则不消耗道具、静默无效）
+func _apply_evolution_item(item_id: String, target_idx: int) -> void:
+	var team = GameState.player_team
+	if target_idx < 0 or target_idx >= team.size(): return
+	if GameState.items.get(item_id, 0) <= 0: return
+	var mon = team[target_idx]
+	for evo in MonDB.get_potential_evolutions(mon):
+		if evo.get("item", "") == item_id:
+			_do_evolve(mon, evo)
+			return
 
 # ── 努力值属性选择 ──
 func _draw_pause_bag_stat_select() -> void:
