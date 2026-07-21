@@ -180,10 +180,6 @@ export class SpeciesTab {
                 ).join("")}</select>
               </div>
               <div class="form-group">
-                <label>捕获率</label>
-                <input type="number" id="field-catch" value="${mon.catch_rate || 45}" min="0" max="255" />
-              </div>
-              <div class="form-group">
                 <label>经验值</label>
                 <input type="number" id="field-exp" value="${mon.exp_yield || 100}" min="0" />
               </div>
@@ -341,7 +337,6 @@ export class SpeciesTab {
       type2: "",
       base: { hp: 50, atk: 50, def: 50, sp_atk: 50, sp_def: 50, spd: 50 },
       tier: "凡",
-      catch_rate: 45,
       exp_yield: 100,
       growth_rate: "早熟",
       desc: "",
@@ -787,7 +782,6 @@ export class SpeciesTab {
     bind("field-type1", "type1");
     bind("field-type2", "type2");
     bind("field-tier", "tier");
-    bindNumeric("field-catch", "catch_rate");
     bindNumeric("field-exp", "exp_yield");
     bind("field-growth", "growth_rate");
     this._bindGenderRatio(mon);
