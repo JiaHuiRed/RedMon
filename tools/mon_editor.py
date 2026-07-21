@@ -1498,13 +1498,14 @@ class App:
             self.mon_stat_lv50[key].config(text=str(lv60))
             self.mon_stat_lv100[key].config(text=str(lv120))
         self.mon_total_label.config(text=str(total))
-        # Color-code BST tier: 天/神/地/玄/灵/凡
-        if   total >= 670: col = "#D42020"   # 红   — 天（顶级神兽 670+）
-        elif total >= 600: col = "#C85A00"   # 橙红  — 神（幻兽/弱神兽 600-669）
-        elif total >= 535: col = "#B8860B"   # 金   — 地（伪神/准神 535-599）
-        elif total >= 450: col = "#7B2FBE"   # 紫   — 玄（强力进化型 450-534）
-        elif total >= 360: col = "#1A56CC"   # 蓝   — 灵（普通进化型 360-449）
-        else:              col = TEXT_SEC    # 灰   — 凡（基础形态 <360）
+        # 260728 Red 品阶分档此前跟_suggest_tier_role()的阈值不一致(连天/地/神排序都反了)，
+        # 统一成跟_suggest_tier_role()一样的阈值：天720/地640/神530/玄410/灵300
+        if   total >= 720: col = "#D42020"   # 红   — 天（720+）
+        elif total >= 640: col = "#B8860B"   # 金   — 地（640-719）
+        elif total >= 530: col = "#C85A00"   # 橙红  — 神（530-639）
+        elif total >= 410: col = "#7B2FBE"   # 紫   — 玄（410-529）
+        elif total >= 300: col = "#1A56CC"   # 蓝   — 灵（300-409）
+        else:              col = TEXT_SEC    # 灰   — 凡（<300）
         self.mon_total_label.config(fg=col)
 
     def _refresh_ls_table(self):
