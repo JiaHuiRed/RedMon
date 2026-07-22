@@ -106,15 +106,6 @@ var _shop: ShopPanel
 const PCBOX_ROWS  := 8
 
 # ── PCBox 详情颜色 ──────────────────────────────────────────────────────────────
-const PC_TYPE_COLORS := {
-	"火":Color(0.93,0.37,0.18),"水":Color(0.22,0.58,0.95),"木":Color(0.30,0.70,0.28),
-	"雷":Color(0.96,0.82,0.15),"电":Color(0.96,0.82,0.15),"冰":Color(0.38,0.82,0.90),
-	"格":Color(0.76,0.25,0.22),"毒":Color(0.62,0.25,0.72),"土":Color(0.82,0.65,0.28),
-	"风":Color(0.55,0.65,0.90),"灵":Color(0.90,0.28,0.55),"虫":Color(0.62,0.72,0.12),
-	"岩":Color(0.60,0.52,0.28),"鬼":Color(0.38,0.28,0.62),"龙":Color(0.30,0.18,0.90),
-	"暗":Color(0.28,0.20,0.15),"钢":Color(0.60,0.62,0.68),"仙":Color(0.92,0.58,0.72),
-	"光":Color(0.98,0.92,0.52),"空":Color(0.68,0.68,0.62),
-}
 const PC_TIER_COLORS := {
 	"普通": Color(0.878, 0.906, 0.953),
 	"精英": Color(0.278, 0.808, 0.408),
@@ -1247,7 +1238,7 @@ func _show_pcbox_detail(mon: Dictionary) -> void:
 		if r: r.hide()
 	var sp = MonDB.species.get(mon.get("species_id",""), {})
 	var t1 = sp.get("type1","空"); var t2 = sp.get("type2","")
-	var tc = PC_TYPE_COLORS.get(t1, Color(0.50,0.50,0.50))
+	var tc = MonDB.type_colors.get(t1, Color(0.50,0.50,0.50))
 	var tier = mon.get("wild_tier","普通")
 	var gender = mon.get("gender","")
 	var glyph = " ♂" if gender == "male" else " ♀" if gender == "female" else ""
@@ -1269,7 +1260,7 @@ func _show_pcbox_detail(mon: Dictionary) -> void:
 		var t = [t1, t2][j]; var bg = pn.get_node("PcD_TBadge%d" % j)
 		var lb = pn.get_node("PcD_TLabel%d" % j)
 		if t == "" or t == null: bg.hide(); lb.hide(); continue
-		var tc2 = PC_TYPE_COLORS.get(t, tc)
+		var tc2 = MonDB.type_colors.get(t, tc)
 		bg.color = tc2; bg.show(); lb.text = t; lb.show()
 	# 特性
 	var al = pn.get_node("PcD_Ability")

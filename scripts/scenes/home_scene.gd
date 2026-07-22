@@ -62,16 +62,6 @@ func _add_collider(parent: Node2D, pos: Vector2, size: Vector2) -> void:
 	body.add_child(shape)
 	parent.add_child(body)
 
-func _load_tex(path: String) -> Texture2D:
-	if ResourceLoader.exists(path):
-		return load(path)
-	var abs_path = ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(path) or FileAccess.file_exists(abs_path):
-		var img = Image.new()
-		if img.load(abs_path) == OK:
-			return ImageTexture.create_from_image(img)
-	return null
-
 # ── 1F 客厅 ───────────────────────────────────────────────────────────────────
 func _build_floor1() -> void:
 	# 260706 Red 改为 .tscn，碰撞体积在编辑器中手动调整

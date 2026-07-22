@@ -105,25 +105,25 @@ var _type_chart: Dictionary = {
 }
 
 var type_colors: Dictionary = {
-	"空": Color(0.65, 0.65, 0.65),
-	"火": Color(0.95, 0.4, 0.1),
-	"水": Color(0.2, 0.5, 0.95),
-	"木": Color(0.2, 0.75, 0.25),
-	"雷": Color(0.95, 0.85, 0.1),
-	"冰": Color(0.6, 0.85, 0.95),
-	"格": Color(0.75, 0.25, 0.1),
-	"毒": Color(0.6, 0.2, 0.75),
-	"土": Color(0.75, 0.55, 0.2),
-	"风": Color(0.55, 0.75, 0.95),
-	"灵": Color(0.9, 0.35, 0.65),
-	"虫": Color(0.5, 0.75, 0.1),
-	"岩": Color(0.7, 0.6, 0.3),
-	"鬼": Color(0.4, 0.3, 0.65),
-	"龙": Color(0.3, 0.2, 0.9),
-	"暗": Color(0.3, 0.25, 0.3),
-	"钢": Color(0.7, 0.7, 0.8),
-	"仙": Color(0.95, 0.65, 0.8),
-	"光": Color(0.95, 0.9, 0.5),
+	"空": Color(0.68, 0.68, 0.62),
+	"火": Color(0.93, 0.37, 0.18),
+	"水": Color(0.22, 0.58, 0.95),
+	"木": Color(0.30, 0.70, 0.28),
+	"雷": Color(0.96, 0.82, 0.15),
+	"冰": Color(0.38, 0.82, 0.90),
+	"格": Color(0.76, 0.25, 0.22),
+	"毒": Color(0.62, 0.25, 0.72),
+	"土": Color(0.82, 0.65, 0.28),
+	"风": Color(0.55, 0.65, 0.90),
+	"灵": Color(0.90, 0.28, 0.55),
+	"虫": Color(0.62, 0.72, 0.12),
+	"岩": Color(0.60, 0.52, 0.28),
+	"鬼": Color(0.38, 0.28, 0.62),
+	"龙": Color(0.30, 0.18, 0.90),
+	"暗": Color(0.28, 0.20, 0.15),
+	"钢": Color(0.60, 0.62, 0.68),
+	"仙": Color(0.92, 0.58, 0.72),
+	"光": Color(0.98, 0.92, 0.52),
 }
 
 # ── 初始化：从 JSON 读取 ──────────────────────────────────────────────────────
@@ -244,6 +244,10 @@ func boss_tier_ivs() -> Dictionary:
 	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
 		ivs[stat] = randi_range(26, 31)
 	return ivs
+
+# 获取某属性的进攻克制表（公开API，取代直接访问 _type_chart）
+func get_offense_chart(atk_type: String) -> Dictionary:
+	return _type_chart.get(atk_type, {})
 
 func get_effectiveness(atk_type: String, def_type1: String, def_type2: String = "") -> float:
 	var mult = 1.0

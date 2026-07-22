@@ -24,15 +24,6 @@ const HP_G := Color(0.278, 0.808, 0.408)
 const HP_Y := Color(0.961, 0.780, 0.216)
 const HP_R := Color(0.918, 0.267, 0.267)
 
-const TYPE_COLORS := {
-	"火":Color(0.93,0.37,0.18),"水":Color(0.22,0.58,0.95),"木":Color(0.30,0.70,0.28),
-	"雷":Color(0.96,0.82,0.15),"电":Color(0.96,0.82,0.15),"冰":Color(0.38,0.82,0.90),
-	"格":Color(0.76,0.25,0.22),"毒":Color(0.62,0.25,0.72),"土":Color(0.82,0.65,0.28),
-	"风":Color(0.55,0.65,0.90),"灵":Color(0.90,0.28,0.55),"虫":Color(0.62,0.72,0.12),
-	"岩":Color(0.60,0.52,0.28),"鬼":Color(0.38,0.28,0.62),"龙":Color(0.30,0.18,0.90),
-	"暗":Color(0.28,0.20,0.15),"钢":Color(0.60,0.62,0.68),"仙":Color(0.92,0.58,0.72),
-	"光":Color(0.98,0.92,0.52),"空":Color(0.68,0.68,0.62),
-}
 const TYPE_KEYS := ["空","火","水","木","雷","冰","格","毒","土","风","灵","虫","岩","鬼","龙","暗","钢","仙","光"]
 const STAT_COLORS := [
 	Color(0.28,0.78,0.40), Color(0.92,0.35,0.28), Color(0.93,0.65,0.18),
@@ -106,7 +97,7 @@ func _draw_card(idx: int, mon: Dictionary, cy: int) -> void:
 	var sel = (idx == _cursor and _focus == "party")
 	var sp = MonDB.species.get(mon.get("species_id",""), {})
 	var t1 = sp.get("type1","空")
-	var tc = TYPE_COLORS.get(t1, C_ACCENT)
+	var tc = MonDB.type_colors.get(t1, C_ACCENT)
 	var cw = LEFT_W - CARD_X * 2
 	var swap_target = (_swap_idx >= 0 and idx == _swap_idx)
 	var panel = _make_panel(Vector2(CARD_X, cy), Vector2(cw, CARD_H),
@@ -181,7 +172,7 @@ func _draw_right() -> void:
 func _draw_portrait(mon: Dictionary, sp: Dictionary, rx: int) -> void:
 	var pw = 280; var ph = 300
 	var t1 = sp.get("type1","空")
-	var tc = TYPE_COLORS.get(t1, C_ACCENT)
+	var tc = MonDB.type_colors.get(t1, C_ACCENT)
 	var panel = _make_panel(Vector2(rx, 12), Vector2(pw, ph), C_PANEL, C_DIVIDER, 14, 1)
 	_root.add_child(panel)
 	var top_bar = ColorRect.new()
@@ -211,7 +202,7 @@ func _draw_info(mon: Dictionary, sp: Dictionary, rx: int) -> void:
 	for tkey in ["type1","type2"]:
 		var t = sp.get(tkey,"")
 		if t == "": continue
-		var tc = TYPE_COLORS.get(t, C_ACCENT)
+		var tc = MonDB.type_colors.get(t, C_ACCENT)
 		var badge = _make_panel(Vector2(bx, ty), Vector2(60, 26),
 			tc, Color(tc.r*0.7,tc.g*0.7,tc.b*0.7,1.0), 13, 1)
 		_root.add_child(badge)
@@ -297,7 +288,7 @@ func _draw_moves(mon: Dictionary, rx: int, my: int) -> void:
 		var move_id: String = mv_entry.get("id","") if typeof(mv_entry) == TYPE_DICTIONARY else str(mv_entry)
 		var mv = MonDB.moves.get(move_id, {})
 		var mt = mv.get("type","空")
-		var tc = TYPE_COLORS.get(mt, C_ACCENT)
+		var tc = MonDB.type_colors.get(mt, C_ACCENT)
 		var stripe = ColorRect.new()
 		stripe.size = Vector2(5, mh); stripe.position = Vector2(mx, mmy)
 		stripe.color = tc; _root.add_child(stripe)
@@ -369,7 +360,7 @@ func _draw_type_chart(sp: Dictionary, rx: int, my: int) -> void:
 	var strong: Dictionary = {}
 	for chart_t in [t1, t2]:
 		if chart_t == "": continue
-		var chart = MonDB._type_chart.get(chart_t, {})
+		var chart = MonDB.get_offense_chart(chart_t)
 		for def_t in chart:
 			if chart[def_t] > 1.0:
 				strong[def_t] = max(strong.get(def_t, 0.0), chart[def_t])
@@ -405,7 +396,7 @@ func _draw_type_chart(sp: Dictionary, rx: int, my: int) -> void:
 			var mult_str = ("%s" % mult).trim_suffix(".0") + "x"
 			if bx + bw > rx + 12 + label_w + row_w:
 				bx = rx + 12 + label_w; by += bh + gap
-			var tc = TYPE_COLORS.get(t, C_ACCENT)
+			var tc = MonDB.type_colors.get(t, C_ACCENT)
 			var badge = _make_panel(Vector2(bx, by), Vector2(bw, bh), tc, Color(tc.r*0.7,tc.g*0.7,tc.b*0.7,1.0), 8, 1)
 			_root.add_child(badge)
 			var bl = Label.new(); bl.text = "%s %s" % [t, mult_str]
@@ -488,7 +479,7 @@ func _do_relearn() -> void:
 	if mon["moves"].size() < 4:
 		mon["moves"].append(entry)
 	else:
-		mon["moves"][_relearn_cursor % 4] = entry
+		mon["moves"][0] = entry  # 替换最旧技能，与 level_up() 行为一致
 	GameState.money -= RELEARN_COST
 	_focus = "actions"; _render()
 
