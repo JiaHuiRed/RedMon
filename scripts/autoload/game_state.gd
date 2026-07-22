@@ -10,6 +10,7 @@ var has_starter: bool = false
 var starter_trio_given: bool = false  # 260727 Red 御三家是否已从陈教授处领取（区别于蓝秋秋这个自幼相伴的初始伙伴）
 var mom_trio_greeted: bool = false    # 260727 Red 妈妈是否已经对着刚领到的御三家感慨过（只触发一次）
 var prof_rescue_pending: bool = false  # 260727 Red 教授草丛遇袭战触发中，运行时标记，不需要存档
+var meimei_met_houshan: bool = false   # 260722 Red 美美在后山初登场是否已发生过（剧情线，之后偶遇会用到）
 var badges: int = 0
 var money: int = 500
 var items: Dictionary = {"铁丹": 10, "铜丹": 10, "金丹": 5, "精灵葫芦": 50, "超级葫芦": 20, "高级葫芦": 10}
@@ -152,6 +153,7 @@ func save_game() -> void:
 		"cleared_gyms":      cleared_gyms,
 		"eggs":              eggs,
 		"boss_eggs_claimed": boss_eggs_claimed,
+		"meimei_met_houshan": meimei_met_houshan,
 		"last_scene":        last_scene,
 		"player_pos_x":      player_pos_x,
 		"player_pos_y":      player_pos_y,
@@ -202,6 +204,7 @@ func load_game(slot: int = 0) -> bool:
 	cleared_gyms      = data.get("cleared_gyms", [])
 	eggs              = data.get("eggs", [])
 	boss_eggs_claimed = data.get("boss_eggs_claimed", [])
+	meimei_met_houshan = data.get("meimei_met_houshan", false)
 	for egg in eggs:
 		if egg.has("steps_remaining"): egg["steps_remaining"] = int(egg["steps_remaining"])
 		if egg.has("steps_total"): egg["steps_total"] = int(egg["steps_total"])
@@ -246,6 +249,7 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	cleared_gyms = []
 	eggs = []
 	boss_eggs_claimed = []
+	meimei_met_houshan = false
 	last_scene = ""  # YYMMDD Red 新游戏重置
 	play_time = 0.0
 	_play_timer_active = true

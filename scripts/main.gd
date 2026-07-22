@@ -115,6 +115,7 @@ func _load_scene_inner(scene_name: String, data: Dictionary) -> void:
 		"overworld": "res://scenes/大世界.tscn",
 		"rival_home": "res://scenes/buildings/劲敌家.tscn",
 		"rival_home_2f": "res://scenes/buildings/劲敌家_2F.tscn",
+		"houshan": "res://scenes/后山小径.tscn",
 	}
 	if _TSCN_SCENES.has(scene_name):
 		_current = load(_TSCN_SCENES[scene_name]).instantiate()

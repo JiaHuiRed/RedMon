@@ -327,6 +327,7 @@ func create_mon(species_id: String, level: int, ivs: Dictionary = {}, nature: St
 		"moves":       move_list,
 		"status":      "",
 		"sleep_turns": 0,
+		"confused_turns": 0,  # 260722 Red 混乱独立于status，可与烧伤/中毒等异常共存
 		# 战斗中临时能力变化阶段 (-6..+6)
 		"stages": {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0},
 	}
@@ -456,6 +457,14 @@ func _stage_mult(stage: int) -> float:
 		return (2.0 + stage) / 2.0
 	else:
 		return 2.0 / (2.0 - float(stage))
+
+# 混乱中攻击自己：40威力无属性物理，用自己的攻防（含能力阶段），无STAB/克制/暴击
+func calc_confusion_damage(mon: Dictionary) -> int:
+	var eff_atk = mon["atk"] * _stage_mult(mon["stages"].get("atk", 0))
+	var eff_def = mon["def"] * _stage_mult(mon["stages"].get("def", 0))
+	var level_factor = (0.8 * mon["level"] + 6.0) / 100.0
+	var dmg = int(level_factor * 40 * pow(eff_atk / eff_def, 0.8) * randf_range(0.85, 1.0))
+	return max(1, dmg)
 
 # ── 经验值 / 升级系统 ─────────────────────────────────────────────────────────
 # 三档成长速度：按种族值（BST）划分，早熟(<480) / 正常(480-599) / 大器晚成(≥600)

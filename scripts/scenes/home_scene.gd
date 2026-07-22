@@ -14,18 +14,13 @@ const NPC_SCALE := 3.0  # 260703 Red 室内放大比例，匹配背景
 
 var _player: CharacterBody2D
 var _player_spr: Sprite2D
-var _dialog_active: bool = false
-var _dialog_phase: int = 0
-var _dialog_bubble: DialogBubble
-
 var _mom_spr: Sprite2D
 var _lanqiuqiu_spr: Sprite2D
-var _door_guard: bool = false
-var _card_overlay: CanvasLayer = null
 var _stair_hint_2f: Sprite2D  # 2F 下楼箭头
 var _stair_hint_1f: Sprite2D  # 1F 上楼箭头
 var _stair_hint_t: float = 0.0
 var _tutorial_shown: bool = false
+var _card_overlay: CanvasLayer = null
 var _floor1: Node2D   # 1F 客厅
 var _floor2: Node2D   # 2F 卧室
 var _floor: int = 1   # 260703 Red 进门默认1楼客厅
@@ -44,7 +39,6 @@ func _ready() -> void:
 	_build_floor1()
 	_build_floor2()
 	_build_player()
-	_build_dialog()
 	# 260708 Red 新游戏（没御三家）从2F卧室醒来，有御三家后从1F门口进入
 	if not GameState.has_starter:
 		_set_floor(2)
@@ -293,8 +287,7 @@ func _dismiss_partner_card() -> void:
 		_tutorial_shown = true
 		var tip = MonDB.dlg("rival", "tutorial")
 		if tip and tip != "":
-			_dialog_active = true
-			_dialog_bubble.show(tip)
+			DialogManager.show(self, [tip])
 
 func _draw_mom() -> ImageTexture:
 	var img = Image.create(16, 20, false, Image.FORMAT_RGBA8)
@@ -440,74 +433,26 @@ func _go_downstairs() -> void:
 	_player.position = STAIRS1_POS + Vector2(10, 40)
 
 # ── Dialog ───────────────────────────────────────────────────────────────────
-func _build_dialog() -> void:
-	_dialog_bubble = DialogBubble.create(self)
-
 func _start_mom_dialog() -> void:
-	_dialog_active = true
-	_dialog_phase = 0
+	var pname = GameState.player_name
 	if not GameState.has_starter:
-		_dialog_bubble.show(MonDB.dlg("home", "mom_sendoff").replace("{player}", GameState.player_name))
+		var dlg1 = MonDB.dlg("home", "mom_sendoff").replace("{player}", pname)
+		var dlg2 = MonDB.dlg("home", "mom_professor").replace("{player}", pname)
+		DialogManager.show(self, [dlg1, dlg2])
 	elif GameState.starter_trio_given and not GameState.mom_trio_greeted:
-		# 260727 Red 领到御三家后第一次回家，妈妈感慨一番（记得照顾蓝秋秋的感受）
-		_dialog_bubble.show(MonDB.dlg("home", "mom_encourage").replace("{player}", GameState.player_name))
+		var dlg1 = MonDB.dlg("home", "mom_encourage").replace("{player}", pname)
+		var dlg2 = MonDB.dlg("home", "mom_rival").replace("{rival}", GameState.rival_name).replace("{player}", pname)
+		DialogManager.show(self, [dlg1, dlg2], func():
+			GameState.mom_trio_greeted = true
+			GameState.save_game())
 	else:
 		GameState.heal_team()
 		AudioManager.play_me(AudioManager.ME_HEAL)
-		_dialog_bubble.show("妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。")
-
-func _advance_dialog() -> void:
-	if _door_guard:
-		_door_guard = false
-		_dialog_active = false
-		_dialog_bubble.hide()
-		return
-
-	_dialog_phase += 1
-	if _floor == 2 and not GameState.has_starter:
-		var lines = MonDB.dlg_array("home", "bedroom_lanqiuqiu")
-		if _dialog_phase < lines.size():
-			_dialog_bubble.show(lines[_dialog_phase].replace("{player}", GameState.player_name))
-		elif _dialog_phase == lines.size():
-			_dialog_active = false
-			_dialog_bubble.hide()
-			_confirm_starter()
-		return
-
-	# 选完御三家关掉确认对话框→存档，确保存的时候双方状态一致
-	if GameState.has_starter and _floor == 2:
-		GameState.save_game()
-		if not _tutorial_shown:
-			_tutorial_shown = true
-			var tip = MonDB.dlg("rival", "tutorial")
-			if tip and tip != "":
-				_dialog_bubble.show(tip)
-				return
-
-	if not GameState.has_starter:
-		match _dialog_phase:
-			1:
-				_dialog_bubble.show(MonDB.dlg("home", "mom_professor"))
-			_:
-				_dialog_active = false
-				_dialog_bubble.hide()
-	elif GameState.starter_trio_given and not GameState.mom_trio_greeted:
-		match _dialog_phase:
-			1:
-				_dialog_bubble.show(MonDB.dlg("home", "mom_rival")
-					.replace("{rival}", GameState.rival_name).replace("{player}", GameState.player_name))
-			_:
-				GameState.mom_trio_greeted = true
-				GameState.save_game()
-				_dialog_active = false
-				_dialog_bubble.hide()
-	else:
-		_dialog_active = false
-		_dialog_bubble.hide()
+		DialogManager.show(self, ["妈妈：欢迎回来！我帮你的精灵们恢复了精力，出去要小心哦。"])
 
 # ── Movement & input ─────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _dialog_active:
+	if DialogManager.is_active():
 		return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
@@ -555,16 +500,12 @@ func _physics_process(delta: float) -> void:
 	_stair_hint_1f.modulate = Color(1, 1, 1, alpha)
 
 func _input(event: InputEvent) -> void:
+	if DialogManager.handle_input(event): return
+
 	if _card_overlay:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
 			_dismiss_partner_card()
-		return
-
-	if _dialog_active:
-		if event.is_action_pressed("ui_accept"):
-			get_viewport().set_input_as_handled()
-			_advance_dialog()
 		return
 
 	if event.is_action_pressed("ui_accept"):
@@ -572,9 +513,7 @@ func _input(event: InputEvent) -> void:
 		if _floor == 1:
 			if _player.position.distance_to(DOOR_CENTER) < 40:
 				if not GameState.has_starter:
-					_dialog_bubble.show("妈妈：哎呀你这孩子，楼上那小家伙等了你一早上了，先去看看它再走！")
-					_dialog_active = true
-					_door_guard = true
+					DialogManager.show(self, ["妈妈：哎呀你这孩子，楼上那小家伙等了你一早上了，先去看看它再走！"])
 					return
 				GameState.last_scene = "home"
 				request_scene.emit("overworld", {"spawn": "home"})
@@ -587,9 +526,9 @@ func _input(event: InputEvent) -> void:
 				return
 		else:
 			if _player.position.distance_to(LANQIUQIU_POS) < LANQIUQIU_RADIUS and not GameState.has_starter:
-				_dialog_active = true
-				_dialog_phase = 0
-				_dialog_bubble.show(MonDB.dlg_array("home", "bedroom_lanqiuqiu")[0].replace("{player}", GameState.player_name))
+				var dlg = MonDB.dlg_array("home", "bedroom_lanqiuqiu")
+				dlg = dlg.map(func(l): return l.replace("{player}", GameState.player_name))
+				DialogManager.show(self, dlg, _confirm_starter)
 				return
 			if _player.position.distance_to(STAIRS2_POS + Vector2(20, 20)) < 45:
 				_go_downstairs()

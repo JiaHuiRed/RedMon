@@ -29,6 +29,7 @@ const RIVAL_DOOR  := Vector2i(46, 25)   # 劲敌家碰撞≈(1464.5,784)
 const CLINIC_DOOR := Vector2i(127, 7)   # 原(125,7)→碧溪镇新偏移3968+80px
 const SHOP_DOOR   := Vector2i(138, 7)   # 原(147,7)→碧溪镇新偏移3968+432px
 const LAB_DOOR    := Vector2i(42, 9)    # 研究所碰撞≈(1358.5,262.5)
+const HOUSHAN_DOOR := Vector2i(18, 0)   # 260722 Red 后山小径入口：青木村北边界新缺口（col18，与col30冠军之路缺口区分）
 
 const WALK_FRAME_W   := 96  # 260706 Red 升96px，走表4行(下/上/右/左)
 const WALK_FRAME_H   := 160
@@ -51,12 +52,6 @@ var _walk_frame:     int   = 0
 var _walk_anim_t:    float = 0.0
 var _step_counter:   int   = 0
 var _battling:       bool  = false
-
-var _dialog_active:    bool    = false
-var _dialog_phase:     int     = 0
-var _dialog_bubble:    DialogBubble
-var _npc_dialog_lines: Array   = []
-var _npc_dialog_idx:   int     = 0
 
 var _npc_nodes:   Array = []
 var _grass_tiles: Array = []
@@ -140,7 +135,6 @@ func _ready() -> void:
 	_build_town_npcs_fallback()  # 碧溪镇 NPC 尚未迁移到 .tscn，暂留硬编码
 	_build_player()
 	_build_hud()
-	_build_dialog()
 	_build_menu()
 	_shop = ShopPanel.create(self, SHOP_ITEMS)
 	_pcbox = PcBoxList.create(self, PCBOX_ROWS, Vector2(340, 55), Vector2(280, 260), 22, "↑↓选择  Z查看  Esc离开")
@@ -155,7 +149,7 @@ func _ready() -> void:
 		GameState.prof_rescue_pending = false
 		if battle_result == "win":
 			# 260727 Red 只有真正打赢绿肥虫才推进剧情；逃跑等结果原地清空标记，_prof_event_shown 场景重载后自动重置，走进草丛会重新触发战斗
-			call_deferred("_show_dialog", MonDB.dlg("village", "prof_rescue_thanks"), 802)
+			call_deferred("_show_prof_rescue_thanks")
 	# 播放地图 BGM（青木村/华灵草原/碧溪镇都用同一首，后续可分区）
 	if AudioManager and AudioManager.has_method("play_bgm"):
 		AudioManager.play_bgm(AudioManager.BGM_OVERWORLD)
@@ -246,10 +240,14 @@ func _is_water_tile(tile: Vector2i) -> bool:
 # ── 边界 ──────────────────────────────────────────────────────────────────────
 func _build_border_walls() -> void:
 	# 260708 Red 青木村北出口：col 30 留一格缺口（冠军之路入口）
+	# 260722 Red 新增 col 18 缺口（后山小径入口），北墙拆成三段夹两个缺口
 	var gx := 30 * TILE
-	_add_collider(Vector2(gx / 2.0, -TILE / 2.0), Vector2(gx, TILE))
+	var hx := HOUSHAN_DOOR.x * TILE
+	_add_collider(Vector2(hx / 2.0, -TILE / 2.0), Vector2(hx, TILE))                       # 西段：col 0..17
+	var mw := gx - (hx + TILE)
+	_add_collider(Vector2(hx + TILE + mw / 2.0, -TILE / 2.0), Vector2(mw, TILE))            # 中段：col 19..29
 	var rw := MAP_W - gx - TILE
-	_add_collider(Vector2(gx + TILE + rw / 2.0, -TILE / 2.0), Vector2(rw, TILE))
+	_add_collider(Vector2(gx + TILE + rw / 2.0, -TILE / 2.0), Vector2(rw, TILE))            # 东段：col 31..183
 	_add_collider(Vector2(MAP_W / 2.0, MAP_H + TILE / 2.0), Vector2(MAP_W, TILE))
 	_add_collider(Vector2(-TILE / 2.0, MAP_H / 2.0), Vector2(TILE, MAP_H))
 	_add_collider(Vector2(MAP_W + TILE / 2.0, MAP_H / 2.0), Vector2(TILE, MAP_H))
@@ -409,6 +407,11 @@ func _build_player() -> void:
 			"home":      _player.position = Vector2(HOME_DOOR.x * TILE + TILE/2.0, HOME_DOOR.y * TILE + TILE)
 			"rival_home": _player.position = Vector2(RIVAL_DOOR.x * TILE + TILE/2.0, RIVAL_DOOR.y * TILE + TILE)
 			"gym":       _player.position = SPAWN_TOWN
+			# 260722 Red 后山小径缺口南侧：两个 key 都指向同一坐标——
+			# "village_north" 对应本函数新增分支的字面命名，"houshan_path" 对应
+			# 后山小径_scene.gd 出口触发时实际 emit 的 spawn key，两者都需落回同一位置
+			"village_north", "houshan_path":
+				_player.position = Vector2(HOUSHAN_DOOR.x * TILE + TILE/2.0, (HOUSHAN_DOOR.y + 2) * TILE)
 			_:           _player.position = SPAWN_VILLAGE
 	elif GameState.player_pos_x > 0 or GameState.player_pos_y > 0:
 		# 260709 Red 从存档恢复玩家坐标
@@ -486,134 +489,58 @@ func _update_hud() -> void:
 		_area_label.text = ("青木村" if px < VILLAGE_END else "华灵草原" if px < GRASSLAND_END else "碧溪镇")
 
 # ── Dialog ────────────────────────────────────────────────────────────────────
-func _build_dialog() -> void:
-	_dialog_bubble = DialogBubble.create(self)
 
-func _show_dialog(text: String, phase: int) -> void:
-	_dialog_active = true; _dialog_phase = phase
-	_dialog_bubble.show(text)
+# DialogManager callback helpers ───────────────────────────────────────────────
+func _heal_and_pcbox() -> void:
+	_heal_all_mons()
+	DialogManager.show(self, ["精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？"], _open_pcbox)
 
-func _advance_dialog() -> void:
-	match _dialog_phase:
-		100:  # 训练师确认 → 开战
-			_dialog_active = false; _dialog_bubble.hide(); _battling = true
-			request_scene.emit("battle", {
-				"trainer": _pending_trainer, "from_scene": "overworld",
-				"player_pos": [_player.position.x, _player.position.y],
-				"bg": _bg_for_area(_current_area())
-			})
-		101:  # 训练师战后
-			_dialog_active = false; _dialog_bubble.hide(); _pending_trainer = {}
-		200:  # NPC 普通对话翻页
-			_npc_dialog_idx += 1
-			if _npc_dialog_idx < _npc_dialog_lines.size():
-				_dialog_bubble.show(_npc_dialog_lines[_npc_dialog_idx])
-			else:
-				_dialog_active = false; _dialog_bubble.hide()
-				_npc_dialog_lines = []; _npc_dialog_idx = 0
-		300:  # 劲敌确认 → 开战
-			_dialog_active = false; _dialog_bubble.hide(); _battling = true
-			_rival_leave()
-			var starter_id = GameState.player_team[0].get("species_id", "炎喵") if not GameState.player_team.is_empty() else "炎喵"
-			var rival_sp = {"炎喵": "蓝蛇", "蓝蛇": "小竹熊", "小竹熊": "炎喵"}.get(starter_id, "蓝蛇")
-			request_scene.emit("battle", {
-				"trainer": {"name": GameState.rival_name, "team": [MonDB.create_mon(rival_sp, 7)],
-					"reward": 500, "id": "rival", "dialog_win": "%s：切……这次算你走运！下次我一定赢！" % GameState.rival_name, "difficulty": 1},
-				"from_scene": "overworld",
-				"player_pos": [_player.position.x, _player.position.y],
-				"bg": _bg_for_area(_current_area())
-			})
-		400:  # 精灵堂治疗
-			_heal_all_mons(); _dialog_phase = 401
-			_dialog_bubble.show("精灵堂：好了，精灵们都精神抖擞！要看看仓库里的精灵吗？")
-		401:
-			_dialog_active = false; _dialog_bubble.hide(); _open_pcbox()
-		500:  # 260726 Red 旧 starter 流已移除，兜底回 opening（正常新游戏不会走到这里）
-			_dialog_active = false; _dialog_bubble.hide()
-			request_scene.emit("opening", {"player_pos": [_player.position.x, _player.position.y]})
-		600:  # 260706 Red 申鹤碧溪镇对战
-			_dialog_active = false; _dialog_bubble.hide(); _battling = true
-			var shenhe_data = MonDB.trainers.get("shenhe", {})
-			if shenhe_data.is_empty():
-				shenhe_data = {"name":"申鹤","team":[{"species":"小雉鸡","level":14},{"species":"炎喵","level":16}],"reward":1600,"id":"shenhe","dialog_win":"哼……还算有点意思。","difficulty":2}
-			request_scene.emit("battle", {
-				"trainer": shenhe_data, "from_scene": "overworld",
-				"player_pos": [_player.position.x, _player.position.y],
-				"bg": _bg_for_area(_current_area())
-			})
-		700:  # 260715 Red 头目战：小霞自我介绍
-			_dialog_active = false; _dialog_bubble.hide()
-			_show_dialog(MonDB.dlg("ally_xiaoxia", "self_intro"), 701)
-		701:  # 260715 Red 头目战确认 → 开战 (君美 + 小霞声援)
-			_dialog_active = false; _dialog_bubble.hide(); _battling = true
-			var area_map_id := (_current_area()
-				.replace("青木村", "1")
-				.replace("华灵草原", "2")
-				.replace("碧溪镇", "3")
-				.replace("翠竹馆", "4")
-				.replace("炎心山道", "5")
-				.replace("炎心市", "6")
-				.replace("碧波湖畔", "7")
-				.replace("碧波市", "8")
-				.replace("磐石洞穴", "9")
-				.replace("磐石镇", "10")
-				.replace("厚土荒原", "11")
-				.replace("厚土镇", "12")
-				.replace("雷鸣峡谷", "13")
-				.replace("雷鸣市", "14")
-				.replace("冰晶雪峰", "15")
-				.replace("冰晶镇", "16")
-				.replace("武道山", "17")
-				.replace("武道城", "18")
-				.replace("青木路口", "19")
-				.replace("碧溪海滩", "20")
-				.replace("炎心隧道", "21")
-				.replace("磐石山道", "22")
-				.replace("厚土关口", "23")
-				.replace("雷鸣桥", "24")
-				.replace("冰晶小径", "25")
-				.replace("武道阶梯", "26")
-				.replace("黑风堂据点", "27")
-				.replace("华灵联盟", "28")
-				.replace("冠军之路", "29"))
-			var boss_lv: int = EncounterDB.calc_level_range(int(area_map_id))[1] + 7
-			var boss_mon = MonDB.create_mon("君美", boss_lv, MonDB.boss_tier_ivs())
-			request_scene.emit("battle", {
-				"wild_mon": boss_mon, "ally_name": "小霞",
-				"egg_reward": "君美", "boss_id": "junmei_xiaoxia",
-				"from_scene": "overworld",
-				"player_pos": [_player.position.x, _player.position.y],
-				"bg": _bg_for_area(_current_area())
-			})
-		800:  # 260727 Red 陈教授草丛遇袭确认 → 用蓝秋秋迎战野生绿肥虫
-			_dialog_active = false; _dialog_bubble.hide(); _battling = true
-			GameState.prof_rescue_pending = true
-			var wild_mon = MonDB.create_wild_mon("绿肥虫", 3)
-			request_scene.emit("battle", {
-				"wild_mon": wild_mon, "from_scene": "overworld",
-				"player_pos": [_player.position.x, _player.position.y],
-				"bg": _bg_for_area(_current_area())
-			})
-		802:  # 战后感谢 → 继续
-			_show_dialog(MonDB.dlg("village", "prof_rescue_gift"), 803)
-		803:  # 送御三家 → 弹三选一面板
-			_dialog_active = false; _dialog_bubble.hide()
-			_open_starter_trio_panel()
-		804:  # 阿婆拦截对话关闭后恢复拦截状态
-			_granny_stopped = false
-			_dialog_active = false; _dialog_bubble.hide()
-		805:  # 御三家确认 → 正式选择
-			_dialog_active = false; _dialog_bubble.hide()
-			if _starter_pending != "":
-				_confirm_starter_trio()
-		-1:
-			_dialog_active = false; _dialog_bubble.hide()
-		_:
-			_dialog_active = false; _dialog_bubble.hide()
+func _start_rival_battle() -> void:
+	_battling = true
+	_rival_leave()
+	var starter_id = GameState.player_team[0].get("species_id", "炎喵") if not GameState.player_team.is_empty() else "炎喵"
+	var rival_sp = {"炎喵": "蓝蛇", "蓝蛇": "小竹熊", "小竹熊": "炎喵"}.get(starter_id, "蓝蛇")
+	request_scene.emit("battle", {
+		"trainer": {"name": GameState.rival_name, "team": [MonDB.create_mon(rival_sp, 7)], "reward": 500, "id": "rival", "dialog_win": "...", "difficulty": 1},
+		"from_scene": "overworld", "player_pos": [_player.position.x, _player.position.y],
+		"bg": _bg_for_area(_current_area())})
+
+func _start_shenhe_battle() -> void:
+	_battling = true
+	var shenhe_data = MonDB.trainers.get("shenhe", {})
+	if shenhe_data.is_empty():
+		shenhe_data = {"name": "申鹤", "team": [MonDB.create_mon("蓝蛇", 12), MonDB.create_mon("小竹熊", 14)], "reward": 800, "id": "shenhe", "dialog_win": "...", "difficulty": 2}
+	request_scene.emit("battle", {
+		"trainer": shenhe_data, "from_scene": "overworld", "player_pos": [_player.position.x, _player.position.y],
+		"bg": _bg_for_area(_current_area())})
+
+func _boss_intro_p2() -> void:
+	DialogManager.show(self, [MonDB.dlg("ally_xiaoxia", "self_intro")], _start_boss_battle)
+
+func _start_boss_battle() -> void:
+	_battling = true
+	var area_map_id := {"青木村": "1001", "华灵草原": "2001", "碧溪镇": "3001"}.get(_current_area(), "1001")
+	var boss_lv = EncounterDB.calc_level_range(int(area_map_id))[1] + 7
+	var boss_mon = MonDB.create_mon("君美", boss_lv, MonDB.boss_tier_ivs())
+	request_scene.emit("battle", {
+		"wild_mon": boss_mon, "ally_name": "小霞", "egg_reward": "君美",
+		"boss_id": "junmei_xiaoxia", "from_scene": "overworld", "bg": _bg_for_area(_current_area())})
+
+func _start_prof_battle() -> void:
+	_battling = true
+	GameState.prof_rescue_pending = true
+	var wild_mon = MonDB.create_wild_mon("绿肥虫", 3)
+	request_scene.emit("battle", {"wild_mon": wild_mon, "from_scene": "overworld", "bg": _bg_for_area(_current_area())})
+
+func _show_prof_rescue_thanks() -> void:
+	DialogManager.show(self, [MonDB.dlg("village", "prof_rescue_thanks")], _show_prof_rescue_gift)
+
+func _show_prof_rescue_gift() -> void:
+	DialogManager.show(self, [MonDB.dlg("village", "prof_rescue_gift")], _open_starter_trio_panel)
 
 # ── 移动 & 输入 ───────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _battling or _dialog_active or _shop.is_active() or _pcbox.is_active() or _menu_active or _party_active: return
+	if _battling or DialogManager.is_active() or _shop.is_active() or _pcbox.is_active() or _menu_active or _party_active: return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
@@ -648,7 +575,7 @@ func _physics_process(delta: float) -> void:
 			if _player.position.distance_to(_granny_pos) > 350:
 				_player.position = old_pos
 				_granny_stopped = true
-				_show_dialog("阿婆：" + GameState.player_name + "！你上哪儿去？\n那个人还在草丛里等着你救呢！", 804)
+				DialogManager.show(self, ["阿婆：" + GameState.player_name + "！你上哪儿去？\n那个人还在草丛里等着你救呢！"])
 	_update_hud()
 
 func _update_walk_anim(dir: Vector2, moving: bool, delta: float) -> void:
@@ -683,17 +610,11 @@ func _input(event: InputEvent) -> void:
 	if _starter_panel_active:
 		_handle_starter_panel_nav(event); return
 	# 260709 Red 菜单统一由 main.gd 全局暂停菜单处理，overworld 不再拦截 ui_menu
+	if DialogManager.handle_input(event): return
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		if _shop.is_active():  _close_shop(); return
 		if _pcbox.is_active(): _close_pcbox(); return
-		if _dialog_active: return
-		return
-	if _dialog_active:
-		if event.is_action_pressed("ui_accept"):
-			get_viewport().set_input_as_handled(); _advance_dialog()
-		elif event.is_action_pressed("ui_cancel") and _dialog_phase == 805:
-			get_viewport().set_input_as_handled(); _cancel_starter_confirm()
 		return
 	if _shop.is_active():  _handle_shop_nav(event); return
 	if _pcbox.is_active(): _handle_pcbox_nav(event); return
@@ -704,7 +625,7 @@ func _try_interact() -> void:
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 	# 精灵堂
 	if tile.x >= CLINIC_DOOR.x and tile.x <= CLINIC_DOOR.x + 3 and abs(tile.y - CLINIC_DOOR.y) <= 1:
-		_show_dialog("精灵堂：欢迎光临！要让你的精灵休息一下吗？", 400); return
+		DialogManager.show(self, ["精灵堂：欢迎光临！要让你的精灵休息一下吗？"], _heal_and_pcbox); return
 	# 杂货铺
 	if tile.x >= SHOP_DOOR.x and tile.x <= SHOP_DOOR.x + 3 and abs(tile.y - SHOP_DOOR.y) <= 1:
 		_open_shop(); return
@@ -718,6 +639,9 @@ func _try_interact() -> void:
 	# 研究所（陈教授 + 助手林薇）
 	if tile.x >= LAB_DOOR.x - 2 and tile.x <= LAB_DOOR.x + 2 and abs(tile.y - LAB_DOOR.y) <= 1:
 		_handle_lab_visit(); return
+	# 260722 Red 后山小径入口（村北新缺口，走近按确认键进入）
+	if tile.x >= HOUSHAN_DOOR.x - 1 and tile.x <= HOUSHAN_DOOR.x + 1 and abs(tile.y - HOUSHAN_DOOR.y) <= 1:
+		request_scene.emit("houshan", {"spawn": "village_north"}); return
 	# 道馆（碧溪镇 tile 143-146, row 7-8）
 	if tile.x >= 143 and tile.x <= 146 and tile.y >= 7 and tile.y <= 8:
 		request_scene.emit("gym", {"from": "overworld"}); return
@@ -744,16 +668,13 @@ func _try_talk_npc(tile: Vector2i) -> void:
 				_handle_junmei_boss(); return
 			if dlg == "__granny_hint__":
 				_handle_granny_hint(); return
-			_npc_dialog_lines = [dlg]; _npc_dialog_idx = 0
-			_show_dialog(dlg, 200); return
+			DialogManager.show(self, [dlg]); return
 
 func _handle_lab_visit() -> void:
 	# 260716 Red 林薇是陈教授的助手，常驻研究所内，不在村子地图上走动
 	# 260727 Red 领御三家之前教授不在研究所内（正在草丛旁忙着），林薇代为接待
 	if not GameState.starter_trio_given:
-		_npc_dialog_lines = ["林薇：你好呀！我是陈教授的助手林薇。\n教授出去忙了，你可以到村子里转转找找他。"]
-		_npc_dialog_idx = 0
-		_show_dialog(_npc_dialog_lines[0], 200)
+		DialogManager.show(self, ["林薇：你好呀！我是陈教授的助手林薇。\n教授出去忙了，你可以到村子里转转找找他。"])
 		return
 	var lines: Array = []
 	if GameState.items.get("精灵葫芦", 0) == 0:
@@ -772,37 +693,35 @@ func _handle_lab_visit() -> void:
 		else:
 			lines.append("林薇：多抓一些精灵吧！每捕捉满 10 只我会给你奖励哦～\n你已经捕捉了 %d 只了。" % GameState.caught_count)
 	GameState.save_game()
-	_npc_dialog_lines = lines
-	_npc_dialog_idx = 0
-	_show_dialog(lines[0], 200)
+	DialogManager.show(self, lines)
 
 func _handle_granny_hint() -> void:
 	# 260727 Red has_starter=已带蓝秋秋出门；starter_trio_given=已从教授处正式领取御三家
 	if GameState.has_starter and not GameState.starter_trio_given:
-		_show_dialog(MonDB.dlg("village", "granny_hint").replace("{player}", GameState.player_name), -1)
+		DialogManager.show(self, [MonDB.dlg("village", "granny_hint").replace("{player}", GameState.player_name)])
 	else:
-		_show_dialog("阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！", -1)
+		DialogManager.show(self, ["阿婆：这孩子，出门在外要照顾好自己，野外的精灵可不好惹！"])
 
 func _handle_north_guard() -> void:
 	var n := GameState.badges
 	if n >= 8:
-		_show_dialog("守卫：集齐八枚徽章了！冠军之路向你敞开，祝你好运！", -1)
+		DialogManager.show(self, ["守卫：集齐八枚徽章了！冠军之路向你敞开，祝你好运！"])
 	else:
-		_show_dialog("守卫：前方是华灵冠军之路。\n集齐全部八枚道馆徽章方可通行。\n当前徽章：%d / 8 枚。" % n, -1)
+		DialogManager.show(self, ["守卫：前方是华灵冠军之路。\n集齐全部八枚道馆徽章方可通行。\n当前徽章：%d / 8 枚。" % n])
 
 # 260708 Red 右出口村民：没御三家拦住，有了就放行
 func _handle_right_guard() -> void:
 	if not GameState.has_starter:
-		_show_dialog("村民：嘿，前面是华灵草原，没有精灵的话太危险了！\n先去找陈教授领一只精灵吧，他的研究所就在村北。", -1)
+		DialogManager.show(self, ["村民：嘿，前面是华灵草原，没有精灵的话太危险了！\n先去找陈教授领一只精灵吧，他的研究所就在村北。"])
 	else:
-		_show_dialog("村民：你已经有自己的精灵了啊！前面就是华灵草原，比村子附近要强一些，准备好了吗？", -1)
+		DialogManager.show(self, ["村民：你已经有自己的精灵了啊！前面就是华灵草原，比村子附近要强一些，准备好了吗？"])
 
 # 260708 Red 劲敌对话 → 多段台词 → 对战
 func _handle_rival_talk() -> void:
 	_rival_done = true
 	var rn = GameState.rival_name
 	var pn = GameState.player_name
-	_show_dialog("%s：哟，%s！你终于出来了！\n我也从陈教授那里拿到精灵了哦！\n怎么样——既然都有搭档了，不如来一场！" % [rn, pn], 300)
+	DialogManager.show(self, ["%s：哟，%s！你终于出来了！\n我也从陈教授那里拿到精灵了哦！\n怎么样——既然都有搭档了，不如来一场！" % [rn, pn]], _start_rival_battle)
 
 func _rival_leave() -> void:
 	if _rival_node:
@@ -811,8 +730,8 @@ func _rival_leave() -> void:
 func _handle_shenhe_grassland_npc() -> void:
 	_shenhe_village_done = true
 	if not GameState.has_starter:
-		_show_dialog("申鹤：你连精灵都没有就敢来草原？回去吧。", -1); return
-	_show_dialog("申鹤：哼，你也拿到精灵了？我申鹤的目标是成为华灵大陆最强——你这等路人根本不在我眼里。\n……不过，前面有黑风堂的人在出没，你小心点。", -1)
+		DialogManager.show(self, ["申鹤：你连精灵都没有就敢来草原？回去吧。"]); return
+	DialogManager.show(self, ["申鹤：哼，你也拿到精灵了？我申鹤的目标是成为华灵大陆最强——你这等路人根本不在我眼里。\n……不过，前面有黑风堂的人在出没，你小心点。"])
 
 func _handle_junmei_boss() -> void:
 	_battling = true  # 锁输入，跑入动画+对话期间不可移动
@@ -823,10 +742,10 @@ func _handle_junmei_boss() -> void:
 	tw.tween_property(_xiaoxia_spr, "position", target, 0.6)
 	await tw.finished
 	_battling = false
-	_show_dialog(MonDB.dlg("boss_encounter", "intro", {"ally": "小霞"}), 700)
+	DialogManager.show(self, [MonDB.dlg("boss_encounter", "intro", {"ally": "小霞"})], _boss_intro_p2)
 
 func _check_egg_hatch() -> void:
-	if _dialog_active or _battling or GameState.eggs.is_empty(): return
+	if DialogManager.is_active() or _battling or GameState.eggs.is_empty(): return
 	var hatched = GameState.tick_eggs()
 	for egg in hatched:
 		var mon = MonDB.create_mon(egg["species_id"], 1, MonDB.boss_tier_ivs())
@@ -838,26 +757,26 @@ func _check_egg_hatch() -> void:
 			mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
 			GameState.pc_box.append(mon)
 		GameState.save_game()
-		_show_dialog("蛋孵化了！\n%s 诞生了！" % MonDB.display_name(mon), -1)
+		DialogManager.show(self, ["蛋孵化了！\n%s 诞生了！" % MonDB.display_name(mon)])
 		return  # 一次只弹一条提示，剩下的蛋下次移动再检查
 
 func _check_shenhe_grassland() -> void:
 	# 260706 Red 申鹤草原出口（对话，不对战）
-	if _shenhe_grassland_done or not GameState.has_starter or _dialog_active or _battling: return
+	if _shenhe_grassland_done or not GameState.has_starter or DialogManager.is_active() or _battling: return
 	var px = _player.position.x
 	if px >= GRASSLAND_END - 3 * TILE and px <= GRASSLAND_END:
 		_shenhe_grassland_done = true
-		_show_dialog("申鹤：……你要去碧溪镇？黑风堂在镇里也有眼线，注意点。
+		DialogManager.show(self, ["申鹤：……你要去碧溪镇？黑风堂在镇里也有眼线，注意点。
 对了，林青松馆主使用木系，火系或虫系会很有利。
-我先走了。", -1)
+我先走了。"])
 
 func _check_shenhe_town() -> void:
 	# 260706 Red 申鹤碧溪镇对战（道馆前）
-	if _shenhe_town_done or not GameState.has_starter or _dialog_active or _battling: return
+	if _shenhe_town_done or not GameState.has_starter or DialogManager.is_active() or _battling: return
 	var tile = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 	if tile.x >= 127 and tile.x <= 130 and tile.y >= 7 and tile.y <= 10:
 		_shenhe_town_done = true
-		_show_dialog("申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！", 600)
+		DialogManager.show(self, ["申鹤：你居然跟到这里来了。既然如此……我来考考你有没有资格进那个道馆！"], _start_shenhe_battle)
 
 func _check_encounter() -> void:
 	# 260709 Red 必须踩在草丛 tile 上才触发遇敌
@@ -873,9 +792,9 @@ func _check_encounter() -> void:
 
 func _trigger_professor_event() -> void:
 	# 260727 Red 陈教授草丛遇袭：阿婆已提示过，玩家踩草丛后正式遭遇，用蓝秋秋一战
-	if _prof_event_shown or _dialog_active or _battling: return
+	if _prof_event_shown or DialogManager.is_active() or _battling: return
 	_prof_event_shown = true
-	_show_dialog(MonDB.dlg("village", "prof_rescue_intro").replace("{player}", GameState.player_name), 800)
+	DialogManager.show(self, [MonDB.dlg("village", "prof_rescue_intro").replace("{player}", GameState.player_name)], _start_prof_battle)
 
 # ── 御三家三选一面板 ──────────────────────────────────────────────────────────
 func _open_starter_trio_panel() -> void:
@@ -976,7 +895,7 @@ func _handle_starter_panel_nav(event: InputEvent) -> void:
 		_starter_pending = STARTER_TRIO[_starter_cursor]
 		_starter_panel_active = false
 		var desc := MonDB.dlg("village", "starter_confirm_%s" % _starter_pending)
-		_show_dialog(desc, 805)
+		DialogManager.show(self, [desc], _confirm_starter_trio, _cancel_starter_confirm)
 
 func _confirm_starter_trio() -> void:
 	var chosen := _starter_pending
@@ -993,10 +912,10 @@ func _confirm_starter_trio() -> void:
 	_starter_panel = null
 	_starter_panel_active = false
 
-	_show_dialog(MonDB.dlg("village", "prof_rescue_farewell").replace("{player}", GameState.player_name), -1)
+	DialogManager.show(self, [MonDB.dlg("village", "prof_rescue_farewell").replace("{player}", GameState.player_name)])
 
 func _cancel_starter_confirm() -> void:
-	_dialog_active = false; _dialog_bubble.hide()
+	DialogManager.hide()
 	_starter_pending = ""
 	_starter_panel_active = true
 
@@ -1026,13 +945,13 @@ func _trigger_encounter() -> void:
 	})
 
 func _check_trainer_sight() -> void:
-	if _battling or _dialog_active: return
+	if _battling or DialogManager.is_active(): return
 	var pt = Vector2i(int(_player.position.x / TILE), int(_player.position.y / TILE))
 	for td in TRAINERS:
 		if td["id"] in GameState.defeated_trainers: continue
 		if MonDB.is_in_sight(td["tile"], td["dir"], td["sight"], pt):
 			_pending_trainer = td
-			_show_dialog("训练师%s：\n%s" % [td["name"], td["dialog_before"]], 100)
+			DialogManager.show(self, ["训练师%s：\n%s" % [td["name"], td["dialog_before"]]], _start_trainer_battle)
 			return
 
 # ── 战败处理 ──────────────────────────────────────────────────────────────────

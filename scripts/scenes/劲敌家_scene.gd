@@ -21,15 +21,10 @@ var _walk_dir: int = 0
 var _walk_frame: int = 0
 var _walk_anim_t: float = 0.0
 
-var _dialog_active: bool = false
-var _dialog_phase: int = 0
-var _dialog_text: Array = []
-var _dialog_bubble: DialogBubble
 var _npcs: Array = []
 
 func _ready() -> void:
 	_build_player()
-	_build_dialog()
 	_build_npcs()
 	# 260718 Red 支持从楼梯/特定 spawn 点进入
 	var data = get_meta("scene_data", {})
@@ -88,27 +83,9 @@ func _build_npcs() -> void:
 					dialog = ["……"]
 			_npcs.append({"pos": child.position, "dialog": dialog})
 
-# ── 对话 ─────────────────────────────────────────────────────────────────────
-func _build_dialog() -> void:
-	_dialog_bubble = DialogBubble.create(self)
-
-func _show_dialog(lines: Array) -> void:
-	_dialog_text = lines
-	_dialog_phase = 0
-	_dialog_active = true
-	_dialog_bubble.show(_dialog_text[0])
-
-func _advance_dialog() -> void:
-	_dialog_phase += 1
-	if _dialog_phase < _dialog_text.size():
-		_dialog_bubble.show(_dialog_text[_dialog_phase])
-	else:
-		_dialog_active = false
-		_dialog_bubble.hide()
-
 # ── 移动 ─────────────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _dialog_active: return
+	if DialogManager.is_active(): return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
@@ -141,10 +118,7 @@ func _physics_process(delta: float) -> void:
 
 # ── 输入 ─────────────────────────────────────────────────────────────────────
 func _input(event: InputEvent) -> void:
-	if _dialog_active:
-		if event.is_action_pressed("ui_accept"):
-			get_viewport().set_input_as_handled()
-			_advance_dialog()
+	if DialogManager.handle_input(event):
 		return
 
 	if event.is_action_pressed("ui_accept"):
@@ -162,5 +136,5 @@ func _input(event: InputEvent) -> void:
 		# NPC交互
 		for npc in _npcs:
 			if _player.position.distance_to(npc["pos"]) < 40:
-				_show_dialog(npc["dialog"])
+				DialogManager.show(self, npc["dialog"])
 				return

@@ -26,10 +26,6 @@ var _walk_frame:  int   = 0
 var _walk_anim_t: float = 0.0
 
 var _battling      := false
-var _dialog_active := false
-var _dialog_bubble: DialogBubble
-var _dialog_lines:  Array = []
-var _dialog_idx:    int   = 0
 
 var _pending_trainer: Dictionary = {}
 var _defeated_guards: Array      = []  # 已击败杂兵id
@@ -82,7 +78,6 @@ func _load_trainer_data() -> void:
 	_build_guards()
 	_build_leader()
 	_build_player()
-	_build_dialog()
 	_build_badge_panel()
 	_ready_check_return()
 	print("[GYM] 翠竹馆")
@@ -229,47 +224,6 @@ func _update_walk_sprite(dir: Vector2, moving: bool, delta: float) -> void:
 	_player_spr.flip_h = false
 	_player_spr.region_rect = Rect2(col * WALK_FRAME_W, _walk_dir * WALK_FRAME_H, WALK_FRAME_W, WALK_FRAME_H)
 
-# ── 对话框 ────────────────────────────────────────────────────────────────────
-func _build_dialog() -> void:
-	_dialog_bubble = DialogBubble.create(self)
-
-func _show_dialog(lines: Array) -> void:
-	_dialog_lines = lines; _dialog_idx = 0
-	_dialog_active = true
-	_dialog_bubble.show(lines[0])
-
-func _advance_dialog() -> void:
-	_dialog_idx += 1
-	if _dialog_idx < _dialog_lines.size():
-		_dialog_bubble.show(_dialog_lines[_dialog_idx])
-	else:
-		_dialog_active = false
-		_dialog_bubble.hide()
-		_dialog_lines = []; _dialog_idx = 0
-		_on_dialog_end()
-
-var _dialog_context := ""  # "guard_before" "guard_after" "leader_before" "leader_after"
-var _active_guard_id := ""
-
-func _on_dialog_end() -> void:
-	match _dialog_context:
-		"guard_before":
-			_dialog_context = ""
-			_battling = true
-			var td = _get_guard(_active_guard_id)
-			request_scene.emit("battle", {"trainer": _make_trainer_data(td), "from_scene": "gym",
-				"return_scene": "gym", "bg": "res://assets/backgrounds/战斗背景_竹馆.png"})
-		"leader_before":
-			_dialog_context = ""
-			_battling = true
-			request_scene.emit("battle", {"trainer": _make_leader_data(), "from_scene": "gym",
-				"return_scene": "gym", "bg": "res://assets/backgrounds/战斗背景_竹馆.png"})
-		"leader_after":
-			_dialog_context = ""
-			_show_badge_popup()
-		_:
-			_dialog_context = ""
-
 # ── 训练师转换辅助 ────────────────────────────────────────────────────────────
 func _make_trainer_data(g: Dictionary) -> Dictionary:
 	return {
@@ -377,20 +331,24 @@ func _check_sight() -> void:
 	for g in _guards:
 		if g["id"] in _defeated_guards: continue
 		if MonDB.is_in_sight(g["tile"], g["dir"], g["sight"], ptile):
-			_active_guard_id = g["id"]
-			_dialog_context = "guard_before"
-			_show_dialog([g["name"] + "：" + g["before"]])
+			DialogManager.show(self, [g["name"] + "：" + g["before"]], func():
+				_battling = true
+				var td = _get_guard(g["id"])
+				request_scene.emit("battle", {"trainer": _make_trainer_data(td), "from_scene": "gym",
+					"return_scene": "gym", "bg": "res://assets/backgrounds/战斗背景_竹馆.png"}))
 			return
 
 	# 馆主（需所有杂兵已击败）
 	if not _leader_defeated and _defeated_guards.size() >= _guards.size():
 		if MonDB.is_in_sight(_leader["tile"], Vector2i(0, 1), _leader["sight"], ptile):
-			_dialog_context = "leader_before"
 			var lines = MonDB.dlg_array("gym_cuizhu", "leader_before_lines")
 			if lines.is_empty():
 				lines = ["林青松：我是翠竹馆馆主林青松。", "竹以柔克刚——你，准备好了吗？"]
 			lines = lines.map(func(s): return s.replace("{player}", GameState.player_name))
-			_show_dialog(lines)
+			DialogManager.show(self, lines, func():
+				_battling = true
+				request_scene.emit("battle", {"trainer": _make_leader_data(), "from_scene": "gym",
+					"return_scene": "gym", "bg": "res://assets/backgrounds/战斗背景_竹馆.png"}))
 			return
 
 # ── 战斗返回处理 ──────────────────────────────────────────────────────────────
@@ -406,7 +364,7 @@ func _ready_check_return() -> void:
 				if _guard_nodes.has(tid):
 					_guard_nodes[tid].queue_free()
 					_guard_nodes.erase(tid)
-				_show_dialog([g["name"] + "：" + g["after"]])
+				DialogManager.show(self, [g["name"] + "：" + g["after"]])
 				return
 		# 馆主
 		if tid == _leader["id"]:
@@ -415,13 +373,12 @@ func _ready_check_return() -> void:
 			var lines = MonDB.dlg_array("gym_cuizhu", "leader_after_lines")
 			if lines.is_empty():
 				lines = ["林青松：……了不起。", "这枚翠竹徽，你当之无愧。收下吧。"]
-			_dialog_context = "leader_after"
 			lines = lines.map(func(s): return s.replace("{player}", GameState.player_name))
-			_show_dialog(lines)
+			DialogManager.show(self, lines, _show_badge_popup)
 
 # ── 物理/输入 ─────────────────────────────────────────────────────────────────
 func _physics_process(delta: float) -> void:
-	if _battling or _dialog_active or _badge_panel.visible: return
+	if _battling or DialogManager.is_active() or _badge_panel.visible: return
 	var dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"): dir.x += 1
 	if Input.is_action_pressed("ui_left"):  dir.x -= 1
@@ -437,16 +394,12 @@ func _physics_process(delta: float) -> void:
 		_check_sight()
 
 func _input(event: InputEvent) -> void:
+	if DialogManager.handle_input(event): return
+
 	if _badge_panel.visible:
 		if event.is_action_pressed("ui_accept"):
 			get_viewport().set_input_as_handled()
 			_badge_panel.visible = false
-		return
-
-	if _dialog_active:
-		if event.is_action_pressed("ui_accept"):
-			get_viewport().set_input_as_handled()
-			_advance_dialog()
 		return
 
 	if event.is_action_pressed("ui_accept"):

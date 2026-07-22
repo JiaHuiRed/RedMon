@@ -1,0 +1,45 @@
+[gd_scene format=4 uid="uid://6vunfpjf2vqi"]
+
+[ext_resource type="Script" uid="uid://mil1gd8oq14n" path="res://scripts/scenes/后山小径_scene.gd" id="1"]
+[ext_resource type="TileSet" path="res://assets/tilemaps/mountain_tileset.tres" id="2_dahyt"]
+[ext_resource type="Texture2D" path="res://assets/npc/老爷爷.png" id="3_herbalist"]
+[ext_resource type="Texture2D" path="res://assets/sprites/幽狐front.png" id="4_youhu"]
+[ext_resource type="Texture2D" path="res://assets/npc/美美front.png" id="5_meimei"]
+
+[node name="houshan_path" type="Node2D" unique_id=193667924]
+script = ExtResource("1")
+
+[node name="地面" type="TileMapLayer" parent="." unique_id=2073108358]
+tile_map_data = PackedByteArray("AAAAAAAAAAACAAIAAAABAAAAAAACAAIAAAACAAAAAAACAAIAAAADAAAAAAACAAIAAAAEAAAAAAACAAIAAAAFAAAAAAACAAIAAAAGAAAAAAACAAIAAAAHAAAAAAACAAIAAAAIAAAAAAACAAIAAAAJAAAAAAACAAIAAAAAAAEAAAACAAIAAAABAAEAAAACAAIAAAACAAEAAAACAAIAAAADAAEAAAACAAIAAAAEAAEAAAACAAIAAAAFAAEAAAACAAIAAAAGAAEAAAACAAIAAAAHAAEAAAACAAIAAAAIAAEAAAACAAIAAAAJAAEAAAACAAIAAAAAAAIAAAACAAIAAAABAAIAAAACAAIAAAACAAIAAAACAAIAAAADAAIAAAACAAIAAAAEAAIAAAACAAIAAAAFAAIAAAACAAIAAAAGAAIAAAACAAIAAAAHAAIAAAACAAIAAAAIAAIAAAACAAIAAAAJAAIAAAACAAIAAAAAAAMAAAACAAIAAAABAAMAAAACAAIAAAACAAMAAAACAAIAAAADAAMAAAACAAIAAAAEAAMAAAACAAIAAAAFAAMAAAACAAIAAAAGAAMAAAACAAIAAAAHAAMAAAACAAIAAAAIAAMAAAACAAIAAAAJAAMAAAACAAIAAAAAAAQAAAACAAIAAAABAAQAAAACAAIAAAACAAQAAAACAAIAAAADAAQAAAACAAIAAAAEAAQAAAACAAIAAAAFAAQAAAACAAIAAAAGAAQAAAACAAIAAAAHAAQAAAACAAIAAAAIAAQAAAACAAIAAAAJAAQAAAACAAIAAAAAAAUAAAACAAIAAAABAAUAAAACAAIAAAACAAUAAAACAAIAAAADAAUAAAACAAIAAAAEAAUAAAACAAIAAAAFAAUAAAACAAIAAAAGAAUAAAACAAIAAAAHAAUAAAACAAIAAAAIAAUAAAACAAIAAAAJAAUAAAACAAIAAAAAAAYAAAACAAIAAAABAAYAAAACAAIAAAACAAYAAAACAAIAAAADAAYAAAACAAIAAAAEAAYAAAACAAIAAAAFAAYAAAACAAIAAAAGAAYAAAACAAIAAAAHAAYAAAACAAIAAAAIAAYAAAACAAIAAAAJAAYAAAACAAIAAAAAAAcAAAACAAIAAAABAAcAAAACAAIAAAACAAcAAAACAAIAAAADAAcAAAACAAIAAAAEAAcAAAACAAIAAAAFAAcAAAACAAIAAAAGAAcAAAACAAIAAAAHAAcAAAACAAIAAAAIAAcAAAACAAIAAAAJAAcAAAACAAIAAAA=")
+tile_set = ExtResource("2_dahyt")
+
+[node name="出口" type="Marker2D" parent="." unique_id=1833298489]
+position = Vector2(320, 480)
+
+[node name="采药人" type="Sprite2D" parent="." unique_id=3010021001]
+z_index = 5
+position = Vector2(160, 160)
+texture = ExtResource("3_herbalist")
+metadata/npc_type = "npc"
+metadata/npc_dialog = "herbalist"
+
+[node name="幽狐_头目" type="Sprite2D" parent="." unique_id=3010021002]
+z_index = 5
+texture_filter = 4
+position = Vector2(480, 120)
+scale = Vector2(0.095, 0.095)
+texture = ExtResource("4_youhu")
+metadata/npc_type = "npc"
+metadata/npc_dialog = "youhu_boss"
+
+[node name="美美_旁观" type="Sprite2D" parent="." unique_id=3010021003]
+visible = false
+z_index = 6
+texture_filter = 4
+position = Vector2(576, 120)
+scale = Vector2(0.11, 0.11)
+texture = ExtResource("5_meimei")
+metadata/npc_type = "ally_hidden"
+
+[node name="美美_停靠点" type="Marker2D" parent="." unique_id=3010021004]
+position = Vector2(416, 140)
