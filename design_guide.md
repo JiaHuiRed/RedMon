@@ -213,7 +213,7 @@ No characters in the scene.
 
 ### 文件读写（Python 工具脚本）
 
-所有 JSON 读写必须使用以下模式，保持 CRLF 换行和 UTF-8 编码：
+所有 JSON 读写必须使用以下模式，保持 **LF** 换行和 UTF-8 编码：
 
 ```python
 # 读
@@ -223,8 +223,13 @@ with open(path, 'rb') as f:
 # 写
 with open(path, 'wb') as f:
     text = json.dumps(data, ensure_ascii=False, indent=2)
-    f.write(text.replace('\n', '\r\n').encode('utf-8'))
+    f.write(text.encode('utf-8'))
 ```
+
+> 260722 Red：这里原来写的是"保持 CRLF"，跟仓库实际存储（`data/*.json` 在 git 里全部是 LF，
+> `core.autocrlf=true` 会在 commit 时自动把 CRLF 转回 LF）对不上——工具一旦真按旧指示写了
+> CRLF，工作区就会跟 HEAD 不一致，`git status` 就会显示"已修改"但 `git diff` 是空的，纯噪声。
+> `.gitattributes` 已经把 `data/*.json` 钉死成 `eol=lf`，工具老老实实写 LF 就行，不用再手动转换。
 
 Windows 控制台中文会乱码，**不要用 `print()` 输出中文再重定向**，改为直接写文件：
 ```python
