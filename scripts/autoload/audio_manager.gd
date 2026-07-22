@@ -25,7 +25,9 @@ const SE_SAVE    := "GUI save choice"
 const SE_PARTY   := "GUI party switch"
 const SE_DAMAGE  := "Battle damage normal"
 const SE_DAMAGE_SUPER := "Battle damage super"
+const SE_DAMAGE_WEAK := "Battle damage weak"
 const SE_FAINT   := "Pkmn faint"
+const SE_MART_BUY := "Mart buy item"
 
 # 常用 ME 名称
 const ME_HEAL    := "Pkmn healing"

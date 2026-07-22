@@ -687,6 +687,7 @@ func _on_use_item(item_id: String) -> void:
 	# ── 捕捉 ──────────────────────────────────────────────────────────────
 	if category == "捕捉":
 		if _is_trainer:
+			AudioManager.play_se(AudioManager.SE_BUZZER)
 			await _show_message_async("训练师的精灵不能捕捉！")
 			GameState.items[item_id] += 1
 			_busy = false
@@ -697,6 +698,7 @@ func _on_use_item(item_id: String) -> void:
 		var success = await _anim_throw_gourd(item_id, catch_mult)
 		if success:
 			GameState.caught_count += 1
+			AudioManager.play_me(AudioManager.ME_CAPTURE)
 			await _show_message_async("恭喜！成功捕捉到%s了！" % MonDB.display_name(_enemy_mon))
 			var dialog = preload("res://scripts/ui/name_dialog.gd").new()
 			add_child(dialog)
@@ -739,6 +741,7 @@ func _on_use_item(item_id: String) -> void:
 		else:
 			var heal = item_data.get("heal_amount", 20)
 			if _player_mon["current_hp"] >= _player_mon["max_hp"]:
+				AudioManager.play_se(AudioManager.SE_BUZZER)
 				await _show_message_async("HP已满，无法使用！")
 				GameState.items[item_id] += 1
 				_busy = false
@@ -1271,6 +1274,7 @@ func _on_mon() -> void:
 func _on_run() -> void:
 	if _busy: return
 	if _is_trainer:
+		AudioManager.play_se(AudioManager.SE_BUZZER)
 		_show_message("训练师对战中，无法逃跑！", func(): _show_action_panel())
 		return
 	_busy = true
@@ -1452,6 +1456,14 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 
 		defender["current_hp"] = max(0, defender["current_hp"] - dmg)
 
+		if dmg > 0:
+			if eff > 1.0:
+				AudioManager.play_se(AudioManager.SE_DAMAGE_SUPER)
+			elif eff < 1.0 and eff > 0.0:
+				AudioManager.play_se(AudioManager.SE_DAMAGE_WEAK)
+			else:
+				AudioManager.play_se(AudioManager.SE_DAMAGE)
+
 		# Visual flash
 		var target_spr = _enemy_spr if not is_enemy else _player_spr
 		_flash_red(target_spr)
@@ -1601,6 +1613,7 @@ func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary)
 # Victory / Defeat
 # ══════════════════════════════════════════════════════════════════════════════
 func _handle_victory() -> void:
+	AudioManager.play_se(AudioManager.SE_FAINT)
 	AudioManager.play_me(AudioManager.ME_VICTORY)
 
 	var sp_id     = _enemy_mon.get("species_id", "")
@@ -1689,6 +1702,7 @@ func _handle_victory() -> void:
 	_end_battle("win")
 
 func _handle_defeat() -> void:
+	AudioManager.play_se(AudioManager.SE_FAINT)
 	await _show_message_async("%s 倒下了……" % MonDB.display_name(_player_mon))
 
 	# 检查是否还有存活的精灵
