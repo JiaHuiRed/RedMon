@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.27.7] - 2026-07-22
+
+> 技能effect系统大规模补全（119个死字段技能接线+10个新机制）+ 对话框统一重构 + 青木村后山头目战支线
+
+### 新增
+
+- **青木村北支线"后山小径"**：warp进出（村北新缺口col 18，与冠军之路缺口col 30区分）、采药人氛围NPC、幽狐头目战（wild_mon+boss_tier_ivs机制，可击败拿蛋或直接捕捉带走）、美美（邬君梅伪装）剧情初登场——旁观头目战+战后关于人与精灵关系的深度对话，为她的黑化动机埋下伏笔（幕后设定见 `story_design.md`）
+- **DialogManager 统一对话框单例**：接管 overworld/home/劲敌家/道馆 场景此前各自维护的 `_dialog_active`/`_show_dialog`/`_advance_dialog` 状态机
+- **技能效果补全**：混乱（`inflict_confusion`，独立于主状态可共存）、多段攻击（`multi_hit`/`multi_hit_2`，2~5次按35/35/15/15%分布或固定2次）、畏缩、剧毒递增、替身、寄生种子、再来一次、特殊屏障、连续技锁定（如逆鳞）、滚动累加、连续加速、禁孤立招式——均为此前设计文档列了效果key但战斗代码从未实现的占位
+
+### 修复
+
+- **全库133个技能描述承诺了效果（异常状态/能力升降/多段攻击等）但 `effect` 字段是空字符串**，完全不生效，威力被腰斩——92个接回已有effect key，其余用新实现的effect key补上
+- **`data/*.json` 每次改动都被git误判成"已修改"**：换行符噪声，内容其实没变（`core.autocrlf=true` 下仓库存储始终是LF，工作区一旦被写成CRLF就会误报）——`.gitattributes` 钉死为 `eol=lf`
+
+### 重构
+
+- **TYPE_COLORS 去重**收敛到 `mon_db.gd` 单一入口，`party_ui.gd`/`overworld_scene.gd` 移除本地副本
+- **`home_scene.gd` 死代码**（`_load_tex`，与 `GameState.load_tex()` 完全重复）移除
+- `party_ui.gd` 两处bug修复：`MonDB._type_chart` 改为走公开的 `get_offense_chart()`；relearn替换索引从 `_relearn_cursor%4` 改为正确的 `0`
+
 ## [0.27.6] - 2026-07-21
 
 > 进化系统整改（携带/道具/动画）+ 全局代码重复审计与修复 + 编辑器补齐
