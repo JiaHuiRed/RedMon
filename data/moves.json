@@ -1030,7 +1030,7 @@
     "effect": "",
     "description": "变身成对手的样子，能够使用和对手完全相同的招式。"
   },
-  "叢林治療": {
+  "丛林治疗": {
     "name": "叢林治療",
     "type": "木",
     "category": "变化",
@@ -1600,7 +1600,7 @@
     "effect": "",
     "description": "使用仙灵之力的辅助招式。"
   },
-  "大地波動": {
+  "大地波动": {
     "name": "大地波動",
     "type": "空",
     "category": "特殊",
@@ -2100,7 +2100,7 @@
     "effect": "",
     "description": "使用普通之力的辅助招式。"
   },
-  "廣域戰力": {
+  "广域战力": {
     "name": "廣域戰力",
     "type": "灵",
     "category": "特殊",
@@ -2770,7 +2770,7 @@
     "effect": "",
     "description": "使用暗黑之力的辅助招式。"
   },
-  "指導": {
+  "指导": {
     "name": "指導",
     "type": "格",
     "category": "变化",
@@ -3190,7 +3190,7 @@
     "effect": "",
     "description": "回复自己的HP。根据天气的不同，回复量也会有所变化。"
   },
-  "暗冥強擊": {
+  "暗冥强击": {
     "name": "暗冥強擊",
     "type": "暗",
     "category": "物理",
@@ -3990,7 +3990,7 @@
     "effect": "",
     "description": "以水流之力攻击对手。"
   },
-  "水流連打": {
+  "水流连打": {
     "name": "水流連打",
     "type": "水",
     "category": "物理",
@@ -4210,7 +4210,7 @@
     "effect": "",
     "description": "释放耀眼的光芒进行攻击。有时会降低对手的特防。"
   },
-  "洩憤": {
+  "泄愤": {
     "name": "洩憤",
     "type": "暗",
     "category": "物理",
@@ -4781,7 +4781,7 @@
     "effect": "",
     "description": "以火焰之力攻击对手。"
   },
-  "熱沙大地": {
+  "热沙大地": {
     "name": "熱沙大地",
     "type": "土",
     "category": "特殊",
@@ -4851,7 +4851,7 @@
     "effect": "",
     "description": "释放强大的普通之力猛烈攻击对手。"
   },
-  "爬擊": {
+  "爬击": {
     "name": "爬擊",
     "type": "虫",
     "category": "物理",
@@ -6151,7 +6151,7 @@
     "effect": "",
     "description": "发射从自然收集的生命力量。有时会降低对手的特防。"
   },
-  "腐蝕氣體": {
+  "腐蚀气体": {
     "name": "腐蝕氣體",
     "type": "毒",
     "category": "变化",
@@ -6171,7 +6171,7 @@
     "effect": "",
     "description": "使用普通之力的辅助招式。"
   },
-  "臂貝武器": {
+  "臂贝武器": {
     "name": "臂貝武器",
     "type": "毒",
     "category": "特殊",
@@ -6491,7 +6491,7 @@
     "effect": "",
     "description": "用念力之力攻击对手。"
   },
-  "薄霧炸裂": {
+  "薄雾炸裂": {
     "name": "薄霧炸裂",
     "type": "仙",
     "category": "特殊",
@@ -7131,7 +7131,7 @@
     "effect": "",
     "description": "让对手听摩擦金属般讨厌的声音。大幅降低对手的特防。"
   },
-  "鐵滾輪": {
+  "铁滚轮": {
     "name": "鐵滾輪",
     "type": "钢",
     "category": "物理",
@@ -7381,7 +7381,7 @@
     "effect": "",
     "description": "使用大地之力的辅助招式。"
   },
-  "雙翼": {
+  "双翼": {
     "name": "雙翼",
     "type": "风",
     "category": "物理",
@@ -7431,7 +7431,7 @@
     "effect": "",
     "description": "用雷电之力攻击对手。"
   },
-  "電力上升": {
+  "电力上升": {
     "name": "電力上升",
     "type": "雷",
     "category": "特殊",
@@ -7451,7 +7451,7 @@
     "effect": "",
     "description": "使用大地之力的招式。"
   },
-  "靈騷": {
+  "灵骚": {
     "name": "靈騷",
     "type": "鬼",
     "category": "物理",
@@ -7831,7 +7831,7 @@
     "effect": "",
     "description": "向对手发射强力的光芒进行攻击。有时会降低对手的特攻。"
   },
-  "鱗射": {
+  "鳞射": {
     "name": "鱗射",
     "type": "龙",
     "category": "物理",
@@ -8423,7 +8423,7 @@
     "description": "释放至高之力猛烈攻击对手。",
     "name": "卷风破空"
   },
-  "乾天迅雷斩": {
+  "干天迅雷斩": {
     "type": "灵",
     "category": "特殊",
     "power": 130,
@@ -9002,5 +9002,445 @@
     "max_pp": 5,
     "effect": "",
     "description": "从天而降的花雨，给予对手致命伤害。"
+  },
+  "偷袭": {
+    "name": "偷袭",
+    "type": "恶",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": "抢先出手攻击，若目标攻击则必定命中。"
+  },
+  "光之冲击": {
+    "name": "光之冲击",
+    "type": "超",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": "用光之力量猛烈冲击对手。"
+  },
+  "光之壁": {
+    "name": "光之壁",
+    "type": "超",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": "制造光之墙壁，5回合内提升特防。"
+  },
+  "冤冤相报": {
+    "name": "冤冤相报",
+    "type": "恶",
+    "category": "物理",
+    "power": 50,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "若后出手则威力翻倍。"
+  },
+  "冰之突刺": {
+    "name": "冰之突刺",
+    "type": "冰",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": "先制攻击，用冰锥突刺对手。"
+  },
+  "冰晶风暴": {
+    "name": "冰晶风暴",
+    "type": "冰",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 70,
+    "max_pp": 5,
+    "effect": "",
+    "description": "召唤猛烈的冰晶风暴攻击对手。"
+  },
+  "制裁之光": {
+    "name": "制裁之光",
+    "type": "光",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "释放制裁之光攻击对手。"
+  },
+  "双重攻击": {
+    "name": "双重攻击",
+    "type": "空",
+    "category": "物理",
+    "power": 35,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": "用锋锐的物体连续2次攻击对手。"
+  },
+  "吹风": {
+    "name": "吹风",
+    "type": "风",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 35,
+    "effect": "",
+    "description": "用翅膀刮起狂风攻击对手。"
+  },
+  "大地怒吼": {
+    "name": "大地怒吼",
+    "type": "地",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "令大地震动怒吼攻击对手。"
+  },
+  "头槌": {
+    "name": "头槌",
+    "type": "空",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用头撞向对手，有几率使对手畏缩。"
+  },
+  "审判之光": {
+    "name": "审判之光",
+    "type": "光",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "释放审判之光攻击对手。"
+  },
+  "审判之风": {
+    "name": "审判之风",
+    "type": "风",
+    "category": "特殊",
+    "power": 100,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "释放审判之风吹袭对手。"
+  },
+  "山崩地裂": {
+    "name": "山崩地裂",
+    "type": "岩",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 90,
+    "max_pp": 10,
+    "effect": "",
+    "description": "令岩石崩塌砸向对手，有几率使对手畏缩。"
+  },
+  "影子球": {
+    "name": "影子球",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "发射暗影之球攻击对手。"
+  },
+  "旋风": {
+    "name": "旋风",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": "将对手卷入旋风强制交换下场。"
+  },
+  "暗之波动": {
+    "name": "暗之波动",
+    "type": "恶",
+    "category": "特殊",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "释放黑暗波动攻击对手。"
+  },
+  "暗影之力": {
+    "name": "暗影之力",
+    "type": "鬼",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "凝聚暗影之力攻击对手。"
+  },
+  "暗袭": {
+    "name": "暗袭",
+    "type": "恶",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "从暗处突袭对手，容易击中要害。"
+  },
+  "暗黑强化": {
+    "name": "暗黑强化",
+    "type": "恶",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 50,
+    "max_pp": 10,
+    "effect": "",
+    "description": "让对手陷入黑暗从而进入睡眠状态。"
+  },
+  "暴风之刃": {
+    "name": "暴风之刃",
+    "type": "风",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 80,
+    "max_pp": 5,
+    "effect": "",
+    "description": "凝聚暴风之刃斩击对手。"
+  },
+  "暴风眼": {
+    "name": "暴风眼",
+    "type": "风",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 70,
+    "max_pp": 5,
+    "effect": "",
+    "description": "在暴风中心攻击对手。"
+  },
+  "曙光": {
+    "name": "曙光",
+    "type": "光",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": "吸收曙光回复HP，天气不同回复量不同。"
+  },
+  "月之力": {
+    "name": "月之力",
+    "type": "仙",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "凝聚月之力量攻击对手。"
+  },
+  "极速折返": {
+    "name": "极速折返",
+    "type": "虫",
+    "category": "物理",
+    "power": 70,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": "攻击后迅速折返，与后备精灵交换。"
+  },
+  "棉花孢子": {
+    "name": "棉花孢子",
+    "type": "草",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 40,
+    "effect": "",
+    "description": "散播棉花孢子大幅降低对手速度。"
+  },
+  "森林诅咒": {
+    "name": "森林诅咒",
+    "type": "草",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 20,
+    "effect": "",
+    "description": "令对手被森林诅咒，追加草属性。"
+  },
+  "污泥射击": {
+    "name": "污泥射击",
+    "type": "毒",
+    "category": "特殊",
+    "power": 95,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "发射污泥攻击对手，有几率使其中毒。"
+  },
+  "火焰放射": {
+    "name": "火焰放射",
+    "type": "火",
+    "category": "特殊",
+    "power": 90,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "喷射火焰攻击对手，有几率使对手灼伤。"
+  },
+  "火焰漩涡": {
+    "name": "火焰漩涡",
+    "type": "火",
+    "category": "特殊",
+    "power": 35,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用火焰漩涡困住对手持续伤害。"
+  },
+  "甩尾": {
+    "name": "甩尾",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": "甩动尾巴降低对手防御。"
+  },
+  "究极冲击": {
+    "name": "究极冲击",
+    "type": "空",
+    "category": "物理",
+    "power": 150,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "以究极冲击猛撞对手，下一回合无法行动。"
+  },
+  "空气切裂": {
+    "name": "空气切裂",
+    "type": "风",
+    "category": "特殊",
+    "power": 75,
+    "accuracy": 95,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用空气利刃切裂对手，有几率使其畏缩。"
+  },
+  "起死回生": {
+    "name": "起死回生",
+    "type": "斗",
+    "category": "物理",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "HP越低威力越大。"
+  },
+  "近身拳": {
+    "name": "近身拳",
+    "type": "斗",
+    "category": "物理",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 5,
+    "effect": "",
+    "description": "以近身拳法猛攻对手，自身防御和特防降低。"
+  },
+  "连续切": {
+    "name": "连续切",
+    "type": "虫",
+    "category": "物理",
+    "power": 40,
+    "accuracy": 95,
+    "max_pp": 20,
+    "effect": "",
+    "description": "连续切割，每次命中威力翻倍。"
+  },
+  "铁头撞": {
+    "name": "铁头撞",
+    "type": "钢",
+    "category": "物理",
+    "power": 80,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用钢铁头部撞击对手，有几率使其畏缩。"
+  },
+  "阳光烈焰": {
+    "name": "阳光烈焰",
+    "type": "草",
+    "category": "特殊",
+    "power": 120,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "第1回合蓄力，第2回合攻击。"
+  },
+  "雷光拳": {
+    "name": "雷光拳",
+    "type": "雷",
+    "category": "物理",
+    "power": 75,
+    "accuracy": 100,
+    "max_pp": 15,
+    "effect": "",
+    "description": "用雷电环绕的拳头攻击对手，有几率使对手麻痹。"
+  },
+  "雷电": {
+    "name": "雷电",
+    "type": "雷",
+    "category": "特殊",
+    "power": 110,
+    "accuracy": 70,
+    "max_pp": 10,
+    "effect": "",
+    "description": "召唤雷电攻击对手，有几率使对手麻痹。"
+  },
+  "风压": {
+    "name": "风压",
+    "type": "风",
+    "category": "特殊",
+    "power": 40,
+    "accuracy": 100,
+    "max_pp": 30,
+    "effect": "",
+    "description": "用风压攻击对手。"
+  },
+  "鬼火": {
+    "name": "鬼火",
+    "type": "火",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 85,
+    "max_pp": 15,
+    "effect": "",
+    "description": "释放鬼火使对手灼伤。"
+  },
+  "鬼面": {
+    "name": "鬼面",
+    "type": "空",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "",
+    "description": "用恐怖的面孔大幅降低对手速度。"
+  },
+  "龙星群": {
+    "name": "龙星群",
+    "type": "龙",
+    "category": "特殊",
+    "power": 130,
+    "accuracy": 90,
+    "max_pp": 5,
+    "effect": "",
+    "description": "召唤流星群轰击对手，自身特攻大幅降低。"
   }
 }
