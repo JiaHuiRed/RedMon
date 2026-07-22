@@ -78,6 +78,21 @@ func _wild_tier_prefix(mon: Dictionary) -> String:
 func _wild_tier_color(mon: Dictionary) -> Color:
 	return WILD_TIER_COLORS.get(mon.get("wild_tier", ""), Color(0.1, 0.1, 0.1))
 
+# 260722 Red 战斗限定的临时状态（畏缩/替身/寄生种子/再来一次/光墙/连续同招记录），
+# 每次有新精灵登场（开场/换场/训练师换下一只）都要清零，不能跨场次persist
+func _reset_transient_battle_state(mon: Dictionary) -> void:
+	mon["flinched"] = false
+	mon["substitute_hp"] = 0
+	mon["leech_seeded"] = false
+	mon["encore_turns"] = 0
+	mon["encore_move"] = ""
+	mon["screen_special_turns"] = 0
+	mon["last_move_id"] = ""
+	mon["rampage_turns_left"] = 0
+	mon["rampage_move_id"] = ""
+	mon["fury_cutter_streak"] = 0
+	mon["tormented"] = false
+
 # ── 键盘 / 手柄导航 ────────────────────────────────────────────────────────────
 var _active_panel:      String = "none"  # "action"|"move"|"bag"|"mon"|"none"
 var _action_btns:       Array  = []
@@ -167,6 +182,7 @@ func _ready() -> void:
 		if GameState.player_team[i].get("current_hp", 0) > 0:
 			_player_mon_idx = i; break
 	_player_mon = GameState.player_team[_player_mon_idx]
+	_reset_transient_battle_state(_player_mon)
 	_return_scene   = data.get("return_scene", "overworld")
 	_return_pos     = data.get("player_pos", [])
 	_bg_path        = data.get("bg", "res://assets/backgrounds/草原.png")
@@ -191,6 +207,7 @@ func _ready() -> void:
 		_enemy_mon = data.get("wild_mon", MonDB.create_mon("绿肥虫", 3))
 		if _encounter_area != "" and not _enemy_mon.has("met_location"):
 			_enemy_mon["met_location"] = _encounter_area
+	_reset_transient_battle_state(_enemy_mon)
 
 	_build_battle_field()
 	_build_info_boxes()
@@ -786,6 +803,12 @@ func _do_enemy_turn_after_item() -> void:
 	if not is_inside_tree(): return
 	if _enemy_mon["current_hp"] <= 0:
 		await _handle_victory(); return
+	await _apply_end_of_round_upkeep()
+	if not is_inside_tree(): return
+	if _player_mon["current_hp"] <= 0:
+		await _handle_defeat(); return
+	if _enemy_mon["current_hp"] <= 0:
+		await _handle_victory(); return
 	_player_turn = true
 	_busy = false
 	_show_action_panel()
@@ -885,6 +908,7 @@ func _on_switch_mon(idx: int) -> void:
 
 	_player_mon_idx = idx
 	_player_mon = GameState.player_team[idx]
+	_reset_transient_battle_state(_player_mon)
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 	_rescale_sprite(_player_spr, 100.0)
 	_refresh_info()
@@ -910,6 +934,12 @@ func _on_switch_mon(idx: int) -> void:
 		await _handle_defeat(); return
 	await _apply_end_of_turn_damage(_enemy_mon, _enemy_spr)
 	if not is_inside_tree(): return
+	if _enemy_mon["current_hp"] <= 0:
+		await _handle_victory(); return
+	await _apply_end_of_round_upkeep()
+	if not is_inside_tree(): return
+	if _player_mon["current_hp"] <= 0:
+		await _handle_defeat(); return
 	if _enemy_mon["current_hp"] <= 0:
 		await _handle_victory(); return
 
@@ -1303,8 +1333,36 @@ func _on_move_pressed(idx: int) -> void:
 	_player_turn = false
 
 	var mv_id = moves[idx]["id"]
-	moves[idx]["pp"] -= 1
+	var skip_pp_cost = false
+	# 260722 Red 连续攻击类（大闹一番/花瓣舞/逆鳞/滚动）：本回合仍在锁定中，
+	# 强制重复上一招且不再消耗PP（原版specialUsage规则），优先级高于再来一次
+	if _player_mon.get("rampage_turns_left", 0) > 0:
+		var locked_id: String = _player_mon.get("rampage_move_id", "")
+		for i in range(moves.size()):
+			if moves[i]["id"] == locked_id:
+				idx = i; break
+		mv_id = locked_id
+		skip_pp_cost = true
+	# 260722 Red 再来一次(encore)：被击中后接下来几回合被迫重复使用同一招，
+	# 无视玩家本回合点了哪个技能格，除非那招PP已经耗尽（提前解除）
+	elif _player_mon.get("encore_turns", 0) > 0:
+		var forced_id: String = _player_mon.get("encore_move", "")
+		var forced_idx := -1
+		for i in range(moves.size()):
+			if moves[i]["id"] == forced_id:
+				forced_idx = i; break
+		if forced_idx >= 0 and moves[forced_idx]["pp"] > 0:
+			idx = forced_idx
+			mv_id = forced_id
+		else:
+			_player_mon["encore_turns"] = 0
+	if not skip_pp_cost:
+		moves[idx]["pp"] -= 1
 	_show_move_panel()
+
+	# 260722 Red 无理取闹(torment)：被点名后不能连续两回合使出同一招，命中判定前就直接失败
+	var p_torment_fail = _player_mon.get("tormented", false) \
+		and _player_mon.get("last_move_id", "") == mv_id and mv_id != "撞击"
 
 	# ── 先后手：先制技能 > 速度比较（麻痹减半）────────────────────────────────
 	var p_mv_data = MonDB.moves.get(mv_id, {})
@@ -1327,7 +1385,10 @@ func _on_move_pressed(idx: int) -> void:
 	if player_first:
 		var blocked = await _check_status_block(_player_mon, false)
 		if not blocked:
-			await _execute_move(_player_mon, _enemy_mon, mv_id, false)
+			if p_torment_fail:
+				await _show_message_async("%s 因为无理取闹，无法连续使出同一招式！" % MonDB.display_name(_player_mon))
+			else:
+				await _execute_move(_player_mon, _enemy_mon, mv_id, false)
 		if not is_inside_tree(): return
 		if _enemy_mon["current_hp"] <= 0:
 			await _handle_victory(); return
@@ -1348,7 +1409,10 @@ func _on_move_pressed(idx: int) -> void:
 		await get_tree().create_timer(0.4).timeout
 		var blocked = await _check_status_block(_player_mon, false)
 		if not blocked:
-			await _execute_move(_player_mon, _enemy_mon, mv_id, false)
+			if p_torment_fail:
+				await _show_message_async("%s 因为无理取闹，无法连续使出同一招式！" % MonDB.display_name(_player_mon))
+			else:
+				await _execute_move(_player_mon, _enemy_mon, mv_id, false)
 		if not is_inside_tree(): return
 		if _enemy_mon["current_hp"] <= 0:
 			await _handle_victory(); return
@@ -1362,6 +1426,12 @@ func _on_move_pressed(idx: int) -> void:
 	if not is_inside_tree(): return
 	if _enemy_mon["current_hp"] <= 0:
 		await _handle_victory(); return
+	await _apply_end_of_round_upkeep()
+	if not is_inside_tree(): return
+	if _player_mon["current_hp"] <= 0:
+		await _handle_defeat(); return
+	if _enemy_mon["current_hp"] <= 0:
+		await _handle_victory(); return
 
 	_player_turn = true
 	_busy = false
@@ -1371,18 +1441,50 @@ func _on_move_pressed(idx: int) -> void:
 # Battle execution
 # ══════════════════════════════════════════════════════════════════════════════
 func _pick_enemy_move() -> String:
+	# 260722 Red 连续攻击类锁定优先级最高，其次才是被玩家的再来一次逼招
+	if _enemy_mon.get("rampage_turns_left", 0) > 0:
+		var locked: String = _enemy_mon.get("rampage_move_id", "")
+		if locked != "":
+			return locked
+	if _enemy_mon.get("encore_turns", 0) > 0:
+		var forced_id: String = _enemy_mon.get("encore_move", "")
+		for mv in _enemy_mon.get("moves", []):
+			if mv["id"] == forced_id and mv["pp"] > 0:
+				return forced_id
+		_enemy_mon["encore_turns"] = 0
 	var moves = _enemy_mon.get("moves", [])
 	var usable = []
+	var tormented_move = _enemy_mon.get("last_move_id", "") if _enemy_mon.get("tormented", false) else ""
 	for mv in moves:
-		if mv["pp"] > 0:
+		if mv["pp"] > 0 and mv["id"] != tormented_move:
 			usable.append(mv["id"])
 	if usable.is_empty():
 		return "撞击"   # Fallback (Struggle equivalent)
 	return usable[randi() % usable.size()]
 
 # 检查状态是否阻止行动，返回 true = 无法行动本回合
-func _check_status_block(mon: Dictionary, _is_enemy: bool) -> bool:
+func _check_status_block(mon: Dictionary, is_enemy: bool) -> bool:
 	var name = MonDB.display_name(mon)
+	# 260722 Red 畏缩：只对本回合还没行动的一方生效（先手方打出flinch后手方才会畏缩），
+	# 用完立刻清空，不会拖到下一回合
+	if mon.get("flinched", false):
+		mon["flinched"] = false
+		await _show_message_async("%s 因为畏缩而无法行动！" % name)
+		return true
+	# 260722 Red 混乱独立于status，可与烧伤/中毒/麻痹等共存，故先于match单独判定
+	if mon.get("confused_turns", 0) > 0:
+		mon["confused_turns"] -= 1
+		if mon["confused_turns"] <= 0:
+			await _show_message_async("%s 从混乱中清醒过来了！" % name)
+		elif randf() < 0.33:
+			var dmg = MonDB.calc_confusion_damage(mon)
+			mon["current_hp"] = max(0, mon["current_hp"] - dmg)
+			_flash_red(_enemy_spr if is_enemy else _player_spr)
+			_refresh_info(true)
+			await _show_message_async("%s 混乱中攻击了自己！（-%d）" % [name, dmg])
+			return true
+		else:
+			await _show_message_async("%s 混乱中……" % name)
 	match mon.get("status", ""):
 		"睡眠":
 			if mon.get("sleep_turns", 0) > 0:
@@ -1425,6 +1527,42 @@ func _apply_end_of_turn_damage(mon: Dictionary, spr: Sprite2D) -> void:
 			_flash_red(spr)
 			_refresh_info(true)
 			await _show_message_async("%s 受到中毒伤害！（-%d）" % [name, dmg])
+		"剧毒":
+			var stage = mon.get("toxic_counter", 1)
+			var dmg = max(1, int(mon["max_hp"] * stage / 16.0))
+			mon["current_hp"] = max(0, mon["current_hp"] - dmg)
+			mon["toxic_counter"] = stage + 1
+			_flash_red(spr)
+			_refresh_info(true)
+			await _show_message_async("%s 受到剧毒伤害！（-%d）" % [name, dmg])
+
+# 260722 Red 回合末的场地/持续类效果：寄生种子吸血 + 光墙/再来一次的剩余回合倒数
+func _apply_end_of_round_upkeep() -> void:
+	await _apply_leech_seed(_player_mon, _enemy_mon, _player_spr)
+	if not is_inside_tree(): return
+	if _player_mon["current_hp"] > 0 and _enemy_mon["current_hp"] > 0:
+		await _apply_leech_seed(_enemy_mon, _player_mon, _enemy_spr)
+		if not is_inside_tree(): return
+
+	for m in [_player_mon, _enemy_mon]:
+		if m.get("screen_special_turns", 0) > 0:
+			m["screen_special_turns"] -= 1
+		if m.get("encore_turns", 0) > 0:
+			m["encore_turns"] -= 1
+			if m["encore_turns"] <= 0:
+				m["encore_move"] = ""
+
+func _apply_leech_seed(mon: Dictionary, other: Dictionary, spr: Sprite2D) -> void:
+	if not mon.get("leech_seeded", false): return
+	if mon["current_hp"] <= 0 or other["current_hp"] <= 0: return
+	var name = MonDB.display_name(mon)
+	var dmg = max(1, mon["max_hp"] / 8)
+	mon["current_hp"] = max(0, mon["current_hp"] - dmg)
+	var heal = min(dmg, other["max_hp"] - other["current_hp"])
+	other["current_hp"] = min(other["max_hp"], other["current_hp"] + heal)
+	_flash_red(spr)
+	_refresh_info(true)
+	await _show_message_async("%s 的HP被寄生种子吸取了！（-%d）" % [name, dmg])
 
 func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is_enemy: bool) -> void:
 	var mv = MonDB.moves.get(mv_id, {})
@@ -1433,6 +1571,10 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 
 	var attacker_name = MonDB.display_name(attacker)
 	var mv_name = mv["name"]
+	# 260722 Red 连续切(fury_cutter)要知道"上一回合是不是同一招"，必须在覆盖前先记下来
+	var prev_move_id: String = attacker.get("last_move_id", "")
+	# 260722 Red 再来一次(encore)需要知道"上一招"是什么，命中/未命中都算数出过招
+	attacker["last_move_id"] = mv_id
 
 	# Accuracy check
 	var accuracy = mv.get("accuracy", 100)
@@ -1441,6 +1583,66 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		return
 
 	await _show_message_async("%s 使用了 %s！" % [attacker_name, mv_name])
+
+	# 260722 Red 多段攻击（种子机关枪/连音踢等）：2~5次随机 或 双重攻击固定2次，
+	# 每次独立算伤害/暴击，中途目标倒下就提前结束
+	var multi_effect = mv.get("effect", "")
+	if multi_effect == "multi_hit" or multi_effect == "multi_hit_2":
+		var hit_count: int
+		if multi_effect == "multi_hit_2":
+			hit_count = 2
+		else:
+			var roll = randf()
+			if roll < 0.35: hit_count = 2
+			elif roll < 0.70: hit_count = 3
+			elif roll < 0.85: hit_count = 4
+			else: hit_count = 5
+
+		var target_spr  = _enemy_spr if not is_enemy else _player_spr
+		var actual_hits = 0
+		var any_crit    = false
+		var last_eff    = 1.0
+		for i in range(hit_count):
+			if defender["current_hp"] <= 0:
+				break
+			var result = MonDB.calc_damage(attacker, defender, mv_id)
+			var dmg    = result["damage"]
+			last_eff   = result["effectiveness"]
+			if result["crit"]:
+				any_crit = true
+			if mv.get("category", "") == "特殊" and defender.get("screen_special_turns", 0) > 0:
+				dmg = max(1, int(dmg * 0.5))
+			var sub_broke = _damage_defender(defender, dmg)
+			actual_hits += 1
+			if dmg > 0:
+				if last_eff > 1.0:
+					AudioManager.play_se(AudioManager.SE_DAMAGE_SUPER)
+				elif last_eff < 1.0 and last_eff > 0.0:
+					AudioManager.play_se(AudioManager.SE_DAMAGE_WEAK)
+				else:
+					AudioManager.play_se(AudioManager.SE_DAMAGE)
+			_flash_red(target_spr)
+			_spawn_damage_number(dmg, target_spr.position)
+			_refresh_info(true)
+			await get_tree().create_timer(0.25).timeout
+			if sub_broke:
+				break
+
+		var hit_msg = "命中了 %d 次！" % actual_hits
+		if any_crit:
+			hit_msg += "\n有几次是要害一击！"
+		await _show_message_async(hit_msg)
+
+		var multi_eff_msg = ""
+		if last_eff == 0.0:
+			multi_eff_msg = "对 %s 没有效果……" % MonDB.display_name(defender)
+		elif last_eff > 1.0:
+			multi_eff_msg = "效果拔群！"
+		elif last_eff < 1.0:
+			multi_eff_msg = "效果一般……"
+		if multi_eff_msg != "":
+			await _show_message_async(multi_eff_msg)
+		return
 
 	if mv["power"] > 0:
 		# Damage
@@ -1453,8 +1655,26 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			crit = randf() < 0.20  # 额外20%机会（总计约25%）
 			if crit:
 				dmg = int(dmg * 1.3)  # 补算暴击倍率
+		# 260722 Red 光之壁(screen_special)：对方特殊攻击伤害减半
+		if mv.get("category", "") == "特殊" and defender.get("screen_special_turns", 0) > 0:
+			dmg = max(1, int(dmg * 0.5))
+		# 260722 Red 滚动(rollout)：连续命中每回合威力翻倍，用锁定前剩余回合数反推这是第几次
+		# （首次使用时rampage_turns_left还是0，shift自然是0，不额外加成）
+		if mv.get("effect", "") == "rollout" and attacker.get("rampage_turns_left", 0) > 0:
+			var shift = 5 - attacker["rampage_turns_left"]
+			dmg = int(dmg * pow(2, shift))
+		# 260722 Red 连续切(fury_cutter)：连续两回合用同一招就翻倍，封顶4倍（40→80→160）
+		# 只要中途用了别的招，prev_move_id对不上，streak就会自然清零重来
+		if mv.get("effect", "") == "fury_cutter":
+			var streak = attacker.get("fury_cutter_streak", 0)
+			if prev_move_id == mv_id and streak > 0:
+				streak = mini(streak + 1, 3)
+			else:
+				streak = 1
+			attacker["fury_cutter_streak"] = streak
+			dmg = int(dmg * pow(2, streak - 1))
 
-		defender["current_hp"] = max(0, defender["current_hp"] - dmg)
+		var sub_broke = _damage_defender(defender, dmg)
 
 		if dmg > 0:
 			if eff > 1.0:
@@ -1488,6 +1708,9 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		elif eff_msg != "":
 			await _show_message_async(eff_msg)
 
+		if sub_broke:
+			await _show_message_async("%s 的替身消失了！" % MonDB.display_name(defender))
+
 		# 260715 Red 头目战：怀旧NPC场外声援（每种情况整场只触发一次，避免刷屏）
 		if _ally_name != "":
 			if not is_enemy:
@@ -1504,6 +1727,19 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 				elif eff < 1.0 and eff > 0.0 and not _ally_commented_enemy_weak:
 					_ally_commented_enemy_weak = true
 					await _show_message_async(MonDB.dlg("boss_encounter", "reassure_weak", {"ally": _ally_name}))
+
+		# 260722 Red 连续攻击类锁定收尾：大闹一番/花瓣舞/逆鳞（结束后自身混乱）/ 滚动（纯计数，不混乱）
+		var lock_effect = mv.get("effect", "")
+		if (lock_effect == "rampage" or lock_effect == "rollout") and dmg > 0:
+			if attacker.get("rampage_turns_left", 0) <= 0:
+				attacker["rampage_turns_left"] = 5 if lock_effect == "rollout" else (2 + randi() % 2)
+				attacker["rampage_move_id"] = mv_id
+			attacker["rampage_turns_left"] -= 1
+			if attacker["rampage_turns_left"] <= 0:
+				attacker["rampage_move_id"] = ""
+				if lock_effect == "rampage" and attacker.get("confused_turns", 0) <= 0:
+					attacker["confused_turns"] = randi() % 4 + 2
+					await _show_message_async("%s 因为连续攻击而陷入了混乱！" % attacker_name)
 
 		# 260703 Red recoil（反伤）
 		var sec_effect  = mv.get("effect", "")
@@ -1526,23 +1762,30 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			await _show_message_async("%s 吸取了对手的体力！（+%d）" % [attacker_name, heal_amt])
 
 		# 附带状态/能力效果（有概率触发）
-		elif sec_effect != "" and sec_effect != "high_crit":
+		elif sec_effect != "" and sec_effect != "high_crit" \
+			and sec_effect != "rampage" and sec_effect != "rollout" and sec_effect != "fury_cutter":
 			var sec_chance = mv.get("effect_chance", 0)
 			if sec_chance > 0 and eff > 0.0:
 				if randf() * 100.0 < sec_chance:
-					_apply_effect(sec_effect, attacker, defender, is_enemy)
-					_refresh_info()
-					var msg = _effect_message(sec_effect, attacker, defender)
-					if msg != "":
-						await _show_message_async(msg)
+					if sec_effect in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
+						pass  # 260722 Red 替身挡下了附加效果（沿用主流规则：作用于对手的效果一律被替身吸收）
+					else:
+						_apply_effect(sec_effect, attacker, defender, is_enemy, sec_value)
+						_refresh_info()
+						var msg = _effect_message(sec_effect, attacker, defender)
+						if msg != "":
+							await _show_message_async(msg)
 	else:
 		# 纯状态技能（power=0）
 		var effect = mv.get("effect", "")
-		_apply_effect(effect, attacker, defender, is_enemy)
-		_refresh_info(true)
-		var msg = _effect_message(effect, attacker, defender)
-		if msg != "":
-			await _show_message_async(msg)
+		if effect in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
+			await _show_message_async("但是被 %s 的替身挡住了！" % MonDB.display_name(defender))
+		else:
+			_apply_effect(effect, attacker, defender, is_enemy, mv.get("effect_value", 0))
+			_refresh_info(true)
+			var msg = _effect_message(effect, attacker, defender)
+			if msg != "":
+				await _show_message_async(msg)
 
 func _show_message_async(text: String) -> void:
 	_msg_label.text = text
@@ -1551,15 +1794,46 @@ func _show_message_async(text: String) -> void:
 # ══════════════════════════════════════════════════════════════════════════════
 # Status effects
 # ══════════════════════════════════════════════════════════════════════════════
-func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _is_enemy: bool) -> void:
+# 260722 Red 作用于"对手"的effect（会被替身挡下）；raise_*/heal_self/drain/recoil/
+# substitute/screen_special都是作用于攻击者自己，不受对方替身影响，故不在此列
+const DEFENDER_TARGETING_EFFECTS := [
+	"lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
+	"inflict_burn", "inflict_poison", "inflict_paralysis", "inflict_sleep", "inflict_freeze",
+	"inflict_confusion", "inflict_toxic", "flinch", "leech_seed", "encore", "reckless_debuff",
+	"torment",
+]
+
+# 260722 Red 破釜沉舟(reckless_debuff)随机点名一项能力时用来拼文案
+const STAT_LABELS := {
+	"atk": "攻击", "def": "防御", "sp_atk": "特攻", "sp_def": "特防", "spd": "速度", "acc": "命中率",
+}
+
+# 有替身时伤害先扣替身HP（扣满即消失，多余伤害不会穿透到真实HP）；
+# 返回true代表这一下刚好打破了替身，供调用方额外提示"替身消失了"
+func _damage_defender(defender: Dictionary, dmg: int) -> bool:
+	if defender.get("substitute_hp", 0) > 0:
+		defender["substitute_hp"] = max(0, defender["substitute_hp"] - dmg)
+		return defender["substitute_hp"] <= 0
+	defender["current_hp"] = max(0, defender["current_hp"] - dmg)
+	return false
+
+func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _is_enemy: bool, effect_value: int = 0) -> void:
 	match effect:
 		# ── 能力阶段变化 ──────────────────────────────────────────────────────
 		"lower_atk":
 			defender["stages"]["atk"] = max(-6, defender["stages"].get("atk", 0) - 1)
+		"lower_def":
+			defender["stages"]["def"] = max(-6, defender["stages"].get("def", 0) - 1)
+		"lower_sp_atk":
+			defender["stages"]["sp_atk"] = max(-6, defender["stages"].get("sp_atk", 0) - 1)
+		"lower_sp_def":
+			defender["stages"]["sp_def"] = max(-6, defender["stages"].get("sp_def", 0) - 1)
 		"lower_acc":
 			defender["stages"]["acc"] = max(-6, defender["stages"].get("acc", 0) - 1)
 		"lower_spd":
 			defender["stages"]["spd"] = max(-6, defender["stages"].get("spd", 0) - 1)
+		"raise_atk":
+			attacker["stages"]["atk"] = min(6, attacker["stages"].get("atk", 0) + 1)
 		"raise_def":
 			attacker["stages"]["def"] = min(6, attacker["stages"].get("def", 0) + 1)
 		"raise_sp_atk":
@@ -1589,14 +1863,53 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 		"inflict_freeze":
 			if defender.get("status", "") == "":
 				defender["status"] = "冰冻"
+		"inflict_confusion":
+			if defender.get("confused_turns", 0) <= 0:
+				defender["confused_turns"] = randi() % 4 + 2  # 2~5回合
+		"inflict_toxic":
+			if defender.get("status", "") == "":
+				defender["status"] = "剧毒"
+				defender["toxic_counter"] = 1
+		# ── 260722 Red 新接入的占位效果（畏缩/替身/寄生种子/再来一次/光墙）──────
+		"flinch":
+			defender["flinched"] = true
+		"substitute":
+			var sub_pct = effect_value if effect_value > 0 else 25
+			var sub_cost = max(1, int(attacker["max_hp"] * sub_pct / 100.0))
+			if attacker.get("substitute_hp", 0) <= 0 and attacker["current_hp"] > sub_cost:
+				attacker["current_hp"] -= sub_cost
+				attacker["substitute_hp"] = sub_cost
+		"leech_seed":
+			if not defender.get("leech_seeded", false):
+				defender["leech_seeded"] = true
+		"encore":
+			if defender.get("last_move_id", "") != "" and defender.get("encore_turns", 0) <= 0:
+				defender["encore_turns"] = 3
+				defender["encore_move"] = defender["last_move_id"]
+		"screen_special":
+			attacker["screen_special_turns"] = 5
+		"reckless_debuff":
+			var cost_pct = effect_value if effect_value > 0 else 50
+			var cost = max(1, int(attacker["max_hp"] * cost_pct / 100.0))
+			attacker["current_hp"] = max(0, attacker["current_hp"] - cost)
+			var stat_keys = STAT_LABELS.keys()
+			var pick = stat_keys[randi() % stat_keys.size()]
+			defender["stages"][pick] = max(-6, defender["stages"].get(pick, 0) - 2)
+			defender["_last_debuffed_stat"] = pick
+		"torment":
+			defender["tormented"] = true
 
 func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary) -> String:
 	var a = MonDB.display_name(attacker)
 	var d = MonDB.display_name(defender)
 	match effect:
 		"lower_atk":        return "%s 的攻击下降了！" % d
+		"lower_def":        return "%s 的防御下降了！" % d
+		"lower_sp_atk":     return "%s 的特攻下降了！" % d
+		"lower_sp_def":     return "%s 的特防下降了！" % d
 		"lower_acc":        return "%s 命中率下降了！" % d
 		"lower_spd":        return "%s 速度下降了！" % d
+		"raise_atk":        return "%s 的攻击提升了！" % a
 		"raise_def":        return "%s 的防御提升了！" % a
 		"raise_sp_atk":     return "%s 的特攻提升了！" % a
 		"raise_sp_def":     return "%s 的特防提升了！" % a
@@ -1607,6 +1920,19 @@ func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary)
 		"inflict_paralysis":return "%s 陷入了麻痹状态！" % d
 		"inflict_sleep":    return "%s 睡着了！" % d
 		"inflict_freeze":   return "%s 被冰封了！" % d
+		"inflict_confusion":return "%s 陷入了混乱状态！" % d
+		"inflict_toxic":    return "%s 陷入了剧毒状态！" % d
+		"flinch":           return ""
+		"substitute":
+			return "%s 制造了替身！" % a if attacker.get("substitute_hp", 0) > 0 else "但是失败了！"
+		"leech_seed":       return "%s 被种下了寄生种子！" % d
+		"encore":
+			return "%s 被迫再次使出了上一招！" % d if defender.get("encore_turns", 0) > 0 else "但是失败了！"
+		"screen_special":   return "%s 周围出现了闪耀的光墙！" % a
+		"reckless_debuff":
+			var label = STAT_LABELS.get(defender.get("_last_debuffed_stat", ""), "")
+			return "%s 消耗了一半体力！\n%s 的%s大幅下降了！" % [a, d, label]
+		"torment":          return "%s 被无理取闹了，无法连续使出同一招式！" % d
 	return ""
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1669,6 +1995,7 @@ func _handle_victory() -> void:
 		if _trainer_mon_idx < _trainer_team.size():
 			# 训练师派出下一只
 			_enemy_mon = _trainer_team[_trainer_mon_idx]
+			_reset_transient_battle_state(_enemy_mon)
 			_enemy_spr.texture = _draw_mon_front(_enemy_mon["species_id"])
 			_rescale_sprite(_enemy_spr, 80.0)
 			_enemy_spr.modulate = Color.WHITE

@@ -59,16 +59,6 @@
     "effect": "",
     "description": "用格斗之力攻击对手。"
   },
-  "临别礼物": {
-    "name": "临别礼物",
-    "type": "暗",
-    "category": "变化",
-    "power": 0,
-    "accuracy": 100,
-    "max_pp": 10,
-    "effect": "",
-    "description": "虽然会使自己陷入昏厥，但是能够大幅降低对手的攻击和特攻。"
-  },
   "九彩升华齐聚顶": {
     "name": "九彩升华齐聚顶",
     "type": "空",
@@ -86,7 +76,7 @@
     "power": 15,
     "accuracy": 85,
     "max_pp": 20,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "用角或喙刺向对手进行攻击。连续攻击2～5次。"
   },
   "乱抓": {
@@ -96,7 +86,7 @@
     "power": 18,
     "accuracy": 80,
     "max_pp": 15,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "用爪子或镰刀等抓对手进行攻击。连续攻击2～5次。"
   },
   "二连击": {
@@ -126,7 +116,7 @@
     "power": 30,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "multi_hit_2",
     "description": "用2只脚踢飞对手进行攻击。连续2次给予伤害。"
   },
   "亚空裂斩": {
@@ -136,7 +126,8 @@
     "power": 100,
     "accuracy": 95,
     "max_pp": 5,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 10,
     "description": "用异次元的冲击波攻击对手。有时会使对手畏缩。"
   },
   "交换场地": {
@@ -166,7 +157,8 @@
     "power": 100,
     "accuracy": 100,
     "max_pp": 5,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "释放交错的美丽雷电攻击对手。有时会让对手陷入麻痹状态。"
   },
   "亮亮风暴": {
@@ -276,7 +268,8 @@
     "power": 75,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_confusion",
+    "effect_chance": 10,
     "description": "发射神奇的光线进行攻击。有时会使对手混乱。"
   },
   "修长之角": {
@@ -316,7 +309,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_sp_def",
     "description": "装哭流泪。使对手不知所措，从而大幅降低对手的特防。"
   },
   "假跪真撞": {
@@ -366,7 +359,7 @@
     "power": 0,
     "accuracy": 75,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "撒出催眠粉，从而让对手陷入睡眠状态。"
   },
   "充电": {
@@ -436,7 +429,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 5,
-    "effect": "",
+    "effect": "encore",
     "description": "让对手接受再来一次，连续3次使出最后使用的招式。"
   },
   "写生": {
@@ -476,7 +469,8 @@
     "power": 55,
     "accuracy": 95,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_spd",
+    "effect_chance": 100,
     "description": "向对手吹出冰冷的寒风进行攻击。会降低对手的速度。"
   },
   "冰冻伏特": {
@@ -496,7 +490,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_freeze",
+    "effect_chance": 10,
     "description": "向对手发射冰冻光束进行攻击。有时会让对手陷入冰冻状态。"
   },
   "冰冻光线": {
@@ -517,7 +512,8 @@
     "power": 75,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_freeze",
+    "effect_chance": 10,
     "description": "用充满寒气的拳头攻击对手。有时会让对手陷入冰冻状态。"
   },
   "冰冻牙": {
@@ -597,7 +593,7 @@
     "power": 25,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "向对手发射锋利的冰柱进行攻击。连续攻击2～5次。"
   },
   "冰雹": {
@@ -677,7 +673,8 @@
     "power": 40,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "进行先制攻击，使对手畏缩。要在出场后立刻使出才能成功。"
   },
   "击落": {
@@ -717,7 +714,7 @@
     "power": 0,
     "accuracy": 85,
     "max_pp": 40,
-    "effect": "",
+    "effect": "lower_def",
     "description": "发出不由自主想要捂起耳朵的刺耳声，从而大幅降低对手的防御。"
   },
   "剑舞": {
@@ -737,7 +734,7 @@
     "power": 0,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_toxic",
     "description": "让对手陷入剧毒状态。随着回合的推进，中毒伤害会增加。"
   },
   "剧毒牙": {
@@ -747,7 +744,8 @@
     "power": 50,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_toxic",
+    "effect_chance": 30,
     "description": "用有毒的牙齿咬住对手进行攻击。有时会使对手中剧毒。"
   },
   "劈开": {
@@ -817,7 +815,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "向对手发射聚集的光之力量进行攻击。有时会降低对手的特防。"
   },
   "加农水炮": {
@@ -847,7 +846,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 10,
     "description": "向对手发出强力电击进行攻击。有时会让对手陷入麻痹状态。"
   },
   "十万马力": {
@@ -887,7 +887,8 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 10,
     "description": "用毒之刃劈开对手进行攻击。有时会让对手陷入中毒状态。容易击中要害。"
   },
   "千万伏特": {
@@ -967,7 +968,7 @@
     "power": 25,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "multi_hit_2",
     "description": "将2根针刺入对手，连续2次给予伤害。有时会让对手陷入中毒状态。"
   },
   "反射壁": {
@@ -1057,7 +1058,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 40,
-    "effect": "",
+    "effect": "lower_atk",
     "description": "让对手听可爱的叫声，引开注意力使其疏忽，从而降低对手的攻击。"
   },
   "可怕面孔": {
@@ -1157,7 +1158,8 @@
     "power": 20,
     "accuracy": 100,
     "max_pp": 25,
-    "effect": "",
+    "effect": "drain",
+    "effect_value": 50,
     "description": "吸取对手的养分进行攻击。可以回复给予对手伤害的一半HP。"
   },
   "吸取之吻": {
@@ -1237,7 +1239,8 @@
     "power": 60,
     "accuracy": 100,
     "max_pp": 25,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用尖锐的牙咬住对手进行攻击。有时会使对手畏缩。"
   },
   "咬碎": {
@@ -1247,7 +1250,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_def",
+    "effect_chance": 20,
     "description": "用利牙咬碎对手进行攻击。有时会降低对手的防御。"
   },
   "哈欠": {
@@ -1287,7 +1291,7 @@
     "power": 0,
     "accuracy": 55,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "让对手听舒适、美妙的歌声，从而陷入睡眠状态。"
   },
   "啃咬": {
@@ -1457,7 +1461,8 @@
     "power": 60,
     "accuracy": 85,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "一边使身体快速旋转，一边踢飞对手进行攻击。有时会使对手畏缩。"
   },
   "围攻": {
@@ -1587,7 +1592,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "向对手脚下释放大地之力。有时会降低对手的特防。"
   },
   "大地掌控": {
@@ -1677,7 +1683,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "inflict_paralysis",
     "description": "用腹部的花纹使对手害怕，从而让其陷入麻痹状态。"
   },
   "大闹一番": {
@@ -1687,7 +1693,7 @@
     "power": 120,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "rampage",
     "description": "在2～3回合内，乱打一气地攻击对手。大闹一番后自己会陷入混乱。"
   },
   "天使之吻": {
@@ -1707,7 +1713,8 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "将头伸出，笔直地扑向对手进行攻击。有时会使对手畏缩。"
   },
   "夹住": {
@@ -1737,7 +1744,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_confusion",
     "description": "显示奇怪的光，扰乱对手。使对手混乱。"
   },
   "奇异之风": {
@@ -1797,7 +1804,8 @@
     "power": 90,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_atk",
+    "effect_chance": 10,
     "description": "与对手嬉闹玩耍进行攻击。有时会降低对手的攻击。"
   },
   "子弹拳": {
@@ -1847,7 +1855,7 @@
     "power": 0,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "leech_seed",
     "description": "植入寄生种子后，将在每回合吸取对手的HP用来回复自己。"
   },
   "密语": {
@@ -1887,7 +1895,7 @@
     "power": 20,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "向对手发射锐针进行攻击。连续攻击2～5次。"
   },
   "尖刺臂": {
@@ -1897,7 +1905,8 @@
     "power": 60,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用带刺的手臂猛烈地挥舞进行攻击。有时会使对手畏缩。"
   },
   "尖刺防守": {
@@ -1957,7 +1966,8 @@
     "power": 75,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "将大岩石猛烈地撞向对手进行攻击。有时会使对手畏缩。"
   },
   "岩石封锁": {
@@ -1967,7 +1977,8 @@
     "power": 60,
     "accuracy": 95,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_spd",
+    "effect_chance": 100,
     "description": "投掷岩石进行攻击。封住对手的行动，从而降低速度。"
   },
   "岩石打磨": {
@@ -1997,7 +2008,7 @@
     "power": 25,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "向对手发射坚硬的岩石进行攻击。连续攻击2～5次。"
   },
   "巨人卫士・阿罗拉": {
@@ -2067,7 +2078,8 @@
     "power": 65,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_confusion",
+    "effect_chance": 10,
     "description": "向对手发射神奇的光线进行攻击。有时会使对手混乱。"
   },
   "广域破坏": {
@@ -2147,7 +2159,8 @@
     "power": 85,
     "accuracy": 85,
     "max_pp": 5,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "弹跳到高高的空中，第2回合攻击对手。有时会让对手陷入麻痹状态。"
   },
   "强力鞭打": {
@@ -2287,7 +2300,8 @@
     "power": 50,
     "accuracy": 100,
     "max_pp": 25,
-    "effect": "",
+    "effect": "inflict_confusion",
+    "effect_chance": 10,
     "description": "向对手发送微弱的念力进行攻击。有时会使对手混乱。"
   },
   "急速折返": {
@@ -2347,7 +2361,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 20,
     "description": "从体内发出充满恶意的气场。有时会使对手畏缩。"
   },
   "恶意追击": {
@@ -2377,7 +2392,7 @@
     "power": 0,
     "accuracy": 75,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "用恐怖的脸强吻对手。让对手陷入睡眠状态。"
   },
   "您先请": {
@@ -2397,7 +2412,8 @@
     "power": 30,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用尖叫声等突然惊吓对手进行攻击。有时会使对手畏缩。"
   },
   "惊爆大头": {
@@ -2427,7 +2443,8 @@
     "power": 80,
     "accuracy": 90,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 20,
     "description": "集中精神力量用头撞击对手。有时会使对手畏缩。"
   },
   "意念移物": {
@@ -2577,7 +2594,8 @@
     "power": 110,
     "accuracy": 70,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "向对手劈下暴雷进行攻击。有时会让对手陷入麻痹状态。"
   },
   "打鼾": {
@@ -2667,7 +2685,7 @@
     "power": 0,
     "accuracy": 80,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_acc",
     "description": "折弯汤匙引开注意，从而降低对手的命中率。"
   },
   "抛下狠话": {
@@ -2807,7 +2825,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_atk",
     "description": "给对手挠痒，使其发笑，从而降低对手的攻击和防御。"
   },
   "挡路": {
@@ -2957,7 +2975,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "lower_def",
     "description": "可爱地左右摇晃尾巴，诱使对手疏忽大意。会降低对手的防御。"
   },
   "摇晃舞": {
@@ -2967,7 +2985,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_confusion",
     "description": "摇摇晃晃地跳起舞蹈，让周围的精灵陷入混乱状态。"
   },
   "摔打": {
@@ -2987,7 +3005,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_atk",
     "description": "可爱地凝视，诱使对手疏忽大意，从而大幅降低对手的攻击。"
   },
   "撒菱": {
@@ -3017,7 +3035,8 @@
     "power": 75,
     "accuracy": 95,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_def",
+    "effect_chance": 20,
     "description": "用坚硬的锐爪劈开对手进行攻击。有时会降低对手的防御。"
   },
   "撞击": {
@@ -3047,7 +3066,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 20,
     "description": "以惊人的气势扑向对手。有时会使对手畏缩。"
   },
   "攻击指令": {
@@ -3067,7 +3087,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "释放耀眼的电击攻击周围所有精灵。有时会让对手陷入麻痹状态。"
   },
   "断头钳": {
@@ -3137,7 +3158,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "torment",
     "description": "向对手无理取闹，令其不能连续2次使出相同招式。"
   },
   "日光刃": {
@@ -3267,7 +3288,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 20,
     "description": "投掷一团黑影进行攻击。有时会降低对手的特防。"
   },
   "暗袭要害": {
@@ -3287,7 +3309,7 @@
     "power": 0,
     "accuracy": 50,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "将对手拖入黑暗的世界，让对手陷入睡眠状态。"
   },
   "暗黑爆破": {
@@ -3317,7 +3339,8 @@
     "power": 110,
     "accuracy": 70,
     "max_pp": 5,
-    "effect": "",
+    "effect": "inflict_freeze",
+    "effect_chance": 10,
     "description": "将猛烈的暴风雪刮向对手进行攻击。有时会让对手陷入冰冻状态。"
   },
   "替身": {
@@ -3327,7 +3350,8 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 10,
-    "effect": "",
+    "effect": "substitute",
+    "effect_value": 25,
     "description": "削减少许自己的HP，制造分身。分身将成为自己的替身。"
   },
   "月亮之力": {
@@ -3337,7 +3361,8 @@
     "power": 95,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_sp_atk",
+    "effect_chance": 30,
     "description": "借助月亮的力量攻击对手。有时会降低对手的特攻。"
   },
   "月光": {
@@ -3417,7 +3442,8 @@
     "power": 65,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_atk",
+    "effect_chance": 10,
     "description": "向对手发射虹色光束进行攻击。有时会降低对手的攻击。"
   },
   "极寒冷焰": {
@@ -3807,7 +3833,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 30,
     "description": "用浸满毒素的触手或手臂攻击对手。有时会让对手陷入中毒状态。"
   },
   "毒尾": {
@@ -3817,7 +3844,8 @@
     "power": 50,
     "accuracy": 100,
     "max_pp": 25,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 10,
     "description": "用尾巴拍打。有时会让对手陷入中毒状态，也容易击中要害。"
   },
   "毒液冲击": {
@@ -3847,7 +3875,7 @@
     "power": 0,
     "accuracy": 90,
     "max_pp": 40,
-    "effect": "",
+    "effect": "inflict_poison",
     "description": "将毒瓦斯吹到对手的脸上，从而让对手陷入中毒状态。"
   },
   "毒粉": {
@@ -3877,7 +3905,8 @@
     "power": 15,
     "accuracy": 100,
     "max_pp": 35,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 30,
     "description": "将有毒的针刺入对手进行攻击。有时会让对手陷入中毒状态。"
   },
   "气味侦测": {
@@ -3927,7 +3956,8 @@
     "power": 60,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_confusion",
+    "effect_chance": 20,
     "description": "用水的震动攻击对手。有时会使对手混乱。"
   },
   "水之誓约": {
@@ -4027,7 +4057,8 @@
     "power": 65,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 30,
     "description": "用污泥投掷对手进行攻击。有时会让对手陷入中毒状态。"
   },
   "污泥波": {
@@ -4047,7 +4078,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 30,
     "description": "用污泥炸弹攻击对手。有时会让对手陷入中毒状态。"
   },
   "汲取": {
@@ -4057,7 +4089,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "drain",
+    "effect_value": 50,
     "description": "吸取血液攻击对手。可以回复给予对手伤害的一半HP。"
   },
   "沙暴": {
@@ -4127,7 +4160,8 @@
     "power": 40,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "lower_spd",
+    "effect_chance": 10,
     "description": "向对手用力吹起无数泡泡进行攻击。有时会降低对手的速度。"
   },
   "泡沫光线": {
@@ -4137,7 +4171,8 @@
     "power": 65,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_spd",
+    "effect_chance": 10,
     "description": "向对手猛烈地喷射泡沫进行攻击。有时会降低对手的速度。"
   },
   "波导弹": {
@@ -4157,7 +4192,8 @@
     "power": 55,
     "accuracy": 95,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_spd",
+    "effect_chance": 100,
     "description": "向对手投掷泥块进行攻击。同时降低对手的速度。"
   },
   "泥巴炸弹": {
@@ -4187,7 +4223,8 @@
     "power": 85,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "用整个身体压住对手进行攻击。有时会让对手陷入麻痹状态。"
   },
   "泼沙": {
@@ -4197,7 +4234,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_acc",
     "description": "向对手脸上泼沙子，从而降低命中率。"
   },
   "洁净光芒": {
@@ -4207,7 +4244,8 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 5,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "释放耀眼的光芒进行攻击。有时会降低对手的特防。"
   },
   "泄愤": {
@@ -4287,7 +4325,8 @@
     "power": 90,
     "accuracy": 85,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_acc",
+    "effect_chance": 30,
     "description": "向对手喷射浑浊的水进行攻击。有时会降低对手的命中率。"
   },
   "浊雾": {
@@ -4297,7 +4336,8 @@
     "power": 30,
     "accuracy": 70,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 40,
     "description": "将肮脏的浓雾吹向对手进行攻击。有时会让对手陷入中毒状态。"
   },
   "海神庄严交响乐": {
@@ -4387,7 +4427,8 @@
     "power": 40,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "将强酸泼向对手进行攻击。有时会降低对手的特防。"
   },
   "滔滔冲浪": {
@@ -4407,7 +4448,7 @@
     "power": 30,
     "accuracy": 90,
     "max_pp": 20,
-    "effect": "",
+    "effect": "rollout",
     "description": "在5回合内连续滚动攻击对手。招式每次击中，威力就会提高。"
   },
   "潜水": {
@@ -4667,7 +4708,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_acc",
     "description": "向对手喷出烟或墨汁等，从而降低对手的命中率。"
   },
   "烟雾弹": {
@@ -4838,7 +4879,8 @@
     "power": 100,
     "accuracy": 50,
     "max_pp": 5,
-    "effect": "",
+    "effect": "inflict_confusion",
+    "effect_chance": 100,
     "description": "使出浑身力气出拳进行攻击。必定会使对手混乱。"
   },
   "爆音波": {
@@ -4938,7 +4980,7 @@
     "power": 15,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "用张开着的双手猛推对手进行攻击。连续攻击2～5次。"
   },
   "猛撞": {
@@ -5068,7 +5110,8 @@
     "power": 65,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "让电流覆盖全身，猛撞向对手进行攻击。有时会让对手陷入麻痹状态。"
   },
   "电光一闪": {
@@ -5158,7 +5201,8 @@
     "power": 120,
     "accuracy": 50,
     "max_pp": 5,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 100,
     "description": "发出电磁炮攻击对手。让对手陷入麻痹状态。"
   },
   "电磁飘浮": {
@@ -5368,7 +5412,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "lower_def",
     "description": "用犀利的眼神使其害怕，从而降低对手的防御。"
   },
   "瞬间失忆": {
@@ -5438,7 +5482,8 @@
     "power": 140,
     "accuracy": 90,
     "max_pp": 5,
-    "effect": "",
+    "effect": "lower_sp_atk",
+    "effect_chance": 10,
     "description": "释放强力的光线攻击对手。有时会降低对手的特攻。"
   },
   "破灭之愿": {
@@ -5488,7 +5533,8 @@
     "power": 40,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_def",
+    "effect_chance": 30,
     "description": "用拳头进行攻击。有时会降低对手的防御。"
   },
   "磁场操控": {
@@ -5608,7 +5654,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 10,
     "description": "发出看不见的神奇力量进行攻击。有时会使对手畏缩。"
   },
   "神速": {
@@ -5628,7 +5675,8 @@
     "power": 140,
     "accuracy": 90,
     "max_pp": 5,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "第2回合攻击对手。偶尔使对手畏缩。也容易击中要害。"
   },
   "祸不单行": {
@@ -5648,7 +5696,7 @@
     "power": 25,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "向对手猛烈地发射种子进行攻击。连续攻击2～5次。"
   },
   "种子炸弹": {
@@ -5838,7 +5886,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "向对手发送强大的念力进行攻击。有时会降低对手的特防。"
   },
   "精神波": {
@@ -5958,7 +6007,8 @@
     "power": 75,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "drain",
+    "effect_value": 50,
     "description": "吸取对手的养分进行攻击。可以回复给予对手伤害的一半HP。"
   },
   "绑紧": {
@@ -6038,7 +6088,8 @@
     "power": 10,
     "accuracy": 100,
     "max_pp": 35,
-    "effect": "",
+    "effect": "lower_spd",
+    "effect_chance": 10,
     "description": "用触手或青藤等缠绕进行攻击。有时会降低对手的速度。"
   },
   "缩入壳中": {
@@ -6068,7 +6119,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_atk",
     "description": "撒出羽毛，笼罩在对手的周围。大幅降低对手的攻击。"
   },
   "翅膀攻击": {
@@ -6148,7 +6199,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "发射从自然收集的生命力量。有时会降低对手的特防。"
   },
   "腐蚀气体": {
@@ -6288,7 +6340,8 @@
     "power": 30,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "用长长的舌头，舔遍对手进行攻击。有时会让对手陷入麻痹状态。"
   },
   "舍身冲撞": {
@@ -6318,7 +6371,7 @@
     "power": 120,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "rampage",
     "description": "在2～3回合内，散落花瓣攻击对手。之后自己会陷入混乱。"
   },
   "花疗": {
@@ -6408,7 +6461,7 @@
     "power": 0,
     "accuracy": 55,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "让对手听舒适的笛声，从而陷入睡眠状态。"
   },
   "萤火": {
@@ -6518,7 +6571,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "撒满具有催眠效果的孢子，从而让对手陷入睡眠状态。"
   },
   "虚张声势": {
@@ -6528,7 +6581,7 @@
     "power": 0,
     "accuracy": 85,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_confusion",
     "description": "激怒对手，使其混乱。因为愤怒，对手的攻击会大幅提高。"
   },
   "虫之抵抗": {
@@ -6558,7 +6611,8 @@
     "power": 90,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 10,
     "description": "振动翅膀发出音波攻击对手。有时会降低对手的特防。"
   },
   "蛛网": {
@@ -6778,7 +6832,8 @@
     "power": 40,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "drain",
+    "effect_value": 50,
     "description": "吸取对手的养分进行攻击。可以回复给予对手伤害的一半HP。"
   },
   "超级水流大漩涡": {
@@ -6818,7 +6873,7 @@
     "power": 0,
     "accuracy": 55,
     "max_pp": 20,
-    "effect": "",
+    "effect": "inflict_confusion",
     "description": "从身体发出特殊的音波，从而使对手混乱。"
   },
   "跃起": {
@@ -6858,7 +6913,8 @@
     "power": 65,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用大脚踩踏对手进行攻击。有时会使对手畏缩。"
   },
   "蹭蹭脸颊": {
@@ -6978,7 +7034,7 @@
     "power": 15,
     "accuracy": 85,
     "max_pp": 10,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "用连环巴掌拍打对手进行攻击。连续攻击2～5次。"
   },
   "连续拳": {
@@ -6988,7 +7044,7 @@
     "power": 18,
     "accuracy": 85,
     "max_pp": 15,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "用拳头怒涛般的殴打对手进行攻击。连续攻击2～5次。"
   },
   "迷人": {
@@ -7008,7 +7064,8 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_confusion",
+    "effect_chance": 20,
     "description": "有节奏地出拳攻击对手。有时会使对手混乱。"
   },
   "追打": {
@@ -7028,7 +7085,7 @@
     "power": 120,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "rampage",
     "description": "在2～3回合内，乱打一气地进行攻击。大闹一番后自己会陷入混乱。"
   },
   "逐步击破": {
@@ -7128,7 +7185,7 @@
     "power": 0,
     "accuracy": 85,
     "max_pp": 40,
-    "effect": "",
+    "effect": "lower_sp_def",
     "description": "让对手听摩擦金属般讨厌的声音。大幅降低对手的特防。"
   },
   "铁滚轮": {
@@ -7188,7 +7245,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用钢铁般坚硬的头撞击对手。有时会使对手畏缩。"
   },
   "铁尾": {
@@ -7198,7 +7256,8 @@
     "power": 100,
     "accuracy": 75,
     "max_pp": 15,
-    "effect": "",
+    "effect": "lower_def",
+    "effect_chance": 30,
     "description": "使用坚硬的尾巴摔打对手进行攻击。有时会降低对手的防御。"
   },
   "铁蹄光线": {
@@ -7238,7 +7297,8 @@
     "power": 65,
     "accuracy": 85,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_def",
+    "effect_chance": 30,
     "description": "释放汇聚的光束射击对手。有时会降低对手的特防。"
   },
   "镜面反射": {
@@ -7278,7 +7338,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "lower_acc",
     "description": "使出光芒，从而降低对手的命中率。"
   },
   "闪焰冲锋": {
@@ -7408,7 +7468,8 @@
     "power": 130,
     "accuracy": 85,
     "max_pp": 5,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 20,
     "description": "释放蓝色的闪电攻击对手。有时会让对手陷入麻痹状态。"
   },
   "雷电拳": {
@@ -7418,7 +7479,8 @@
     "power": 75,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 10,
     "description": "用充满电流的拳头攻击对手。有时会让对手陷入麻痹状态。"
   },
   "雷电牙": {
@@ -7598,7 +7660,7 @@
     "power": 25,
     "accuracy": 95,
     "max_pp": 20,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "向对手发射锐针进行攻击。连续攻击2～5次。"
   },
   "飞水手里剑": {
@@ -7678,7 +7740,7 @@
     "power": 50,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "multi_hit_2",
     "description": "用手中的骨头投掷对手，来回连续2次给予伤害。"
   },
   "骨棒": {
@@ -7688,7 +7750,8 @@
     "power": 65,
     "accuracy": 85,
     "max_pp": 20,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 10,
     "description": "用手中的骨头殴打对手进行攻击。有时会使对手畏缩。"
   },
   "骨棒乱打": {
@@ -7728,7 +7791,8 @@
     "power": 50,
     "accuracy": 100,
     "max_pp": 40,
-    "effect": "",
+    "effect": "raise_spd",
+    "effect_chance": 100,
     "description": "通过旋转来攻击对手。可以摆脱束缚类招式。还能提高自己的速度。"
   },
   "高速星星": {
@@ -7828,7 +7892,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_sp_atk",
+    "effect_chance": 10,
     "description": "向对手发射强力的光芒进行攻击。有时会降低对手的特攻。"
   },
   "鳞射": {
@@ -7898,7 +7963,7 @@
     "power": 0,
     "accuracy": 75,
     "max_pp": 30,
-    "effect": "",
+    "effect": "inflict_paralysis",
     "description": "撒出麻痹粉，从而让对手陷入麻痹状态。"
   },
   "麻麻刺刺": {
@@ -8038,7 +8103,8 @@
     "power": 40,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 20,
     "description": "兴起龙卷风，将对手卷入进行攻击。有时会使对手畏缩。"
   },
   "龙尾": {
@@ -8870,7 +8936,7 @@
     "power": 95,
     "accuracy": 95,
     "max_pp": 10,
-    "effect": "",
+    "effect": "multi_hit",
     "description": "用龙牙连续攻击对手。"
   },
   "龙翼制裁": {
@@ -9030,7 +9096,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "screen_special",
     "description": "制造光之墙壁，5回合内提升特防。"
   },
   "冤冤相报": {
@@ -9080,7 +9146,7 @@
     "power": 35,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "multi_hit_2",
     "description": "用锋锐的物体连续2次攻击对手。"
   },
   "吹风": {
@@ -9110,7 +9176,8 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用头撞向对手，有几率使对手畏缩。"
   },
   "审判之光": {
@@ -9140,7 +9207,8 @@
     "power": 75,
     "accuracy": 90,
     "max_pp": 10,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "令岩石崩塌砸向对手，有几率使对手畏缩。"
   },
   "影子球": {
@@ -9200,7 +9268,7 @@
     "power": 0,
     "accuracy": 50,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_sleep",
     "description": "让对手陷入黑暗从而进入睡眠状态。"
   },
   "暴风之刃": {
@@ -9260,7 +9328,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 40,
-    "effect": "",
+    "effect": "lower_spd",
     "description": "散播棉花孢子大幅降低对手速度。"
   },
   "森林诅咒": {
@@ -9280,7 +9348,8 @@
     "power": 95,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_poison",
+    "effect_chance": 30,
     "description": "发射污泥攻击对手，有几率使其中毒。"
   },
   "火焰放射": {
@@ -9310,7 +9379,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 30,
-    "effect": "",
+    "effect": "lower_def",
     "description": "甩动尾巴降低对手防御。"
   },
   "究极冲击": {
@@ -9330,7 +9399,8 @@
     "power": 75,
     "accuracy": 95,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用空气利刃切裂对手，有几率使其畏缩。"
   },
   "起死回生": {
@@ -9360,7 +9430,7 @@
     "power": 40,
     "accuracy": 95,
     "max_pp": 20,
-    "effect": "",
+    "effect": "fury_cutter",
     "description": "连续切割，每次命中威力翻倍。"
   },
   "铁头撞": {
@@ -9370,7 +9440,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "flinch",
+    "effect_chance": 30,
     "description": "用钢铁头部撞击对手，有几率使其畏缩。"
   },
   "阳光烈焰": {
@@ -9390,7 +9461,8 @@
     "power": 75,
     "accuracy": 100,
     "max_pp": 15,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 10,
     "description": "用雷电环绕的拳头攻击对手，有几率使对手麻痹。"
   },
   "雷电": {
@@ -9400,7 +9472,8 @@
     "power": 110,
     "accuracy": 70,
     "max_pp": 10,
-    "effect": "",
+    "effect": "inflict_paralysis",
+    "effect_chance": 30,
     "description": "召唤雷电攻击对手，有几率使对手麻痹。"
   },
   "风压": {
@@ -9430,7 +9503,7 @@
     "power": 0,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "lower_spd",
     "description": "用恐怖的面孔大幅降低对手速度。"
   },
   "龙星群": {
@@ -9442,5 +9515,16 @@
     "max_pp": 5,
     "effect": "",
     "description": "召唤流星群轰击对手，自身特攻大幅降低。"
+  },
+  "破釜沉舟": {
+    "name": "破釜沉舟",
+    "type": "暗",
+    "category": "变化",
+    "power": 0,
+    "accuracy": 100,
+    "max_pp": 10,
+    "effect": "reckless_debuff",
+    "effect_value": 50,
+    "description": "不惜消耗自己一半的体力，随机让对手的一项能力大幅下降。"
   }
 }

@@ -318,13 +318,19 @@ GDScript/Python 内的标记注释统一格式：`// YYMMDD Red xxx`（如 `// 2
 | 吸血 | drain | 吸血 | | ✓(%伤害) |
 | 反伤 | recoil | 反伤 | | ✓(%伤害) |
 | 替身 | substitute | 替身 | | ✓(%HP) |
-| 攻击 | priority / high_crit / flinch / multi_hit / bind | 先制/暴击/畏缩/连击/束缚 | 畏缩✓ | |
+| 攻击 | priority / high_crit / flinch / multi_hit / multi_hit_2 / bind | 先制/暴击/畏缩/连击(2~5次)/连击(固定2次)/束缚 | 畏缩✓ | |
 | 节奏 | charge / recharge / self_destruct | 蓄力/休息/自爆 | | |
 | 场控 | force_switch / protect / leech_seed / taunt / encore / clear_stats / entry_hazard | 各种 | | |
 | 天气 | weather_sun / weather_rain / weather_sandstorm / weather_hail | 天气 | | |
 | 屏障 | screen_physical / screen_special | 物理/特殊减伤 | | |
 
-> 注：目前战斗代码 `_apply_effect()` 仅实现了 `lower_atk/lower_acc/lower_spd/raise_def/raise_sp_atk` 和五种异常状态，其余均为占位，待逐步接入。
+> 注：目前战斗代码 `_apply_effect()` 已实现全部升/降能力（含混乱 `inflict_confusion`）+ 七种异常状态（含剧毒 `inflict_toxic`，每回合递增1/16伤害）；`_execute_move()` 另外单独实现了 `multi_hit`/`multi_hit_2` 多段攻击（260722，此前11个技能只按单段威力结算，是纯数据×代码两头都缺的真bug，不是占位）。
+>
+> 260722 Red 又接入了5个：`flinch`（畏缩，先手方命中后手方本回合无法行动，用完即清）、`substitute`（替身，消耗25%当前HP，之后伤害先扣替身HP、多余不穿透，替身在时几乎所有"作用于对手"的效果都会被挡下）、`leech_seed`（寄生种子，回合末按被种者1/8最大HP吸血给对方）、`encore`（再来一次，锁定对方接下来3回合必须使用其上一招，直到PP耗尽提前解除）、`screen_special`（光之壁，5回合内使对方特殊攻击伤害减半，1v1单挑简化为直接作用于施放者自己）。
+>
+> 其余（束缚 `bind`/蓄力 `charge`/休息 `recharge`/自爆 `self_destruct`/强制换场 `force_switch`/守住 `protect`/挑衅 `taunt`/清除能力 `clear_stats`/钉刺类 `entry_hazard`/天气 `weather_*`/物理屏障 `screen_physical`）仍是占位，待逐步接入。
+>
+> 260722 Red 参考Pokemon Essentials原版逻辑又接入4个（新技能名单独列在effect表外，不占用上面枚举的分类位）：`rampage`（大闹一番/花瓣舞/逆鳞，命中后锁定2~3回合强制重复同一招且不消耗PP，锁定结束后对自己上混乱；中途换场/晕厥会随`_reset_transient_battle_state`清空，不会跨场次残留）、`rollout`（滚动，同款锁定机制但持续5回合、不上混乱，改为每回合伤害翻倍，30→60→120→240→480）、`fury_cutter`（连续切，不锁定选招，只要连续两回合点的是同一招就翻倍，封顶4倍，中途换别的招式会自动清零，靠比对`last_move_id`实现，不需要额外计时）、`torment`（无理取闹，标记对方不能连续用上一招；AI侧直接从候选列表里过滤掉，玩家侧因为UI没有禁用按钮那层，简化成选中后判定失败、不执行但仍耗PP）。另外“临别礼物”改名`破釜沉舟`并重新设计为`reckless_debuff`：消耗自身50%最大HP，随机大幅降低对手一项能力（-2级），弃用了原版"自我昏厥"设定。
 
 ### 学习树(learnset)设计规则
 
