@@ -16,19 +16,22 @@
 ### 行走图（walk sheet）规范
 - 生图时分开出图：正面行走图（3帧横排）/ 背面行走图（3帧横排）/ 侧走图（5帧横排）
 - 各帧之间留明显白色/透明间隔，便于脚本等分裁剪
-- 处理脚本：`tools/rebuild_walksheet.py`（女主）/ `tools/rebuild_walksheet_v2.py`（通用）
+- ~~处理脚本：`tools/rebuild_walksheet.py`（女主）/ `tools/rebuild_walksheet_v2.py`（通用）~~
+  260723订正：这两个脚本当前 `tools/` 目录下都不存在，按 design_guide.md「一次性脚本约定」
+  推测是当时用完即删的临时脚本，不是长期可复用工具——如果要重新处理walk sheet需要重写
 - 最终格式：480×640 PNG，5列×4行，每格 96×160px
 
 ### 投掷/特效动作图（throw/action）
 - 2帧横排，帧间留间隔
-- 处理脚本：`tools/process_throw.py`
+- ~~处理脚本：`tools/process_throw.py`~~ 260723订正：同上，当前不存在；另外这个规格目前也
+  没有任何实际落地文件，design_guide.md 核实 `throw.png` 全代码库无引用，是纯占位规格
 - 最终格式：192×160 PNG，2帧横排
 
 ---
 
 ## 一、黑风堂干部立绘（中期剧情）
 
-### 凌蛊叟_front.png → assets/sprites/
+### 凌蛊叟front.png → assets/npc/
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 凌蛊叟：老年男性，干瘦佝偻，皮肤暗黄布满皱纹，眼神狡黠眯缝。
@@ -38,7 +41,7 @@
 头发杂乱插骨针，右手持盘根枯木手杖，左手托装有蛊虫的小陶罐。整体色调：腐褐+枯黑。
 ```
 
-### 谢冥毒_front.png → assets/sprites/
+### 谢冥毒front.png → assets/npc/
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 谢冥毒：男性约35岁，面容白皙阴柔，五官精致，带危险的温和笑容。
@@ -48,7 +51,7 @@
 长发半扎深紫近黑，右手夹一朵紫色曼陀罗花。整体色调：深紫+玄黑。
 ```
 
-### 方玄幽_front.png → assets/sprites/
+### 方玄幽front.png → assets/npc/
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 方玄幽：男性年龄难辨，肤色苍白如纸，眼下浓重黑眼圈，眼神空洞漠然。
@@ -62,7 +65,7 @@
 
 ## 二、后续道馆主立绘（提前备用）
 
-### 韩炎驰_front.png → assets/sprites/  【炎心馆·火系·2号馆】
+### 韩炎驰front.png → assets/npc/  【炎心馆·火系·2号馆】
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 韩炎驰：成年男性约30岁，体格魁梧，古铜色皮肤，络腮胡，眼神热烈。
@@ -72,7 +75,7 @@
 腰间挂铁链，嘴角上扬。整体色调：火红+铁黑，铁匠气质。
 ```
 
-### 苏漪漪_front.png → assets/sprites/  【碧波馆·水系·3号馆】
+### 苏漪漪front.png → assets/npc/  【碧波馆·水系·3号馆】
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 苏漪漪：年轻女性约25岁，身材火辣，笑容灿烂自信。
@@ -82,7 +85,7 @@
 长波浪发，发梢蓝色挑染，耳戴海贝耳环，一手叉腰一手拨发。整体色调：海蓝+白色。
 ```
 
-### 赵磐石_front.png → assets/sprites/  【磐石馆·岩系·4号馆】
+### 赵磐石front.png → assets/npc/  【磐石馆·岩系·4号馆】
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 赵磐石：中年男性约45岁，身形高大厚重，方脸宽肩，眉骨突出，表情严肃。
@@ -92,7 +95,7 @@
 花白短发，腰间挂一块未刻完的小石头，双臂交叉于胸前。整体色调：岩灰+土褐。
 ```
 
-### 陈赭云_front.png → assets/sprites/  【厚土馆·土系·5号馆】
+### 陈赭云front.png → assets/npc/  【厚土馆·土系·5号馆】
 ```
 中式像素风人物立绘，纯白背景，单人全身完整居中（必须包含双脚），512×512。
 陈赭云：年轻女性约22岁，深棕健康肤色，五官立体，笑容爽朗。
@@ -149,15 +152,19 @@
 
 ---
 
-## 七、普通NPC Walk Sheet（已生成 ✓）
+## 七、普通NPC Walk Sheet
 
-- npc_fat_man_walk_sheet.png
-- npc_fat_woman_walk_sheet.png
-- npc_young_woman_walk_sheet.png
-- npc_girl_walk_sheet.png
-- npc_young_man_walk_sheet.png
-- npc_old_man_walk_sheet.png
-- npc_old_woman_walk_sheet.png
+> 260723 Red：核实 `assets/npc/` 实际只有下面7个里的**1个**真实存在（`npc_young_woman_walk_sheet.png`），
+> 其余6个都不存在——推测后续开发改用具名NPC（林薇/成洋/申鹤/神子等专属立绘+行走图）取代了这批
+> 通用占位NPC，这里的"已生成✓"标记没跟着同步。下面按实际存在情况重新标注：
+
+- npc_fat_man_walk_sheet.png（未生成）
+- npc_fat_woman_walk_sheet.png（未生成）
+- npc_young_woman_walk_sheet.png ✓ 已生成，`assets/npc/` 下真实存在
+- npc_girl_walk_sheet.png（未生成）
+- npc_young_man_walk_sheet.png（未生成）
+- npc_old_man_walk_sheet.png（未生成）
+- npc_old_woman_walk_sheet.png（未生成）
 
 ---
 

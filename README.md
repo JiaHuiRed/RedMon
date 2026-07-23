@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue.svg)](https://godotengine.org/)
-[![Version](https://img.shields.io/badge/version-v0.27.6-green.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.27.8-green.svg)](./CHANGELOG.md)
 
 ---
 
@@ -30,9 +30,9 @@
 - **经验与升级** — 3 种成长速度（快速/中速/缓慢），升级自动习得技能
 - **进化系统** — 等级进化 + 道具分支进化（露比为代表的多分支形态），战斗中弹出选择
 - **捕捉系统** — 精灵葫芦投掷动画，基于 HP、状态、种族捕获率的概率公式
-- **道具背包** — 精灵葫芦、回复丹药、进化道具、滋补食物等 35 种道具
+- **道具背包** — 精灵葫芦、回复丹药、进化道具、滋补食物等 46 种道具
 - **键盘全套映射** — Z 确认 / X 取消 / Enter 菜单 / Space 跑步，Godot input map 统一管理
-- **多精灵队伍** — 最多 6 只，战斗中可切换，被击倒后强制换场，PC 仓库存储
+- **多精灵队伍** — 最多 7 只，战斗中可切换，被击倒后强制换场，PC 仓库存储
 - **道馆系统** — 翠竹馆（草系 1 号馆）已实装，含杂兵训练师 + 馆主战
 - **NPC 系统** — 林薇（跑步鞋 + 捕捉奖励）、训练师对战、商店、灵疗所
 - **3 档存档** — 标题画面存档槽选择，随时存读
@@ -42,7 +42,7 @@
 
 ## 精灵图鉴
 
-游戏目前包含 **305 种精灵**（持续扩充中），覆盖 19 种属性。
+游戏目前包含 **444 种精灵**（持续扩充中），覆盖 19 种属性。
 
 > 完整数据见 `data/species.json`，可通过 `tools/mon_editor.py` 可视化浏览和编辑。
 
@@ -159,40 +159,53 @@ npm run tauri dev   # 开发模式
 
 ## 项目结构
 
+> 260723 Red：这节原来画的是老版"RPG_Demo/"子目录布局，仓库早就没有这层嵌套了，
+> project.godot 就在仓库根目录；场景脚本文件名也整体重命名过（比如青木村/华灵草原/碧溪镇
+> 三张地图早就合并成一张无缝大地图，脚本是 overworld_scene.gd 一个文件，不是村/镇/草原
+> 三个独立scene）。下面按当前实际结构重写。
+
 ```
-RPG_Demo/
+E:\AI\RedMon/                 ← project.godot 就在这一层，不是子目录
 ├── assets/
-│   ├── sprites/          # 精灵素材（PNG，LFS 管理）
+│   ├── sprites/          # 战斗精灵立绘（PNG，LFS 管理）
+│   ├── npc/               # 角色立绘/行走图（教授/劲敌/道馆主等具名角色）
 │   └── backgrounds/      # 战斗/场景背景
 ├── data/
-│   ├── species.json      # 精灵种族数据（305 种）
-│   ├── moves.json        # 技能数据（837 个）
-│   ├── items.json        # 道具数据（35 种）
+│   ├── species.json      # 精灵种族数据（444 种）
+│   ├── moves.json        # 技能数据（937 个）
+│   ├── items.json        # 道具数据（46 种）
 │   ├── abilities.json    # 特性数据库
 │   ├── natures.json      # 性格数据（25 种）
-│   ├── trainers.json     # 训练师数据（队伍/对话/奖励）
+│   ├── npcs.json         # NPC数据，训练师队伍/对话/奖励嵌在各条目的 trainer 字段里
+│   ├── encounters.json   # 按map_id索引的野外遇敌表
+│   ├── maps.json         # 地图/区域定义
 │   └── dialogs.json      # 剧情文本
 ├── scenes/
-│   └── main.tscn         # 主场景（场景管理器）
+│   ├── 大世界.tscn        # 青木村/华灵草原/碧溪镇 合并成的无缝大地图
+│   ├── 青木村.tscn / 华灵草原.tscn / 碧溪镇.tscn  # 大世界拼接用的分区子场景
+│   ├── 翠竹馆.tscn
+│   ├── 后山小径.tscn
+│   └── buildings/         # 室内建筑场景（家/劲敌家等）
 ├── scripts/
 │   ├── autoload/
-│   │   ├── game_state.gd # 全局玩家状态
-│   │   └── mon_db.gd     # 精灵/技能数据库 + 公式
+│   │   ├── game_state.gd    # 全局玩家状态/存档
+│   │   ├── mon_db.gd        # 精灵/技能/道具/训练师数据库 + 核心公式
+│   │   ├── encounter_db.gd  # 遇敌表加载与抽取
+│   │   ├── audio_manager.gd # BGM/SE/ME
+│   │   └── dialog_manager.gd # 对话框统一单例
+│   ├── components/          # 跨场景复用的小工具（SceneUtils等）
 │   └── scenes/
-│       ├── main.gd           # 场景切换管理
-│       ├── title_scene.gd    # 标题画面
-│       ├── char_create_scene.gd # 角色创建
-│       ├── starter_scene.gd  # 御三家选择
-│       ├── home_scene.gd     # 家室内
-│       ├── village_scene.gd  # 青木村
-│       ├── town_scene.gd     # 碧溪镇
-│       ├── world_scene.gd    # 华灵草原
-│       ├── gym_scene.gd      # 翠竹馆
-│       └── battle_scene.gd   # 战斗系统
+│       ├── main.gd            # 场景切换管理
+│       ├── title_scene.gd     # 标题画面
+│       ├── opening_scene.gd   # 开场：性别/取名/御三家选择
+│       ├── home_scene.gd      # 主角家室内
+│       ├── overworld_scene.gd # 大世界（青木村/华灵草原/碧溪镇一张图）
+│       ├── 后山小径_scene.gd    # 青木村北支线
+│       ├── gym_scene.gd       # 翠竹馆
+│       └── battle_scene.gd    # 战斗系统
 ├── tools/
-│   ├── mon_editor.py     # 可视化编辑器（tkinter）
-│   ├── build_editor.bat  # 编辑器打包脚本
-│   └── editor/           # 可视化编辑器（Tauri + Vite，UI 美化版）
+│   ├── mon_editor.py     # 可视化编辑器（tkinter，已归档不再更新）
+│   └── editor/            # 可视化编辑器（Tauri + Vite，当前主用版本）
 ├── README.md
 ├── CHANGELOG.md
 ├── design_guide.md
@@ -227,7 +240,7 @@ git lfs install
    ```bash
    git lfs pull
    ```
-4. 在 Godot 中打开 `RPG_Demo/project.godot`
+4. 在 Godot 中打开仓库根目录下的 `project.godot`
 5. 点击运行（F5）
 
 ### 运行编辑器
@@ -277,9 +290,11 @@ python -X utf8 tools/mon_editor.py
 - [x] 光属性（第 19 属性 + 20 种光系技能）
 - [x] 技能效果结构化（38 种效果类型 + 概率/数值参数）
 - [x] 音效与背景音乐（BGM/SE/ME + 655 个精灵叫声素材库）
-- [ ] 特性内容批量填充 + 战斗效果实现
+- [x] 战斗效果实现（260722-260723：能力升降/异常状态/多段攻击/自爆/一击必杀等约45个effect已接入战斗，详见 CHANGELOG）
+- [ ] 特性(ability)接入战斗——220个特性目前仍是纯展示数据，`battle_scene.gd` 零处引用
 - [ ] 更多道馆（火/水/岩/土/冰）
-- [ ] 美美NPC支线 + 黑风堂剧情
+- [~] 美美NPC支线 + 黑风堂剧情——青木村后山头目战已实装剧情初登场（旁观头目战+黑化动机埋伏笔），
+      后续"再次相遇"事件线与真身揭露仍待做
 
 ---
 
