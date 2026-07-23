@@ -2,7 +2,7 @@
 // 集中管理编辑器全局状态、数据读写、撤销/重做、保存序列化。
 // main.js 只负责 DOM 绑定和 init，不再直接持有 state/tabs/activeTab。
 
-import { readJson, writeJson } from "./api.js";
+import { readJson, writeJson } from "./utils/api.js";
 import { SpeciesTab } from "./tabs/species.js";
 import { MovesTab } from "./tabs/moves.js";
 import { ItemsTab } from "./tabs/items.js";
