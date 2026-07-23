@@ -217,3 +217,49 @@ export function updateSummary() {
   const it = (state.data.items || []).length;
   el.textContent = `精灵 ${sp}只  ·  技能 ${mv}个  ·  特性 ${ab}种  ·  道具 ${it}种`;
 }
+
+export async function handleSaveOne(fileKey, jsonData) {
+  const info = state.dataPaths[fileKey];
+  if (!info) return;
+  try {
+    await writeJson(info.path, dataForSave(fileKey, jsonData));
+    state.modified[fileKey] = false;
+    updateSaveButton();
+    setStatus(`已保存 ${fileKey}.json`);
+    if (fileKey === "species") {
+      await _syncEncountersFromSpecies();
+    }
+  } catch (err) {
+    setStatus(`保存失败: ${err}`);
+  }
+}
+
+export async function handleSaveAll() {
+  const speciesModified = state.modified["species"];
+  for (const [key, def] of Object.entries(TAB_DEFS)) {
+    const info = state.dataPaths[def.file];
+    if (info && info.exists && state.modified[def.file]) {
+      const tab = tabs[key];
+      if (tab && tab.getData) {
+        try {
+          const data = tab.getData();
+          await writeJson(info.path, dataForSave(def.file, data));
+          state.modified[def.file] = false;
+        } catch (err) {
+          setStatus(`保存 ${def.file}.json 失败: ${err}`);
+          return;
+        }
+      }
+    }
+  }
+  if (speciesModified) {
+    await _syncEncountersFromSpecies();
+  }
+  const mapsTab = tabs["maps"];
+  if (mapsTab && mapsTab.encModified && mapsTab.encountersPath) {
+    await mapsTab._saveEncounters();
+  }
+  state.modified = {};
+  updateSaveButton();
+  setStatus("全部已保存");
+}
