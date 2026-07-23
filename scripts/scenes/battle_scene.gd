@@ -92,6 +92,14 @@ func _reset_transient_battle_state(mon: Dictionary) -> void:
 	mon["rampage_move_id"] = ""
 	mon["fury_cutter_streak"] = 0
 	mon["tormented"] = false
+	# 260723 Red 补上此前一直被漏掉的三项：混乱/剧毒计数属于"每次入场都该清零"的临时状态，
+	# 之前只有260722那批（畏缩/替身/寄生种子等）被这个函数清过，混乱/剧毒是后来单独加的字段，
+	# 没人把它们补进来，导致混乱/剧毒回合数会跨对局残留
+	mon["confused_turns"] = 0
+	mon["toxic_counter"] = 0
+	# 260723 Red 能力等级变化(攻防特攻特防速度命中)此前从未在任何地方清零，战斗内被升降过
+	# 之后即使换场景/换精灵/开始下一场战斗依然带着，是比这批新效果更早就存在的老问题
+	mon["stages"] = {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0}
 
 # ── 键盘 / 手柄导航 ────────────────────────────────────────────────────────────
 var _active_panel:      String = "none"  # "action"|"move"|"bag"|"mon"|"none"
@@ -118,6 +126,11 @@ func _calc_trainer_ivs(iv_tier: int) -> Dictionary:
 
 # YYMMDD Red 战斗结束统一返回，记录 last_scene
 func _end_battle(result: String) -> void:
+	# 260723 Red _reset_transient_battle_state() 只清了"这场战斗里上过场"的精灵，替补精灵
+	# （被换下后没再换回来）不会被它碰到，能力等级变化会一直挂在队伍存档里；战斗结束这个
+	# 唯一出口统一清一遍全队，才能保证不会有精灵带着上一场的能力升降进下一场
+	for m in GameState.player_team:
+		m["stages"] = {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0}
 	GameState.last_scene = _return_scene
 	var ret_data := {"battle_result": result}
 	if _return_pos.size() == 2:
@@ -741,6 +754,9 @@ func _on_use_item(item_id: String) -> void:
 					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。\n给它取名叫「%s」！" % [MonDB.display_name(_enemy_mon), chosen_name])
 				else:
 					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。" % MonDB.display_name(_enemy_mon))
+			# 260723 Red 捕捉头目也算通关，跟打赢共用同一份一次性发蛋判定（此前捕捉完全不发蛋/不标记，
+			# 导致头目NPC永不隐藏、可无限刷；现在头目常驻可刷，但蛋只在"第一次通关"发一次）
+			await _grant_boss_egg_if_first_clear()
 			_busy = false
 			GameState.save_game()
 			_end_battle("caught")
@@ -1580,6 +1596,11 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 	var accuracy = mv.get("accuracy", 100)
 	if randf() * 100 > accuracy:
 		await _show_message_async("%s 使用了 %s！\n但是没有命中！" % [attacker_name, mv_name])
+		# 260722 Red 自爆(self_destruct)：大爆炸/玉石俱碎，无论有没有命中都会让自己昏厥
+		if mv.get("effect", "") == "self_destruct":
+			attacker["current_hp"] = 0
+			_refresh_info(true)
+			await _show_message_async("%s 昏厥了！" % attacker_name)
 		return
 
 	await _show_message_async("%s 使用了 %s！" % [attacker_name, mv_name])
@@ -1741,6 +1762,14 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 					attacker["confused_turns"] = randi() % 4 + 2
 					await _show_message_async("%s 因为连续攻击而陷入了混乱！" % attacker_name)
 
+		# 260722 Red 自爆(self_destruct)：命中也一样必定昏厥，和上面未命中分支的处理呼应
+		if lock_effect == "self_destruct" and dmg > 0:
+			attacker["current_hp"] = 0
+			var self_spr = _player_spr if not is_enemy else _enemy_spr
+			_flash_red(self_spr)
+			_refresh_info(true)
+			await _show_message_async("%s 昏厥了！" % attacker_name)
+
 		# 260703 Red recoil（反伤）
 		var sec_effect  = mv.get("effect", "")
 		var sec_value   = mv.get("effect_value", 0)
@@ -1762,7 +1791,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			await _show_message_async("%s 吸取了对手的体力！（+%d）" % [attacker_name, heal_amt])
 
 		# 附带状态/能力效果（有概率触发）
-		elif sec_effect != "" and sec_effect != "high_crit" \
+		elif sec_effect != "" and sec_effect != "high_crit" and sec_effect != "self_destruct" \
 			and sec_effect != "rampage" and sec_effect != "rollout" and sec_effect != "fury_cutter":
 			var sec_chance = mv.get("effect_chance", 0)
 			if sec_chance > 0 and eff > 0.0:
@@ -2017,16 +2046,22 @@ func _handle_victory() -> void:
 			return
 
 	# 260715 Red 头目战：野生战胜利后发放蛋奖励
-	if _egg_reward != "":
-		GameState.eggs.append({"species_id": _egg_reward, "steps_remaining": 1500, "steps_total": 1500})
-		if _boss_id != "" and not GameState.boss_eggs_claimed.has(_boss_id):
-			GameState.boss_eggs_claimed.append(_boss_id)
-		var ally_msg = MonDB.dlg("boss_encounter", "egg_reward", {"ally": _ally_name}) if _ally_name != "" else "获得了一颗蛋！"
-		await _show_message_async(ally_msg)
+	await _grant_boss_egg_if_first_clear()
 
 	_busy = false
 	GameState.save_game()
 	_end_battle("win")
+
+# 260723 Red 头目战一次性发蛋：打赢/捕捉都算通关，只发一次；头目NPC本身是否消失
+# 由各场景自己的显示逻辑决定，不再靠这个标记来隐藏（比如君美改成可反复刷级，只是蛋只发一次）
+func _grant_boss_egg_if_first_clear() -> void:
+	if _egg_reward == "": return
+	if _boss_id != "" and GameState.boss_eggs_claimed.has(_boss_id): return
+	GameState.eggs.append({"species_id": _egg_reward, "steps_remaining": 1500, "steps_total": 1500})
+	if _boss_id != "":
+		GameState.boss_eggs_claimed.append(_boss_id)
+	var ally_msg = MonDB.dlg("boss_encounter", "egg_reward", {"ally": _ally_name}) if _ally_name != "" else "获得了一颗蛋！"
+	await _show_message_async(ally_msg)
 
 func _handle_defeat() -> void:
 	AudioManager.play_se(AudioManager.SE_FAINT)

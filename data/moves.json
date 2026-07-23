@@ -1676,7 +1676,7 @@
     "power": 250,
     "accuracy": 100,
     "max_pp": 5,
-    "effect": "",
+    "effect": "self_destruct",
     "description": "引发大爆炸，攻击周围所有的精灵。使用后自己会陷入昏厥。"
   },
   "大蛇瞪眼": {
@@ -5006,7 +5006,7 @@
     "power": 200,
     "accuracy": 100,
     "max_pp": 5,
-    "effect": "",
+    "effect": "self_destruct",
     "description": "引发爆炸，攻击周围所有的精灵。使用后陷入昏厥。"
   },
   "王牌": {
