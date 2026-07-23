@@ -208,13 +208,32 @@ func dlg_sub(text: String, vars: Dictionary) -> String:
 # 四档品级 + IV 范围：普通(0-15) 精英(10-20) 头目(20-25) 首领(26-31)
 # 概率：普通72% 精英18% 头目8% 首领2%
 # 神/天品级物种强制 头目80% 首领20%
+# 260723 Red 三个IV随机函数共用：stat列表之前在这三处各写了一遍，抽成模块级常量；
+# "按tier查区间→六维各randi_range一次"这段骨架也抽成 _roll_ivs_in_range() 复用
+const STAT_KEYS := ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]
+const TIER_IV_RANGES := {
+	"普通": [0, 15],
+	"精英": [10, 20],
+	"头目": [20, 25],
+	"首领": [26, 31],
+}
+
+static func _roll_ivs_in_range(lo: int, hi: int) -> Dictionary:
+	var ivs := {}
+	for stat in STAT_KEYS:
+		ivs[stat] = randi_range(lo, hi)
+	return ivs
+
 func roll_wild_tier_ivs(species_id: String) -> Dictionary:
 	var sp = species.get(species_id, {})
 	var sp_tier: String = sp.get("tier", "")
 	var tier: String
 	var roll: int = randi() % 100
 
-	if sp_tier == "神" or sp_tier == "天":
+	# 260723 Red 260728把品阶顺序从"凡灵玄地神天"调整为"凡灵玄神地天"（地>神）后，这里判断
+	# "最高两档"的字符串没跟着改，一直还是旧顺序下的"神/天"，实际现在该判"地/天"（最高两档）——
+	# 跟 game_state.gd 的 stamp_encounter_info() 对齐（那边"天/地"从一开始就是对的）
+	if sp_tier == "地" or sp_tier == "天":
 		tier = "头目" if roll < 80 else "首领"
 	else:
 		if roll < 72:
@@ -226,35 +245,19 @@ func roll_wild_tier_ivs(species_id: String) -> Dictionary:
 		else:
 			tier = "首领"
 
-	var iv_ranges := {
-		"普通": [0, 15],
-		"精英": [10, 20],
-		"头目": [20, 25],
-		"首领": [26, 31],
-	}
-	var r = iv_ranges[tier]
-	var ivs := {}
-	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
-		ivs[stat] = randi_range(r[0], r[1])
-	return {"tier": tier, "ivs": ivs}
+	var r = TIER_IV_RANGES[tier]
+	return {"tier": tier, "ivs": _roll_ivs_in_range(r[0], r[1])}
 
 # 260715 Red 头目战：保证"首领"档个体值(26-31)，供蛋孵化等"确定拿最高档"的场合使用
 func boss_tier_ivs() -> Dictionary:
-	var ivs := {}
-	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
-		ivs[stat] = randi_range(26, 31)
-	return ivs
+	return _roll_ivs_in_range(26, 31)
 
-# 260723 Red 明雷头目精灵专用：跟神/天品级野生精灵同一套"头目80%/首领20%"概率分布，
+# 260723 Red 明雷头目精灵专用：跟地/天品级野生精灵同一套"头目80%/首领20%"概率分布，
 # 不再固定拿最高档——头目战本身也该有品级浮动，返回值格式对齐 roll_wild_tier_ivs()
 func roll_boss_tier_ivs() -> Dictionary:
 	var tier = "头目" if randi() % 100 < 80 else "首领"
-	var iv_ranges := {"头目": [20, 25], "首领": [26, 31]}
-	var r = iv_ranges[tier]
-	var ivs := {}
-	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
-		ivs[stat] = randi_range(r[0], r[1])
-	return {"tier": tier, "ivs": ivs}
+	var r = TIER_IV_RANGES[tier]
+	return {"tier": tier, "ivs": _roll_ivs_in_range(r[0], r[1])}
 
 # 获取某属性的进攻克制表（公开API，取代直接访问 _type_chart）
 func get_offense_chart(atk_type: String) -> Dictionary:
@@ -373,15 +376,20 @@ func recalc_stats(mon: Dictionary) -> void:
 
 # ── 性别 ──────────────────────────────────────────────────────────────────────
 # 依据物种 gender_ratio（"雄%/雌%"）随机生成个体性别；比例为 0/0 视为无性别
-func roll_gender(species_id: String) -> String:
+# 260723 Red gender_ratio="m/f"字符串解析之前在roll_gender()/_gender_lock()各写了一遍，抽出来
+# 共用；解析失败(格式不对)时退化成50/50，两处原本"畸形输入当中性处理"的效果保持一致
+func _parse_gender_ratio(species_id: String) -> Vector2:
 	var sp = species.get(species_id, {})
 	var parts = str(sp.get("gender_ratio", "50/50")).split("/")
 	if parts.size() != 2:
-		return "male" if randf() < 0.5 else "female"
-	var m = float(parts[0]); var f = float(parts[1])
-	if m <= 0.0 and f <= 0.0:
+		return Vector2(50, 50)
+	return Vector2(float(parts[0]), float(parts[1]))
+
+func roll_gender(species_id: String) -> String:
+	var mf = _parse_gender_ratio(species_id)
+	if mf.x <= 0.0 and mf.y <= 0.0:
 		return ""
-	return "male" if randf() * 100.0 < m else "female"
+	return "male" if randf() * 100.0 < mf.x else "female"
 
 # ── 性格 ──────────────────────────────────────────────────────────────────────
 # 260702 Red 性格系统：25种性格，非中性性格对应属性+5%，另一属性-5%（HP不受影响）
@@ -411,13 +419,9 @@ func roll_ability(species_id: String) -> String:
 
 # 判断物种是否为单一性别限定（gender_ratio 恰为 100/0 或 0/100），返回 "male"/"female"/""
 func _gender_lock(species_id: String) -> String:
-	var sp = species.get(species_id, {})
-	var parts = str(sp.get("gender_ratio", "50/50")).split("/")
-	if parts.size() != 2:
-		return ""
-	var m = float(parts[0]); var f = float(parts[1])
-	if m <= 0.0 and f > 0.0: return "female"
-	if f <= 0.0 and m > 0.0: return "male"
+	var mf = _parse_gender_ratio(species_id)
+	if mf.x <= 0.0 and mf.y > 0.0: return "female"
+	if mf.y <= 0.0 and mf.x > 0.0: return "male"
 	return ""
 
 func display_name(mon: Dictionary) -> String:
@@ -524,18 +528,9 @@ func exp_for_level(growth_rate: String, lv: int) -> int:
 	return table[min(lv, MAX_LEVEL) - 1]
 
 # 升一级：重算能力值，返回本级新学的技能列表
-func level_up(mon: Dictionary) -> Array:
-	mon["level"] += 1
-	var lv = mon["level"]
-	var sp = species[mon["species_id"]]
-
-	var old_max_hp = mon["max_hp"]
-	recalc_stats(mon)
-	# 当前HP随最大HP成长（不满血升级也只涨差值）
-	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max_hp), mon["max_hp"])
-
-	# 检查本级学到的新技能（进化链技能池共享）
-	var merged_ls = get_full_learnset(mon["species_id"])
+# 260723 Red level_up()/evolve_to() 都要"查某等级学到的新技能→塞技能栏（满了替换slot 0）"，
+# 之前两处逐行重复抄了一份，抽出来共用；返回新学到的技能id列表
+func _learn_moves_at_level(mon: Dictionary, lv: int, merged_ls: Dictionary) -> Array:
 	var new_moves: Array = []
 	for mv_id in merged_ls.get(lv, []):
 		var known = false
@@ -552,8 +547,19 @@ func level_up(mon: Dictionary) -> Array:
 		else:
 			# 技能栏满：替换最旧的技能（slot 0）
 			mon["moves"][0] = entry
-
 	return new_moves
+
+func level_up(mon: Dictionary) -> Array:
+	mon["level"] += 1
+	var lv = mon["level"]
+
+	var old_max_hp = mon["max_hp"]
+	recalc_stats(mon)
+	# 当前HP随最大HP成长（不满血升级也只涨差值）
+	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max_hp), mon["max_hp"])
+
+	# 检查本级学到的新技能（进化链技能池共享）
+	return _learn_moves_at_level(mon, lv, get_full_learnset(mon["species_id"]))
 
 # ── 进化系统 ──────────────────────────────────────────────────────────────────
 # 260728 Red 参照PokemonEssentials的check_evolution_internal设计：进化资格判断（等级+道具持有）
@@ -690,17 +696,7 @@ func evolve_to(mon: Dictionary, species_id: String) -> void:
 	mon["current_hp"] = min(mon["current_hp"] + (mon["max_hp"] - old_max), mon["max_hp"])
 
 	# 学习进化时等级对应的新技能（进化链技能池共享）
-	var merged_ls = get_full_learnset(species_id)
-	for mv_id in merged_ls.get(lv, []):
-		var known = false
-		for m in mon["moves"]:
-			if m["id"] == mv_id: known = true; break
-		if not known:
-			var entry = {"id": mv_id, "pp": moves[mv_id]["max_pp"], "max_pp": moves[mv_id]["max_pp"]}
-			if mon["moves"].size() < 4:
-				mon["moves"].append(entry)
-			else:
-				mon["moves"][0] = entry
+	_learn_moves_at_level(mon, lv, get_full_learnset(species_id))
 
 # 自动进化（纯等级触发，取第一个满足条件的，调用了检查道具）
 func evolve(mon: Dictionary) -> void:
@@ -711,15 +707,6 @@ func evolve(mon: Dictionary) -> void:
 # ── 捕捉系统 ─────────────────────────────────────────────────────────────────
 # 返回是否捕捉成功。HP越低、状态异常、捕捉率越高，成功率越高。
 # 按地点生成遭遇表 [[species_id, rate], ...]
-func get_encounters(location: String) -> Array:
-	var result: Array = []
-	for sp_id in species:
-		var sp = species[sp_id]
-		for enc in sp.get("encounters", []):
-			if enc.get("location", "") == location:
-				result.append([sp_id, enc.get("rate", 0)])
-	return result
-
 func calc_catch(mon: Dictionary, ball_bonus: float = 1.0) -> bool:
 	var sp = species.get(mon["species_id"], {})
 	var b = sp.get("base", {})

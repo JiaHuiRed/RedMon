@@ -86,14 +86,7 @@ func _build_ground() -> void:
 
 # ── 边界碰撞（四周围死，出口靠交互而非物理豁口）────────────────────────────────
 func _add_collider(pos: Vector2, size: Vector2) -> void:
-	var body := StaticBody2D.new()
-	body.position = pos
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = size
-	col.shape = shape
-	body.add_child(col)
-	add_child(body)
+	SceneUtils.add_collider(self, pos, size)
 
 func _build_border_walls() -> void:
 	_add_collider(Vector2(MAP_W / 2.0, -CELL / 2.0), Vector2(MAP_W + CELL, CELL))          # 北

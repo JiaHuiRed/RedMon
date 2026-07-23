@@ -72,6 +72,15 @@ func _update_volumes() -> void:
 	_se.volume_db  = linear_to_db(se_volume)
 	_me.volume_db  = linear_to_db(me_volume)
 
+# 260723 Red play_bgm/play_se/play_me 之前各自重复了一份"拼路径→load→null检查→push_warning"，
+# 抽出来共用
+func _load_stream(dir: String, name: String, label: String) -> AudioStreamOggVorbis:
+	var path := dir + name + ".ogg"
+	var stream := load(path) as AudioStreamOggVorbis
+	if not stream:
+		push_warning("AudioManager: %s not found: %s" % [label, path])
+	return stream
+
 # 播放 BGM（自动停止上一首，loop 开启）
 func play_bgm(name: String, vol: float = -1.0) -> void:
 	if name == _current_bgm and _bgm.playing:
@@ -79,10 +88,8 @@ func play_bgm(name: String, vol: float = -1.0) -> void:
 	if vol >= 0.0:
 		bgm_volume = vol
 		_update_volumes()
-	var path := BGM_DIR + name + ".ogg"
-	var stream := load(path) as AudioStreamOggVorbis
+	var stream = _load_stream(BGM_DIR, name, "BGM")
 	if not stream:
-		push_warning("AudioManager: BGM not found: ", path)
 		return
 	_bgm.stop()
 	stream.loop = true
@@ -96,10 +103,8 @@ func stop_bgm() -> void:
 
 # 播放 SE（一次性）
 func play_se(name: String, vol: float = -1.0) -> void:
-	var path := SE_DIR + name + ".ogg"
-	var stream := load(path) as AudioStreamOggVorbis
+	var stream = _load_stream(SE_DIR, name, "SE")
 	if not stream:
-		push_warning("AudioManager: SE not found: ", path)
 		return
 	if vol >= 0.0:
 		se_volume = vol
@@ -109,10 +114,8 @@ func play_se(name: String, vol: float = -1.0) -> void:
 
 # 播放 ME（一次性，音乐效果）
 func play_me(name: String, vol: float = -1.0) -> void:
-	var path := ME_DIR + name + ".ogg"
-	var stream := load(path) as AudioStreamOggVorbis
+	var stream = _load_stream(ME_DIR, name, "ME")
 	if not stream:
-		push_warning("AudioManager: ME not found: ", path)
 		return
 	if vol >= 0.0:
 		me_volume = vol
@@ -127,3 +130,8 @@ func set_bgm_volume(v: float) -> void:
 func set_se_volume(v: float) -> void:
 	se_volume = clampf(v, 0.0, 1.0)
 	_se.volume_db = linear_to_db(se_volume)
+
+# 260723 Red 之前只有 bgm/se 有独立setter，me音量缺了一个，三份音量子系统不对称
+func set_me_volume(v: float) -> void:
+	me_volume = clampf(v, 0.0, 1.0)
+	_me.volume_db = linear_to_db(me_volume)

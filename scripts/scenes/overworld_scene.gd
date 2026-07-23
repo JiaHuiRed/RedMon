@@ -1413,9 +1413,7 @@ func _use_field_item(item_name: String) -> void:
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────────
 func _add_collider(pos: Vector2, size: Vector2) -> void:
-	var body = StaticBody2D.new(); body.position = pos
-	var sh = CollisionShape2D.new(); var rect = RectangleShape2D.new()
-	rect.size = size; sh.shape = rect; body.add_child(sh); add_child(body)
+	SceneUtils.add_collider(self, pos, size)
 
 func _draw_tree(col: int, row: int) -> void:
 	if not _tree_tex:

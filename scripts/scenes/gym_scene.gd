@@ -98,14 +98,7 @@ func _build_floor() -> void:
 
 # ── 杂兵 ─────────────────────────────────────────────────────────────────────
 func _add_collider(pos: Vector2, size: Vector2) -> void:
-	var body = StaticBody2D.new()
-	body.position = pos
-	var shape = CollisionShape2D.new()
-	var rect = RectangleShape2D.new()
-	rect.size = size
-	shape.shape = rect
-	body.add_child(shape)
-	add_child(body)
+	SceneUtils.add_collider(self, pos, size)
 
 func _build_guards() -> void:
 	for g in _guards:

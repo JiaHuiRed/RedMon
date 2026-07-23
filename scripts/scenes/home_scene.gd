@@ -47,14 +47,7 @@ func _ready() -> void:
 		_set_floor(1)
 
 func _add_collider(parent: Node2D, pos: Vector2, size: Vector2) -> void:
-	var body = StaticBody2D.new()
-	body.position = pos
-	var shape = CollisionShape2D.new()
-	var rect = RectangleShape2D.new()
-	rect.size = size
-	shape.shape = rect
-	body.add_child(shape)
-	parent.add_child(body)
+	SceneUtils.add_collider(parent, pos, size)
 
 # ── 1F 客厅 ───────────────────────────────────────────────────────────────────
 func _build_floor1() -> void:
@@ -106,15 +99,7 @@ func _build_lanqiuqiu() -> void:
 		_lanqiuqiu_spr.position = LANQIUQIU_POS
 		_lanqiuqiu_spr.z_index = 5
 		_floor2.add_child(_lanqiuqiu_spr)
-
-		var body := StaticBody2D.new()
-		body.position = LANQIUQIU_POS
-		var col_shape := CollisionShape2D.new()
-		var rect := RectangleShape2D.new()
-		rect.size = Vector2(40, 40)
-		col_shape.shape = rect
-		body.add_child(col_shape)
-		_floor2.add_child(body)
+		SceneUtils.add_collider(_floor2, LANQIUQIU_POS, Vector2(40, 40))
 
 	var name_lbl = Label.new()
 	name_lbl.text = "蓝秋秋"
