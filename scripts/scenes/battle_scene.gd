@@ -99,6 +99,7 @@ func _reset_transient_battle_state(mon: Dictionary) -> void:
 	mon["toxic_counter"] = 0
 	mon["enduring"] = false
 	mon["endured_hit"] = false
+	mon["yawn_turns"] = 0
 	# 260723 Red 能力等级变化(攻防特攻特防速度命中)此前从未在任何地方清零，战斗内被升降过
 	# 之后即使换场景/换精灵/开始下一场战斗依然带着，是比这批新效果更早就存在的老问题
 	mon["stages"] = {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0}
@@ -154,6 +155,12 @@ var _trainer_iv_tier:            int    = 0
 var _ally_name:  String = ""
 var _egg_reward: String = ""
 var _boss_id:    String = ""
+# 260723 Red 头目战两种模板的显式区分字段（见 docs/npc_roster.md "260723 已有第一个落地实例"）：
+# "story" = 剧情向一次性头目战，可捕捉（如幽狐+美美）
+# "farm"  = 常驻刷级点，不可捕捉，只能打赢（如君美+小霞，类似"太晶坑"式可重复玩法容器）
+# 不传就是历史遗留的旧场景（如果以后还有），行为等同"story"（默认可捕捉）
+var _boss_type:  String = ""
+var _no_capture: bool = false  # 默认跟着_boss_type走（farm→true），也支持caller显式覆盖
 var _ally_commented_super: bool = false
 var _ally_commented_weak:  bool = false
 var _ally_commented_enemy_super: bool = false
@@ -205,6 +212,8 @@ func _ready() -> void:
 	_ally_name      = data.get("ally_name", "")
 	_egg_reward     = data.get("egg_reward", "")
 	_boss_id        = data.get("boss_id", "")
+	_boss_type      = data.get("boss_type", "")
+	_no_capture     = data.get("no_capture", _boss_type == "farm")
 
 	var trainer_data = data.get("trainer", {})
 	if not trainer_data.is_empty():
@@ -718,9 +727,10 @@ func _on_use_item(item_id: String) -> void:
 
 	# ── 捕捉 ──────────────────────────────────────────────────────────────
 	if category == "捕捉":
-		if _is_trainer:
+		if _is_trainer or _no_capture:
 			AudioManager.play_se(AudioManager.SE_BUZZER)
-			await _show_message_async("训练师的精灵不能捕捉！")
+			var deny_msg = "训练师的精灵不能捕捉！" if _is_trainer else "这只精灵气势逼人，葫芦根本近不了它的身！"
+			await _show_message_async(deny_msg)
 			GameState.items[item_id] += 1
 			_busy = false
 			_refresh_bag_panel()
@@ -1607,6 +1617,15 @@ func _apply_end_of_round_upkeep() -> void:
 		# 260723 Red 挺住(endure)只保护"这一回合"，不管这回合有没有真的用上都要在回合末失效，
 		# 不然会一直挡到下次真正受到攻击为止
 		m["enduring"] = false
+		# 260723 Red 哈欠(yawn)：命中后不是立刻睡着，是"下一回合结束时"才睡着，
+		# 用完就是本回合的这次倒数减到0才触发，中间隔了一整回合正常行动
+		if m.get("yawn_turns", 0) > 0:
+			m["yawn_turns"] -= 1
+			if m["yawn_turns"] <= 0 and m.get("status", "") == "":
+				m["status"] = "睡眠"
+				m["sleep_turns"] = randi() % 3 + 1
+				_refresh_info(true)
+				await _show_message_async("%s 因为哈欠而睡着了！" % MonDB.display_name(m))
 
 func _apply_leech_seed(mon: Dictionary, other: Dictionary, spr: Sprite2D) -> void:
 	if not mon.get("leech_seeded", false): return
@@ -1757,6 +1776,15 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		# 260723 Red 冤冤相报(revenge)：本回合是后出手就威力翻倍，先后手由调用方传入
 		if mv.get("effect", "") == "revenge" and acted_second:
 			dmg = int(dmg * 2)
+		# 260723 Red 硬撑(facade)：自己带异常状态（烧伤/中毒/剧毒/麻痹）时威力翻倍，
+		# 这是纯粹的伤害修正，不走_apply_effect（那边没有attacker自身状态这个概念）
+		if mv.get("effect", "") == "facade" and attacker.get("status", "") in ["烧伤", "中毒", "剧毒", "麻痹"]:
+			dmg = int(dmg * 2)
+		# 260723 Red 清醒(wake_up_slap)：对方麻痹时伤害翻倍，命中后顺便治好对方的麻痹
+		# （反而是"以彼之道还治彼身"式的设计，不是单纯debuff）
+		var defender_was_paralyzed = defender.get("status", "") == "麻痹"
+		if mv.get("effect", "") == "wake_up_slap" and defender_was_paralyzed:
+			dmg = int(dmg * 2)
 
 		var sub_broke = _damage_defender(defender, dmg)
 
@@ -1836,6 +1864,12 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			_refresh_info(true)
 			await _show_message_async("%s 昏厥了！" % attacker_name)
 
+		# 260723 Red 清醒(wake_up_slap)：命中后顺便治好对方的麻痹（伤害翻倍已经在上面算过了）
+		if lock_effect == "wake_up_slap" and defender_was_paralyzed and dmg > 0:
+			defender["status"] = ""
+			_refresh_info(true)
+			await _show_message_async("%s 的麻痹被治愈了！" % MonDB.display_name(defender))
+
 		# 260703 Red recoil（反伤）
 		var sec_effect  = mv.get("effect", "")
 		var sec_value   = mv.get("effect_value", 0)
@@ -1859,7 +1893,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		# 附带状态/能力效果（有概率触发）
 		elif sec_effect != "" and sec_effect != "high_crit" and sec_effect != "self_destruct" \
 			and sec_effect != "rampage" and sec_effect != "rollout" and sec_effect != "fury_cutter" \
-			and sec_effect != "revenge":
+			and sec_effect != "revenge" and sec_effect != "facade" and sec_effect != "wake_up_slap":
 			var sec_chance = mv.get("effect_chance", 0)
 			if sec_chance > 0 and eff > 0.0:
 				if randf() * 100.0 < sec_chance:
@@ -1896,7 +1930,7 @@ const DEFENDER_TARGETING_EFFECTS := [
 	"lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
 	"inflict_burn", "inflict_poison", "inflict_paralysis", "inflict_sleep", "inflict_freeze",
 	"inflict_confusion", "inflict_toxic", "flinch", "leech_seed", "encore", "reckless_debuff",
-	"torment", "ohko",
+	"torment", "ohko", "tri_status", "swagger", "yawn",
 ]
 
 # 260722 Red 破釜沉舟(reckless_debuff)随机点名一项能力时用来拼文案
@@ -2010,6 +2044,24 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 		"endure":
 			if attacker.get("enduring", false): return false
 			attacker["enduring"] = true
+		"tri_status":
+			if defender.get("status", "") != "": return false
+			var options = ["麻痹", "烧伤", "冰冻"]
+			defender["status"] = options[randi() % options.size()]
+		"swagger":
+			var conf_applied = false
+			if defender.get("confused_turns", 0) <= 0:
+				defender["confused_turns"] = randi() % 4 + 2
+				conf_applied = true
+			defender["_swagger_confused"] = conf_applied
+			defender["stages"]["atk"] = min(6, defender["stages"].get("atk", 0) + 2)
+		"cure_self_status":
+			if not (attacker.get("status", "") in ["中毒", "麻痹", "烧伤", "剧毒"]): return false
+			attacker["status"] = ""
+			attacker["toxic_counter"] = 0
+		"yawn":
+			if defender.get("yawn_turns", 0) > 0 or defender.get("status", "") != "": return false
+			defender["yawn_turns"] = 2
 		_:
 			return false
 	return true
@@ -2053,6 +2105,14 @@ func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary,
 		"torment":          return "%s 被无理取闹了，无法连续使出同一招式！" % d
 		"ohko":             return "一击必杀！%s 昏厥了！" % d
 		"endure":           return "%s 摆好了架势！" % a
+		"tri_status":       return "%s 陷入了%s状态！" % [d, defender.get("status", "")]
+		"swagger":
+			var msg = "%s 的攻击提升了！" % d
+			if defender.get("_swagger_confused", false):
+				msg += "\n%s 陷入了混乱状态！" % d
+			return msg
+		"cure_self_status": return "%s 治愈了自己的异常状态！" % a
+		"yawn":             return "%s 开始犯困了！" % d
 	return ""
 
 # ══════════════════════════════════════════════════════════════════════════════

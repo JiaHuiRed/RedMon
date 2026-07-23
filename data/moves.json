@@ -46,7 +46,8 @@
     "power": 80,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "tri_status",
+    "effect_chance": 20,
     "description": "用3种光线进行攻击。有时会让对手陷入麻痹、烧伤或冰冻的状态。"
   },
   "下盘踢": {
@@ -1264,7 +1265,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 10,
-    "effect": "",
+    "effect": "yawn",
     "description": "打个大哈欠引起睡意。在下一回合让对手陷入睡眠状态。"
   },
   "哗哗气场": {
@@ -4382,7 +4383,7 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "wake_up_slap",
     "description": "对于麻痹状态下的对手，威力会变成2倍。但对手的麻痹也会被治愈。"
   },
   "清除之烟": {
@@ -4786,7 +4787,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 20,
-    "effect": "",
+    "effect": "cure_self_status",
     "description": "让身体休息，治愈自己身上所中的毒、麻痹、烧伤的异常状态。"
   },
   "焚天灭世炽光爆": {
@@ -5521,7 +5522,7 @@
     "power": 70,
     "accuracy": 100,
     "max_pp": 20,
-    "effect": "",
+    "effect": "facade",
     "description": "当自己处于中毒、麻痹、烧伤状态时，威力会变成2倍。"
   },
   "碉堡": {
@@ -6590,7 +6591,7 @@
     "power": 0,
     "accuracy": 85,
     "max_pp": 15,
-    "effect": "inflict_confusion",
+    "effect": "swagger",
     "description": "激怒对手，使其混乱。因为愤怒，对手的攻击会大幅提高。"
   },
   "虫之抵抗": {
