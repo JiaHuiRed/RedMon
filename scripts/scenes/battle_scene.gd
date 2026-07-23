@@ -97,6 +97,8 @@ func _reset_transient_battle_state(mon: Dictionary) -> void:
 	# 没人把它们补进来，导致混乱/剧毒回合数会跨对局残留
 	mon["confused_turns"] = 0
 	mon["toxic_counter"] = 0
+	mon["enduring"] = false
+	mon["endured_hit"] = false
 	# 260723 Red 能力等级变化(攻防特攻特防速度命中)此前从未在任何地方清零，战斗内被升降过
 	# 之后即使换场景/换精灵/开始下一场战斗依然带着，是比这批新效果更早就存在的老问题
 	mon["stages"] = {"atk": 0, "def": 0, "sp_atk": 0, "sp_def": 0, "spd": 0, "acc": 0}
@@ -743,12 +745,9 @@ func _on_use_item(item_id: String) -> void:
 				else:
 					await _show_message_async("%s 加入了队伍！" % MonDB.display_name(_enemy_mon))
 			else:
-				# 260709 Red 仓库也记录相遇信息
-				if not _enemy_mon.has("met_date"):
-					var dt = Time.get_datetime_dict_from_system()
-					_enemy_mon["met_date"] = "%d年%d月%d日" % [dt["year"], dt["month"], dt["day"]]
-				if not _enemy_mon.has("met_location"):
-					_enemy_mon["met_location"] = GameState.last_scene
+				# 260723 Red 改调 GameState.stamp_encounter_info() 统一入口——之前这里自己
+				# 单独写了一份，漏了天/地品阶"命中注定的相遇"覆盖，跟 add_mon() 不一致
+				GameState.stamp_encounter_info(_enemy_mon)
 				GameState.pc_box.append(_enemy_mon)
 				if chosen_name != "":
 					await _show_message_async("队伍已满！\n%s 被送到精灵堂仓库了。\n给它取名叫「%s」！" % [MonDB.display_name(_enemy_mon), chosen_name])
@@ -769,6 +768,9 @@ func _on_use_item(item_id: String) -> void:
 		if item_data.get("full_heal", false):
 			_player_mon["current_hp"] = _player_mon["max_hp"]
 			_player_mon["status"] = ""  # 260728 Red full_heal此前只回HP，没清异常状态(金丹desc明确写了"恢复所有异常状态")
+			# 260723 Red 混乱(confused_turns)从260722起独立于status字段，跟烧伤/中毒不是一回事，
+			# 260728那次修复清status时它还不存在，没被顺带清掉——金丹用完混乱状态其实还在
+			_player_mon["confused_turns"] = 0
 			_refresh_info(true)
 			await _show_message_async("%s 的 HP 完全恢复了！" % MonDB.display_name(_player_mon))
 		else:
@@ -1372,13 +1374,22 @@ func _on_move_pressed(idx: int) -> void:
 			mv_id = forced_id
 		else:
 			_player_mon["encore_turns"] = 0
-	if not skip_pp_cost:
-		moves[idx]["pp"] -= 1
-	_show_move_panel()
 
 	# 260722 Red 无理取闹(torment)：被点名后不能连续两回合使出同一招，命中判定前就直接失败
+	# 260723 Red 连续技锁定(rampage)期间强制重复同一招，这跟无理取闹"禁止重复同一招"天然互斥——
+	# 之前没有排除这种情况，两个效果一旦同时命中，_execute_move()完全不会跑，rampage_turns_left/
+	# last_move_id都推进不了，本回合判定完下一回合还是同样结果，精灵会卡死到强制换场为止。
+	# 连续技本身就不是玩家主动选的，不应该因为torment额外再罚一次，直接让它跳过torment判定
 	var p_torment_fail = _player_mon.get("tormented", false) \
-		and _player_mon.get("last_move_id", "") == mv_id and mv_id != "撞击"
+		and _player_mon.get("last_move_id", "") == mv_id and mv_id != "撞击" \
+		and _player_mon.get("rampage_turns_left", 0) <= 0
+
+	# 260723 Red 判定挪到扣PP之前——被无理取闹禁用的招式不会真的使出（下面会显示失败消息），
+	# 之前扣PP这行在判定之前，玩家选中被禁招式会白扣一点PP；AI侧选招时就把被禁的过滤掉，
+	# 根本不会选中，不会有这个损失，两边不一致
+	if not skip_pp_cost and not p_torment_fail:
+		moves[idx]["pp"] -= 1
+	_show_move_panel()
 
 	# ── 先后手：先制技能 > 速度比较（麻痹减半）────────────────────────────────
 	var p_mv_data = MonDB.moves.get(mv_id, {})
@@ -1398,6 +1409,9 @@ func _on_move_pressed(idx: int) -> void:
 		if _enemy_mon.get("status") == "麻痹":  e_spd *= 0.5
 		player_first = p_spd >= e_spd
 
+	# 260723 Red 混乱自伤/破釜沉舟这类自损效果让"自己把自己打到0血"在己方回合内变得常见，
+	# 之前每一半回合结束只检查对方血量，没检查自己血量，会出现"已经倒下的精灵还被对面完整打
+	# 一次"的错乱顺序，甚至可能被打完这一招后又中一个新状态。现在两边行动后都各自检查双方血量
 	if player_first:
 		var blocked = await _check_status_block(_player_mon, false)
 		if not blocked:
@@ -1408,13 +1422,17 @@ func _on_move_pressed(idx: int) -> void:
 		if not is_inside_tree(): return
 		if _enemy_mon["current_hp"] <= 0:
 			await _handle_victory(); return
+		if _player_mon["current_hp"] <= 0:
+			await _handle_defeat(); return
 		await get_tree().create_timer(0.4).timeout
 		var e_blocked = await _check_status_block(_enemy_mon, true)
 		if not e_blocked:
-			await _execute_move(_enemy_mon, _player_mon, e_mv_id, true)
+			await _execute_move(_enemy_mon, _player_mon, e_mv_id, true, true)
 		if not is_inside_tree(): return
 		if _player_mon["current_hp"] <= 0:
 			await _handle_defeat(); return
+		if _enemy_mon["current_hp"] <= 0:
+			await _handle_victory(); return
 	else:
 		var e_blocked = await _check_status_block(_enemy_mon, true)
 		if not e_blocked:
@@ -1422,16 +1440,20 @@ func _on_move_pressed(idx: int) -> void:
 		if not is_inside_tree(): return
 		if _player_mon["current_hp"] <= 0:
 			await _handle_defeat(); return
+		if _enemy_mon["current_hp"] <= 0:
+			await _handle_victory(); return
 		await get_tree().create_timer(0.4).timeout
 		var blocked = await _check_status_block(_player_mon, false)
 		if not blocked:
 			if p_torment_fail:
 				await _show_message_async("%s 因为无理取闹，无法连续使出同一招式！" % MonDB.display_name(_player_mon))
 			else:
-				await _execute_move(_player_mon, _enemy_mon, mv_id, false)
+				await _execute_move(_player_mon, _enemy_mon, mv_id, false, true)
 		if not is_inside_tree(): return
 		if _enemy_mon["current_hp"] <= 0:
 			await _handle_victory(); return
+		if _player_mon["current_hp"] <= 0:
+			await _handle_defeat(); return
 
 	# ── 回合末状态伤害 ───────────────────────────────────────────────────────
 	await _apply_end_of_turn_damage(_player_mon, _player_spr)
@@ -1457,26 +1479,38 @@ func _on_move_pressed(idx: int) -> void:
 # Battle execution
 # ══════════════════════════════════════════════════════════════════════════════
 func _pick_enemy_move() -> String:
+	# 260723 Red 此前这个函数只选招不扣PP——全文件唯一的PP扣减在玩家侧_on_move_pressed()里，
+	# 敌方/训练师精灵的PP实际上永远不会减少。现在跟玩家侧对齐：连续技锁定期间不消耗PP，
+	# 其余情况选中哪招就扣哪招的PP，"撞击"兜底不是真实招式，不参与PP扣减
 	# 260722 Red 连续攻击类锁定优先级最高，其次才是被玩家的再来一次逼招
 	if _enemy_mon.get("rampage_turns_left", 0) > 0:
 		var locked: String = _enemy_mon.get("rampage_move_id", "")
 		if locked != "":
 			return locked
+	var chosen_id: String = ""
 	if _enemy_mon.get("encore_turns", 0) > 0:
 		var forced_id: String = _enemy_mon.get("encore_move", "")
 		for mv in _enemy_mon.get("moves", []):
 			if mv["id"] == forced_id and mv["pp"] > 0:
-				return forced_id
-		_enemy_mon["encore_turns"] = 0
-	var moves = _enemy_mon.get("moves", [])
-	var usable = []
-	var tormented_move = _enemy_mon.get("last_move_id", "") if _enemy_mon.get("tormented", false) else ""
-	for mv in moves:
-		if mv["pp"] > 0 and mv["id"] != tormented_move:
-			usable.append(mv["id"])
-	if usable.is_empty():
-		return "撞击"   # Fallback (Struggle equivalent)
-	return usable[randi() % usable.size()]
+				chosen_id = forced_id
+				break
+		if chosen_id == "":
+			_enemy_mon["encore_turns"] = 0
+	if chosen_id == "":
+		var moves = _enemy_mon.get("moves", [])
+		var usable = []
+		var tormented_move = _enemy_mon.get("last_move_id", "") if _enemy_mon.get("tormented", false) else ""
+		for mv in moves:
+			if mv["pp"] > 0 and mv["id"] != tormented_move:
+				usable.append(mv["id"])
+		if usable.is_empty():
+			return "撞击"   # Fallback (Struggle equivalent)，不扣PP
+		chosen_id = usable[randi() % usable.size()]
+	for mv in _enemy_mon.get("moves", []):
+		if mv["id"] == chosen_id:
+			mv["pp"] = max(0, mv["pp"] - 1)
+			break
+	return chosen_id
 
 # 检查状态是否阻止行动，返回 true = 无法行动本回合
 func _check_status_block(mon: Dictionary, is_enemy: bool) -> bool:
@@ -1488,6 +1522,10 @@ func _check_status_block(mon: Dictionary, is_enemy: bool) -> bool:
 		await _show_message_async("%s 因为畏缩而无法行动！" % name)
 		return true
 	# 260722 Red 混乱独立于status，可与烧伤/中毒/麻痹等共存，故先于match单独判定
+	# 260723 Red 之前混乱自伤命中时直接return true，会跳过下面睡眠/冰冻的计数——一只"又混乱又
+	# 睡眠"的精灵，混乱自伤命中的那几回合睡眠不会解除，变相拉长了持续时间。改成两边各自独立
+	# 判定、结果取或，混乱不再打断状态那边的计数
+	var confusion_blocked = false
 	if mon.get("confused_turns", 0) > 0:
 		mon["confused_turns"] -= 1
 		if mon["confused_turns"] <= 0:
@@ -1498,34 +1536,33 @@ func _check_status_block(mon: Dictionary, is_enemy: bool) -> bool:
 			_flash_red(_enemy_spr if is_enemy else _player_spr)
 			_refresh_info(true)
 			await _show_message_async("%s 混乱中攻击了自己！（-%d）" % [name, dmg])
-			return true
+			confusion_blocked = true
 		else:
 			await _show_message_async("%s 混乱中……" % name)
+	var status_blocked = false
 	match mon.get("status", ""):
 		"睡眠":
 			if mon.get("sleep_turns", 0) > 0:
 				mon["sleep_turns"] -= 1
 				await _show_message_async("%s 还在睡眠中……" % name)
-				return true
+				status_blocked = true
 			else:
 				mon["status"] = ""
 				_refresh_info()
 				await _show_message_async("%s 从睡眠中醒来了！" % name)
-				return false
 		"冰冻":
 			if randf() < 0.2:
 				mon["status"] = ""
 				_refresh_info()
 				await _show_message_async("%s 解冻了！" % name)
-				return false
 			else:
 				await _show_message_async("%s 被冰封，无法行动！" % name)
-				return true
+				status_blocked = true
 		"麻痹":
 			if randf() < 0.25:
 				await _show_message_async("%s 因麻痹无法行动！" % name)
-				return true
-	return false
+				status_blocked = true
+	return confusion_blocked or status_blocked
 
 # 回合末状态持续伤害（烧伤/中毒）
 func _apply_end_of_turn_damage(mon: Dictionary, spr: Sprite2D) -> void:
@@ -1567,6 +1604,9 @@ func _apply_end_of_round_upkeep() -> void:
 			m["encore_turns"] -= 1
 			if m["encore_turns"] <= 0:
 				m["encore_move"] = ""
+		# 260723 Red 挺住(endure)只保护"这一回合"，不管这回合有没有真的用上都要在回合末失效，
+		# 不然会一直挡到下次真正受到攻击为止
+		m["enduring"] = false
 
 func _apply_leech_seed(mon: Dictionary, other: Dictionary, spr: Sprite2D) -> void:
 	if not mon.get("leech_seeded", false): return
@@ -1580,7 +1620,7 @@ func _apply_leech_seed(mon: Dictionary, other: Dictionary, spr: Sprite2D) -> voi
 	_refresh_info(true)
 	await _show_message_async("%s 的HP被寄生种子吸取了！（-%d）" % [name, dmg])
 
-func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is_enemy: bool) -> void:
+func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is_enemy: bool, acted_second: bool = false) -> void:
 	var mv = MonDB.moves.get(mv_id, {})
 	if mv.is_empty():
 		return
@@ -1623,6 +1663,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		var actual_hits = 0
 		var any_crit    = false
 		var last_eff    = 1.0
+		var endured_now = false
 		for i in range(hit_count):
 			if defender["current_hp"] <= 0:
 				break
@@ -1634,6 +1675,9 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			if mv.get("category", "") == "特殊" and defender.get("screen_special_turns", 0) > 0:
 				dmg = max(1, int(dmg * 0.5))
 			var sub_broke = _damage_defender(defender, dmg)
+			if defender.get("endured_hit", false):
+				defender["endured_hit"] = false
+				endured_now = true
 			actual_hits += 1
 			if dmg > 0:
 				if last_eff > 1.0:
@@ -1653,6 +1697,8 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		if any_crit:
 			hit_msg += "\n有几次是要害一击！"
 		await _show_message_async(hit_msg)
+		if endured_now:
+			await _show_message_async("%s 撑住了！" % MonDB.display_name(defender))
 
 		var multi_eff_msg = ""
 		if last_eff == 0.0:
@@ -1663,6 +1709,20 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			multi_eff_msg = "效果一般……"
 		if multi_eff_msg != "":
 			await _show_message_async(multi_eff_msg)
+
+		# 260723 Red 双针这类"多段攻击+额外几率异常状态"的技能，effect字段被multi_hit占用后
+		# 没地方再挂第二个效果——用新增的secondary_status字段单独表达，几率复用effect_chance，
+		# 挡替身规则跟普通附加效果一致
+		var multi_sec_status = mv.get("secondary_status", "")
+		if multi_sec_status != "" and defender["current_hp"] > 0 \
+			and not (multi_sec_status in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0):
+			var multi_sec_chance = mv.get("effect_chance", 0)
+			if multi_sec_chance > 0 and randf() * 100.0 < multi_sec_chance:
+				var sec_applied = _apply_effect(multi_sec_status, attacker, defender, is_enemy, mv.get("effect_value", 0))
+				_refresh_info()
+				var sec_msg = _effect_message(multi_sec_status, attacker, defender, sec_applied)
+				if sec_msg != "":
+					await _show_message_async(sec_msg)
 		return
 
 	if mv["power"] > 0:
@@ -1694,6 +1754,9 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 				streak = 1
 			attacker["fury_cutter_streak"] = streak
 			dmg = int(dmg * pow(2, streak - 1))
+		# 260723 Red 冤冤相报(revenge)：本回合是后出手就威力翻倍，先后手由调用方传入
+		if mv.get("effect", "") == "revenge" and acted_second:
+			dmg = int(dmg * 2)
 
 		var sub_broke = _damage_defender(defender, dmg)
 
@@ -1731,6 +1794,9 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 
 		if sub_broke:
 			await _show_message_async("%s 的替身消失了！" % MonDB.display_name(defender))
+		if defender.get("endured_hit", false):
+			defender["endured_hit"] = false
+			await _show_message_async("%s 撑住了！" % MonDB.display_name(defender))
 
 		# 260715 Red 头目战：怀旧NPC场外声援（每种情况整场只触发一次，避免刷屏）
 		if _ally_name != "":
@@ -1792,16 +1858,17 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 
 		# 附带状态/能力效果（有概率触发）
 		elif sec_effect != "" and sec_effect != "high_crit" and sec_effect != "self_destruct" \
-			and sec_effect != "rampage" and sec_effect != "rollout" and sec_effect != "fury_cutter":
+			and sec_effect != "rampage" and sec_effect != "rollout" and sec_effect != "fury_cutter" \
+			and sec_effect != "revenge":
 			var sec_chance = mv.get("effect_chance", 0)
 			if sec_chance > 0 and eff > 0.0:
 				if randf() * 100.0 < sec_chance:
 					if sec_effect in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
 						pass  # 260722 Red 替身挡下了附加效果（沿用主流规则：作用于对手的效果一律被替身吸收）
 					else:
-						_apply_effect(sec_effect, attacker, defender, is_enemy, sec_value)
+						var applied = _apply_effect(sec_effect, attacker, defender, is_enemy, sec_value)
 						_refresh_info()
-						var msg = _effect_message(sec_effect, attacker, defender)
+						var msg = _effect_message(sec_effect, attacker, defender, applied)
 						if msg != "":
 							await _show_message_async(msg)
 	else:
@@ -1810,9 +1877,9 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		if effect in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
 			await _show_message_async("但是被 %s 的替身挡住了！" % MonDB.display_name(defender))
 		else:
-			_apply_effect(effect, attacker, defender, is_enemy, mv.get("effect_value", 0))
+			var applied = _apply_effect(effect, attacker, defender, is_enemy, mv.get("effect_value", 0))
 			_refresh_info(true)
-			var msg = _effect_message(effect, attacker, defender)
+			var msg = _effect_message(effect, attacker, defender, applied)
 			if msg != "":
 				await _show_message_async(msg)
 
@@ -1829,7 +1896,7 @@ const DEFENDER_TARGETING_EFFECTS := [
 	"lower_atk", "lower_def", "lower_sp_atk", "lower_sp_def", "lower_spd", "lower_acc",
 	"inflict_burn", "inflict_poison", "inflict_paralysis", "inflict_sleep", "inflict_freeze",
 	"inflict_confusion", "inflict_toxic", "flinch", "leech_seed", "encore", "reckless_debuff",
-	"torment",
+	"torment", "ohko",
 ]
 
 # 260722 Red 破釜沉舟(reckless_debuff)随机点名一项能力时用来拼文案
@@ -1843,10 +1910,21 @@ func _damage_defender(defender: Dictionary, dmg: int) -> bool:
 	if defender.get("substitute_hp", 0) > 0:
 		defender["substitute_hp"] = max(0, defender["substitute_hp"] - dmg)
 		return defender["substitute_hp"] <= 0
-	defender["current_hp"] = max(0, defender["current_hp"] - dmg)
+	# 260723 Red 挺住(endure)：本该致命的一击改成刚好留1HP，只消耗一次，调用方靠
+	# "endured_hit"这个一次性标记决定要不要额外提示"撑住了"
+	var new_hp = defender["current_hp"] - dmg
+	if new_hp <= 0 and defender.get("enduring", false):
+		new_hp = 1
+		defender["enduring"] = false
+		defender["endured_hit"] = true
+	defender["current_hp"] = max(0, new_hp)
 	return false
 
-func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _is_enemy: bool, effect_value: int = 0) -> void:
+## 260723 Red 改成返回bool——之前不管是否真的生效（比如目标已经有异常状态/已经有替身），
+## _effect_message() 都只会读"当前状态值"来判断成功/失败文案，对于本来就该no-op的重复施放，
+## 状态值还是"生效中"，于是显示成功文案，跟实际没生效对不上。现在由这里明确告诉调用方"这次到底
+## 有没有真的改变了什么"，_effect_message() 直接用这个结果，不用再自己猜
+func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _is_enemy: bool, effect_value: int = 0) -> bool:
 	match effect:
 		# ── 能力阶段变化 ──────────────────────────────────────────────────────
 		"lower_atk":
@@ -1877,44 +1955,44 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 			attacker["current_hp"] = min(attacker["max_hp"], attacker["current_hp"] + heal)
 		# ── 状态异常（仅在目标无状态时生效）──────────────────────────────────
 		"inflict_burn":
-			if defender.get("status", "") == "":
-				defender["status"] = "烧伤"
+			if defender.get("status", "") != "": return false
+			defender["status"] = "烧伤"
 		"inflict_poison":
-			if defender.get("status", "") == "":
-				defender["status"] = "中毒"
+			if defender.get("status", "") != "": return false
+			defender["status"] = "中毒"
 		"inflict_paralysis":
-			if defender.get("status", "") == "":
-				defender["status"] = "麻痹"
+			if defender.get("status", "") != "": return false
+			defender["status"] = "麻痹"
 		"inflict_sleep":
-			if defender.get("status", "") == "":
-				defender["status"] = "睡眠"
-				defender["sleep_turns"] = randi() % 3 + 1
+			if defender.get("status", "") != "": return false
+			defender["status"] = "睡眠"
+			defender["sleep_turns"] = randi() % 3 + 1
 		"inflict_freeze":
-			if defender.get("status", "") == "":
-				defender["status"] = "冰冻"
+			if defender.get("status", "") != "": return false
+			defender["status"] = "冰冻"
 		"inflict_confusion":
-			if defender.get("confused_turns", 0) <= 0:
-				defender["confused_turns"] = randi() % 4 + 2  # 2~5回合
+			if defender.get("confused_turns", 0) > 0: return false
+			defender["confused_turns"] = randi() % 4 + 2  # 2~5回合
 		"inflict_toxic":
-			if defender.get("status", "") == "":
-				defender["status"] = "剧毒"
-				defender["toxic_counter"] = 1
+			if defender.get("status", "") != "": return false
+			defender["status"] = "剧毒"
+			defender["toxic_counter"] = 1
 		# ── 260722 Red 新接入的占位效果（畏缩/替身/寄生种子/再来一次/光墙）──────
 		"flinch":
 			defender["flinched"] = true
 		"substitute":
 			var sub_pct = effect_value if effect_value > 0 else 25
 			var sub_cost = max(1, int(attacker["max_hp"] * sub_pct / 100.0))
-			if attacker.get("substitute_hp", 0) <= 0 and attacker["current_hp"] > sub_cost:
-				attacker["current_hp"] -= sub_cost
-				attacker["substitute_hp"] = sub_cost
+			if attacker.get("substitute_hp", 0) > 0 or attacker["current_hp"] <= sub_cost: return false
+			attacker["current_hp"] -= sub_cost
+			attacker["substitute_hp"] = sub_cost
 		"leech_seed":
-			if not defender.get("leech_seeded", false):
-				defender["leech_seeded"] = true
+			if defender.get("leech_seeded", false): return false
+			defender["leech_seeded"] = true
 		"encore":
-			if defender.get("last_move_id", "") != "" and defender.get("encore_turns", 0) <= 0:
-				defender["encore_turns"] = 3
-				defender["encore_move"] = defender["last_move_id"]
+			if defender.get("last_move_id", "") == "" or defender.get("encore_turns", 0) > 0: return false
+			defender["encore_turns"] = 3
+			defender["encore_move"] = defender["last_move_id"]
 		"screen_special":
 			attacker["screen_special_turns"] = 5
 		"reckless_debuff":
@@ -1927,8 +2005,21 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 			defender["_last_debuffed_stat"] = pick
 		"torment":
 			defender["tormented"] = true
+		"ohko":
+			defender["current_hp"] = 0
+		"endure":
+			if attacker.get("enduring", false): return false
+			attacker["enduring"] = true
+		_:
+			return false
+	return true
 
-func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary) -> String:
+func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary, success: bool = true) -> String:
+	# 260723 Red 成功/失败现在完全信 _apply_effect() 的返回值，不再自己读状态猜——之前substitute/
+	# encore是读当前状态值判断（重复施放时状态值还在，误报成功），leech_seed甚至没判断过，
+	# 无论有没有真的种上都显示成功
+	if not success:
+		return "但是失败了！"
 	var a = MonDB.display_name(attacker)
 	var d = MonDB.display_name(defender)
 	match effect:
@@ -1952,16 +2043,16 @@ func _effect_message(effect: String, attacker: Dictionary, defender: Dictionary)
 		"inflict_confusion":return "%s 陷入了混乱状态！" % d
 		"inflict_toxic":    return "%s 陷入了剧毒状态！" % d
 		"flinch":           return ""
-		"substitute":
-			return "%s 制造了替身！" % a if attacker.get("substitute_hp", 0) > 0 else "但是失败了！"
+		"substitute":       return "%s 制造了替身！" % a
 		"leech_seed":       return "%s 被种下了寄生种子！" % d
-		"encore":
-			return "%s 被迫再次使出了上一招！" % d if defender.get("encore_turns", 0) > 0 else "但是失败了！"
+		"encore":           return "%s 被迫再次使出了上一招！" % d
 		"screen_special":   return "%s 周围出现了闪耀的光墙！" % a
 		"reckless_debuff":
 			var label = STAT_LABELS.get(defender.get("_last_debuffed_stat", ""), "")
 			return "%s 消耗了一半体力！\n%s 的%s大幅下降了！" % [a, d, label]
 		"torment":          return "%s 被无理取闹了，无法连续使出同一招式！" % d
+		"ohko":             return "一击必杀！%s 昏厥了！" % d
+		"endure":           return "%s 摆好了架势！" % a
 	return ""
 
 # ══════════════════════════════════════════════════════════════════════════════

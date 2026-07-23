@@ -970,6 +970,8 @@
     "accuracy": 100,
     "max_pp": 20,
     "effect": "multi_hit_2",
+    "secondary_status": "inflict_poison",
+    "effect_chance": 30,
     "description": "将2根针刺入对手，连续2次给予伤害。有时会让对手陷入中毒状态。"
   },
   "反射壁": {
@@ -1524,7 +1526,7 @@
     "power": 0,
     "accuracy": 30,
     "max_pp": 5,
-    "effect": "",
+    "effect": "ohko",
     "description": "让对手掉落于地裂的裂缝中进行攻击。只要命中就会一击昏厥。"
   },
   "地隆啸天大终结": {
@@ -2868,7 +2870,7 @@
     "power": 0,
     "accuracy": 0,
     "max_pp": 10,
-    "effect": "",
+    "effect": "endure",
     "description": "即使受到攻击，也至少会留下1HP。连续使出则容易失败。"
   },
   "捏碎": {
@@ -6065,7 +6067,7 @@
     "power": 0,
     "accuracy": 30,
     "max_pp": 5,
-    "effect": "",
+    "effect": "ohko",
     "description": "给对手一击昏厥。如果是冰属性以外的精灵使用，就会难以打中。"
   },
   "绞紧": {
@@ -6729,7 +6731,7 @@
     "power": 0,
     "accuracy": 30,
     "max_pp": 5,
-    "effect": "",
+    "effect": "ohko",
     "description": "用旋转的角刺入对手进行攻击。只要命中就会一击昏厥。"
   },
   "认真起来大爆击": {
@@ -9114,7 +9116,7 @@
     "power": 50,
     "accuracy": 100,
     "max_pp": 10,
-    "effect": "",
+    "effect": "revenge",
     "description": "若后出手则威力翻倍。"
   },
   "冰之突刺": {
