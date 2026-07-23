@@ -29,10 +29,10 @@ export const state = {
   data: {},
   modified: {},
   history: {},
+  activeTab: "species",
 };
 
 export const tabs = {};
-export let activeTab = "species";
 
 const MAX_HISTORY = 50;
 
@@ -68,7 +68,7 @@ export function undo() {
     return "撤销遇效表";
   }
 
-  const tab = tabs[activeTab];
+  const tab = tabs[state.activeTab];
   if (!tab) return;
   const fileKey = tab.fileKey;
 
@@ -93,7 +93,7 @@ export function redo() {
     return "重做遇效表";
   }
 
-  const tab = tabs[activeTab];
+  const tab = tabs[state.activeTab];
   if (!tab) return;
   const fileKey = tab.fileKey;
 

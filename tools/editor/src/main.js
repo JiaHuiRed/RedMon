@@ -4,7 +4,6 @@ import {
   TAB_DEFS,
   state,
   tabs,
-  activeTab,
   loadAllData,
   saveHistory,
   undo,
@@ -30,7 +29,7 @@ const dom = {
 
 // === Tab Switching ===
 function switchTab(tabKey) {
-  activeTab = tabKey;
+  state.activeTab = tabKey;
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tabKey);
@@ -50,7 +49,7 @@ function switchTab(tabKey) {
 }
 
 function updateSidebarButtons() {
-  const tab = tabs[activeTab];
+  const tab = tabs[state.activeTab];
   if (!tab || !dom.sidebarActions) return;
   const hasActions = tab.onAdd || tab.onDelete;
   dom.sidebarActions.style.display = hasActions ? "flex" : "none";
@@ -87,7 +86,7 @@ async function openProjectAt(root) {
     tabs[key] = tab;
   }
 
-  tabs[activeTab]?.renderList();
+  tabs[state.activeTab]?.renderList();
   setStatus(`已加载项目: ${root}`);
   updateSummary();
   updateSaveButton();
@@ -96,7 +95,7 @@ async function openProjectAt(root) {
 
 // === Search ===
 dom.searchInput.addEventListener("input", (e) => {
-  const tab = tabs[activeTab];
+  const tab = tabs[state.activeTab];
   if (tab && tab.filterList) {
     tab.filterList(e.target.value);
   }
@@ -134,11 +133,11 @@ async function init() {
   });
 
   dom.btnAdd?.addEventListener("click", () => {
-    const tab = tabs[activeTab];
+    const tab = tabs[state.activeTab];
     if (tab && tab.onAdd) { tab.onAdd(); updateSidebarButtons(); }
   });
   dom.btnDelete?.addEventListener("click", () => {
-    const tab = tabs[activeTab];
+    const tab = tabs[state.activeTab];
     if (tab && tab.onDelete) { tab.onDelete(); updateSidebarButtons(); }
   });
 
