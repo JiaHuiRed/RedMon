@@ -313,8 +313,10 @@ func _register_scene_npc(spr: Node2D) -> void:
 		spr.visible = GameState.has_starter and not GameState.starter_trio_given
 		return
 	if str(spr.get_meta("npc_dialog", "")) == "junmei_boss_npc":
-		# 260715 Red 头目战明雷精灵：拿到初始精灵前 / 已领取过蛋后不出现
-		if not GameState.has_starter or GameState.boss_eggs_claimed.has("junmei_xiaoxia"):
+		# 260715 Red 头目战明雷精灵：拿到初始精灵前不出现
+		# 260723 Red 不再因为领过蛋就隐藏——改成常驻可反复挑战/捕捉的刷级点，蛋本身只发一次
+		# （判定挪到 battle_scene.gd 的 _grant_boss_egg_if_first_clear()）
+		if not GameState.has_starter:
 			spr.visible = false
 			return
 		spr.set_meta("npc_tile", tile)
@@ -521,10 +523,14 @@ func _start_boss_battle() -> void:
 	_battling = true
 	var area_map_id := {"青木村": "1001", "华灵草原": "2001", "碧溪镇": "3001"}.get(_current_area(), "1001")
 	var boss_lv = EncounterDB.calc_level_range(int(area_map_id))[1] + 7
-	var boss_mon = MonDB.create_mon("君美", boss_lv, MonDB.boss_tier_ivs())
+	# 260723 Red 头目常驻可反复挑战刷级，改用头目/首领概率浮动，不再固定拿"首领"最高档
+	var tier_ivs = MonDB.roll_boss_tier_ivs()
+	var boss_mon = MonDB.create_mon("君美", boss_lv, tier_ivs["ivs"])
+	boss_mon["wild_tier"] = tier_ivs["tier"]
 	request_scene.emit("battle", {
 		"wild_mon": boss_mon, "ally_name": "小霞", "egg_reward": "君美",
-		"boss_id": "junmei_xiaoxia", "from_scene": "overworld", "bg": _bg_for_area(_current_area())})
+		"boss_id": "junmei_xiaoxia", "boss_type": "farm",
+		"from_scene": "overworld", "bg": _bg_for_area(_current_area())})
 
 func _start_prof_battle() -> void:
 	_battling = true

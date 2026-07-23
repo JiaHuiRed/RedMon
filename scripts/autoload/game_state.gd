@@ -254,7 +254,10 @@ func start_new_game(name: String, rname: String = "小敏", slot: int = 1) -> vo
 	play_time = 0.0
 	_play_timer_active = true
 
-func add_mon(mon: Dictionary) -> void:
+# 260723 Red 相遇信息盖章抽成独立函数——此前只有 add_mon()（队伍未满入队）会做这件事，
+# battle_scene.gd 里"队伍已满送仓库"是另外单独手写的一份 met_date/met_location 初始化，
+# 没有天/地品阶覆盖那一段，天/地品阶精灵进仓库时不会显示"命中注定的相遇"
+func stamp_encounter_info(mon: Dictionary) -> void:
 	# 260709 Red 记录相遇信息
 	if not mon.has("met_date"):
 		var dt = Time.get_datetime_dict_from_system()
@@ -269,6 +272,9 @@ func add_mon(mon: Dictionary) -> void:
 			mon["met_location"] = "命中注定的相遇"
 		# 防重复计算
 		mon["_encounter_patched"] = true
+
+func add_mon(mon: Dictionary) -> void:
+	stamp_encounter_info(mon)
 	player_team.append(mon)
 
 func first_mon() -> Dictionary:

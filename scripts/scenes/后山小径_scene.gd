@@ -228,10 +228,15 @@ func _handle_youhu_boss() -> void:
 func _start_youhu_battle() -> void:
 	# 260722 Red 幽狐22级才进化成影狐，头目战用未进化的幽狐+高IV，避免"11级却是进化后形态"的设定矛盾
 	var boss_lv = EncounterDB.calc_level_range(1)[1] + 7
-	var boss_mon = MonDB.create_mon("幽狐", boss_lv, MonDB.boss_tier_ivs())
+	# 260723 Red 头目/首领概率浮动，不再固定拿"首领"最高档（跟君美那场保持一致）；
+	# 这场保留可捕捉——剧情设计上"打服后带走照顾"是幽狐这段故事本身的落点，跟君美不一样
+	var tier_ivs = MonDB.roll_boss_tier_ivs()
+	var boss_mon = MonDB.create_mon("幽狐", boss_lv, tier_ivs["ivs"])
+	boss_mon["wild_tier"] = tier_ivs["tier"]
 	request_scene.emit("battle", {
 		"wild_mon": boss_mon, "ally_name": "美美", "egg_reward": "幽狐",
-		"boss_id": "youhu_houshan", "return_scene": "houshan", "bg": "res://assets/backgrounds/山上.png"
+		"boss_id": "youhu_houshan", "boss_type": "story",
+		"return_scene": "houshan", "bg": "res://assets/backgrounds/山上.png"
 	})
 
 func _show_youhu_post_battle(result: String) -> void:

@@ -1,6 +1,7 @@
 extends Node
-class_name DialogManager
 # 260722 Red 对话框统一管理单例（替代各场景自己的 _dialog_bubble + _advance_dialog）
+# 不声明 class_name：本脚本作为 project.godot 里的 DialogManager autoload 单例使用，
+# class_name 会跟同名 autoload 冲突（"Class hides an autoload singleton"）
 # API: show(), handle_input(), is_active(), hide()
 # battle_scene 和 opening_scene 保留自有消息框不改动
 

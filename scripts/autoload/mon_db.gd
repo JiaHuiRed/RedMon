@@ -238,12 +238,23 @@ func roll_wild_tier_ivs(species_id: String) -> Dictionary:
 		ivs[stat] = randi_range(r[0], r[1])
 	return {"tier": tier, "ivs": ivs}
 
-# 260715 Red 头目战：保证"首领"档个体值(26-31)，供明雷头目精灵使用
+# 260715 Red 头目战：保证"首领"档个体值(26-31)，供蛋孵化等"确定拿最高档"的场合使用
 func boss_tier_ivs() -> Dictionary:
 	var ivs := {}
 	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
 		ivs[stat] = randi_range(26, 31)
 	return ivs
+
+# 260723 Red 明雷头目精灵专用：跟神/天品级野生精灵同一套"头目80%/首领20%"概率分布，
+# 不再固定拿最高档——头目战本身也该有品级浮动，返回值格式对齐 roll_wild_tier_ivs()
+func roll_boss_tier_ivs() -> Dictionary:
+	var tier = "头目" if randi() % 100 < 80 else "首领"
+	var iv_ranges := {"头目": [20, 25], "首领": [26, 31]}
+	var r = iv_ranges[tier]
+	var ivs := {}
+	for stat in ["hp", "atk", "def", "sp_atk", "sp_def", "spd"]:
+		ivs[stat] = randi_range(r[0], r[1])
+	return {"tier": tier, "ivs": ivs}
 
 # 获取某属性的进攻克制表（公开API，取代直接访问 _type_chart）
 func get_offense_chart(atk_type: String) -> Dictionary:
@@ -435,7 +446,8 @@ func calc_damage(attacker: Dictionary, defender: Dictionary, move_id: String) ->
 	var sp = species[defender["species_id"]]
 	var effectiveness = get_effectiveness(atk_type, sp["type1"], sp.get("type2", ""))
 
-	# STAB（同属性加成 ×1.5）
+	# STAB（同属性加成 ×1.2，本作故意调低于宝可梦官方的×1.5，260723 Red 确认代码数值是对的，
+	# 之前这里注释一直写着×1.5跟实际不符，是注释没跟上调整，不是数值本身写错）
 	var atk_sp = species[attacker["species_id"]]
 	var stab = 1.2 if (atk_type == atk_sp["type1"] or atk_type == atk_sp.get("type2", "")) else 1.0
 
@@ -446,9 +458,13 @@ func calc_damage(attacker: Dictionary, defender: Dictionary, move_id: String) ->
 	# 伤害内核：等级系数按本作 Lv10/60/120 的伤害节奏反推校准（不是宝可梦的 /50+2）
 	# 攻防比取 0.8 次幂而非线性比值，压制数值差距悬殊时的一击秒杀/隔靴搔痒
 	var level_factor = (0.8 * attacker["level"] + 6.0) / 100.0
-	var dmg = int(level_factor * mv["power"] * pow(eff_atk / eff_def, 0.8))
-	dmg = int(dmg * stab * effectiveness * crit_mult * rng)
-	dmg = max(1, dmg)
+	# 260723 Red 之前分两步取整（先算基础伤害取整一次，再乘STAB/克制/暴击又取整一次），
+	# 低等级低威力技能下两次取整会把STAB/效果拔群加成吃掉大半，改成只在最后统一取整一次
+	var raw_dmg = level_factor * mv["power"] * pow(eff_atk / eff_def, 0.8) * stab * effectiveness * crit_mult * rng
+	var dmg = int(raw_dmg)
+	# 260723 Red 属性免疫(0倍)应该是0伤害——之前不分青红皂白 max(1,dmg)，导致"没有效果"的
+	# 提示和实际掉血对不上，免疫方每次还是要吃1点血
+	dmg = max(1, dmg) if effectiveness > 0.0 else 0
 
 	return {"damage": dmg, "effectiveness": effectiveness, "crit": crit}
 
@@ -461,6 +477,10 @@ func _stage_mult(stage: int) -> float:
 # 混乱中攻击自己：40威力无属性物理，用自己的攻防（含能力阶段），无STAB/克制/暴击
 func calc_confusion_damage(mon: Dictionary) -> int:
 	var eff_atk = mon["atk"] * _stage_mult(mon["stages"].get("atk", 0))
+	# 260723 Red 漏抄了calc_damage()里烧伤减半物理攻击的判断——混乱自伤本质也是物理招式，
+	# 烧伤状态下应该同样减半，之前两处公式各写各的，对不上
+	if mon.get("status", "") == "烧伤":
+		eff_atk *= 0.5
 	var eff_def = mon["def"] * _stage_mult(mon["stages"].get("def", 0))
 	var level_factor = (0.8 * mon["level"] + 6.0) / 100.0
 	var dmg = int(level_factor * 40 * pow(eff_atk / eff_def, 0.8) * randf_range(0.85, 1.0))
@@ -635,12 +655,16 @@ func get_potential_evolutions(mon: Dictionary) -> Array:
 # 返回所有当前可执行的进化分支；battle_scene.gd分支选择面板需要完整列表，
 # main.gd糖果/经验道具升级只需要取[0]。兼容仅有旧版evolves_into/evolve_level字段的精灵。
 func get_available_evolutions(mon: Dictionary) -> Array:
+	var potential = get_potential_evolutions(mon)
 	var result = []
-	for evo in get_potential_evolutions(mon):
+	for evo in potential:
 		var req_item = evo.get("item", "")
 		if req_item == "" or GameState.items.get(req_item, 0) > 0:
 			result.append(evo)
-	if result.is_empty():
+	# 260723 Red 旧版兼容兜底只在"新版evolutions数组本身没有任何满足等级条件的分支"时才生效——
+	# 之前用 result.is_empty() 判断，满足等级但缺道具被上面过滤掉的分支也会落进这里，而旧字段
+	# 兜底完全不检查道具，等于道具门槛被绕过（这批新旧字段同时存在的精灵此前不需要道具也能进化）
+	if potential.is_empty():
 		var sp = species.get(mon["species_id"], {})
 		var evo_into = sp.get("evolves_into", "")
 		var evo_level = sp.get("evolve_level", 0)
@@ -656,7 +680,8 @@ func evolve_to(mon: Dictionary, species_id: String) -> void:
 	var lv     = mon["level"]
 
 	mon["species_id"] = species_id
-	mon["nickname"]   = ""
+	# 260723 Red 之前这里无条件清空昵称——玩家捕捉时取的名字，精灵一进化就会丢，没有任何
+	# "只在没取过名字时才清空"的判断，属于静默丢用户数据，删掉这行，昵称跟着精灵走
 
 	# 260728 Red 改调recalc_stats()统一公式，此前这里自己重复了一份计算且漏了
 	# 努力值(training)和性格(nature)加成，导致进化后这两项加成全部消失
