@@ -1,5 +1,5 @@
 import { initTheme, toggleTheme } from "./utils/theme.js";
-import { openProject, loadProject, detectProjectRoot } from "./utils/api.js";
+import { openProject, loadProject, detectProjectRoot, getDataPaths } from "./utils/api.js";
 import {
   TAB_DEFS,
   state,
@@ -73,6 +73,7 @@ async function openProjectAt(root) {
   dom.projectPath.title = root;
   localStorage.setItem("redmon-last-project", root);
 
+  state.dataPaths = await getDataPaths(root);
   await loadAllData();
 
   for (const [key, def] of Object.entries(TAB_DEFS)) {
