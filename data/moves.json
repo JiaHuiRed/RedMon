@@ -7360,6 +7360,8 @@
     "max_pp": 15,
     "effect": "recoil",
     "effect_value": 33,
+    "secondary_status": "inflict_burn",
+    "effect_chance": 10,
     "description": "让火焰覆盖全身猛烈冲撞对手。自己也会受到相当大的伤害。有时会让对手陷入烧伤状态。"
   },
   "闪闪雷光": {

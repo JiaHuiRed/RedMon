@@ -1905,6 +1905,22 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 						var msg = _effect_message(sec_effect, attacker, defender, applied)
 						if msg != "":
 							await _show_message_async(msg)
+
+		# 260723 Red 单段技能版的"secondary_status"（跟双针那套多段攻击用的是同一个字段/思路）：
+		# 主效果被recoil/drain/high_crit等占用后，同一招还想再挂一个独立几率状态时用这个，
+		# 比如闪焰冲锋是反伤(recoil)+有时烧伤，两个效果互不影响，各走各的判定
+		var single_sec_status = mv.get("secondary_status", "")
+		if single_sec_status != "" and dmg > 0 and eff > 0.0:
+			var single_sec_chance = mv.get("effect_chance", 0)
+			if single_sec_chance > 0 and randf() * 100.0 < single_sec_chance:
+				if single_sec_status in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
+					pass
+				else:
+					var single_applied = _apply_effect(single_sec_status, attacker, defender, is_enemy, mv.get("effect_value", 0))
+					_refresh_info()
+					var single_msg = _effect_message(single_sec_status, attacker, defender, single_applied)
+					if single_msg != "":
+						await _show_message_async(single_msg)
 	else:
 		# 纯状态技能（power=0）
 		var effect = mv.get("effect", "")
