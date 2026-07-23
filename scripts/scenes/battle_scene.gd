@@ -245,6 +245,12 @@ func _ready() -> void:
 	if AudioManager and AudioManager.has_method("play_bgm"):
 		AudioManager.play_bgm(AudioManager.BGM_TRAINER if _is_trainer else AudioManager.BGM_WILD)
 
+	# 260723 Red 特性接入战斗：双方开场出场触发（威吓/下载等）
+	await _trigger_switch_in_ability(_player_mon, _enemy_mon)
+	if not is_inside_tree(): return
+	await _trigger_switch_in_ability(_enemy_mon, _player_mon)
+	if not is_inside_tree(): return
+
 	if _is_trainer:
 		await _show_message("训练师%s\n想要对战！" % _trainer_name, func(): _show_action_panel())
 	else:
@@ -934,14 +940,19 @@ func _on_switch_mon(idx: int) -> void:
 	if not _force_switch:
 		await _show_message_async("回来！%s！" % MonDB.display_name(_player_mon))
 
+	var _outgoing_player_mon = _player_mon
 	_player_mon_idx = idx
 	_player_mon = GameState.player_team[idx]
 	_reset_transient_battle_state(_player_mon)
+	_trigger_switch_out_ability(_outgoing_player_mon)
 	_player_spr.texture = _draw_mon_back(_player_mon["species_id"])
 	_rescale_sprite(_player_spr, 100.0)
 	_refresh_info()
 	_refresh_move_panel()
 	await _show_message_async("上吧！%s！" % MonDB.display_name(_player_mon))
+	# 260723 Red 特性接入战斗：换上场触发（威吓/下载等）
+	await _trigger_switch_in_ability(_player_mon, _enemy_mon)
+	if not is_inside_tree(): return
 
 	var was_forced = _force_switch
 	_force_switch = false
@@ -1405,8 +1416,11 @@ func _on_move_pressed(idx: int) -> void:
 	var p_mv_data = MonDB.moves.get(mv_id, {})
 	var e_mv_id = _pick_enemy_move()
 	var e_mv_data = MonDB.moves.get(e_mv_id, {})
-	var p_priority = p_mv_data.get("effect", "") == "priority"
-	var e_priority = e_mv_data.get("effect", "") == "priority"
+	# 260723 Red 特性：恶作剧之心(变化类招式+1优先度，简化成跟先制招式同等对待)
+	var p_priority = p_mv_data.get("effect", "") == "priority" \
+		or (_player_mon.get("ability", "") == "恶作剧之心" and p_mv_data.get("power", 0) == 0)
+	var e_priority = e_mv_data.get("effect", "") == "priority" \
+		or (_enemy_mon.get("ability", "") == "恶作剧之心" and e_mv_data.get("power", 0) == 0)
 	var player_first: bool
 	if p_priority and not e_priority:
 		player_first = true
@@ -1415,8 +1429,11 @@ func _on_move_pressed(idx: int) -> void:
 	else:
 		var p_spd = _player_mon["spd"] * MonDB._stage_mult(_player_mon["stages"].get("spd", 0))
 		if _player_mon.get("status") == "麻痹": p_spd *= 0.5
+		# 260723 Red 特性：飞毛腿(异常状态时速度x1.5)
+		if _player_mon.get("ability", "") == "飞毛腿" and _player_mon.get("status", "") != "": p_spd *= 1.5
 		var e_spd = _enemy_mon["spd"]  * MonDB._stage_mult(_enemy_mon["stages"].get("spd", 0))
 		if _enemy_mon.get("status") == "麻痹":  e_spd *= 0.5
+		if _enemy_mon.get("ability", "") == "飞毛腿" and _enemy_mon.get("status", "") != "": e_spd *= 1.5
 		player_first = p_spd >= e_spd
 
 	# 260723 Red 混乱自伤/破釜沉舟这类自损效果让"自己把自己打到0血"在己方回合内变得常见，
@@ -1577,6 +1594,8 @@ func _check_status_block(mon: Dictionary, is_enemy: bool) -> bool:
 # 回合末状态持续伤害（烧伤/中毒）
 func _apply_end_of_turn_damage(mon: Dictionary, spr: Sprite2D) -> void:
 	var name = MonDB.display_name(mon)
+	# 260723 Red 特性：毒疗(Poison Heal)，中毒/剧毒变成每回合回血而非扣血
+	var poison_heal = mon.get("ability", "") == "毒疗"
 	match mon.get("status", ""):
 		"烧伤":
 			var dmg = max(1, mon["max_hp"] / 16)
@@ -1585,19 +1604,31 @@ func _apply_end_of_turn_damage(mon: Dictionary, spr: Sprite2D) -> void:
 			_refresh_info(true)
 			await _show_message_async("%s 受到烧伤伤害！（-%d）" % [name, dmg])
 		"中毒":
-			var dmg = max(1, mon["max_hp"] / 8)
-			mon["current_hp"] = max(0, mon["current_hp"] - dmg)
-			_flash_red(spr)
-			_refresh_info(true)
-			await _show_message_async("%s 受到中毒伤害！（-%d）" % [name, dmg])
+			if poison_heal:
+				var heal = max(1, mon["max_hp"] / 8)
+				mon["current_hp"] = min(mon["max_hp"], mon["current_hp"] + heal)
+				_refresh_info(true)
+				await _show_message_async("%s 的毒疗回复了HP！（+%d）" % [name, heal])
+			else:
+				var dmg = max(1, mon["max_hp"] / 8)
+				mon["current_hp"] = max(0, mon["current_hp"] - dmg)
+				_flash_red(spr)
+				_refresh_info(true)
+				await _show_message_async("%s 受到中毒伤害！（-%d）" % [name, dmg])
 		"剧毒":
-			var stage = mon.get("toxic_counter", 1)
-			var dmg = max(1, int(mon["max_hp"] * stage / 16.0))
-			mon["current_hp"] = max(0, mon["current_hp"] - dmg)
-			mon["toxic_counter"] = stage + 1
-			_flash_red(spr)
-			_refresh_info(true)
-			await _show_message_async("%s 受到剧毒伤害！（-%d）" % [name, dmg])
+			if poison_heal:
+				var heal = max(1, mon["max_hp"] / 8)
+				mon["current_hp"] = min(mon["max_hp"], mon["current_hp"] + heal)
+				_refresh_info(true)
+				await _show_message_async("%s 的毒疗回复了HP！（+%d）" % [name, heal])
+			else:
+				var stage = mon.get("toxic_counter", 1)
+				var dmg = max(1, int(mon["max_hp"] * stage / 16.0))
+				mon["current_hp"] = max(0, mon["current_hp"] - dmg)
+				mon["toxic_counter"] = stage + 1
+				_flash_red(spr)
+				_refresh_info(true)
+				await _show_message_async("%s 受到剧毒伤害！（-%d）" % [name, dmg])
 
 # 260722 Red 回合末的场地/持续类效果：寄生种子吸血 + 光墙/再来一次的剩余回合倒数
 func _apply_end_of_round_upkeep() -> void:
@@ -1627,6 +1658,12 @@ func _apply_end_of_round_upkeep() -> void:
 				_refresh_info(true)
 				await _show_message_async("%s 因为哈欠而睡着了！" % MonDB.display_name(m))
 
+	# 260723 Red 特性接入战斗：回合末特性（加速/蜕皮/恶梦）
+	await _apply_ability_end_of_turn(_player_mon, _enemy_mon)
+	if not is_inside_tree(): return
+	await _apply_ability_end_of_turn(_enemy_mon, _player_mon)
+	if not is_inside_tree(): return
+
 func _apply_leech_seed(mon: Dictionary, other: Dictionary, spr: Sprite2D) -> void:
 	if not mon.get("leech_seeded", false): return
 	if mon["current_hp"] <= 0 or other["current_hp"] <= 0: return
@@ -1638,6 +1675,304 @@ func _apply_leech_seed(mon: Dictionary, other: Dictionary, spr: Sprite2D) -> voi
 	_flash_red(spr)
 	_refresh_info(true)
 	await _show_message_async("%s 的HP被寄生种子吸取了！（-%d）" % [name, dmg])
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 特性系统 (260723 Red 特性接入战斗，P0——docs/design_gap_and_roadmap.md /
+# docs/design_gap_hgengine.md)
+# abilities.json 的 effect 字段只是11个粗分类，同分类下机制经常完全不同（比如
+# on_switch_in 既有"威吓"降对方攻击也有"下载"比较对方防御选择提升自己），不能靠
+# effect 分类驱动逻辑，全部按特性名字精确匹配，风格与下面 _apply_effect() 一致。
+# 天气/场地/持有道具/双打/招式flags(拳系/咬类/切割类等)依赖的特性本轮不做；
+# "接触"判定用 mv.category=="物理" 简化代理（没有招式flags字段，正式做是独立P1项）。
+# "稀有专属"分类里大量特性是这里几种机制的组合，留作后续批次，复用同一套表成本很低。
+# ══════════════════════════════════════════════════════════════════════════════
+
+func _mon_type1(mon: Dictionary) -> String:
+	return MonDB.species.get(mon.get("species_id", ""), {}).get("type1", "")
+
+func _mon_type2(mon: Dictionary) -> String:
+	return MonDB.species.get(mon.get("species_id", ""), {}).get("type2", "")
+
+# 属性免疫/吸收特性：mode "absorb"=归零+回复1/4血 "immune"=单纯归零
+# "immune_boost"=归零+自身该系招式x1.5 "immune_spd"=归零+自身速度+1段
+const ABILITY_TYPE_GUARD := {
+	"蓄电":     {"type": "电", "mode": "absorb"},
+	"储水":     {"type": "水", "mode": "absorb"},
+	"避雷针":   {"type": "电", "mode": "immune"},
+	"飘浮":     {"type": "地", "mode": "immune"},
+	"引火":     {"type": "火", "mode": "immune_boost"},
+	"电气引擎": {"type": "电", "mode": "immune_spd"},
+	"干燥皮肤": {"type": "水", "mode": "absorb"},
+}
+
+# 状态免疫：defender即将被赋值status/混乱/畏缩前查这个表；
+# "__confusion__"/"__flinch__"是伪状态key，"__all__"=所有异常状态都免疫
+const ABILITY_STATUS_IMMUNE := {
+	"柔软":     ["麻痹"],
+	"迟钝":     ["__confusion__"],
+	"我行我素": ["__confusion__"],
+	"不眠":     ["睡眠"],
+	"干劲":     ["睡眠"],
+	"免疫":     ["中毒", "剧毒"],
+	"精神力":   ["__flinch__"],
+	"熔岩盔甲": ["冰冻"],
+	"水幕":     ["烧伤"],
+	"净化之躯": ["__all__"],
+}
+
+func _ability_blocks_status(mon: Dictionary, status: String) -> bool:
+	var immune = ABILITY_STATUS_IMMUNE.get(mon.get("ability", ""), [])
+	return status in immune or "__all__" in immune
+
+# HP<=1/3上限时对应属性招式威力x1.5
+const ABILITY_LOW_HP_BOOST := {
+	"茂盛":     "木",
+	"猛火":     "火",
+	"激流":     "水",
+	"虫之预感": "虫",
+}
+
+# 阻止"对方招式/特性降低自己能力等级"（Clear Body系）
+const ABILITY_BLOCKS_DEBUFF := ["恒净之躯", "白色烟雾"]
+
+func _ability_blocks_debuff(mon: Dictionary) -> bool:
+	return mon.get("ability", "") in ABILITY_BLOCKS_DEBUFF
+
+# 接触反击附带异常状态：defender被"接触类"招式(简化代理:物理招式)命中后触发
+const ABILITY_CONTACT_STATUS := {
+	"静电":     {"status": "麻痹", "chance": 0.3},
+	"毒刺":     {"status": "中毒", "chance": 0.3},
+	"火焰之躯": {"status": "烧伤", "chance": 0.3},
+	"毒手":     {"status": "中毒", "chance": 0.3},
+}
+
+# 能力等级被对方降低时的反应（不屈之心：速度+1，简化成永久段而非"仅本回合"）
+func _react_to_stat_lowered(mon: Dictionary) -> void:
+	if mon.get("ability", "") == "不屈之心":
+		mon["stages"]["spd"] = min(6, mon["stages"].get("spd", 0) + 1)
+
+# 同步：自己中毒/麻痹/烧伤时把同样状态反弹给对方（对方还没有状态才会中招）
+func _ability_synchronize(afflicted: Dictionary, other: Dictionary, status: String) -> void:
+	if afflicted.get("ability", "") == "同步" and other.get("status", "") == "" and other.get("current_hp", 0) > 0:
+		other["status"] = status
+
+# 早起：睡眠回合数减半（向上取整，至少1回合）
+func _ability_sleep_turns(mon: Dictionary) -> int:
+	var turns = randi() % 3 + 1
+	if mon.get("ability", "") == "早起":
+		turns = max(1, int(ceil(turns / 2.0)))
+	return turns
+
+# 天恩：招式附加效果发动几率翻倍（封顶100）
+func _ability_effect_chance(attacker: Dictionary, base_chance) -> float:
+	if attacker.get("ability", "") == "天恩":
+		return min(100.0, float(base_chance) * 2.0)
+	return float(base_chance)
+
+# 纯朴(Unaware)：伤害计算时无视对方的能力等级变化。MonDB.calc_damage() 直接读传入
+# 字典的 stages 字段，这里传一份 stages 清零的临时拷贝进去，不影响原mon的真实记录
+func _prep_unaware(attacker: Dictionary, defender: Dictionary) -> Array:
+	var eff_attacker = attacker
+	var eff_defender = defender
+	if defender.get("ability", "") == "纯朴":
+		eff_attacker = attacker.duplicate()
+		eff_attacker["stages"] = attacker["stages"].duplicate()
+		eff_attacker["stages"]["atk"] = 0
+		eff_attacker["stages"]["sp_atk"] = 0
+	if attacker.get("ability", "") == "纯朴":
+		eff_defender = defender.duplicate()
+		eff_defender["stages"] = defender["stages"].duplicate()
+		eff_defender["stages"]["def"] = 0
+		eff_defender["stages"]["sp_def"] = 0
+	return [eff_attacker, eff_defender]
+
+# ── 出场触发（威吓/下载）──────────────────────────────────────────────────────
+func _trigger_switch_in_ability(mon: Dictionary, opponent: Dictionary) -> void:
+	if mon.get("current_hp", 0) <= 0 or opponent.get("current_hp", 0) <= 0: return
+	match mon.get("ability", ""):
+		"威吓":
+			if not _ability_blocks_debuff(opponent):
+				var before = opponent["stages"].get("atk", 0)
+				opponent["stages"]["atk"] = max(-6, before - 1)
+				if opponent["stages"]["atk"] != before:
+					_refresh_info()
+					await _show_message_async("%s 的威吓使 %s 的攻击下降了！" % [MonDB.display_name(mon), MonDB.display_name(opponent)])
+		"下载":
+			var opp_def   = opponent.get("def", 0)    * MonDB._stage_mult(opponent["stages"].get("def", 0))
+			var opp_spdef = opponent.get("sp_def", 0) * MonDB._stage_mult(opponent["stages"].get("sp_def", 0))
+			var stat_key = "sp_atk" if opp_spdef >= opp_def else "atk"
+			mon["stages"][stat_key] = min(6, mon["stages"].get(stat_key, 0) + 1)
+			_refresh_info()
+			await _show_message_async("%s 的下载提升了自己的%s！" % [MonDB.display_name(mon), STAT_LABELS.get(stat_key, "")])
+
+# ── 换下场触发（自然回复/再生力）──────────────────────────────────────────────
+func _trigger_switch_out_ability(mon: Dictionary) -> void:
+	if mon.get("current_hp", 0) <= 0: return
+	match mon.get("ability", ""):
+		"自然回复":
+			if mon.get("status", "") != "":
+				mon["status"] = ""
+				mon["toxic_counter"] = 0
+		"再生力":
+			var heal = max(1, int(mon["max_hp"] * 0.33))
+			mon["current_hp"] = min(mon["max_hp"], mon["current_hp"] + heal)
+
+# ── 命中伤害修正：MonDB.calc_damage()返回之后、_damage_defender()之前调用 ──────
+# 返回 {"mult": 叠乘在dmg上的倍率, "absorbed": 是否已完全接管(回血/加速等副作用
+# 已经在本函数内部处理完毕，调用方把dmg当0处理，不再额外判断)}
+func _apply_ability_damage_mod(attacker: Dictionary, defender: Dictionary, mv: Dictionary, eff: float, crit: bool) -> Dictionary:
+	var mv_type = mv.get("type", "")
+	var mv_cat  = mv.get("category", "")
+	var atk_ab  = attacker.get("ability", "")
+	var def_ab  = defender.get("ability", "")
+	var mold_breaker = atk_ab == "破格"
+
+	# ── 防御方：属性免疫/吸收（破格无视，胆量无视对方飘浮）───────────────────
+	if not mold_breaker and ABILITY_TYPE_GUARD.has(def_ab):
+		var g = ABILITY_TYPE_GUARD[def_ab]
+		if mv_type == g["type"] and not (def_ab == "飘浮" and atk_ab == "胆量"):
+			match g["mode"]:
+				"absorb":
+					var heal = max(1, int(defender["max_hp"] / 4.0))
+					defender["current_hp"] = min(defender["max_hp"], defender["current_hp"] + heal)
+				"immune_spd":
+					defender["stages"]["spd"] = min(6, defender["stages"].get("spd", 0) + 1)
+			return {"mult": 0.0, "absorbed": true}
+
+	if not mold_breaker:
+		if def_ab == "神奇守护" and eff <= 1.0 and mv.get("effect", "") != "ohko":
+			return {"mult": 0.0, "absorbed": true}
+		if def_ab == "蹲守" and mv.get("effect", "") == "priority":
+			return {"mult": 0.0, "absorbed": true}
+
+	var mult := 1.0
+
+	# ── 攻击方：自身状态触发的威力提升 ───────────────────────────────────────
+	var atk_guard = ABILITY_TYPE_GUARD.get(atk_ab, {})
+	if atk_guard.get("mode", "") == "immune_boost" and mv_type == atk_guard.get("type", ""):
+		mult *= 1.5
+	if atk_ab == "干燥皮肤" and mv_type == "火":
+		mult *= 1.25
+	if ABILITY_LOW_HP_BOOST.get(atk_ab, "") == mv_type and attacker["current_hp"] <= attacker["max_hp"] / 3.0:
+		mult *= 1.5
+	if atk_ab == "大力士" and mv_cat == "物理":
+		mult *= 2.0
+	if atk_ab == "活力" and mv_cat == "物理":
+		mult *= 1.5
+	if atk_ab == "毅力" and mv_cat == "物理" and attacker.get("status", "") != "":
+		mult *= 1.5
+	if atk_ab == "中毒激升" and mv_cat == "特殊" and attacker.get("status", "") in ["中毒", "剧毒"]:
+		mult *= 1.5
+	if atk_ab == "受热激升" and attacker.get("status", "") == "烧伤":
+		mult *= 1.5 if mv_cat == "特殊" else 2.0  # 物理分支额外x2抵消mon_db.gd里烧伤减半物理攻击
+	if atk_ab == "好胜" and attacker.get("gender", "") != "" and defender.get("gender", "") != "":
+		mult *= 1.25 if attacker["gender"] == defender["gender"] else 0.75
+	if atk_ab == "舍身" and mv.get("effect", "") == "recoil":
+		mult *= 1.2
+	if atk_ab == "有色眼镜" and eff > 1.0:
+		mult *= 1.3
+	if atk_ab == "技术高手" and mv.get("power", 0) > 0 and mv["power"] <= 60:
+		mult *= 1.5
+	if atk_ab == "适应力" and mv_type != "" and (mv_type == _mon_type1(attacker) or mv_type == _mon_type2(attacker)):
+		mult *= 1.17
+	if atk_ab == "龙颚" and mv_type == "龙":
+		mult *= 1.3
+	if mv_type == "仙" and (atk_ab == "妖精气场" or def_ab == "妖精气场"):
+		mult *= 1.3
+	if mv_type == "暗" and (atk_ab == "暗黑气场" or def_ab == "暗黑气场"):
+		mult *= 1.3
+
+	# ── 防御方：减伤类（破格无视）─────────────────────────────────────────────
+	if not mold_breaker:
+		if def_ab == "厚脂肪" and mv_type in ["火", "冰"]:
+			mult *= 0.5
+		if def_ab == "耐热" and mv_type == "火":
+			mult *= 0.5
+		if def_ab == "重装甲" and mv_cat == "物理":
+			mult *= 0.67
+		if def_ab == "毛皮大衣" and mv_cat == "物理":
+			mult *= 0.5
+		if def_ab == "多重鳞片" and defender["current_hp"] >= defender["max_hp"]:
+			mult *= 0.5
+		if def_ab == "钢之意志" and mv_type == "钢":
+			mult *= 0.75
+		if def_ab == "洁净之盐" and mv_type == "灵":
+			mult *= 0.5
+		if def_ab == "过滤" and eff > 1.0:
+			mult *= 0.75
+		if crit and def_ab in ["硬壳盔甲", "战斗盔甲"]:
+			mult /= 1.3  # 抵消 MonDB.calc_damage() 里已经乘过的暴击倍率
+
+	# ── 防御方：受击反应（任意伤害命中都触发，不限"接触"）────────────────────
+	if defender.get("current_hp", 0) > 0:
+		if def_ab == "蒸汽机" and mv_type in ["火", "水"]:
+			defender["stages"]["spd"] = min(6, defender["stages"].get("spd", 0) + 2)
+		if def_ab == "正义之心" and mv_type == "暗":
+			defender["stages"]["sp_atk"] = min(6, defender["stages"].get("sp_atk", 0) + 1)
+		if def_ab == "愤怒穴位" and crit:
+			defender["stages"]["atk"] = 6
+
+	return {"mult": mult, "absorbed": false}
+
+# ── 接触反击 / 受击反应：_damage_defender()之后调用 ───────────────────────────
+func _apply_ability_contact_punish(attacker: Dictionary, defender: Dictionary, mv: Dictionary, dmg: int) -> void:
+	if dmg <= 0: return
+	var is_contact = mv.get("category", "") == "物理"
+	var atk_ab = attacker.get("ability", "")
+	var def_ab = defender.get("ability", "")
+	var atk_name = MonDB.display_name(attacker)
+
+	if attacker.get("current_hp", 0) > 0:
+		if is_contact and ABILITY_CONTACT_STATUS.has(def_ab):
+			var c = ABILITY_CONTACT_STATUS[def_ab]
+			if attacker.get("status", "") == "" and not _ability_blocks_status(attacker, c["status"]) and randf() < c["chance"]:
+				attacker["status"] = c["status"]
+				_refresh_info()
+				await _show_message_async("%s 被 %s 传染了%s状态！" % [atk_name, def_ab, c["status"]])
+		if is_contact and def_ab == "粗糙皮肤":
+			var recoil = max(1, int(attacker["max_hp"] / 8.0))
+			attacker["current_hp"] = max(0, attacker["current_hp"] - recoil)
+			_refresh_info(true)
+			await _show_message_async("%s 因粗糙皮肤受到了伤害！" % atk_name)
+		if is_contact and def_ab == "孢子" and attacker.get("status", "") == "" and randf() < 0.3:
+			var opts = ["中毒", "麻痹", "睡眠"]
+			opts = opts.filter(func(s): return not _ability_blocks_status(attacker, s))
+			if not opts.is_empty():
+				var picked = opts[randi() % opts.size()]
+				attacker["status"] = picked
+				if picked == "睡眠": attacker["sleep_turns"] = _ability_sleep_turns(attacker)
+				_refresh_info()
+				await _show_message_async("%s 被孢子传染了%s状态！" % [atk_name, picked])
+		if is_contact and def_ab == "木乃伊" and atk_ab != "木乃伊":
+			attacker["ability"] = "木乃伊"
+			await _show_message_async("%s 的特性变成了木乃伊！" % atk_name)
+		# 胆怯：任意命中（不限接触）都有几率使对方畏缩
+		if atk_ab == "胆怯" and defender.get("current_hp", 0) > 0 and not _ability_blocks_status(defender, "__flinch__") and randf() < 0.1:
+			defender["flinched"] = true
+
+	if defender.get("current_hp", 0) > 0 and is_contact and def_ab == "碎裂铠甲":
+		defender["stages"]["def"] = max(-6, defender["stages"].get("def", 0) - 1)
+		defender["stages"]["spd"] = min(6, defender["stages"].get("spd", 0) + 2)
+		_refresh_info()
+		await _show_message_async("%s 的碎裂铠甲发动了！" % MonDB.display_name(defender))
+
+# ── 回合末特性（加速/蜕皮/恶梦）：对player_mon/enemy_mon各调用一次 ────────────
+func _apply_ability_end_of_turn(mon: Dictionary, other: Dictionary) -> void:
+	if mon.get("current_hp", 0) <= 0: return
+	var ab = mon.get("ability", "")
+	if ab == "加速":
+		mon["stages"]["spd"] = min(6, mon["stages"].get("spd", 0) + 1)
+	elif ab == "蜕皮" and mon.get("status", "") != "" and randf() < 0.3:
+		mon["status"] = ""
+		mon["toxic_counter"] = 0
+		mon["confused_turns"] = 0
+		_refresh_info(true)
+		await _show_message_async("%s 的蜕皮治愈了异常状态！" % MonDB.display_name(mon))
+	if ab == "恶梦" and other.get("status", "") == "睡眠" and other.get("current_hp", 0) > 0:
+		var dmg = max(1, other["max_hp"] / 8)
+		other["current_hp"] = max(0, other["current_hp"] - dmg)
+		_refresh_info(true)
+		await _show_message_async("%s 被恶梦侵扰，受到了伤害！" % MonDB.display_name(other))
 
 func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is_enemy: bool, acted_second: bool = false) -> void:
 	var mv = MonDB.moves.get(mv_id, {})
@@ -1653,7 +1988,9 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 
 	# Accuracy check
 	var accuracy = mv.get("accuracy", 100)
-	if randf() * 100 > accuracy:
+	# 260723 Red 特性：拨云见日(双方招式必定命中)
+	var _always_hit = attacker.get("ability", "") == "拨云见日" or defender.get("ability", "") == "拨云见日"
+	if not _always_hit and randf() * 100 > accuracy:
 		await _show_message_async("%s 使用了 %s！\n但是没有命中！" % [attacker_name, mv_name])
 		# 260722 Red 自爆(self_destruct)：大爆炸/玉石俱碎，无论有没有命中都会让自己昏厥
 		if mv.get("effect", "") == "self_destruct":
@@ -1686,14 +2023,21 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		for i in range(hit_count):
 			if defender["current_hp"] <= 0:
 				break
-			var result = MonDB.calc_damage(attacker, defender, mv_id)
+			var _ud = _prep_unaware(attacker, defender)
+			var result = MonDB.calc_damage(_ud[0], _ud[1], mv_id)
 			var dmg    = result["damage"]
 			last_eff   = result["effectiveness"]
 			if result["crit"]:
 				any_crit = true
+			var ab_mod = _apply_ability_damage_mod(attacker, defender, mv, last_eff, result["crit"])
+			if ab_mod["absorbed"]:
+				dmg = 0
+			else:
+				dmg = int(dmg * ab_mod["mult"])
 			if mv.get("category", "") == "特殊" and defender.get("screen_special_turns", 0) > 0:
 				dmg = max(1, int(dmg * 0.5))
 			var sub_broke = _damage_defender(defender, dmg)
+			await _apply_ability_contact_punish(attacker, defender, mv, dmg)
 			if defender.get("endured_hit", false):
 				defender["endured_hit"] = false
 				endured_now = true
@@ -1735,7 +2079,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		var multi_sec_status = mv.get("secondary_status", "")
 		if multi_sec_status != "" and defender["current_hp"] > 0 \
 			and not (multi_sec_status in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0):
-			var multi_sec_chance = mv.get("effect_chance", 0)
+			var multi_sec_chance = _ability_effect_chance(attacker, mv.get("effect_chance", 0))
 			if multi_sec_chance > 0 and randf() * 100.0 < multi_sec_chance:
 				var sec_applied = _apply_effect(multi_sec_status, attacker, defender, is_enemy, mv.get("effect_value", 0))
 				_refresh_info()
@@ -1746,15 +2090,35 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 
 	if mv["power"] > 0:
 		# Damage
-		var result = MonDB.calc_damage(attacker, defender, mv_id)
+		var _ud = _prep_unaware(attacker, defender)
+		var result = MonDB.calc_damage(_ud[0], _ud[1], mv_id)
 		var dmg    = result["damage"]
 		var eff    = result["effectiveness"]
 		var crit   = result["crit"]
+		# 260723 Red 特性：硬壳盔甲/战斗盔甲(暴击免疫) —— 先处理掉初始暴击判定，
+		# 再决定要不要走下面的high_crit/超幸运额外暴击几率
+		var crit_immune = (defender.get("ability", "") in ["硬壳盔甲", "战斗盔甲"]) and attacker.get("ability", "") != "破格"
+		if crit and crit_immune:
+			dmg = int(dmg / 1.3)
+			crit = false
 		# 260703 Red high_crit：提升暴击率到25%
-		if mv.get("effect", "") == "high_crit" and not crit:
+		if mv.get("effect", "") == "high_crit" and not crit and not crit_immune:
 			crit = randf() < 0.20  # 额外20%机会（总计约25%）
 			if crit:
 				dmg = int(dmg * 1.3)  # 补算暴击倍率
+		# 260723 Red 特性：超幸运(额外暴击几率)/狙击手(暴击伤害额外提升)
+		if not crit and not crit_immune and attacker.get("ability", "") == "超幸运":
+			crit = randf() < 0.10
+			if crit:
+				dmg = int(dmg * 1.3)
+		if crit and attacker.get("ability", "") == "狙击手":
+			dmg = int(dmg * 1.3)
+		# 260723 Red 特性接入战斗：属性免疫/吸收、HP过低系加成、暴击伤害减免等
+		var ab_mod = _apply_ability_damage_mod(attacker, defender, mv, eff, crit)
+		if ab_mod["absorbed"]:
+			dmg = 0
+		else:
+			dmg = int(dmg * ab_mod["mult"])
 		# 260722 Red 光之壁(screen_special)：对方特殊攻击伤害减半
 		if mv.get("category", "") == "特殊" and defender.get("screen_special_turns", 0) > 0:
 			dmg = max(1, int(dmg * 0.5))
@@ -1787,6 +2151,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 			dmg = int(dmg * 2)
 
 		var sub_broke = _damage_defender(defender, dmg)
+		await _apply_ability_contact_punish(attacker, defender, mv, dmg)
 
 		if dmg > 0:
 			if eff > 1.0:
@@ -1894,7 +2259,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		elif sec_effect != "" and sec_effect != "high_crit" and sec_effect != "self_destruct" \
 			and sec_effect != "rampage" and sec_effect != "rollout" and sec_effect != "fury_cutter" \
 			and sec_effect != "revenge" and sec_effect != "facade" and sec_effect != "wake_up_slap":
-			var sec_chance = mv.get("effect_chance", 0)
+			var sec_chance = _ability_effect_chance(attacker, mv.get("effect_chance", 0))
 			if sec_chance > 0 and eff > 0.0:
 				if randf() * 100.0 < sec_chance:
 					if sec_effect in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
@@ -1911,7 +2276,7 @@ func _execute_move(attacker: Dictionary, defender: Dictionary, mv_id: String, is
 		# 比如闪焰冲锋是反伤(recoil)+有时烧伤，两个效果互不影响，各走各的判定
 		var single_sec_status = mv.get("secondary_status", "")
 		if single_sec_status != "" and dmg > 0 and eff > 0.0:
-			var single_sec_chance = mv.get("effect_chance", 0)
+			var single_sec_chance = _ability_effect_chance(attacker, mv.get("effect_chance", 0))
 			if single_sec_chance > 0 and randf() * 100.0 < single_sec_chance:
 				if single_sec_status in DEFENDER_TARGETING_EFFECTS and defender.get("substitute_hp", 0) > 0:
 					pass
@@ -1978,27 +2343,39 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 	match effect:
 		# ── 能力阶段变化 ──────────────────────────────────────────────────────
 		"lower_atk":
-			defender["stages"]["atk"] = max(-6, defender["stages"].get("atk", 0) - 1)
+			if _ability_blocks_debuff(defender): return false
+			defender["stages"]["atk"] = max(-6, defender["stages"].get("atk", 0) - (2 if defender.get("ability", "") == "单纯" else 1))
+			_react_to_stat_lowered(defender)
 		"lower_def":
-			defender["stages"]["def"] = max(-6, defender["stages"].get("def", 0) - 1)
+			if _ability_blocks_debuff(defender): return false
+			defender["stages"]["def"] = max(-6, defender["stages"].get("def", 0) - (2 if defender.get("ability", "") == "单纯" else 1))
+			_react_to_stat_lowered(defender)
 		"lower_sp_atk":
-			defender["stages"]["sp_atk"] = max(-6, defender["stages"].get("sp_atk", 0) - 1)
+			if _ability_blocks_debuff(defender): return false
+			defender["stages"]["sp_atk"] = max(-6, defender["stages"].get("sp_atk", 0) - (2 if defender.get("ability", "") == "单纯" else 1))
+			_react_to_stat_lowered(defender)
 		"lower_sp_def":
-			defender["stages"]["sp_def"] = max(-6, defender["stages"].get("sp_def", 0) - 1)
+			if _ability_blocks_debuff(defender): return false
+			defender["stages"]["sp_def"] = max(-6, defender["stages"].get("sp_def", 0) - (2 if defender.get("ability", "") == "单纯" else 1))
+			_react_to_stat_lowered(defender)
 		"lower_acc":
-			defender["stages"]["acc"] = max(-6, defender["stages"].get("acc", 0) - 1)
+			if _ability_blocks_debuff(defender): return false
+			defender["stages"]["acc"] = max(-6, defender["stages"].get("acc", 0) - (2 if defender.get("ability", "") == "单纯" else 1))
+			_react_to_stat_lowered(defender)
 		"lower_spd":
-			defender["stages"]["spd"] = max(-6, defender["stages"].get("spd", 0) - 1)
+			if _ability_blocks_debuff(defender): return false
+			defender["stages"]["spd"] = max(-6, defender["stages"].get("spd", 0) - (2 if defender.get("ability", "") == "单纯" else 1))
+			_react_to_stat_lowered(defender)
 		"raise_atk":
-			attacker["stages"]["atk"] = min(6, attacker["stages"].get("atk", 0) + 1)
+			attacker["stages"]["atk"] = min(6, attacker["stages"].get("atk", 0) + (2 if attacker.get("ability", "") == "单纯" else 1))
 		"raise_def":
-			attacker["stages"]["def"] = min(6, attacker["stages"].get("def", 0) + 1)
+			attacker["stages"]["def"] = min(6, attacker["stages"].get("def", 0) + (2 if attacker.get("ability", "") == "单纯" else 1))
 		"raise_sp_atk":
-			attacker["stages"]["sp_atk"] = min(6, attacker["stages"].get("sp_atk", 0) + 1)
+			attacker["stages"]["sp_atk"] = min(6, attacker["stages"].get("sp_atk", 0) + (2 if attacker.get("ability", "") == "单纯" else 1))
 		"raise_sp_def":
-			attacker["stages"]["sp_def"] = min(6, attacker["stages"].get("sp_def", 0) + 1)
+			attacker["stages"]["sp_def"] = min(6, attacker["stages"].get("sp_def", 0) + (2 if attacker.get("ability", "") == "单纯" else 1))
 		"raise_spd":
-			attacker["stages"]["spd"] = min(6, attacker["stages"].get("spd", 0) + 1)
+			attacker["stages"]["spd"] = min(6, attacker["stages"].get("spd", 0) + (2 if attacker.get("ability", "") == "单纯" else 1))
 		# ── 自我回复 ──────────────────────────────────────────────────────────
 		"heal_self":
 			var heal = max(1, int(attacker["max_hp"] * 0.5))
@@ -2006,29 +2383,40 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 		# ── 状态异常（仅在目标无状态时生效）──────────────────────────────────
 		"inflict_burn":
 			if defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "烧伤"): return false
 			defender["status"] = "烧伤"
+			_ability_synchronize(defender, attacker, "烧伤")
 		"inflict_poison":
 			if defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "中毒"): return false
 			defender["status"] = "中毒"
+			_ability_synchronize(defender, attacker, "中毒")
 		"inflict_paralysis":
 			if defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "麻痹"): return false
 			defender["status"] = "麻痹"
+			_ability_synchronize(defender, attacker, "麻痹")
 		"inflict_sleep":
 			if defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "睡眠"): return false
 			defender["status"] = "睡眠"
-			defender["sleep_turns"] = randi() % 3 + 1
+			defender["sleep_turns"] = _ability_sleep_turns(defender)
 		"inflict_freeze":
 			if defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "冰冻"): return false
 			defender["status"] = "冰冻"
 		"inflict_confusion":
 			if defender.get("confused_turns", 0) > 0: return false
+			if _ability_blocks_status(defender, "__confusion__"): return false
 			defender["confused_turns"] = randi() % 4 + 2  # 2~5回合
 		"inflict_toxic":
 			if defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "剧毒"): return false
 			defender["status"] = "剧毒"
 			defender["toxic_counter"] = 1
 		# ── 260722 Red 新接入的占位效果（畏缩/替身/寄生种子/再来一次/光墙）──────
 		"flinch":
+			if _ability_blocks_status(defender, "__flinch__"): return false
 			defender["flinched"] = true
 		"substitute":
 			var sub_pct = effect_value if effect_value > 0 else 25
@@ -2049,34 +2437,42 @@ func _apply_effect(effect: String, attacker: Dictionary, defender: Dictionary, _
 			var cost_pct = effect_value if effect_value > 0 else 50
 			var cost = max(1, int(attacker["max_hp"] * cost_pct / 100.0))
 			attacker["current_hp"] = max(0, attacker["current_hp"] - cost)
-			var stat_keys = STAT_LABELS.keys()
-			var pick = stat_keys[randi() % stat_keys.size()]
-			defender["stages"][pick] = max(-6, defender["stages"].get(pick, 0) - 2)
-			defender["_last_debuffed_stat"] = pick
+			if _ability_blocks_debuff(defender):
+				defender["_last_debuffed_stat"] = ""
+			else:
+				var stat_keys = STAT_LABELS.keys()
+				var pick = stat_keys[randi() % stat_keys.size()]
+				defender["stages"][pick] = max(-6, defender["stages"].get(pick, 0) - 2)
+				defender["_last_debuffed_stat"] = pick
+				_react_to_stat_lowered(defender)
 		"torment":
 			defender["tormented"] = true
 		"ohko":
+			if defender.get("ability", "") == "黄金之躯": return false
 			defender["current_hp"] = 0
 		"endure":
 			if attacker.get("enduring", false): return false
 			attacker["enduring"] = true
 		"tri_status":
 			if defender.get("status", "") != "": return false
-			var options = ["麻痹", "烧伤", "冰冻"]
+			var options = ["麻痹", "烧伤", "冰冻"].filter(func(s): return not _ability_blocks_status(defender, s))
+			if options.is_empty(): return false
 			defender["status"] = options[randi() % options.size()]
 		"swagger":
 			var conf_applied = false
-			if defender.get("confused_turns", 0) <= 0:
+			if defender.get("confused_turns", 0) <= 0 and not _ability_blocks_status(defender, "__confusion__"):
 				defender["confused_turns"] = randi() % 4 + 2
 				conf_applied = true
 			defender["_swagger_confused"] = conf_applied
-			defender["stages"]["atk"] = min(6, defender["stages"].get("atk", 0) + 2)
+			if not _ability_blocks_debuff(defender):
+				defender["stages"]["atk"] = min(6, defender["stages"].get("atk", 0) + 2)
 		"cure_self_status":
 			if not (attacker.get("status", "") in ["中毒", "麻痹", "烧伤", "剧毒"]): return false
 			attacker["status"] = ""
 			attacker["toxic_counter"] = 0
 		"yawn":
 			if defender.get("yawn_turns", 0) > 0 or defender.get("status", "") != "": return false
+			if _ability_blocks_status(defender, "睡眠"): return false
 			defender["yawn_turns"] = 2
 		_:
 			return false
@@ -2198,6 +2594,8 @@ func _handle_victory() -> void:
 			_refresh_info()
 			_busy = false
 			await _show_message_async("训练师%s派出了%s！" % [_trainer_name, MonDB.display_name(_enemy_mon)])
+			await _trigger_switch_in_ability(_enemy_mon, _player_mon)
+			if not is_inside_tree(): return
 			_show_action_panel()
 			return
 		else:

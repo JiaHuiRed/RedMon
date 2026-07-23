@@ -210,8 +210,7 @@ func _draw_info(mon: Dictionary, sp: Dictionary, rx: int) -> void:
 		bl.add_theme_font_size_override("font_size", 14)
 		bl.add_theme_color_override("font_color", Color.WHITE); _root.add_child(bl)
 		bx += 68
-	var abilities = sp.get("abilities",[])
-	var ability_name = abilities[0] if abilities.size() > 0 else sp.get("ability","—")
+	var ability_name = mon.get("ability", "—")
 	var info_pairs = [
 		["等级", "Lv.%d" % mon.get("level",1)],
 		["性格", MonDB.natures.get(mon.get("nature",""),{}).get("name", mon.get("nature","—"))],

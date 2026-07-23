@@ -1168,7 +1168,7 @@ func _show_pcbox_detail(mon: Dictionary) -> void:
 	var gender = mon.get("gender","")
 	var glyph = " ♂" if gender == "male" else " ♀" if gender == "female" else ""
 	var bs = sp.get("base",{})
-	var ability_name = sp.get("abilities",["—"])[0]
+	var ability_name = mon.get("ability", "—")
 	var h = float(sp.get("height",0.0)); var w = float(sp.get("weight",0.0))
 	# 显示背景+色条
 	pn.get_node("PcDetailBg").show()
