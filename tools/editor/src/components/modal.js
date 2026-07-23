@@ -9,13 +9,15 @@
 //     onConfirm: (body) => { ... 返回 false 表示校验失败、弹窗保持打开 ... },
 //   });
 
+import { escapeHtml } from "../utils/dom.js";
+
 export function openModal({ title, bodyHtml, onMount, onConfirm, confirmText = "确定", cancelText = "取消" }) {
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
   overlay.innerHTML = `
-    <div class="modal-box">
-      <div class="modal-title">${title}</div>
-      <div class="modal-body">${bodyHtml}</div>
+      <div class="modal-box">
+        <div class="modal-title">${escapeHtml(title)}</div>
+        <div class="modal-body">${bodyHtml}</div>
       <div class="modal-actions">
         <button class="btn" id="modal-cancel">${cancelText}</button>
         <button class="btn btn-primary" id="modal-confirm">${confirmText}</button>

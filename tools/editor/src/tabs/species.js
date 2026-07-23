@@ -4,6 +4,7 @@ import { readSprite } from "../utils/api.js";
 import { openModal } from "../components/modal.js";
 import { attachSearchableSelect } from "../components/searchable-select.js";
 import { computeMatchup } from "../components/type-chart.js";
+import { escapeHtml } from "../utils/dom.js";
 
 const GROWTH_RATES = ["早熟", "正常", "大器晚成"];
 
@@ -23,6 +24,7 @@ export class SpeciesTab {
     this.spritesDir = state.dataPaths?.sprites_dir?.path || "";
     this.typeFilter = "全部";
     this.tierFilter = "全部";
+    this._preselectId = null; // 搜索/筛选时记忆选中项，退出后恢复
   }
 
   getData() {
@@ -33,6 +35,16 @@ export class SpeciesTab {
   renderList(filter) {
     this.data = this.state.data.species || [];
     const q = filter !== undefined ? filter : (document.getElementById("search-input")?.value || "");
+
+    // 搜索/筛选时记忆当前选中项，方便退出后恢复
+    if (q && this.currentId != null) {
+      this._preselectId = this.currentId;
+    }
+    // 退出搜索/筛选后，恢复记忆的选中项
+    if (!q && this._preselectId != null) {
+      this.currentId = this._preselectId;
+      this._preselectId = null;
+    }
 
     this.filteredData = this.data
       .filter(m => (!q || this._matchFilter(m, q)) && this._matchTypeTier(m))
@@ -52,7 +64,7 @@ export class SpeciesTab {
       ? this.filteredData.map(m =>
           `<div class="sidebar-item ${m.id === this.currentId ? "active" : ""}" data-id="${m.id}">
             <span class="item-id">#${String(m.id).padStart(3, "0")}</span>
-            <span class="item-name">${m.name}</span>
+            <span class="item-name">${escapeHtml(m.name)}</span>
             <span class="type-badge type-badge-sm" style="background:${TYPE_COLORS[m.type1]||"#999"}; color:${contrastTextColor(TYPE_COLORS[m.type1]||"#999")}">${m.type1}</span>
             ${m.type2 ? `<span class="type-badge type-badge-sm" style="background:${TYPE_COLORS[m.type2]||"#999"}; color:${contrastTextColor(TYPE_COLORS[m.type2]||"#999")}">${m.type2}</span>` : ""}
           </div>`
@@ -60,6 +72,10 @@ export class SpeciesTab {
       : '<div class="placeholder">没有精灵数据</div>';
 
     list.innerHTML = filterHtml + itemsHtml;
+
+    // 自动滚动到当前选中项（退出搜索后恢复视觉位置）
+    const activeEl = list.querySelector(".sidebar-item.active");
+    if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
 
     list.querySelectorAll(".sidebar-item").forEach(el => {
       el.addEventListener("click", () => this._selectMon(parseInt(el.dataset.id)));
@@ -95,6 +111,8 @@ export class SpeciesTab {
   // ===== Species Selection =====
   async _selectMon(id) {
     try {
+      // 用户手动点击新项，清除搜索退出恢复标记
+      this._preselectId = null;
       this.currentId = id;
       const mon = this._getSpecies(id);
       this.callbacks.onStatus(`编辑: ${mon?.name || id}`);
@@ -116,7 +134,7 @@ export class SpeciesTab {
       await this._doRender(id);
     } catch (err) {
       console.error("渲染精灵详情失败:", err);
-      this.container.innerHTML = `<div class="placeholder">渲染错误: ${err.message || err}</div>`;
+      this.container.innerHTML = `<div class="placeholder">渲染错误: ${escapeHtml(err.message || err)}</div>`;
     }
   }
 
@@ -161,7 +179,7 @@ export class SpeciesTab {
               </div>
               <div class="form-group">
                 <label>名称</label>
-                <input type="text" id="field-name" value="${mon.name}" />
+                <input type="text" id="field-name" value="${escapeHtml(mon.name)}" />
               </div>
               <div class="form-group">
                 <label>属性 1</label>
@@ -206,19 +224,19 @@ export class SpeciesTab {
               </div>
               <div class="form-group">
                 <label>身高 (m)</label>
-                <input type="text" id="field-height" value="${mon.height || ""}" />
+                <input type="text" id="field-height" value="${escapeHtml(mon.height || "")}" />
               </div>
               <div class="form-group">
                 <label>体重 (kg)</label>
-                <input type="text" id="field-weight" value="${mon.weight || ""}" />
+                <input type="text" id="field-weight" value="${escapeHtml(mon.weight || "")}" />
               </div>
               <div class="form-group">
                 <label>特性 1</label>
-                <input type="text" id="field-ability1" value="${mon.abilities?.[0] || ""}" />
+                <input type="text" id="field-ability1" value="${escapeHtml(mon.abilities?.[0] || "")}" />
               </div>
               <div class="form-group">
                 <label>特性 2</label>
-                <input type="text" id="field-ability2" value="${mon.abilities?.[1] || ""}" />
+                <input type="text" id="field-ability2" value="${escapeHtml(mon.abilities?.[1] || "")}" />
               </div>
               <div id="ability-tier-warn" class="field-warn-msg" style="display:none"></div>
             </div>
@@ -268,7 +286,7 @@ export class SpeciesTab {
             <div id="boss-container">
               <div class="form-group">
                 <label>头目所在地</label>
-                <input type="text" id="field-boss-location" value="${mon.boss_location || ""}" placeholder="选择地图..." />
+                <input type="text" id="field-boss-location" value="${escapeHtml(mon.boss_location || "")}" placeholder="选择地图..." />
               </div>
             </div>
           </div>
@@ -307,11 +325,11 @@ export class SpeciesTab {
           <div class="form-section-title">图鉴描述</div>
           <div class="form-grid">
             <div class="form-group full-width">
-              <textarea id="field-desc" rows="3">${mon.desc || ""}</textarea>
+              <textarea id="field-desc" rows="3">${escapeHtml(mon.desc || "")}</textarea>
             </div>
             <div class="form-group full-width">
               <label>设计灵感来源</label>
-              <input type="text" id="field-design-origin" value="${mon.design_origin || ""}" placeholder="例：瑞兽火猫 + 祥云纹" />
+              <input type="text" id="field-design-origin" value="${escapeHtml(mon.design_origin || "")}" placeholder="例：瑞兽火猫 + 祥云纹" />
             </div>
           </div>
         </div>
@@ -468,8 +486,8 @@ export class SpeciesTab {
       </div>`;
     }).join("");
     return `<div class="evo-stat-card ${isCurrent ? "current" : ""}" ${!isCurrent ? `data-evo-goto="${sp.id}"` : ""}>
-      <div class="evo-card-name">${sp.name}</div>
-      <div class="evo-card-type">${sp.type1}${t2}</div>
+      <div class="evo-card-name">${escapeHtml(sp.name)}</div>
+      <div class="evo-card-type">${escapeHtml(sp.type1)}${t2 ? escapeHtml(sp.type2) : ""}</div>
       ${statRows}
       <div class="evo-card-total">总计 ${total}</div>
     </div>`;
@@ -487,14 +505,14 @@ export class SpeciesTab {
 
     ancestors.forEach(({ sp, cond }) => {
       html += this._evoCardHtml(sp, false);
-      html += `<span class="evo-arrow-label">${cond}</span>`;
+      html += `<span class="evo-arrow-label">${escapeHtml(cond)}</span>`;
     });
 
     html += this._evoCardHtml(mon, true);
 
     branches.forEach((evo, i) => {
       if (i > 0) html += '<div class="evo-branch-sep"></div>';
-      html += `<span class="evo-arrow-label editable" data-evo-idx="${i}" title="点击编辑">${this._evoCondLabel(evo)} ✎</span>`;
+      html += `<span class="evo-arrow-label editable" data-evo-idx="${i}" title="点击编辑">${escapeHtml(this._evoCondLabel(evo))} ✎</span>`;
       let curSp = this._speciesByName(evo.into);
       if (!curSp) return;
       html += this._evoCardHtml(curSp, false);
@@ -507,7 +525,7 @@ export class SpeciesTab {
         const next = fe[0];
         const nextSp = this._speciesByName(next.into);
         if (!nextSp) break;
-        html += `<span class="evo-arrow-label">${this._evoCondLabel(next)}</span>`;
+        html += `<span class="evo-arrow-label">${escapeHtml(this._evoCondLabel(next))}</span>`;
         html += this._evoCardHtml(nextSp, false);
         seenFwd.add(nextSp.name);
         curSp = nextSp;
@@ -674,9 +692,9 @@ export class SpeciesTab {
           ? `<span class="learn-move-badge" style="background:${(TYPE_COLORS[info.type] || "#999")};color:${contrastTextColor(TYPE_COLORS[info.type] || "#999")}">${info.type || "?"}·${CAT_LABEL[info.category] || info.category || "?"}${info.category !== "变化" ? `·威力${info.power ?? "-"}` : ""}</span>`
           : '<span class="learn-move-badge learn-move-badge-unknown">未知技能</span>';
         return `<div class="learn-card">
-          <input type="number" value="${l.level || 0}" class="learn-level" data-idx="${l._idx}" style="width:40px" />
+          <input type="number" value="${escapeHtml(String(l.level || 0))}" class="learn-level" data-idx="${l._idx}" style="width:40px" />
           <div class="learn-card-main">
-            <input type="text" value="${l.name || ""}" class="learn-name" data-idx="${l._idx}" />
+            <input type="text" value="${escapeHtml(l.name || "")}" class="learn-name" data-idx="${l._idx}" />
             ${badge}
           </div>
           <button class="remove-btn learn-remove" data-idx="${l._idx}">✕</button>
@@ -691,7 +709,7 @@ export class SpeciesTab {
     }
     return mon.encounters.map((enc, i) =>
       `<div class="enc-item" data-enc-idx="${i}">
-        <input type="text" class="enc-location" data-idx="${i}" value="${enc.location || ""}" placeholder="地点" />
+        <input type="text" class="enc-location" data-idx="${i}" value="${escapeHtml(enc.location || "")}" placeholder="地点" />
         <input type="number" class="enc-rate" data-idx="${i}" value="${enc.rate || 0}" min="0" max="100" style="width:60px" placeholder="%" />
         <button class="remove-btn enc-remove" data-idx="${i}">✕</button>
       </div>`
@@ -736,7 +754,7 @@ export class SpeciesTab {
     try {
       const dataUrl = await readSprite(path);
       container.innerHTML = `
-        <img src="${dataUrl}" alt="${name} 正面" />
+        <img src="${dataUrl}" alt="${escapeHtml(name)} 正面" />
         <div class="sprite-controls">
           <button class="btn btn-sm" id="btn-toggle-shiny" title="闪光预览">✨</button>
         </div>
@@ -765,7 +783,7 @@ export class SpeciesTab {
       const backPath = `${this.spritesDir}/${name}back.png`;
       try {
         const backDataUrl = await readSprite(backPath);
-        backContainer.innerHTML = `<img src="${backDataUrl}" alt="${name} 背面" />`;
+        backContainer.innerHTML = `<img src="${backDataUrl}" alt="${escapeHtml(name)} 背面" />`;
       } catch {
         backContainer.innerHTML = '<div class="sprite-placeholder">无背面图</div>';
       }

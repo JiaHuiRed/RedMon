@@ -10,6 +10,8 @@
 //     allowEmpty: true,            // 是否允许清空（默认 true）
 //   });
 
+import { escapeHtml } from "../utils/dom.js";
+
 let _activeDropdown = null; // 同一时间只允许一个下拉展开
 
 export function attachSearchableSelect(input, { items = [], value = "", onChange, allowEmpty = true } = {}) {
@@ -37,7 +39,7 @@ export function attachSearchableSelect(input, { items = [], value = "", onChange
       list.innerHTML = '<div class="ss-empty">无匹配项</div>';
     } else {
       list.innerHTML = filtered.slice(0, 200).map((it, i) =>
-        `<div class="ss-item${i === highlighted ? ' hl' : ''}" data-val="${it}">${it}</div>`
+        `<div class="ss-item${i === highlighted ? ' hl' : ''}" data-val="${escapeHtml(it)}">${escapeHtml(it)}</div>`
       ).join("");
     }
     return filtered;

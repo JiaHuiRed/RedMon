@@ -1,4 +1,5 @@
 import { renderTypeBadge, renderTypeOptions } from "../components/type-badge.js";
+import { escapeHtml } from "../utils/dom.js";
 
 const MOVE_CATEGORIES = ["物理", "特殊", "变化"];
 
@@ -52,8 +53,8 @@ export class MovesTab {
 
     list.innerHTML = items.map(m =>
       `<div class="sidebar-item ${m.id === this.currentId ? 'active' : ''}" data-move="${m.id}">
-        <span class="item-name">${m.name}</span>
-        <span style="font-size:11px;color:var(--text-muted)">${m.type||""} ${m.category||""}</span>
+        <span class="item-name">${escapeHtml(m.name)}</span>
+        <span style="font-size:11px;color:var(--text-muted)">${escapeHtml(m.type||"")} ${escapeHtml(m.category||"")}</span>
         <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono)">${m.power||"-"}/${m.accuracy||"-"}</span>
       </div>`
     ).join("");
@@ -84,11 +85,11 @@ export class MovesTab {
         <div class="form-grid">
           <div class="form-group">
             <label>ID</label>
-            <input type="text" id="mv-id" value="${move.id}" />
+            <input type="text" id="mv-id" value="${escapeHtml(move.id)}" />
           </div>
           <div class="form-group">
             <label>名称</label>
-            <input type="text" id="mv-name" value="${move.name}" />
+            <input type="text" id="mv-name" value="${escapeHtml(move.name)}" />
           </div>
           <div class="form-group">
             <label>属性</label>
@@ -97,7 +98,7 @@ export class MovesTab {
           <div class="form-group">
             <label>分类</label>
             <select id="mv-category">${MOVE_CATEGORIES.map(c =>
-              `<option value="${c}" ${move.category===c?"selected":""}>${c}</option>`
+              `<option value="${escapeHtml(c)}" ${move.category===c?"selected":""}>${escapeHtml(c)}</option>`
             ).join("")}</select>
           </div>
           <div class="form-group">
@@ -119,7 +120,7 @@ export class MovesTab {
           <div class="form-group">
             <label>效果类型</label>
             <select id="mv-effect">${Object.entries(MOVE_EFFECTS).map(([k,v]) =>
-              `<option value="${k}" ${move.effect===k?"selected":""}>${v}</option>`
+              `<option value="${escapeHtml(k)}" ${move.effect===k?"selected":""}>${escapeHtml(v)}</option>`
             ).join("")}</select>
           </div>
           <div class="form-group" id="mv-effect-chance-group" style="display:${EFFECT_NEEDS_CHANCE.has(move.effect)?"flex":"none"}">
@@ -132,7 +133,7 @@ export class MovesTab {
           </div>
           <div class="form-group full-width">
             <label>效果描述</label>
-            <textarea id="mv-desc" rows="3">${move.desc||""}</textarea>
+            <textarea id="mv-desc" rows="3">${escapeHtml(move.desc||"")}</textarea>
           </div>
         </div>
       </div>
@@ -190,7 +191,7 @@ export class MovesTab {
     this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
-    if (!item || !confirm(`确认删除技能「${item.name}」？`)) return;
+    if (!item || !confirm(`确认删除技能「${escapeHtml(item.name)}」？`)) return;
     this.data = this.data.filter(m => m.id !== this.currentId);
     this.state.data.moves = this.data;
     this.currentId = null;

@@ -1,4 +1,5 @@
 import { readSprite } from "../utils/api.js";
+import { escapeHtml } from "../utils/dom.js";
 
 const ITEM_CATEGORIES = ["回复", "技能机", "捕捉", "滋补", "进化"];
 
@@ -32,8 +33,8 @@ export class ItemsTab {
     if (!items.length) { list.innerHTML = '<div class="placeholder">无道具数据</div>'; return; }
     list.innerHTML = items.map(m =>
       `<div class="sidebar-item ${m.id === this.currentId ? 'active' : ''}" data-id="${m.id}">
-        <span class="item-name">${m.name}</span>
-        <span style="font-size:11px;color:var(--text-muted)">${m.category||""}</span>
+        <span class="item-name">${escapeHtml(m.name)}</span>
+        <span style="font-size:11px;color:var(--text-muted)">${escapeHtml(m.category||"")}</span>
       </div>`
     ).join("");
     list.querySelectorAll("[data-id]").forEach(el => {
@@ -59,27 +60,27 @@ export class ItemsTab {
           <div class="form-section-title">道具信息</div>
           <div class="form-grid">
             <div class="form-group">
-              <label>ID</label><input type="text" id="it-id" value="${item.id}" />
+              <label>ID</label><input type="text" id="it-id" value="${escapeHtml(item.id)}" />
             </div>
             <div class="form-group">
-              <label>名称</label><input type="text" id="it-name" value="${item.name}" />
+              <label>名称</label><input type="text" id="it-name" value="${escapeHtml(item.name)}" />
             </div>
             <div class="form-group">
               <label>分类</label>
               <select id="it-category">${ITEM_CATEGORIES.map(c =>
-                `<option value="${c}" ${item.category===c?"selected":""}>${c}</option>`
+                `<option value="${escapeHtml(c)}" ${item.category===c?"selected":""}>${escapeHtml(c)}</option>`
               ).join("")}</select>
             </div>
             <div class="form-group">
               <label>价格</label><input type="number" id="it-price" value="${item.price||0}" min="0" />
             </div>
             <div class="form-group">
-              <label>效果</label><input type="text" id="it-effect" value="${item.effect||""}" />
+              <label>效果</label><input type="text" id="it-effect" value="${escapeHtml(item.effect||"")}" />
             </div>
             <div class="form-group" id="it-train-stat-group" style="display:${item.category==="滋补"?"block":"none"}">
               <label>努力值属性</label>
               <select id="it-train-stat">${TRAIN_STATS.map(s =>
-                `<option value="${s.value}" ${item.train_stat===s.value?"selected":""}>${s.label}</option>`
+                `<option value="${escapeHtml(s.value)}" ${item.train_stat===s.value?"selected":""}>${escapeHtml(s.label)}</option>`
               ).join("")}</select>
             </div>
             <div class="form-group" id="it-train-amount-group" style="display:${item.category==="滋补"?"block":"none"}">
@@ -88,7 +89,7 @@ export class ItemsTab {
             </div>
             <div class="form-group full-width">
               <label>描述</label>
-              <textarea id="it-desc" rows="3">${item.desc||""}</textarea>
+              <textarea id="it-desc" rows="3">${escapeHtml(item.desc||"")}</textarea>
             </div>
           </div>
         </div>
@@ -135,7 +136,7 @@ export class ItemsTab {
     console.debug("[items] loading icon from:", path);
     try {
       const dataUrl = await readSprite(path);
-      container.innerHTML = `<img src="${dataUrl}" alt="${name}" />`;
+      container.innerHTML = `<img src="${dataUrl}" alt="${escapeHtml(name)}" />`;
     } catch (e) {
       console.warn("[items] icon load error:", e);
       container.innerHTML = '<div class="sprite-placeholder">无图标</div>';
@@ -154,7 +155,7 @@ export class ItemsTab {
     this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
-    if (!item || !confirm(`确认删除道具「${item.name}」？`)) return;
+    if (!item || !confirm(`确认删除道具「${escapeHtml(item.name)}」？`)) return;
     const idx = this.data.findIndex(m => m.id === this.currentId);
     if (idx !== -1) this.data.splice(idx, 1);
     this.currentId = null;

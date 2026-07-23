@@ -1,3 +1,5 @@
+import { escapeHtml } from "../utils/dom.js";
+
 const ABILITY_EFFECTS = {
   "": "-- 无战斗效果 --",
   "immune_status": "免疫异常状态",
@@ -69,7 +71,7 @@ export class AbilitiesTab {
     if (!items.length) { list.innerHTML = '<div class="placeholder">无特性数据</div>'; return; }
     list.innerHTML = items.map(m =>
       `<div class="sidebar-item ${m.id === this.currentId ? 'active' : ''}" data-id="${m.id}">
-        <span class="item-name">${m.name}</span>
+        <span class="item-name">${escapeHtml(m.name)}</span>
       </div>`
     ).join("");
     list.querySelectorAll("[data-id]").forEach(el => {
@@ -95,34 +97,34 @@ export class AbilitiesTab {
         <div class="form-section-title">特性信息</div>
         <div class="form-grid">
           <div class="form-group">
-            <label>ID</label><input type="text" id="ab-id" value="${ab.id}" />
+            <label>ID</label><input type="text" id="ab-id" value="${escapeHtml(ab.id)}" />
           </div>
           <div class="form-group">
-            <label>名称</label><input type="text" id="ab-name" value="${ab.name}" />
+            <label>名称</label><input type="text" id="ab-name" value="${escapeHtml(ab.name)}" />
           </div>
           <div class="form-group">
             <label>效果类型</label>
             <select id="ab-effect">${Object.entries(ABILITY_EFFECTS).map(([k,v]) =>
-              `<option value="${k}" ${ab.effect===k?"selected":""}>${v}</option>`
+              `<option value="${escapeHtml(k)}" ${ab.effect===k?"selected":""}>${escapeHtml(v)}</option>`
             ).join("")}</select>
           </div>
           <div class="form-group">
             <label>分类标签</label>
             <select id="ab-category">${Object.entries(ABILITY_CATEGORIES).map(([k,v]) =>
-              `<option value="${k}" ${ab.category===k?"selected":""}>${v}</option>`
+              `<option value="${escapeHtml(k)}" ${ab.category===k?"selected":""}>${escapeHtml(v)}</option>`
             ).join("")}</select>
           </div>
           <div class="form-group">
-            <label>主数值（<span id="ab-stage-unit">${unit.label}，${unit.min}~${unit.max}</span>） <span id="ab-stage-pct" style="color:var(--accent)">${magnitudeToPercent(ab.stage||0, ab.effect)}</span></label>
+            <label>主数值（<span id="ab-stage-unit">${escapeHtml(unit.label)}，${unit.min}~${unit.max}</span>） <span id="ab-stage-pct" style="color:var(--accent)">${magnitudeToPercent(ab.stage||0, ab.effect)}</span></label>
             <input type="number" id="ab-stage" value="${ab.stage||0}" min="${unit.min}" max="${unit.max}" step="1" />
           </div>
           <div class="form-group">
-            <label>副数值（<span id="ab-stage2-unit">${unit.label}，${unit.min}~${unit.max}</span>，可选） <span id="ab-stage2-pct" style="color:var(--accent)">${magnitudeToPercent(ab.stage2||0, ab.effect)}</span></label>
+            <label>副数值（<span id="ab-stage2-unit">${escapeHtml(unit.label)}，${unit.min}~${unit.max}</span>，可选） <span id="ab-stage2-pct" style="color:var(--accent)">${magnitudeToPercent(ab.stage2||0, ab.effect)}</span></label>
             <input type="number" id="ab-stage2" value="${ab.stage2||0}" min="${unit.min}" max="${unit.max}" step="1" />
           </div>
           <div class="form-group full-width">
             <label>效果描述</label>
-            <textarea id="ab-desc" rows="4">${ab.desc||""}</textarea>
+            <textarea id="ab-desc" rows="4">${escapeHtml(ab.desc||"")}</textarea>
           </div>
         </div>
       </div>
@@ -199,7 +201,7 @@ export class AbilitiesTab {
     this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
     const item = this.data.find(m => m.id === this.currentId);
-    if (!item || !confirm(`确认删除特性「${item.name}」？`)) return;
+    if (!item || !confirm(`确认删除特性「${escapeHtml(item.name)}」？`)) return;
     const idx = this.data.findIndex(m => m.id === this.currentId);
     if (idx !== -1) this.data.splice(idx, 1);
     this.currentId = null;

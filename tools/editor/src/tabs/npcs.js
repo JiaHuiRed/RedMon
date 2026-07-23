@@ -1,5 +1,6 @@
 import { readSprite } from "../utils/api.js";
 import { renderStatBar, renderTotalBar } from "../components/stat-bar.js";
+import { escapeHtml } from "../utils/dom.js";
 
 // 与 mon_editor.py 的 NPC_ROLE_MAP 保持一致（npcs.json 里 role 字段的真实取值是这些英文 key）
 // 额外补了 "champion"（真实数据里存在，但旧编辑器的映射表里也没有）
@@ -62,8 +63,8 @@ export class NpcsTab {
     const itemsHtml = items.length
       ? items.map(m => {
           const isTrainer = !!m.trainer;
-          return `<div class="sidebar-item ${m.id === this.currentId ? 'active' : ''}" data-id="${m.id}">
-            <span class="item-name">${isTrainer ? "⚔ " : ""}${m.name}</span>
+          return `<div class="sidebar-item ${m.id == this.currentId ? 'active' : ''}" data-id="${m.id}">
+            <span class="item-name">${isTrainer ? "⚔ " : ""}${escapeHtml(m.name)}</span>
             <span style="font-size:11px;color:var(--text-muted)">${NPC_ROLE_MAP[m.role || ""] || m.role || ""}</span>
           </div>`;
         }).join("")
@@ -93,7 +94,7 @@ export class NpcsTab {
   async _select(id) {
     this.currentId = id;
     this.callbacks.onStatus(`编辑角色: ${id}`);
-    const npc = this.data.find(m => m.id === id);
+    const npc = this.data.find(m => m.id == id);
     if (npc) await this.renderDetail(npc);
     this.renderList();
   }
@@ -102,10 +103,10 @@ export class NpcsTab {
     const t = npc.trainer || {};
     const teamHtml = (t.team || []).map((p, i) =>
       `<tr>
-        <td><input type="text" value="${p.species||""}" class="tr-team-species" data-idx="${i}" style="width:80px" /></td>
-        <td><input type="number" value="${p.level||1}" class="tr-team-level" data-idx="${i}" style="width:50px" min="1" /></td>
-        <td><input type="text" value="${(p.moves||[]).join(",")}" class="tr-team-moves" data-idx="${i}" style="width:120px" placeholder="用逗号分隔" /></td>
-        <td><input type="text" value="${p.item||""}" class="tr-team-item" data-idx="${i}" style="width:60px" /></td>
+        <td><input type="text" value="${escapeHtml(p.species||"")}" class="tr-team-species" data-idx="${i}" style="width:80px" /></td>
+        <td><input type="number" value="${escapeHtml(String(p.level||1))}" class="tr-team-level" data-idx="${i}" style="width:50px" min="1" /></td>
+        <td><input type="text" value="${escapeHtml((p.moves||[]).join(","))}" class="tr-team-moves" data-idx="${i}" style="width:120px" placeholder="用逗号分隔" /></td>
+        <td><input type="text" value="${escapeHtml(p.item||"")}" class="tr-team-item" data-idx="${i}" style="width:60px" /></td>
         <td><button class="remove-btn tr-team-remove" data-idx="${i}">✕</button></td>
       </tr>`
     ).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">无队伍</td></tr>';
@@ -121,13 +122,13 @@ export class NpcsTab {
           <div class="form-section-title">角色信息</div>
           <div class="form-grid">
             <div class="form-group">
-              <label>ID</label><input type="text" id="np-id" value="${npc.id}" />
+              <label>ID</label><input type="text" id="np-id" value="${escapeHtml(String(npc.id))}" />
             </div>
             <div class="form-group">
-              <label>名称</label><input type="text" id="np-name" value="${npc.name}" />
+              <label>名称</label><input type="text" id="np-name" value="${escapeHtml(npc.name)}" />
             </div>
             <div class="form-group">
-              <label>称号</label><input type="text" id="np-title" value="${npc.title||""}" placeholder="如「青木村的守护者」" />
+              <label>称号</label><input type="text" id="np-title" value="${escapeHtml(npc.title||"")}" placeholder="如「青木村的守护者」" />
             </div>
             <div class="form-group">
               <label>角色类型</label>
@@ -145,11 +146,11 @@ export class NpcsTab {
             </div>
             <div class="form-group full-width">
               <label>描述</label>
-              <textarea id="np-desc" rows="2">${npc.desc||""}</textarea>
+              <textarea id="np-desc" rows="2">${escapeHtml(npc.desc||"")}</textarea>
             </div>
             <div class="form-group full-width">
               <label>对话</label>
-              <textarea id="np-dialog" rows="3">${npc.dialog||""}</textarea>
+              <textarea id="np-dialog" rows="3">${escapeHtml(npc.dialog||"")}</textarea>
             </div>
           </div>
         </div>
@@ -158,7 +159,7 @@ export class NpcsTab {
         <summary class="form-section-title">训练师数据</summary>
         <div class="form-grid">
           <div class="form-group">
-            <label>训练师ID</label><input type="text" id="tr-id" value="${t.trainer_id||""}" />
+            <label>训练师ID</label><input type="text" id="tr-id" value="${escapeHtml(t.trainer_id||"")}" />
           </div>
           <div class="form-group">
             <label>职业</label>
@@ -177,23 +178,23 @@ export class NpcsTab {
           </div>
           <div class="form-group full-width">
             <label>战前对话</label>
-            <textarea id="tr-dialog-before" rows="2">${t.dialog_before||""}</textarea>
+            <textarea id="tr-dialog-before" rows="2">${escapeHtml(t.dialog_before||"")}</textarea>
           </div>
           <div class="form-group full-width">
             <label>战后对话（胜利）</label>
-            <textarea id="tr-dialog-win" rows="2">${t.dialog_win||""}</textarea>
+            <textarea id="tr-dialog-win" rows="2">${escapeHtml(t.dialog_win||"")}</textarea>
           </div>
           <div class="form-group full-width">
             <label>战后对话（失败）</label>
-            <textarea id="tr-dialog-lose" rows="2">${t.dialog_lose||""}</textarea>
+            <textarea id="tr-dialog-lose" rows="2">${escapeHtml(t.dialog_lose||"")}</textarea>
           </div>
           <div class="form-group full-width">
             <label>玩家败北对话</label>
-            <textarea id="tr-dialog-player-lose" rows="2">${t.dialog_player_lose||""}</textarea>
+            <textarea id="tr-dialog-player-lose" rows="2">${escapeHtml(t.dialog_player_lose||"")}</textarea>
           </div>
           <div class="form-group full-width">
             <label>战后对话</label>
-            <textarea id="tr-dialog-after" rows="2">${t.dialog_after||""}</textarea>
+            <textarea id="tr-dialog-after" rows="2">${escapeHtml(t.dialog_after||"")}</textarea>
           </div>
         </div>
         <div class="section-header" style="margin-top:12px">
@@ -280,7 +281,7 @@ export class NpcsTab {
     }
     const sp = (this.state.data.species || []).find(s => s.name === speciesName);
     if (!sp) {
-      body.innerHTML = `<div class="placeholder">未找到精灵「${speciesName}」</div>`;
+      body.innerHTML = `<div class="placeholder">未找到精灵「${escapeHtml(speciesName)}」</div>`;
       return;
     }
     const base = sp.base || {};
@@ -291,7 +292,7 @@ export class NpcsTab {
           <div class="sprite-placeholder">加载中...</div>
         </div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:600">${sp.name} <span style="font-weight:400;color:var(--text-muted);font-size:12px">${sp.type1}${sp.type2 ? "/" + sp.type2 : ""}</span></div>
+          <div style="font-weight:600">${escapeHtml(sp.name)} <span style="font-weight:400;color:var(--text-muted);font-size:12px">${escapeHtml(sp.type1)}${sp.type2 ? "/" + escapeHtml(sp.type2) : ""}</span></div>
           <div class="stat-group" style="margin-top:6px">
             ${renderStatBar("hp", base.hp || 0)}
             ${renderStatBar("atk", base.atk || 0)}
@@ -308,7 +309,7 @@ export class NpcsTab {
     if (sprContainer && this.speciesSpritesDir) {
       try {
         const dataUrl = await readSprite(`${this.speciesSpritesDir}/${sp.name}front.png`);
-        sprContainer.innerHTML = `<img src="${dataUrl}" alt="${sp.name}" />`;
+        sprContainer.innerHTML = `<img src="${dataUrl}" alt="${escapeHtml(sp.name)}" />`;
       } catch {
         sprContainer.innerHTML = '<div class="sprite-placeholder">无精灵图</div>';
       }
@@ -328,7 +329,7 @@ export class NpcsTab {
     const fullPath = `${this.spritesDir}/${frontPath}`;
     try {
       const dataUrl = await readSprite(fullPath);
-      container.innerHTML = `<img src="${dataUrl}" alt="${npc.name}" />`;
+      container.innerHTML = `<img src="${dataUrl}" alt="${escapeHtml(npc.name)}" />`;
     } catch {
       container.innerHTML = '<div class="sprite-placeholder">无精灵图</div>';
     }
@@ -354,10 +355,10 @@ export class NpcsTab {
   onDelete() {
     this.callbacks.saveHistory(this.fileKey);
     if (!this.currentId) return;
-    const npc = this.data.find(m => m.id === this.currentId);
+    const npc = this.data.find(m => m.id == this.currentId);
     if (!npc) return;
     if (!confirm(`确认删除角色「${npc.name}」？`)) return;
-    const idx = this.data.findIndex(m => m.id === this.currentId);
+    const idx = this.data.findIndex(m => m.id == this.currentId);
     if (idx !== -1) this.data.splice(idx, 1);
     this.currentId = null;
     this.callbacks.onModified(this.fileKey);
