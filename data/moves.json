@@ -6558,7 +6558,7 @@
     "name": "薄雾炸裂",
     "type": "仙",
     "category": "特殊",
-    "power": 100,
+    "power": 90,
     "accuracy": 100,
     "max_pp": 10,
     "effect": "",
